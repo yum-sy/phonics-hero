@@ -567,6 +567,140 @@ const ICONS = {
       <rect x="50" y="48" width="7" height="10" fill="#712b13"/>
     `),
 
+  // -- Group 3 additions: R (chapter 4), G / O / U (chapter 5) --
+
+  // Side profile with a pointed snout, not the front-facing round `dog`/`cat`
+  // heads: gray coat (not dog's tan or cat's cool blue-gray) plus a long bare
+  // tail are the two cues that separate rat from every other animal icon.
+  // The tail is drawn first and rooted well inside the body ellipse (same
+  // trick as `ant`'s legs) so the body fill covers the seam and it reads as
+  // one continuous curl instead of a detached blob.
+  rat: () =>
+    wrap(`
+      <path d="M16 42 Q4 46 4 56 Q4 64 14 62" fill="none" stroke="#e0a273" stroke-width="4.5" stroke-linecap="round"/>
+      <ellipse cx="26" cy="36" rx="20" ry="15" fill="#9b9ba3"/>
+      <circle cx="44" cy="22" r="10" fill="#9b9ba3"/>
+      <polygon points="52,19 63,22 52,26" fill="#7c7c86"/>
+      <circle cx="38" cy="12" r="5.6" fill="#9b9ba3"/>
+      <circle cx="38" cy="12" r="2.6" fill="#e6b8c4"/>
+      <circle cx="47" cy="19" r="2.1" fill="#2c2c2a"/>
+      <g stroke="#7c7c86" stroke-width="1.5" stroke-linecap="round">
+        <line x1="53" y1="19" x2="62" y2="14"/>
+        <line x1="54" y1="22" x2="63" y2="22"/>
+        <line x1="53" y1="25" x2="62" y2="29"/>
+      </g>
+      <ellipse cx="18" cy="49" rx="4" ry="2.4" fill="#7c7c86"/>
+      <ellipse cx="32" cy="50" rx="4" ry="2.4" fill="#7c7c86"/>
+    `),
+
+  // A gold band drawn as a circle-with-a-hole (mask, like `moon`) so it can
+  // never be read as the disc-shaped `key` head, topped with a mounted gem --
+  // the gem is the cue that separates it from `moon`'s bare crescent.
+  ring: () => {
+    const maskId = nextId('ring-mask')
+    return wrap(`
+      <mask id="${maskId}">
+        <rect width="64" height="64" fill="#fff"/>
+        <circle cx="32" cy="42" r="13" fill="#000"/>
+      </mask>
+      <circle cx="32" cy="42" r="19" fill="#f4c95d" mask="url(#${maskId})"/>
+      <circle cx="32" cy="42" r="19" fill="none" stroke="#ef9f27" stroke-width="2" mask="url(#${maskId})"/>
+      <polygon points="32,10 44,24 32,34 20,24" fill="#5dd6e0" stroke="#378add" stroke-width="2.4" stroke-linejoin="round"/>
+      <polygon points="26,20 32,15 38,20 32,26" fill="#eafcff" opacity="0.7"/>
+    `)
+  },
+
+  // A wrapped box with a knotted bow, not the flat unwrapped `gum` strip --
+  // the bow loops and the vertical+horizontal ribbon cross are the shapes
+  // that make it read as "present" rather than "box" at 60px.
+  gift: () =>
+    wrap(`
+      <rect x="10" y="26" width="44" height="30" rx="3" fill="#e24b4a"/>
+      <rect x="10" y="35" width="44" height="8" fill="#f4c95d"/>
+      <rect x="27" y="26" width="10" height="30" fill="#f4c95d"/>
+      <path d="M20 26 Q12 14 22 10 Q30 8 32 20 Q34 8 42 10 Q52 14 44 26 Z"
+        fill="#f4c95d" stroke="#ef9f27" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="32" cy="21" r="4" fill="#ef9f27"/>
+    `),
+
+  // A long flat stick (pale) with a striped foil wrapper peeled back at one
+  // corner -- horizontal and low where `gift` is a tall knotted box, so the
+  // two /g/ words never trade places even at 60px. An earlier draft used two
+  // opposing triangles for the peeled foil and read as a flashlight/arrow;
+  // a single lifted parallelogram flap avoids that directional look.
+  gum: () =>
+    wrap(`
+      <rect x="9" y="27" width="46" height="13" rx="6" fill="#fdf6ec" stroke="#d8cfb8" stroke-width="1.6"/>
+      <rect x="7" y="25" width="26" height="17" rx="4" fill="#378add"/>
+      <line x1="16" y1="25" x2="16" y2="42" stroke="#eafcff" stroke-width="2"/>
+      <line x1="25" y1="25" x2="25" y2="42" stroke="#eafcff" stroke-width="2"/>
+      <path d="M30 25 L40 19 L41 26 L31 32 Z" fill="#5dd6e0"/>
+    `),
+
+  // Big head-and-eyes plus five curling tentacles with suction-cup dots --
+  // legs kept to five (not eight) so they stay separated at 60px, and cool
+  // purple keeps it off every warm-toned animal icon already in the set.
+  octopus: () =>
+    wrap(`
+      <ellipse cx="32" cy="27" rx="23" ry="19" fill="#534ab7"/>
+      <circle cx="23" cy="24" r="7.5" fill="#eafcff"/>
+      <circle cx="41" cy="24" r="7.5" fill="#eafcff"/>
+      <circle cx="23" cy="25" r="3.8" fill="#2c2c2a"/>
+      <circle cx="41" cy="25" r="3.8" fill="#2c2c2a"/>
+      <g stroke="#443a99" stroke-width="6" fill="none" stroke-linecap="round">
+        <path d="M12 38 Q6 48 12 58"/>
+        <path d="M22 42 Q19 52 24 60"/>
+        <path d="M32 43 Q32 53 32 61"/>
+        <path d="M42 42 Q45 52 40 60"/>
+        <path d="M52 38 Q58 48 52 58"/>
+      </g>
+      <g fill="#eafcff">
+        <circle cx="12" cy="53" r="2.4"/>
+        <circle cx="24" cy="55" r="2.4"/>
+        <circle cx="40" cy="55" r="2.4"/>
+        <circle cx="52" cy="53" r="2.4"/>
+      </g>
+    `),
+
+  // Same round-fruit build as `apple` (so the /o/ vs /a/ family reads as
+  // fruit either way) but orange, not red, with a dimpled rind and a stubby
+  // navel instead of apple's stem+leaf, so the two can never be confused.
+  orange: () =>
+    wrap(`
+      <circle cx="32" cy="36" r="24" fill="#ef9f27"/>
+      <circle cx="32" cy="13" r="3.2" fill="#712b13"/>
+      <path d="M32 13 Q40 7 46 13" fill="none" stroke="#3b9922" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#d97f1f" opacity="0.7">
+        <circle cx="22" cy="28" r="1.6"/>
+        <circle cx="30" cy="24" r="1.6"/>
+        <circle cx="40" cy="30" r="1.6"/>
+        <circle cx="24" cy="42" r="1.6"/>
+        <circle cx="36" cy="46" r="1.6"/>
+        <circle cx="44" cy="38" r="1.6"/>
+        <circle cx="30" cy="50" r="1.6"/>
+      </g>
+      <path d="M18 26 Q24 20 30 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    `),
+
+  // A domed canopy (round top, scalloped bottom edge) on a straight pole --
+  // the opposite silhouette from `top`'s pointed triangle spinning toy, so
+  // the two never compete even though both are drawn in cool/warm blocks.
+  umbrella: () =>
+    wrap(`
+      <path d="M4 34 A28 28 0 0 1 32 6 A28 28 0 0 1 60 34 Z" fill="#e24b4a"/>
+      <path d="M4 34 A28 28 0 0 1 32 6 Z" fill="#378add"/>
+      <g stroke="#2c2c2a" stroke-width="1.6" fill="none">
+        <line x1="14" y1="16" x2="20" y2="32"/>
+        <line x1="32" y1="6" x2="32" y2="34"/>
+        <line x1="50" y1="16" x2="44" y2="32"/>
+      </g>
+      <path d="M4 34 Q4 40 10 36 Q16 40 22 36 Q28 40 34 36 Q40 40 46 36 Q52 40 58 36 Q60 35 60 34"
+        fill="none" stroke="#2c2c2a" stroke-width="2.2" stroke-linejoin="round"/>
+      <rect x="30" y="4" width="4" height="4" fill="#f4c95d"/>
+      <line x1="32" y1="34" x2="32" y2="54" stroke="#712b13" stroke-width="4"/>
+      <path d="M32 54 Q32 61 23 61" fill="none" stroke="#712b13" stroke-width="4" stroke-linecap="round"/>
+    `),
+
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.
   letterTile: (label = '') =>
