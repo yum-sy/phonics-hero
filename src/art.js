@@ -9,6 +9,17 @@ import {
   villainRobot,
   villainDeluxeRobot,
 } from './art/robots.js'
+import {
+  dinoRaptor,
+  dinoArmored,
+  dinoFlyer,
+  dinoHorned,
+  dinoBlink,
+  dinoEcho,
+  dinoUpside,
+  dinoSwamp,
+  dinoShadowRex,
+} from './art/dinosaurs.js'
 
 // Shared by every style family defined *in this file*; ./art/robots.js
 // keeps its own copy so it stays importable without this module.
@@ -555,6 +566,10 @@ const HERO_PALETTES = {
   '파워피': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
   '나이토': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
   '캡틴핀': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', emblem: '★' },
+  '케이라': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#1f6b45', emblem: 'C' },
+  '에디': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
+  '허비': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
+  '트라이케라': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
 }
 
 const VILLAIN_PALETTES = {
@@ -568,6 +583,11 @@ const VILLAIN_PALETTES = {
   '멈춤맨': { style: 'supervillain-stop', bodyColor: '#8a7f4b', accent: '#4a4222', collarColor: '#231f10' },
   '뒤죽박죽': { style: 'supervillain-jumble', bodyColor: '#6b8f3a', accent: '#39501c', collarColor: '#1b260d' },
   '섀도우킹': { style: 'supervillain-king', bodyColor: '#4b3f6b', accent: '#211b33', collarColor: '#1c1c1c' },
+  '깜빡괴물': { style: 'dino-blink', bodyColor: '#8f7fd4', accent: '#463a80' },
+  '메아리도둑': { style: 'dino-echo', bodyColor: '#5aa6a0', accent: '#1f5a56' },
+  '거꾸로용': { style: 'dino-upside', bodyColor: '#c96a9b', accent: '#6b2f4c' },
+  '늪지괴물': { style: 'dino-swamp', bodyColor: '#7d9b3a', accent: '#3c4d18' },
+  '그림자렉스': { style: 'dino-shadow-rex', bodyColor: '#4a4a52', accent: '#22222a' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -585,6 +605,10 @@ const HERO_STYLES = {
   // Alias so chapter data authored against the earlier style name for this
   // slot still resolves instead of silently falling back to a robot.
   'superhero-spider': heroAcrobat,
+  'dino-raptor': dinoRaptor,
+  'dino-armored': dinoArmored,
+  'dino-flyer': dinoFlyer,
+  'dino-horned': dinoHorned,
 }
 
 const VILLAIN_STYLES = {
@@ -596,6 +620,11 @@ const VILLAIN_STYLES = {
   'supervillain-stop': villainStop,
   'supervillain-jumble': villainJumble,
   'supervillain-king': villainShadowKing,
+  'dino-blink': dinoBlink,
+  'dino-echo': dinoEcho,
+  'dino-upside': dinoUpside,
+  'dino-swamp': dinoSwamp,
+  'dino-shadow-rex': dinoShadowRex,
 }
 
 // Styles that name a family rather than a final look. Chapter data written
@@ -603,7 +632,7 @@ const VILLAIN_STYLES = {
 // would render all four of a chapter's heroes as the same figure, so a named
 // character's own archetype outranks a family request. A concrete style in
 // the data still wins, and an unknown name still gets the family default.
-const FAMILY_STYLES = new Set(['superhero'])
+const FAMILY_STYLES = new Set(['superhero', 'dino', 'dinosaur'])
 
 // Explicit spec colors win over the name palette, which wins over the art
 // function's own defaults. Undefined spec fields are dropped so a partially

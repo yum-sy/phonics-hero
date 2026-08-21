@@ -30,15 +30,26 @@ src/
   screens.js           # 4단계 네비게이션: 월드 → 챕터 → 맵 → 스테이지
   audio.js             # TTS 큐 (겹침 방지), SpeechRecognition
   state.js             # 진행 상태, 잠금 로직
-  art.js               # 캐릭터 SVG (heroRobot, villainRobot 등)
+  art.js               # heroArt/villainArt dispatch + style 테이블 + 팔레트,
+                       #   슈퍼히어로 계열 함수
+  art/
+    robots.js          # 로봇 계열 (각진 변신자동차 문법)
   icons.js             # 단어 아이콘 SVG + shoutBurst() 집중선 효과
   style.css            # 전체 스타일, 가로/세로 방향 지원
   data/
     chapters/
-      index.js         # 챕터 목록 통합, worlds/stages 배열, 조회 함수
-      chapter-01.js    # 챕터 1 (S/A/T) — 현재 유일하게 구현된 챕터
+      index.js         # 챕터 통합, worlds/stages 배열, 조회 함수,
+                       #   validateChapters() (dev 전용 계약 검증)
+      chapter-01.js    # 챕터 1 (S/A/T → SAT)
+      chapter-02.js    # 챕터 2 (I/P/N → PIN)
     stages.js          # 하위 호환 shim → chapters/index.js 재export
+public/
+  _probe.html          # 화면 검증 하네스 (gitignore, 버려지는 파일)
 ```
+
+새 챕터 추가: `chapter-NN.js` 를 만들고 `chapters/index.js` 의 import + 배열에 넣으면
+끝이다. `worlds` 는 33개 챕터 슬롯을 미리 열거하므로 미작성 챕터는 자동으로 `???`
+잠금 카드로 렌더된다 — 다른 파일은 손댈 필요 없다.
 
 ## 핵심 아키텍처
 
@@ -58,17 +69,32 @@ src/
 - **음성 완료 대기**: 모든 beat 전환은 `waitForTransition(minDelayMs)` = `whenAudioIdle()` + 최소 딜레이
 - `optionLabelHtml(opt)` — 단일 알파벳 letterTile의 텍스트 레이블 sr-only 처리
 
-### 캐릭터 아트 (art.js)
+### 캐릭터 아트 (art.js + art/*.js)
+데이터가 아니라 **아트가 캐릭터의 색·외형을 소유한다.** 진입점은 두 개뿐:
 ```js
-heroRobot({bodyColor, accent, emblem, visorColor})        // 일반 히어로
-heroDeluxeRobot({bodyColor, panelColor, accent, visorColor}) // 카본 (보스전 합체 형태)
-heroSuperhero({bodyColor, accent, capeColor, maskColor, emblem}) // 슈퍼히어로 스타일 (Ch2, 9, 16)
-villainRobot({bodyColor, accent})                          // 일반 악당
-villainDeluxeRobot({bodyColor, accent, capeColor, visorColor}) // 다크스파크 (챕터 보스)
-heroArt(name)   // 이름으로 dispatch
-villainArt(name) // 이름으로 dispatch
+heroArt(heroOrName)     // 문자열(레거시) 또는 { name, style, ...색상override }
+villainArt(villainOrName)
 ```
-- 모든 SVG: viewBox "0 0 120 140", action figure 비율, flat color
+`resolveArt()` 의 해석 순서:
+- **style**: `spec.style` → 이름 팔레트의 style → `'robot'`. 미지 style 은 크래시 없이 robot 폴백.
+- **색상**: 아트 함수 기본값 ← 이름 팔레트 ← `spec` 의 명시 필드(가장 강함).
+- **패밀리 라벨**: `spec.style` 이 `FAMILY_STYLES`(예: `'superhero'`, `'dino'`)이고 그 이름에
+  더 구체적인 style 이 있으면 **팔레트의 구체 style 이 이긴다.** 챕터 데이터는 계열만
+  선언하고 캐릭터별 외형은 아트가 결정한다.
+
+스타일 계열은 파일로 분리한다 — 함수 두어 개를 넘기면 `src/art/<family>.js` 로 빼고
+`art.js` 가 import 해서 `HERO_STYLES`/`VILLAIN_STYLES` 에 등록한다. 그래야 디자이너를
+계열별로 병렬 투입할 수 있다(같은 파일이면 서로 덮어쓴다).
+- `art/robots.js` — `robot`, `robot-deluxe` (히어로/빌런). 각진 변신자동차 문법:
+  가슴=자동차 앞면(앞유리+그릴 슬랫+헤드라이트), 어깨 바퀴, 스포일러, V 크레스트, `rx` 금지
+- `art.js` 내 슈퍼히어로 계열 — `superhero`, `superhero-acrobat/-shield/-thunder/-armor`,
+  `supervillain-fog/-eraser/-stop/-jumble/-king`
+- 모든 SVG: viewBox `"0 0 120 140"`, flat color, 그라디언트/필터 금지, 기하 프리미티브만
+
+**표시 크기가 여러 개다**: 66px(합체 연출 미니봇) / 96px(챕터 카드) / 110px(전투 스프라이트)
+/ 132px(합체 최종 형태). 66px 에서 1 viewBox 단위 ≈ 0.47px 이므로 **3단위 미만 디테일은
+회색 죽이 된다.** 작은 크기에서 통하는 유일한 전략은 요소 수를 줄이고 남은 것을 과장하는 것.
+`emblem` 글자는 파닉스 교육 요소이므로 66px 에서 읽혀야 한다.
 
 ### 챕터/월드 구조 (data/chapters/index.js)
 - `WORLD_SIZE = 7`, `TOTAL_PLANNED_CHAPTERS = 33`
@@ -80,26 +106,55 @@ villainArt(name) // 이름으로 dispatch
 
 ### 완료
 - [x] 월드 선택 → 챕터 선택 → 스테이지 맵 → 스테이지 화면 네비게이션
-- [x] 챕터 1 (S/A/T + SAT 합체): 5개 스테이지 완전 구현
+- [x] 챕터 1 (S/A/T → SAT), 챕터 2 (I/P/N → PIN) — Jolly Group 1 완료
 - [x] 8가지 beat 타입 렌더러
 - [x] TTS 큐 (겹침 방지, 안전 타임아웃, stuck 방지)
 - [x] 오답 재시연 (2연속 오답 시 힌트)
 - [x] 음성 재생 중 화면 이동 차단 (`whenAudioIdle()` 패턴)
 - [x] `clearAudioQueue()` — 뒤로가기 시 대기 발화 취소
 - [x] 가로/세로 방향 동시 지원 (CSS 미디어쿼리)
-- [x] letterTile 단일 알파벳 레이블 sr-only (`.sr-only` CSS)
-- [x] shoutBurst() — 집중선 SVG (중앙 비어있음, 48개 선, 삼각형 accent 없음)
-- [x] 보스 스테이지 "합체 연출" — 미니 로봇 3개(스테이지 2–4) 슬라이드인 + 카본 등장
-  - 탭으로 스킵 가능 (풀스택 에이전트가 추가 예정/확인 필요)
-  - 미니 로봇 팔레트 동적 처리 (챕터 데이터 기반, 풀스택 에이전트 확인 필요)
+- [x] shoutBurst() — 집중선 SVG
+- [x] 보스 합체 연출 — 미니봇 **3개(스테이지 2–4)** 슬라이드인 + 최종 형태 등장,
+      **탭으로 즉시 스킵**(타임아웃/탭 이중 실행 가드), 아트는 스테이지 데이터 기반
+- [x] **표시 / 발화 분리** — `words[]`·`readAloud`·`options[]`·`letters[]` 가 표시용과
+      발화용을 따로 갖는다. `screens.js` 의 모든 `speakEN` 이 오디오 전용 필드나
+      `spokenPair()`/`optionSpeech()` 정규화 결과만 받는다(표시 문자열 직접 발화 경로 0개)
+- [x] **`validateChapters()`** — dev 로드 시 데이터 계약 위반을 `console.error` 로 출력.
+      프로덕션 번들에서는 tree-shaking 으로 제거됨(빌드로 확인)
+- [x] **아트 데이터화** — `heroArt`/`villainArt` 가 style 테이블로 dispatch, 계열별 파일 분리
+- [x] 카봇 로봇 4종 각진 재설계, 챕터 2 히어로 4종 + 빌런 5종 개성화
 
 ### 진행 중 / 미완료
-- [ ] 챕터 2–33 콘텐츠 미구현 (챕터 1만 존재)
-- [ ] 합체 연출: 튜토리얼 스테이지(1번) 제외, 스테이지 2–4 3개 로봇 — 풀스택 에이전트에 지시함
-- [ ] 합체 연출: 탭 스킵 + 팔레트 동적화 — 풀스택 에이전트에 지시함
+- [ ] 챕터 3 (Jolly Group 2 앞 3개: C/K, E, H) — 파닉스 에이전트 작업 중
+- [ ] 공룡 계열 아트 (`src/art/dinosaurs.js`) — 디자인 에이전트 작업 중
+- [ ] 레이아웃 — 834×1194 에서 세로 공간 약 1/3 이 빈 채로 낭비됨(전투 씬 아래 ~190px,
+      버튼 아래 ~190px). 스크롤은 없으나 아트·글자를 키울 공간을 안 쓰고 있다
+- [ ] 챕터 4–33 콘텐츠
 
-### 출시 전 반드시 할 것
-- [ ] `src/state.js` 6번 줄: `DEV_UNLOCK_ALL = true` → `false` 로 변경
+### 출시 전 확인
+- [x] ~~`DEV_UNLOCK_ALL` 을 손으로 `false` 로 바꾸기~~ → **구조적으로 해결됨.**
+      `src/state.js` 가 `DEV_UNLOCK_ALL = import.meta.env.DEV` 이므로 프로덕션 빌드에서
+      상수 접힘으로 사라진다. 손으로 바꾸는 체크리스트 항목은 언젠가 잊히므로 없앴다.
+- [ ] 빌드 산출물 확인(회귀 방지): `dist/assets/*.js` 에 `DEV_UNLOCK`·`import.meta.env`·
+      `validateChapters` 가 **없고**, 잠금 함수가 `return true` 로 단축되지 않고 실제 로직
+      (`return n<=0||m(e[n-1].id)` 형태)을 유지하는지 확인
+- [ ] **실기기에서 소리 표기 청취 확인** — macOS `say` 측정으로 하이픈형 결함을 잡았지만
+      iPad Safari 음성과 동일 보장은 없다. 챕터 1 스테이지 4(T) 한 번만 들어보면 된다
+
+## 검증 방법 (재현 가능)
+이 맥에는 `rsvg-convert`/`magick`/`inkscape` 가 **없다.** SVG·화면 확인은 두 경로뿐:
+- **정적 아트 시트**: Node 로 HTML 시트 생성 → `qlmanage -t -s 1400 -o <dir> sheet.html`
+- **실제 앱 화면**: `public/_probe.html` 하네스 + headless Chrome.
+  `?shot=` 으로 화면 지정(`world`/`map2`/`battle2`/`boss1`/`build1`/`finale2`/`reward1` 등),
+  TTS 를 no-op 으로 막아 오디오 대기 없이 렌더된다. 하단 HUD 에
+  `NOSCROLL/SCROLL … gap=NNpx(N%)` 판정이 표시된다(스크롤은 눈으로 판정하지 말 것).
+  ```
+  CH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  "$CH" --headless --disable-gpu --window-size=834,1194 --virtual-time-budget=5000 \
+    --screenshot=out.png "http://localhost:5173/_probe.html?shot=battle2"
+  ```
+  합체 연출 **진행 중** 화면은 `--virtual-time-budget=700` (1650ms 자동 해제 전).
+- Node 가 PATH 에 없을 수 있다: `/Users/kami.san/.nvm/versions/node/v24.19.0/bin/node`
 
 ## 중요 규칙 / 설계 원칙
 
@@ -128,11 +183,23 @@ villainArt(name) // 이름으로 dispatch
   `letters: [{ text: 'S', say: 'sss' }]`.
   화면에 안 나오는 `repeatAudio`/`promptAudio`는 소리 표기를 직접 쓴다.
   단일 문자를 그대로 발화하면 글자 **이름**("에스", "아이")으로 읽힌다.
-- **소리 표기 규칙**: 지속음은 반복문자(`sss`/`nnn`/`iii`), 파열음은 하이픈
-  절단(`t-t-t`/`p-p-p`), 반복 시 장모음이 되어버리는 모음은 근사 철자(`eh`/`aw`/`uh`).
-  S `sss` · A `aaa` · T `t-t-t` · I `iii` · P `p-p-p` · N `nnn` · M `mmm` ·
-  L `lll` · Z `zzz` · B `b-b-b` · D `d-d-d` · C `k-k-k` (Jolly는 c를 /k/로 가르침) ·
-  E `eh` · O `aw` · U `uh`
+- **소리 표기 규칙**: 지속음은 **반복문자**(`sss`/`nnn`/`iii`), 지속 불가한 소리는
+  **근사 CV 철자**(`tuh`/`puh`/`kuh`/`huh`), 반복 시 장모음이 되는 모음은 근사 철자(`eh`/`uh`).
+  S `sss` · A `aaa` · I `iii` · N `nnn` · M `mmm` · L `lll` · Z `zzz` · E `eh` · U `uh` ·
+  T `tuh` · P `puh` · B `buh` · D `duh` · H `huh` ·
+  C/K `kuh` (Jolly는 c를 /k/로 가르치고, C와 K는 **같은 표기**를 써야 한다)
+- **하이픈형(`t-t-t`) 은 절대 쓰지 마라.** TTS 가 하이픈을 무시하고 글자 **이름**으로
+  읽는다 — 측정으로 확인됐다(`t-t-t` 와 `"tee tee tee"` 의 합성 길이가 두 음성에서
+  소수점 6자리까지 동일). `validateChapters()` 가 이 패턴을 잡는다.
+- **새 소리 표기를 정할 때는 반드시 측정해라** (오디오 출력 없이도 가능):
+  ```bash
+  say -v Samantha -o a.aiff "tuh tuh tuh" && afinfo a.aiff | grep "estimated duration"
+  say -v Samantha -o b.aiff "tee tee tee" && afinfo b.aiff | grep "estimated duration"
+  ```
+  후보와 글자 이름을 **3회 반복형**으로 비교하고(단음절 비교는 노이즈가 커서 결론이
+  흔들린다), `Samantha`/`Alex` 두 음성 교차 확인. 길이가 같으면 같은 음소 시퀀스다.
+  O 의 `aw` 는 Alex 에서 `oh` 와 충돌한다 — O 를 실제로 가르치는 챕터에서 재선정 필요.
+  최종 확인은 실기기에서 귀로 한 번 해야 한다(macOS 음성 ≈ iOS 음성이지만 동일 보장 없음).
 - **캐릭터 색·외형은 `art.js` 소유**: 데이터는 `hero: { name, style }` 만 준다.
   색이나 엠블럼을 데이터에서 넘기면 캐릭터 고유색을 덮어쓴다.
 - **`scored: true` 인 `choose`/`multiselect`/`drag-build` 에는 `readAloud` 필수.**
