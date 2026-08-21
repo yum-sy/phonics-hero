@@ -1,0 +1,726 @@
+// Chapter 5 (platformer theme, reused from the mislabeled chapter-4 art):
+// G, O, U -> boss blends "DOG" + "GUM". Starts Jolly Phonics Group 3
+// (G, O, U, L, F, B) -- chapter 6 will cover L, F, B.
+// Beat vocabulary is identical to chapter-01.js -- see that file's header.
+//
+// Ids are prefixed 'c5' because getStageById() searches every chapter flat.
+// 캐릭터 색·외형은 art.js 소유 -- 데이터는 { name, art, style } 만 준다.
+// art 슬러그는 리더가 art.js 팔레트에 등록한다(이 파일 작성 시점엔 미등록).
+//
+// 표시/발화 규칙: 화면에는 실제 글자·단어, 발화에는 소리.
+// 이 챕터의 소리 표기: G `guh` · O `ough` · U `uh`
+//
+// --- G = `guh` 측정 근거 ---
+// 글자 이름(`gee`)과는 두 음성 모두 배수 재측정에서 격차가 N에 비례해 커진다
+// (Samantha 1x=27ms -> 10x=373ms, Alex 1x=10ms -> 10x=136ms, 5x 근처 이상치
+// 하나 제외하면 단조 증가) -- 실제로 다른 음소다.
+// 한 번 충돌로 의심됐다가 기각된 사례: `guh` vs `duh` 가 Samantha 3회 반복형
+//에서 3.8ms 차이로 근접했다. 하지만 15x/20x/30x 로 확인하니 그 차이가 절대값
+// 3.5ms 로 **고정**돼 있었다(N 에 비례해 커지지 않음, diff/N 이 0.24->0.18->0.12
+// 로 오히려 감소) -- 이게 실제 다른 음소의 신호다(고정 오프셋 = 경계에서 한 번
+// 생기는 실제 조음 차이). 대조로 확인된 진짜 충돌쌍 `buh`/`duh`(Alex) 는 같은
+// 방식으로 재보면 15x/20x/30x 전부 **정확히 0.0ms** 차이였다 -- 그게 진짜
+// "같은 음소" 신호다. 이 대조 덕분에 guh/duh 를 안전하게 기각할 수 있었다.
+// 앞으로 근접한 후보를 만나면: 큰 배수(15/20/30x)에서 diff 가 0 으로 수렴하면
+// 충돌, N 에 비례해 커지거나 절대값이 일정하게 유지되면(0이 아니면) 실제
+// 다른 음소다.
+//
+// --- O = `ough` 재검증 (O 를 실제로 가르치는 첫 챕터) ---
+// 이전 챕터들에서는 O 가 오답 보기로만 쓰였다. 이번엔 O 가 직접 가르쳐지는
+// 문맥이므로 `ough` 를 실제 대비쌍 전부와 큰 배수(15/20/30x)로 재확인했다:
+// vs A(`aaa`) diff 2.9~5.6초(S), 8.6~17.3초(Alex) / vs U(`uh`) diff 2.0~4.1초(S),
+// 0.6~1.3초(Alex) / vs 글자이름(`oh`) diff 1.3~2.7초(S), 0.6~1.3초(Alex) --
+// 전부 N 에 비례해 격차가 벌어진다. 안전 확정.
+//
+// --- 의도된 대비쌍 (혼동시키려는 게 아니라 구별시키려는 것) ---
+// G↔C/K(유무성 대비, 유용함) · O↔A · O↔U · U↔A -- 전부 위와 같은 방식으로
+// 대형 배수 재확인했고 격차가 초 단위로 벌어진다(수백~수천 ms). 충돌 아님.
+//
+// --- 아이콘 제약 (이 챕터가 가장 심하다) ---
+// G/O/U 세 소리 모두 초성 그림이 **0개**다(챕터 4 의 /r/ 과 같은 상황이 세
+// 글자 전부에 적용된다). odd-one-out/multiselect 는 전부 기존 아이콘의
+// 누적 복습으로 대체했고, G/O/U 본 학습은 letterTile 소리 문항 + 아이콘이
+//필요 없는 words[](listen-repeat/finale) + 보스의 drag-build 로 나른다.
+// // TODO(icon): 위치마다 표시했다.
+//
+// --- 보스 단어: DOG(D+O+G) · GUM(G+U+M) ---
+// 두 단어 모두 이 챕터에서 새로 배우는 글자(O 또는 U)가 완성되는 시점의
+// 스테이지 finale 에서 미리 노출한다(챕터 3/4 에서 확립한 구조) -- 'dog' 는
+// O 를 배우는 stage-3 finale(D+G 는 이미 알고 O 만 새로 완성됨), 'gum' 은
+// U 를 배우는 stage-4 finale(G 는 이미 알고 U 만 새로 완성됨). G 자신의
+// stage-2 finale 는 보스 단어가 아닌 보너스 단어 'gap'(G+A+P, 전부 기지
+// 글자)을 미리 노출한다 -- 챕터 4의 R 스테이지가 'rat' 을 보너스로 미리
+// 노출하고 보스는 따로 mat+red 를 조립했던 것과 같은 패턴.
+
+export const chapter5 = {
+  id: 'chapter-5',
+  order: 5,
+  title: 'Brick Road Dash',
+  stages: [
+    {
+      id: 'c5-stage-1',
+      order: 1,
+      title: 'A Rumbling Sound',
+      villain: { name: 'Topsy', art: 'topsy', style: 'plat-flip' },
+      hero: { name: 'Gogo', art: 'gogo', style: 'plat-jumper' },
+      chapterBoss: false,
+      beats: [
+        {
+          id: 'c5s1-teach',
+          kind: 'teach',
+          instructionKo: 'Gogo가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          art: 'hero',
+          repeatAudio: ['guh', 'guh', 'guh'],
+        },
+        {
+          id: 'c5s1-r1',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          // /g/ 그림이 0개라 아이콘이 필요 없는 beat 로 /g/ 를 나른다.
+          instructionKo: 'guh 소리로 시작하는 단어예요! 따라 말해보세요.',
+          words: ['gap', 'gum'],
+        },
+        {
+          id: 'c5s1-break',
+          kind: 'break',
+          instructionKo: '함께 외쳐볼까요?',
+          art: 'hero',
+          repeatAudio: ['guh', 'guh', 'Gogo', 'guh', 'guh', 'gap'],
+        },
+        {
+          id: 'c5s1-r2',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): gift, gum -- /g/ 그림이 생기면 이 자리를 /g/ 문항으로.
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          options: [
+            { id: 'c5s1-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c5s1-hen', icon: 'hen', label: 'hen', correct: false },
+            { id: 'c5s1-dog', icon: 'dog', label: 'dog', correct: true },
+          ],
+          readAloud: { targetText: 'hat' },
+        },
+        {
+          id: 'c5s1-r3',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '"egg"과 같은 소리로 시작하는 걸 찾아보세요!',
+          promptAudio: 'egg',
+          options: [
+            { id: 'c5s1-elephant', icon: 'elephant', label: 'elephant', correct: true },
+            { id: 'c5s1-hat2', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c5s1-pot', icon: 'pot', label: 'pot', correct: false },
+          ],
+          readAloud: { targetText: 'elephant' },
+        },
+        {
+          id: 'c5s1-r4',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          options: [
+            { id: 'c5s1-hat3', icon: 'hat', label: 'hat', correct: true },
+            { id: 'c5s1-moon', icon: 'moon', label: 'moon', correct: false },
+            { id: 'c5s1-hen2', icon: 'hen', label: 'hen', correct: true },
+            { id: 'c5s1-horse', icon: 'horse', label: 'horse', correct: true },
+          ],
+          readAloud: { targetText: 'hat' },
+        },
+        {
+          id: 'c5s1-r5',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['gum', 'gap'],
+        },
+        {
+          id: 'c5s1-finale',
+          kind: 'finale',
+          scored: true,
+          hits: 1,
+          instructionKo: '마지막 공격! 큰 소리로 말해보세요!',
+          words: ['gap'],
+        },
+      ],
+      recapKo: '/g/ 소리를 찾았어요! Gap, gum — 모두 guh로 시작해요!',
+      recapAudio: {
+        ko: '지 소리를 찾았어요! 잘 들어보세요.',
+        en: ['guh', 'gap', 'gum'],
+      },
+    },
+
+    {
+      id: 'c5-stage-2',
+      order: 2,
+      title: 'Power of G',
+      villain: { name: 'Gloop', art: 'gloop', style: 'plat-slime' },
+      hero: { name: 'Gogo', art: 'gogo', style: 'plat-jumper' },
+      chapterBoss: false,
+      beats: [
+        {
+          id: 'c5s2-teach',
+          kind: 'teach',
+          instructionKo: 'G는 Gogo가 뛰어오를 때처럼 guh 소리를 내요!',
+          art: 'hero',
+          letter: 'G',
+          repeatAudio: ['G', 'guh', 'G', 'guh'],
+        },
+        {
+          id: 'c5s2-r1-warmup',
+          kind: 'choose',
+          scored: false,
+          instructionKo: 'guh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          promptAudio: 'guh',
+          // 혼동 보기는 K 하나 -- G/C·K 는 유무성 대비로 유용하다.
+          options: [
+            { id: 'c5s2-G1', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
+            { id: 'c5s2-K1', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
+            { id: 'c5s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+          ],
+        },
+        {
+          id: 'c5s2-r2-oddoneout',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): gift, gum -- /g/ 그림이 생기면 교체.
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          options: [
+            { id: 'c5s2-hen', icon: 'hen', label: 'hen', correct: false },
+            { id: 'c5s2-horse', icon: 'horse', label: 'horse', correct: false },
+            { id: 'c5s2-dog', icon: 'dog', label: 'dog', correct: true },
+          ],
+          readAloud: { targetText: 'hen' },
+        },
+        {
+          id: 'c5s2-r3-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 G를 따라 그리면서 guh 소리를 내보세요!',
+          words: [{ text: 'G', say: 'guh' }],
+        },
+        {
+          id: 'c5s2-break',
+          kind: 'break',
+          instructionKo: '손가락으로 G를 그려볼까요? 함께 외쳐요!',
+          art: 'hero',
+          letter: 'G',
+          repeatAudio: ['G', 'Gogo', 'guh'],
+        },
+        {
+          id: 'c5s2-r4-multiselect',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          // /g/ 그림이 없어 /k/ 복습으로 대체 -- G/K 는 이 챕터의 핵심 대비쌍
+          // 이라 오히려 자연스러운 연결이다.
+          instructionKo: '/k/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          options: [
+            { id: 'c5s2-cat', icon: 'cat', label: 'cat', correct: true },
+            { id: 'c5s2-moon', icon: 'moon', label: 'moon', correct: false },
+            { id: 'c5s2-key', icon: 'key', label: 'key', correct: true },
+            { id: 'c5s2-net', icon: 'net', label: 'net', correct: false },
+          ],
+          readAloud: { targetText: 'cat' },
+        },
+        {
+          id: 'c5s2-r5-hard',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: 'guh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          promptAudio: 'guh',
+          options: [
+            { id: 'c5s2-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
+            { id: 'c5s2-K3', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
+            { id: 'c5s2-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+          ],
+          readAloud: { targetText: 'G', say: 'guh' },
+        },
+        {
+          id: 'c5s2-r6-reversed',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): gum, gift -- promptLetter 'G' 문항으로 교체할 자리.
+          // 지금은 D 를 누적 복습한다.
+          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
+          promptLetter: 'D',
+          options: [
+            { id: 'c5s2-dog2', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c5s2-egg', icon: 'egg', label: 'egg', correct: false },
+            { id: 'c5s2-pot', icon: 'pot', label: 'pot', correct: false },
+          ],
+          readAloud: { targetText: 'dog' },
+        },
+        {
+          id: 'c5s2-r7-listenrepeat',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['gum', 'gap'],
+        },
+        {
+          id: 'c5s2-finale',
+          kind: 'finale',
+          scored: true,
+          hits: 2,
+          // 보스 단어가 아닌 보너스 단어 'gap' (G+A+T 전부 기지 글자).
+          instructionKo: '마지막 공격! G 소리로 크게 외쳐보세요!',
+          words: [{ text: 'G', say: 'guh' }, 'gap'],
+        },
+      ],
+      recapKo: 'G는 guh 소리를 내요 — gap, gum! K의 kuh 소리와 헷갈리지 마세요!',
+      recapAudio: {
+        ko: '지는 이런 소리를 내요. 키 소리와 다르니 잘 들어보세요.',
+        en: ['guh', 'gap', 'gum'],
+      },
+    },
+
+    {
+      id: 'c5-stage-3',
+      order: 3,
+      title: 'Power of O',
+      villain: { name: 'Snatchy', art: 'snatchy', style: 'plat-magnetjack' },
+      hero: { name: 'Ollie', art: 'ollie', style: 'plat-spring' },
+      chapterBoss: false,
+      reviewTargets: ['G'],
+      beats: [
+        {
+          id: 'c5s3-teach',
+          kind: 'teach',
+          instructionKo: 'O는 Ollie가 튕겨 오를 때처럼 ough 소리를 내요!',
+          art: 'hero',
+          letter: 'O',
+          repeatAudio: ['O', 'ough', 'O', 'ough'],
+        },
+        {
+          id: 'c5s3-r1-warmup',
+          kind: 'choose',
+          scored: false,
+          instructionKo: 'ough 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          promptAudio: 'ough',
+          // 혼동 보기는 A 하나 -- O/A 는 의도된 대비쌍이다.
+          options: [
+            { id: 'c5s3-O1', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
+            { id: 'c5s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+            { id: 'c5s3-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+          ],
+        },
+        {
+          id: 'c5s3-r2-oddoneout',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): octopus, orange -- /o/ 그림이 생기면 교체.
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          options: [
+            { id: 'c5s3-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c5s3-pin', icon: 'pin', label: 'pin', correct: false },
+            { id: 'c5s3-net', icon: 'net', label: 'net', correct: true },
+          ],
+          readAloud: { targetText: 'pig' },
+        },
+        {
+          id: 'c5s3-r3-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 O를 따라 그리면서 ough 소리를 내보세요!',
+          words: [{ text: 'O', say: 'ough' }],
+        },
+        {
+          id: 'c5s3-break',
+          kind: 'break',
+          instructionKo: '손가락으로 O를 그려볼까요? 함께 외쳐요!',
+          art: 'hero',
+          letter: 'O',
+          repeatAudio: ['O', 'Ollie', 'ough'],
+        },
+        {
+          id: 'c5s3-r4-multiselect',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          instructionKo: '/e/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          options: [
+            { id: 'c5s3-egg', icon: 'egg', label: 'egg', correct: true },
+            { id: 'c5s3-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c5s3-elephant', icon: 'elephant', label: 'elephant', correct: true },
+            { id: 'c5s3-moon', icon: 'moon', label: 'moon', correct: false },
+          ],
+          readAloud: { targetText: 'egg' },
+        },
+        {
+          id: 'c5s3-r5-hard',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: 'ough 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          promptAudio: 'ough',
+          options: [
+            { id: 'c5s3-O3', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
+            { id: 'c5s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+            { id: 'c5s3-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+          ],
+          readAloud: { targetText: 'O', say: 'ough' },
+        },
+        {
+          id: 'c5s3-r6-reversed',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): octopus, orange -- promptLetter 'O' 문항으로 교체할 자리.
+          // 지금은 P 를 누적 복습한다.
+          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
+          promptLetter: 'P',
+          options: [
+            { id: 'c5s3-pig2', icon: 'pig', label: 'pig', correct: true },
+            { id: 'c5s3-hen', icon: 'hen', label: 'hen', correct: false },
+            { id: 'c5s3-cake', icon: 'cake', label: 'cake', correct: false },
+          ],
+          readAloud: { targetText: 'pig' },
+        },
+        {
+          id: 'c5s3-r7-listenrepeat',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['got', 'on'],
+        },
+        {
+          id: 'c5s3-finale',
+          kind: 'finale',
+          scored: true,
+          hits: 2,
+          // 보스 단어 'dog' 사전 노출 (D+G 는 이미 알고 O 로 완성된다, 조립은 보스에서).
+          instructionKo: '마지막 공격! O 소리로 크게 외쳐보세요!',
+          words: [{ text: 'O', say: 'ough' }, 'dog'],
+        },
+      ],
+      recapKo: 'O는 ough 소리를 내요 — got, on, dog! G의 guh도 기억하고 있어요!',
+      recapAudio: {
+        ko: '오는 이런 소리를 내요. 에이 소리와 다르니 잘 들어보세요.',
+        en: ['ough', 'got', 'dog'],
+      },
+    },
+
+    {
+      id: 'c5-stage-4',
+      order: 4,
+      title: 'Power of U',
+      villain: { name: 'Blocko', art: 'blocko', style: 'plat-brick' },
+      hero: { name: 'Umo', art: 'umo', style: 'plat-block' },
+      chapterBoss: false,
+      reviewTargets: ['G', 'O'],
+      beats: [
+        {
+          id: 'c5s4-teach',
+          kind: 'teach',
+          instructionKo: 'U는 Umo가 힘을 낼 때처럼 uh 소리를 내요!',
+          art: 'hero',
+          letter: 'U',
+          repeatAudio: ['U', 'uh', 'U', 'uh'],
+        },
+        {
+          id: 'c5s4-r1-warmup',
+          kind: 'choose',
+          scored: false,
+          instructionKo: 'uh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          promptAudio: 'uh',
+          // 혼동 보기는 A 하나 -- U/A 는 의도된 대비쌍이다.
+          options: [
+            { id: 'c5s4-U1', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
+            { id: 'c5s4-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+            { id: 'c5s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+          ],
+        },
+        {
+          id: 'c5s4-r2-oddoneout',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): umbrella, under -- /u/ 그림이 생기면 교체.
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          options: [
+            { id: 'c5s4-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c5s4-horse', icon: 'horse', label: 'horse', correct: false },
+            { id: 'c5s4-moon', icon: 'moon', label: 'moon', correct: true },
+          ],
+          readAloud: { targetText: 'hat' },
+        },
+        {
+          id: 'c5s4-r3-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 U를 따라 그리면서 uh 소리를 내보세요!',
+          words: [{ text: 'U', say: 'uh' }],
+        },
+        {
+          id: 'c5s4-break',
+          kind: 'break',
+          instructionKo: '손가락으로 U를 그려볼까요? 함께 외쳐요!',
+          art: 'hero',
+          letter: 'U',
+          repeatAudio: ['U', 'Umo', 'uh'],
+        },
+        {
+          id: 'c5s4-r4-multiselect',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          options: [
+            { id: 'c5s4-pig', icon: 'pig', label: 'pig', correct: true },
+            { id: 'c5s4-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c5s4-pin', icon: 'pin', label: 'pin', correct: true },
+            { id: 'c5s4-cake', icon: 'cake', label: 'cake', correct: false },
+          ],
+          readAloud: { targetText: 'pig' },
+        },
+        {
+          id: 'c5s4-r5-hard',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: 'uh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          promptAudio: 'uh',
+          // 혼동 보기는 O 하나 -- 방금 배운 글자와 대비시킨다(U/O 도 의도된
+          // 대비쌍). warmup 에서 이미 U/A 를 다뤄서 여기선 겹치지 않는다.
+          options: [
+            { id: 'c5s4-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
+            { id: 'c5s4-O3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+            { id: 'c5s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+          ],
+          readAloud: { targetText: 'U', say: 'uh' },
+        },
+        {
+          id: 'c5s4-r6-reversed',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // TODO(icon): umbrella, under -- promptLetter 'U' 문항으로 교체할 자리.
+          // 지금은 N 을 누적 복습한다.
+          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
+          promptLetter: 'N',
+          options: [
+            { id: 'c5s4-net2', icon: 'net', label: 'net', correct: true },
+            { id: 'c5s4-cat', icon: 'cat', label: 'cat', correct: false },
+            { id: 'c5s4-key', icon: 'key', label: 'key', correct: false },
+          ],
+          readAloud: { targetText: 'net' },
+        },
+        {
+          id: 'c5s4-r7-listenrepeat',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['sun', 'nut'],
+        },
+        {
+          id: 'c5s4-finale-cycle',
+          kind: 'choose-sequence',
+          scored: true,
+          hits: 1,
+          instructionKo: 'G, O, U를 빠르게 찾아볼까요?',
+          steps: [
+            {
+              promptAudio: 'guh',
+              options: [
+                { id: 'c5s4-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
+                { id: 'c5s4-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s4-qU', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'ough',
+              options: [
+                { id: 'c5s4-qO2', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
+                { id: 'c5s4-qU2', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+                { id: 'c5s4-qG2', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'uh',
+              options: [
+                { id: 'c5s4-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
+                { id: 'c5s4-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s4-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'c5s4-finale',
+          kind: 'finale',
+          scored: true,
+          hits: 1,
+          // 보스 단어 'gum' 사전 노출 (G+M 은 이미 알고 U 로 완성된다, 조립은 보스에서).
+          instructionKo: '마지막 공격! U 소리로 크게 외쳐보세요!',
+          words: [{ text: 'U', say: 'uh' }, 'gum'],
+        },
+      ],
+      recapKo: '이제 G, O, U를 모두 알아요! Gogo, Ollie, Umo가 합체할 준비를 해요!',
+      recapAudio: {
+        ko: '유는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
+        en: ['uh', 'sun', 'nut'],
+      },
+    },
+
+    {
+      id: 'c5-stage-5',
+      order: 5,
+      title: 'Boss: DOG and GUM!',
+      villain: { name: 'Bug King', art: 'bug-king', style: 'plat-glitch' },
+      hero: { name: 'Captain Gum', art: 'captain-gum', style: 'plat-powerup' },
+      chapterBoss: true,
+      reviewTargets: ['G', 'O', 'U'],
+      beats: [
+        {
+          id: 'c5s5-teach',
+          kind: 'teach',
+          instructionKo: 'Gogo + Ollie + Umo가 합체해요! 먼저 dog을 만들어요.',
+          emoji: '🐶🍬➡️🦸',
+          repeatAudio: ['duh', 'ough', 'guh', 'dog', 'dog'],
+        },
+        {
+          id: 'c5s5-r1-warmup',
+          kind: 'drag-build',
+          scored: false,
+          instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
+          letters: [
+            { text: 'D', say: 'duh' },
+            { text: 'O', say: 'ough' },
+            { text: 'G', say: 'guh' },
+          ],
+          target: 'DOG',
+        },
+        {
+          id: 'c5s5-r2',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '천천히 따라 말해보세요.',
+          words: [
+            { text: 'D', say: 'duh' },
+            { text: 'O', say: 'ough' },
+            { text: 'G', say: 'guh' },
+            'dog',
+          ],
+        },
+        {
+          id: 'c5s5-break',
+          kind: 'break',
+          instructionKo: '이번엔 gum이에요! 함께 외쳐볼까요?',
+          art: 'hero',
+          repeatAudio: ['guh', 'uh', 'mmm', 'gum'],
+        },
+        {
+          id: 'c5s5-r3-quickfire',
+          kind: 'choose-sequence',
+          scored: true,
+          hits: 1,
+          instructionKo: 'G, O, U를 빠르게 찾아볼까요?',
+          steps: [
+            {
+              promptAudio: 'guh',
+              options: [
+                { id: 'c5s5-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
+                { id: 'c5s5-qU', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+                { id: 'c5s5-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'ough',
+              options: [
+                { id: 'c5s5-qO2', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
+                { id: 'c5s5-qG2', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s5-qU2', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'uh',
+              options: [
+                { id: 'c5s5-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
+                { id: 'c5s5-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s5-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'c5s5-r4',
+          kind: 'drag-build',
+          scored: true,
+          hits: 1,
+          instructionKo: '이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.',
+          letters: [
+            { text: 'O', say: 'ough' },
+            { text: 'D', say: 'duh' },
+            { text: 'G', say: 'guh' },
+          ],
+          target: 'DOG',
+          readAloud: { targetText: 'dog' },
+        },
+        {
+          id: 'c5s5-r5-wordspot',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '진짜 단어를 찾아보세요!',
+          options: [
+            { id: 'c5s5-DOG', icon: 'letterTile', label: 'DOG', correct: true },
+            { id: 'c5s5-ODG', icon: 'letterTile', label: 'ODG', correct: false },
+            { id: 'c5s5-GDO', icon: 'letterTile', label: 'GDO', correct: false },
+          ],
+          readAloud: { targetText: 'dog' },
+        },
+        {
+          id: 'c5s5-r6',
+          kind: 'drag-build',
+          scored: true,
+          hits: 1,
+          instructionKo: '이제 gum을 만들어요! 순서대로 옮겨보세요.',
+          letters: [
+            { text: 'U', say: 'uh' },
+            { text: 'G', say: 'guh' },
+            { text: 'M', say: 'mmm' },
+          ],
+          target: 'GUM',
+          readAloud: { targetText: 'gum' },
+        },
+        {
+          id: 'c5s5-r7-bonus',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: 'Captain Gum이 외쳐요! 같이 말해볼까요?',
+          words: ['gum'],
+        },
+        {
+          id: 'c5s5-finale',
+          kind: 'finale',
+          scored: true,
+          hits: 2,
+          instructionKo: '마지막 합체 공격! DOG! GUM!',
+          words: ['dog', 'gum'],
+        },
+      ],
+      recapKo: 'D-O-G는 DOG, G-U-M은 GUM! 단어 두 개를 만들었어요! 챕터 5 클리어!',
+      recapAudio: {
+        ko: '단어 두 개를 만들었어요! 잘 들어보세요.',
+        en: ['dog', 'gum'],
+      },
+    },
+  ],
+}

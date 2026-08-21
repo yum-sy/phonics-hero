@@ -596,6 +596,10 @@ const HERO_PALETTES = {
   'munchlax': { style: 'creature-magno', bodyColor: '#e3d3ab', accent: '#2c2822', emblem: 'M' },
   'drilbur': { style: 'creature-drillo', bodyColor: '#e08a3c', accent: '#7a4a1e', emblem: 'D' },
   'charizard': { style: 'creature-boss', bodyColor: '#f0742e', accent: '#3ea8b0', panelColor: '#fff3c4' },
+  'gogo': { style: 'plat-jumper', bodyColor: '#3aa15a', accent: '#1c5c30', emblem: 'G' },
+  'ollie': { style: 'plat-spring', bodyColor: '#3a8fd6', accent: '#1c4a72', emblem: 'O' },
+  'umo': { style: 'plat-block', bodyColor: '#2f9d8f', accent: '#155048', emblem: 'U' },
+  'captain-gum': { style: 'plat-powerup', bodyColor: '#e05a9e', accent: '#f4c95d', panelColor: '#fff3c4' },
 }
 
 const VILLAIN_PALETTES = {
@@ -619,6 +623,11 @@ const VILLAIN_PALETTES = {
   'grabby': { style: 'creature-grabby', bodyColor: '#c9542f', accent: '#6b2814' },
   'corky': { style: 'creature-corky', bodyColor: '#a67c52', accent: '#5a4126' },
   'pixel-muncher': { style: 'creature-glitch', bodyColor: '#3a3a42', accent: '#e0455a' },
+  'topsy': { style: 'plat-flip', bodyColor: '#6a4fb0', accent: '#332570' },
+  'gloop': { style: 'plat-slime', bodyColor: '#4fb08f', accent: '#1f5c48' },
+  'snatchy': { style: 'plat-magnetjack', bodyColor: '#d1662f', accent: '#6b2f14' },
+  'blocko': { style: 'plat-brick', bodyColor: '#8a6a3a', accent: '#4a3618' },
+  'bug-king': { style: 'plat-glitch', bodyColor: '#8a1f2f', accent: '#3a0f16' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
