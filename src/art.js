@@ -25,6 +25,11 @@ import {
   platSpring,
   platBlock,
   platPowerup,
+  platFlip,
+  platSlime,
+  platMagnetjack,
+  platBrick,
+  platGlitch,
 } from './art/platformer.js'
 
 // Shared by every style family defined *in this file*; ./art/robots.js
@@ -644,6 +649,11 @@ const VILLAIN_STYLES = {
   'dino-upside': dinoUpside,
   'dino-swamp': dinoSwamp,
   'dino-shadow-rex': dinoShadowRex,
+  'plat-flip': platFlip,
+  'plat-slime': platSlime,
+  'plat-magnetjack': platMagnetjack,
+  'plat-brick': platBrick,
+  'plat-glitch': platGlitch,
 }
 
 // Styles that name a family rather than a final look. Chapter data written
