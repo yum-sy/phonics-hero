@@ -421,23 +421,38 @@
   // first available control -- a multiselect's wrong option never disables
   // itself, so a kind-blind walker can get stuck reclicking it forever.
   async function playThroughStage(stage) {
-    for (const beat of stage.beats) {
+    for (let bi = 0; bi < stage.beats.length; bi++) {
+      const beat = stage.beats[bi]
+      try {
       if (beat.kind === 'teach' || beat.kind === 'break') {
+        // Chapter-boss stages open with a combine intro overlaying the
+        // teach content; tap it so the sweep also exercises the skip path
+        // instead of just waiting out its 1.65s timeout on every boss stage.
+        const intro = document.getElementById('boss-intro')
+        if (intro) intro.click()
         await clickWhenEnabled('#continue-btn')
-      } else if (beat.kind === 'choose') {
-        await until('.options-grid')
+      } else if (beat.kind === 'choose' || beat.kind === 'match-shape') {
+        // Wait for THIS beat's specific correct-option id, not just any
+        // '.options-grid' -- the previous beat's own transition (600ms +
+        // whenAudioIdle) can still be in flight when this beat's own poll
+        // starts, so a class-only selector can match the *outgoing* beat's
+        // still-present grid and click into content that's about to be
+        // torn down (data-id from the wrong beat -> querySelector returns
+        // null -> "Cannot read properties of null (reading 'click')").
         const id = beat.options.find((o) => o.correct).id
+        await until(`[data-id="${id}"]`)
         document.querySelector(`[data-id="${id}"]`).click()
       } else if (beat.kind === 'choose-sequence') {
         for (const step of beat.steps) {
-          await until('.options-grid')
           const id = step.options.find((o) => o.correct).id
+          await until(`[data-id="${id}"]`)
           document.querySelector(`[data-id="${id}"]`).click()
           await wait(150)
         }
       } else if (beat.kind === 'multiselect') {
         await until('.options-grid')
         for (const opt of beat.options.filter((o) => o.correct)) {
+          await until(`[data-id="${opt.id}"]`)
           document.querySelector(`[data-id="${opt.id}"]`).click()
           await wait(150)
         }
@@ -460,6 +475,10 @@
       // screen next, regardless of which branch above just ran.
       if (beat.scored && beat.readAloud) {
         await clickWhenEnabled('#mic-btn')
+      }
+      } catch (e) {
+        e.message = `beat[${bi}] kind=${beat.kind} id=${beat.id}: ${e.message}`
+        throw e
       }
       await wait(200)
     }
@@ -559,6 +578,139 @@
     check('matchshapeshot-rendered', !!document.querySelector('.options-grid'))
     stage.beats = saved
   }
+  // --- full curriculum sweep: every stage in every chapter, played to the
+  // end via correct-only taps, checking for exceptions, a live health bar
+  // hitting exactly 0%, checkpoint write/clear, and recapAudio ordering.
+  // Never mutates chapter data (N1 lesson: this walks the app purely by
+  // click, through the same module instances the app itself uses).
+  async function allStagesPlaythrough() {
+    const onlyChapter = params.get('ch')
+    const results = []
+    for (const chapter of chapters) {
+      if (onlyChapter && chapter.id !== onlyChapter) continue
+      for (let i = 0; i < chapter.stages.length; i++) {
+        const stage = chapter.stages[i]
+        errors = 0
+        spoken = []
+        state.clearCheckpoint()
+        let sawZeroHealth = false
+        const obs = new MutationObserver(() => {
+          const el = document.getElementById('health-fill')
+          if (el && el.style.width === '0%') sawZeroHealth = true
+        })
+        obs.observe(document.getElementById('app'), {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ['style'],
+        })
+        let sawCheckpointMidStage = false
+        const checkpointPoll = setInterval(() => {
+          const cp = state.progress.checkpoint
+          if (cp && cp.stageId === stage.id && cp.beatIndex > 0) {
+            sawCheckpointMidStage = true
+          }
+        }, 100)
+        let threw = null
+        try {
+          await enterStage(chapter.id, i)
+          await playThroughStage(stage)
+          await until('.reward-screen', 60)
+        } catch (e) {
+          threw = e.message || String(e)
+        }
+        obs.disconnect()
+        clearInterval(checkpointPoll)
+        const reached = !!document.querySelector('.reward-screen')
+        let recapOk = false
+        let recapDetail = ''
+        if (reached) {
+          await wait(1500 + (stage.recapAudio ? stage.recapAudio.en.length : 0) * 1300)
+          await audio.whenAudioIdle()
+          const ko = stage.recapAudio && stage.recapAudio.ko
+          const en = (stage.recapAudio && stage.recapAudio.en) || []
+          const idxKo = ko ? spoken.lastIndexOf(ko) : -1
+          let cursor = idxKo
+          const enIdx = en.map((w) => {
+            const idx = spoken.indexOf(w, cursor + 1)
+            if (idx !== -1) cursor = idx
+            return idx
+          })
+          recapOk = idxKo !== -1 && enIdx.every((v) => v !== -1)
+          recapDetail = `ko@${idxKo} en@${JSON.stringify(enIdx)}`
+        }
+        const checkpointClearedAfter = state.progress.checkpoint === null
+        const pass =
+          !threw && reached && sawZeroHealth && sawCheckpointMidStage && recapOk && checkpointClearedAfter && errors === 0
+        results.push({
+          id: stage.id,
+          pass,
+          threw,
+          reached,
+          sawZeroHealth,
+          sawCheckpointMidStage,
+          recapOk,
+          recapDetail,
+          checkpointClearedAfter,
+          errors,
+        })
+        // Leave no state behind for the next stage in the loop.
+        state.clearCheckpoint()
+      }
+    }
+    const failed = results.filter((r) => !r.pass)
+    check(
+      'all-20-stages-playthrough',
+      failed.length === 0,
+      failed.length === 0
+        ? `20/20 stages clean: ${results.map((r) => r.id).join(', ')}`
+        : `${results.length - failed.length}/${results.length} clean; FAILED: ` +
+          failed
+            .map(
+              (r) =>
+                `${r.id}[threw=${r.threw} reached=${r.reached} zeroHealth=${r.sawZeroHealth} ` +
+                `cpMid=${r.sawCheckpointMidStage} recap=${r.recapOk}(${r.recapDetail}) cpCleared=${r.checkpointClearedAfter} errs=${r.errors}]`
+            )
+            .join(' | ')
+    )
+    // Full per-stage ledger, independent of pass/fail, for the report.
+    document.documentElement.setAttribute('data-stage-ledger', JSON.stringify(results))
+  }
+
+  // Isolates the real chapter-4 match-shape beat (not a synthetic one) for
+  // a visual check against the current CSS/sizing -- walks stage data up to
+  // it via correct taps, same as playThroughStage, then stops.
+  async function matchShapeRealShot() {
+    const stage = chapters[3].stages[3] // c4-stage-4
+    const idx = stage.beats.findIndex((b) => b.kind === 'match-shape')
+    await enterStage('chapter-4', 3)
+    for (let bi = 0; bi < idx; bi++) {
+      const beat = stage.beats[bi]
+      if (beat.kind === 'teach' || beat.kind === 'break') {
+        await clickWhenEnabled('#continue-btn')
+      } else if (beat.kind === 'choose') {
+        const id = beat.options.find((o) => o.correct).id
+        await until(`[data-id="${id}"]`)
+        document.querySelector(`[data-id="${id}"]`).click()
+      } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
+        for (let i = 0; i < beat.words.length; i++) {
+          await clickWhenEnabled('#mic-btn')
+          await wait(150)
+        }
+      } else if (beat.kind === 'multiselect') {
+        await until('.options-grid')
+        for (const opt of beat.options.filter((o) => o.correct)) {
+          await until(`[data-id="${opt.id}"]`)
+          document.querySelector(`[data-id="${opt.id}"]`).click()
+          await wait(150)
+        }
+      }
+      if (beat.scored && beat.readAloud) await clickWhenEnabled('#mic-btn')
+      await wait(200)
+    }
+    const shown = await until('.options-grid', 100)
+    check('matchshape-real-shot-reached', shown)
+  }
+
   const CASES = {
     tap: tapBacklog,
     poison: queuePoison,
@@ -578,6 +730,8 @@
     recapaudio: recapAudioOrder,
     matchshape: matchShapeNoSoundLeak,
     matchshapeshot: matchShapeShot,
+    allstages: allStagesPlaythrough,
+    matchshapereal: matchShapeRealShot,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

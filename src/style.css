@@ -177,16 +177,18 @@ button {
 }
 
 .chapter-card-title {
-  font-size: clamp(24px, 3.4vh, 42px);
+  /* Single line, capped small enough that "Chapters 22-28" (the longest
+     range) always fits without wrapping. The previous 3-line clamp let the
+     browser's normal line-breaking treat the ASCII hyphen in "1-7" as a
+     break point, so long titles wrapped mid-range ("Chapters 1-" / "7")
+     instead of at the word boundary -- worse than just capping the size. */
+  font-size: clamp(18px, 2.6vh, 29px);
   font-weight: 700;
   text-align: center;
-  /* Hard 3-line cap: card height then cannot run away when a title is
-     retranslated into something longer, which is what pushes this grid --
-     the tightest screen in the app -- into scrolling. */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .chapter-card-badge {
@@ -355,6 +357,19 @@ button {
 
 .hero-sprite {
   transform: scaleX(-1);
+}
+
+/* The whole hero sprite mirrors horizontally so it faces the villain, but
+   every style family's emblem letter is a real <text> node (the phonics
+   letter itself -- S/R/M/etc.), so that flip also mirrored the letter into
+   a backwards glyph ("R" -> "Я"). That teaches the wrong letter shape to a
+   5-year-old, so counter-flip just the text back to normal. transform-box
+   scopes the flip to the glyph's own bounding box instead of the SVG's
+   viewBox origin, so it un-mirrors in place instead of jumping sideways. */
+.hero-sprite .carbot-art text {
+  transform: scaleX(-1);
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .vs-mark {
@@ -1086,7 +1101,11 @@ button {
   }
 
   .chapter-card-title {
-    font-size: 32px;
+    /* Landscape's auto-fill grid packs 4 world cards per row (vs. 3 in
+       portrait), so the available card width is actually smaller here
+       despite the wider viewport -- needs a smaller cap than portrait's
+       29px, not a larger fixed size, to keep "Chapters 22-28" on one line. */
+    font-size: 22px;
   }
 }
 
