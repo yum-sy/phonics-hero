@@ -1,153 +1,19 @@
-// Original chibi toy-robot SVG art, inspired by the general look of Korean
-// transforming-robot toy shows (chunky rounded bodies, big eyes, bold primary
-// colors, chest emblem) — no copied character designs, logos, or names.
+// Character SVG art. Each style family lives in its own module under
+// ./art/ once it grows past a couple of functions -- the robot family
+// already did (see ./art/robots.js). Everything below is the superhero
+// family plus the name/style resolution the rest of the app calls into.
 
+import {
+  heroRobot,
+  heroDeluxeRobot,
+  villainRobot,
+  villainDeluxeRobot,
+} from './art/robots.js'
+
+// Shared by every style family defined *in this file*; ./art/robots.js
+// keeps its own copy so it stays importable without this module.
 function svgWrap(inner, viewBox = '0 0 120 120') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="carbot-art">${inner}</svg>`
-}
-
-// A "cool" action-figure-proportioned hero robot: broad angular shoulders,
-// a tapered torso, a visored head instead of round cartoon eyes, standing
-// tall rather than chibi-round. Proportions only nod at the general look of
-// Korean toy-robot shows — no copied character design.
-export function heroRobot({
-  bodyColor = '#378add',
-  accent = '#0c447c',
-  emblem = 'S',
-  visorColor = '#eafcff',
-} = {}) {
-  return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="132" rx="26" ry="6" fill="#000" opacity="0.08"/>
-      <rect x="42" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="64" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="39" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <rect x="63" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <polygon points="34,58 86,58 78,100 42,100" fill="${bodyColor}"/>
-      <polygon points="46,66 74,66 70,88 50,88" fill="#fff"/>
-      <circle cx="60" cy="76" r="10" fill="#fff"/>
-      <text x="60" y="80" text-anchor="middle" font-size="13" font-weight="800" fill="${accent}">${emblem}</text>
-      <rect x="16" y="54" width="22" height="20" rx="8" fill="${accent}"/>
-      <rect x="82" y="54" width="22" height="20" rx="8" fill="${accent}"/>
-      <rect x="18" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="88" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="50" y="44" width="20" height="12" fill="${accent}"/>
-      <rect x="38" y="16" width="44" height="34" rx="12" fill="${bodyColor}"/>
-      <rect x="44" y="30" width="32" height="9" rx="4" fill="${visorColor}"/>
-      <rect x="57" y="4" width="6" height="12" rx="3" fill="${accent}"/>
-      <circle cx="60" cy="4" r="5" fill="#ffd43b"/>
-    </g>
-  `,
-    '0 0 120 140'
-  )
-}
-
-// A flashier "final form" hero robot: angular armor, back wings/fins, gold
-// trim and a sharp visor — an original design, only borrowing the general
-// red/white/gold toy-robot color language, not any specific product's shape.
-export function heroDeluxeRobot({
-  bodyColor = '#d1332f',
-  panelColor = '#f5f2ea',
-  accent = '#f4c95d',
-  visorColor = '#5dd6e0',
-} = {}) {
-  return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="132" rx="26" ry="6" fill="#000" opacity="0.1"/>
-      <rect x="42" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="64" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="39" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <rect x="63" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <polygon points="30,64 2,44 16,72 30,80" fill="${bodyColor}"/>
-      <polygon points="30,64 10,48 20,70" fill="${accent}" opacity="0.7"/>
-      <polygon points="90,64 118,44 104,72 90,80" fill="${bodyColor}"/>
-      <polygon points="90,64 110,48 100,70" fill="${accent}" opacity="0.7"/>
-      <polygon points="34,58 86,58 78,100 42,100" fill="${bodyColor}"/>
-      <polygon points="46,66 74,66 70,88 50,88" fill="${panelColor}"/>
-      <circle cx="60" cy="76" r="10" fill="${panelColor}"/>
-      <text x="60" y="80" text-anchor="middle" font-size="13" font-weight="800" fill="${accent}">★</text>
-      <rect x="16" y="54" width="22" height="20" rx="8" fill="${accent}"/>
-      <rect x="82" y="54" width="22" height="20" rx="8" fill="${accent}"/>
-      <rect x="18" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="88" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="50" y="44" width="20" height="12" fill="${accent}"/>
-      <rect x="38" y="16" width="44" height="34" rx="12" fill="${bodyColor}"/>
-      <rect x="44" y="30" width="32" height="9" rx="4" fill="${visorColor}"/>
-      <polygon points="52,16 60,2 68,16" fill="${accent}"/>
-      <rect x="57" y="4" width="6" height="10" rx="3" fill="${accent}"/>
-      <circle cx="60" cy="4" r="4" fill="${visorColor}"/>
-    </g>
-  `,
-    '0 0 120 140'
-  )
-}
-
-// A menacing action-figure-proportioned villain robot: same broad-shoulder,
-// tapered-torso silhouette as the heroes, but with a spiky crown, slanted
-// angry eyes and a jagged mouth instead of a friendly visor.
-export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {}) {
-  return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="132" rx="26" ry="6" fill="#000" opacity="0.1"/>
-      <rect x="42" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="64" y="100" width="14" height="30" rx="4" fill="${accent}"/>
-      <rect x="39" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <rect x="63" y="124" width="18" height="10" rx="3" fill="${bodyColor}"/>
-      <polygon points="34,58 86,58 78,100 42,100" fill="${bodyColor}"/>
-      <polygon points="46,66 74,66 70,88 50,88" fill="#2c2c2a" opacity="0.35"/>
-      <polygon points="14,50 38,58 38,74 20,74" fill="${accent}"/>
-      <polygon points="106,50 82,58 82,74 100,74" fill="${accent}"/>
-      <rect x="18" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="88" y="72" width="14" height="26" rx="6" fill="${bodyColor}"/>
-      <rect x="50" y="44" width="20" height="12" fill="${accent}"/>
-      <rect x="38" y="16" width="44" height="34" rx="10" fill="${bodyColor}"/>
-      <polygon points="40,16 46,2 52,16" fill="${accent}"/>
-      <polygon points="54,16 60,0 66,16" fill="${accent}"/>
-      <polygon points="68,16 74,2 80,16" fill="${accent}"/>
-      <polygon points="45,30 58,26 58,34 45,36" fill="#1c1c1c"/>
-      <polygon points="75,30 62,26 62,34 75,36" fill="#1c1c1c"/>
-      <path d="M47 44 L53 40 L60 44 L67 40 L73 44" stroke="#1c1c1c" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </g>
-  `,
-    '0 0 120 140'
-  )
-}
-
-// A menacing "boss form" villain: dark cape, samurai-style rounded helmet
-// with a glowing visor, a diagonal staff — an original design, only
-// borrowing the general dark-armor/cape/staff silhouette language, not any
-// specific costume or character's exact shape.
-export function villainDeluxeRobot({
-  bodyColor = '#2c2c2a',
-  accent = '#b8b8b8',
-  capeColor = '#1c1c1c',
-  visorColor = '#e24b4a',
-} = {}) {
-  return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="132" rx="34" ry="7" fill="#000" opacity="0.12"/>
-      <polygon points="70,46 104,64 92,124 66,96" fill="${capeColor}"/>
-      <polygon points="70,46 100,60 92,64 68,52" fill="${accent}" opacity="0.5"/>
-      <polygon points="42,96 34,124 48,128 54,100" fill="${bodyColor}"/>
-      <polygon points="72,96 78,124 64,128 60,100" fill="${bodyColor}"/>
-      <polygon points="16,102 12,94 92,22 98,30" fill="${accent}"/>
-      <circle cx="14" cy="98" r="7" fill="${accent}"/>
-      <circle cx="96" cy="26" r="7" fill="${accent}"/>
-      <polygon points="42,56 78,56 84,88 60,100 36,88" fill="${bodyColor}"/>
-      <polygon points="48,64 72,64 76,84 60,92 44,84" fill="#3a3a38"/>
-      <path d="M60 92 a8 8 0 1 0 0 16 a6 6 0 1 1 0 -16 Z" fill="${accent}"/>
-      <circle cx="60" cy="30" r="23" fill="${bodyColor}"/>
-      <polygon points="42,10 60,2 78,10 70,20 50,20" fill="${accent}"/>
-      <circle cx="60" cy="31" r="12" fill="#161615"/>
-      <circle cx="60" cy="31" r="8" fill="${visorColor}"/>
-    </g>
-  `,
-    '0 0 120 140'
-  )
 }
 
 // A rounder, chibi-caped "superhero" hero: big round head and torso instead
@@ -457,6 +323,224 @@ export function villainSuperhero({
   )
 }
 
+// Chapter 2's five villains, one function each. villainSuperhero drew them
+// all as the same hooded figure in five colors -- the same flaw the heroes
+// had -- and it read as "ninja" rather than "supervillain". Each of these
+// instead literalizes what the character's name says it does to the sounds,
+// so the picture states the stage's obstacle. Distinction is carried by
+// silhouette (formless / blocky / rigid / lopsided / towering), not color,
+// and every figure leans, juts or sits off-balance against the heroes'
+// upright symmetry.
+
+// 흐림괴물, the blur: a legless ragged fog mass trailing wisps, with sharp
+// slanted eyes as the only crisp shapes -- formlessness is the silhouette.
+export function villainFog({
+  bodyColor = '#7a8b99',
+  accent = '#3d4852',
+  collarColor = '#222a30',
+  eyeColor = '#eafcff',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="132" rx="24" ry="5" fill="#000" opacity="0.07"/>
+      <ellipse cx="60" cy="96" rx="30" ry="10" fill="${bodyColor}" opacity="0.35"/>
+      <polygon points="30,72 44,78 34,112 20,94" fill="${bodyColor}" opacity="0.4"/>
+      <polygon points="78,74 90,70 94,106 74,92" fill="${bodyColor}" opacity="0.3"/>
+      <ellipse cx="57" cy="114" rx="11" ry="6" fill="${bodyColor}" opacity="0.2"/>
+      <polygon points="60,12 72,20 84,12 86,28 100,30 92,44 104,54 90,62 98,76 80,74 74,90 60,80 46,92 40,74 24,78 30,62 16,54 28,44 20,30 34,28 40,12 52,20" fill="${bodyColor}"/>
+      <polygon points="60,30 72,36 78,50 70,62 58,66 46,60 42,46 50,34" fill="${accent}" opacity="0.5"/>
+      <circle cx="13" cy="34" r="5" fill="${bodyColor}" opacity="0.5"/>
+      <circle cx="108" cy="68" r="4" fill="${bodyColor}" opacity="0.45"/>
+      <circle cx="100" cy="18" r="3.5" fill="${bodyColor}" opacity="0.4"/>
+      <polygon points="36,44 58,50 56,64 34,58" fill="${collarColor}"/>
+      <polygon points="84,44 62,50 64,64 86,58" fill="${collarColor}"/>
+      <polygon points="40,49 53,53 52,59 39,55" fill="${eyeColor}"/>
+      <polygon points="80,49 67,53 68,59 81,55" fill="${eyeColor}"/>
+    </g>
+  `,
+    '0 0 120 140'
+  )
+}
+
+// 지우개맨, the eraser: every shape is a hard rectangle and one arm ends in
+// an oversized eraser block, with half-erased marks across the torso and
+// crumbs falling from the other hand.
+export function villainEraser({
+  bodyColor = '#c96a9b',
+  accent = '#6b2f4c',
+  collarColor = '#2a1420',
+  blockColor = '#f5f2ea',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="132" rx="26" ry="5" fill="#000" opacity="0.1"/>
+      <rect x="44" y="90" width="14" height="32" fill="${accent}"/>
+      <rect x="62" y="90" width="14" height="32" fill="${accent}"/>
+      <rect x="38" y="120" width="22" height="11" fill="${collarColor}"/>
+      <rect x="60" y="120" width="22" height="11" fill="${collarColor}"/>
+      <rect x="40" y="42" width="40" height="50" fill="${bodyColor}"/>
+      <rect x="46" y="56" width="12" height="5" fill="${collarColor}"/>
+      <rect x="64" y="56" width="7" height="5" fill="${collarColor}"/>
+      <rect x="46" y="70" width="6" height="5" fill="${collarColor}"/>
+      <rect x="58" y="70" width="16" height="5" fill="${collarColor}"/>
+      <rect x="80" y="50" width="15" height="30" fill="${accent}"/>
+      <rect x="78" y="78" width="20" height="14" fill="${bodyColor}"/>
+      <rect x="82" y="99" width="6" height="6" fill="${collarColor}"/>
+      <rect x="92" y="110" width="5" height="5" fill="${collarColor}"/>
+      <rect x="84" y="118" width="4" height="4" fill="${collarColor}"/>
+      <rect x="95" y="124" width="6" height="6" fill="${collarColor}"/>
+      <rect x="30" y="54" width="16" height="14" fill="${accent}"/>
+      <rect x="1" y="44" width="35" height="30" fill="${blockColor}" stroke="${collarColor}" stroke-width="3"/>
+      <rect x="21" y="44" width="15" height="30" fill="${bodyColor}" stroke="${collarColor}" stroke-width="3"/>
+      <polygon points="1,64 13,74 1,74" fill="#b8b8b8"/>
+      <rect x="5" y="80" width="5" height="5" fill="${collarColor}"/>
+      <rect x="15" y="86" width="4" height="4" fill="${collarColor}"/>
+      <rect x="44" y="8" width="32" height="30" fill="${bodyColor}"/>
+      <polygon points="48,18 60,23 59,29 47,24" fill="${collarColor}"/>
+      <polygon points="72,18 60,23 61,29 73,24" fill="${collarColor}"/>
+      <polygon points="50,33 56,36 60,32 64,36 70,32 70,35 50,36" fill="${collarColor}"/>
+    </g>
+  `,
+    '0 0 120 140'
+  )
+}
+
+// 멈춤맨, the freeze: bolt-upright and exactly mirror-symmetric with
+// right-angled limbs, an octagonal stop sign for a chest and a clock face
+// with frozen hands. The sign keeps the universal red so a 5-year-old reads
+// "stop" instantly; the octagon does the silhouette work either way.
+export function villainStop({
+  bodyColor = '#8a7f4b',
+  accent = '#4a4222',
+  collarColor = '#231f10',
+  signColor = '#d1332f',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="134" rx="28" ry="5" fill="#000" opacity="0.1"/>
+      <rect x="46" y="100" width="13" height="24" fill="${accent}"/>
+      <rect x="61" y="100" width="13" height="24" fill="${accent}"/>
+      <rect x="38" y="122" width="24" height="11" fill="${collarColor}"/>
+      <rect x="58" y="122" width="24" height="11" fill="${collarColor}"/>
+      <rect x="24" y="50" width="26" height="13" fill="${accent}"/>
+      <rect x="24" y="63" width="13" height="31" fill="${accent}"/>
+      <rect x="19" y="92" width="23" height="13" fill="${bodyColor}"/>
+      <rect x="70" y="50" width="26" height="13" fill="${accent}"/>
+      <rect x="83" y="63" width="13" height="31" fill="${accent}"/>
+      <rect x="78" y="92" width="23" height="13" fill="${bodyColor}"/>
+      <rect x="42" y="46" width="36" height="56" fill="${bodyColor}"/>
+      <polygon points="53,49 67,49 77,59 77,73 67,83 53,83 43,73 43,59" fill="${signColor}"/>
+      <rect x="46" y="62" width="28" height="8" fill="#f5f2ea"/>
+      <circle cx="60" cy="91" r="9" fill="#f5f2ea"/>
+      <rect x="59" y="84" width="2" height="3" fill="${collarColor}"/>
+      <rect x="66" y="90" width="3" height="2" fill="${collarColor}"/>
+      <rect x="59" y="95" width="2" height="3" fill="${collarColor}"/>
+      <rect x="51" y="90" width="3" height="2" fill="${collarColor}"/>
+      <path d="M60 91 L54 86" stroke="${collarColor}" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M60 91 L54 93" stroke="${collarColor}" stroke-width="2" stroke-linecap="round"/>
+      <polygon points="46,12 74,12 78,40 42,40" fill="${bodyColor}"/>
+      <rect x="47" y="22" width="12" height="6" fill="${collarColor}"/>
+      <rect x="61" y="22" width="12" height="6" fill="${collarColor}"/>
+      <rect x="50" y="34" width="20" height="3" fill="${collarColor}"/>
+    </g>
+  `,
+    '0 0 120 140'
+  )
+}
+
+// 뒤죽박죽, the scrambler: mismatched limbs, misaligned torso panels, stitch
+// marks and odd-sized eyes, and the whole figure tilts -- nothing on it
+// lines up with anything else.
+export function villainJumble({
+  bodyColor = '#6b8f3a',
+  accent = '#39501c',
+  collarColor = '#1b260d',
+  patchColor = '#8a7f4b',
+} = {}) {
+  return svgWrap(
+    `
+    <g transform="rotate(-8 60 80)">
+      <ellipse cx="60" cy="132" rx="24" ry="5" fill="#000" opacity="0.1"/>
+      <rect x="44" y="92" width="19" height="24" fill="${accent}"/>
+      <rect x="68" y="92" width="10" height="36" fill="${patchColor}"/>
+      <rect x="38" y="114" width="26" height="10" fill="${collarColor}"/>
+      <rect x="64" y="126" width="17" height="8" fill="${collarColor}"/>
+      <polygon points="34,50 45,57 22,106 11,99" fill="${accent}"/>
+      <circle cx="16" cy="105" r="7" fill="${patchColor}"/>
+      <polygon points="42,48 76,53 74,74 40,70" fill="${bodyColor}"/>
+      <polygon points="37,72 79,67 73,95 43,97" fill="${accent}"/>
+      <rect x="53" y="58" width="15" height="13" fill="${patchColor}"/>
+      <g stroke="${collarColor}" stroke-width="2.4" stroke-linecap="round">
+        <path d="M42 71 L46 68"/>
+        <path d="M52 72 L56 69"/>
+        <path d="M62 71 L66 68"/>
+        <path d="M72 70 L76 67"/>
+      </g>
+      <rect x="74" y="54" width="19" height="21" rx="3" fill="${bodyColor}"/>
+      <rect x="90" y="58" width="14" height="14" fill="${patchColor}"/>
+      <polygon points="44,12 78,8 84,34 50,41" fill="${bodyColor}"/>
+      <polygon points="44,12 62,10 60,20 43,21" fill="${patchColor}"/>
+      <circle cx="55" cy="25" r="7" fill="#f5f2ea"/>
+      <circle cx="55" cy="25" r="3.2" fill="${collarColor}"/>
+      <circle cx="72" cy="21" r="3.8" fill="#f5f2ea"/>
+      <circle cx="72" cy="21" r="1.7" fill="${collarColor}"/>
+      <polygon points="52,33 58,37 63,32 69,36 74,31 74,35 52,37" fill="${collarColor}"/>
+    </g>
+  `,
+    '0 0 120 140'
+  )
+}
+
+// 섀도우킹, the chapter boss: deliberately the largest figure in the app --
+// spiked crown to the top edge, cape to the bottom edge, shadow spikes
+// pushing the shoulders wider than any hero, and a face that is pure dark
+// except for two burning eyes.
+export function villainShadowKing({
+  bodyColor = '#4b3f6b',
+  accent = '#211b33',
+  collarColor = '#1c1c1c',
+  eyeColor = '#ffd43b',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="136" rx="36" ry="6" fill="#000" opacity="0.14"/>
+      <polygon points="40,44 6,110 18,104 14,126 30,116 36,132 48,120 60,136 72,120 84,132 90,116 106,126 102,104 114,110 80,44" fill="${collarColor}"/>
+      <polygon points="34,54 12,26 26,52" fill="${accent}"/>
+      <polygon points="40,50 24,18 34,48" fill="${accent}"/>
+      <polygon points="86,54 108,26 94,52" fill="${accent}"/>
+      <polygon points="80,50 96,18 86,48" fill="${accent}"/>
+      <rect x="18" y="58" width="18" height="34" rx="5" fill="${bodyColor}"/>
+      <polygon points="18,92 24,108 27,92" fill="${accent}"/>
+      <polygon points="27,92 31,108 34,92" fill="${accent}"/>
+      <rect x="84" y="58" width="18" height="34" rx="5" fill="${bodyColor}"/>
+      <polygon points="86,92 90,108 93,92" fill="${accent}"/>
+      <polygon points="93,92 97,108 100,92" fill="${accent}"/>
+      <rect x="44" y="104" width="16" height="26" fill="${accent}"/>
+      <rect x="60" y="104" width="16" height="26" fill="${accent}"/>
+      <rect x="36" y="126" width="25" height="11" fill="${collarColor}"/>
+      <rect x="59" y="126" width="25" height="11" fill="${collarColor}"/>
+      <polygon points="36,52 84,52 78,106 42,106" fill="${bodyColor}"/>
+      <polygon points="60,70 70,82 60,94 50,82" fill="${accent}"/>
+      <polygon points="60,76 65,82 60,88 55,82" fill="${eyeColor}"/>
+      <polygon points="36,52 60,64 84,52 78,36 42,36" fill="${accent}"/>
+      <circle cx="60" cy="28" r="20" fill="${collarColor}"/>
+      <polygon points="34,30 37,12 45,26" fill="${accent}"/>
+      <polygon points="40,24 46,2 53,22" fill="${accent}"/>
+      <polygon points="52,22 60,0 68,22" fill="${accent}"/>
+      <polygon points="67,22 74,2 80,24" fill="${accent}"/>
+      <polygon points="86,30 83,12 75,26" fill="${accent}"/>
+      <polygon points="47,25 59,30 58,37 46,32" fill="${eyeColor}"/>
+      <polygon points="73,25 61,30 62,37 74,32" fill="${eyeColor}"/>
+    </g>
+  `,
+    '0 0 120 140'
+  )
+}
+
 // Fallback palettes keyed by character name, for chapter data that names a
 // character without spelling out its colors. Entries may also carry a
 // `style`, which is how a bare name still resolves to a non-robot art
@@ -479,11 +563,11 @@ const VILLAIN_PALETTES = {
   '그림자봇': { bodyColor: '#5f5e5a', accent: '#2c2c2a' },
   '타이머봇': { bodyColor: '#d85a30', accent: '#712b13' },
   '다크스파크': { style: 'robot-deluxe' },
-  '흐림괴물': { style: 'superhero', bodyColor: '#7a8b99', accent: '#3d4852', collarColor: '#222a30' },
-  '지우개맨': { style: 'superhero', bodyColor: '#c96a9b', accent: '#6b2f4c', collarColor: '#2a1420' },
-  '멈춤맨': { style: 'superhero', bodyColor: '#8a7f4b', accent: '#4a4222', collarColor: '#231f10' },
-  '뒤죽박죽': { style: 'superhero', bodyColor: '#6b8f3a', accent: '#39501c', collarColor: '#1b260d' },
-  '섀도우킹': { style: 'superhero', bodyColor: '#4b3f6b', accent: '#211b33', collarColor: '#1c1c1c' },
+  '흐림괴물': { style: 'supervillain-fog', bodyColor: '#7a8b99', accent: '#3d4852', collarColor: '#222a30' },
+  '지우개맨': { style: 'supervillain-eraser', bodyColor: '#c96a9b', accent: '#6b2f4c', collarColor: '#2a1420' },
+  '멈춤맨': { style: 'supervillain-stop', bodyColor: '#8a7f4b', accent: '#4a4222', collarColor: '#231f10' },
+  '뒤죽박죽': { style: 'supervillain-jumble', bodyColor: '#6b8f3a', accent: '#39501c', collarColor: '#1b260d' },
+  '섀도우킹': { style: 'supervillain-king', bodyColor: '#4b3f6b', accent: '#211b33', collarColor: '#1c1c1c' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -507,6 +591,11 @@ const VILLAIN_STYLES = {
   robot: villainRobot,
   'robot-deluxe': villainDeluxeRobot,
   superhero: villainSuperhero,
+  'supervillain-fog': villainFog,
+  'supervillain-eraser': villainEraser,
+  'supervillain-stop': villainStop,
+  'supervillain-jumble': villainJumble,
+  'supervillain-king': villainShadowKing,
 }
 
 // Styles that name a family rather than a final look. Chapter data written

@@ -64,7 +64,6 @@ export function heroRobot({
   visorColor = '#eafcff',
 } = {}) {
   const fin = '38,44 10,20 6,34 34,56'
-  const finTip = '10,20 6,34 16,29'
   const shoulder = '37,42 19,47 15,68 35,64'
   const shoulderFacet = '37,42 21,46 22,53 37,49'
   const upperArm = '18,66 34,63 33,80 20,84'
@@ -74,23 +73,20 @@ export function heroRobot({
   const knuckle = '18,94 31,92 31,97 18,99'
   const thigh = '44,102 58,102 57,118 45,118'
   const thighPlate = '42,104 52,104 51,116 41,116'
-  const shin = '43,121 56,121 55,130 44,130'
-  const knee = '41,114 57,114 56,124 42,124'
-  const kneeNotch = '43,116 54,116 53,120 43,120'
-  const boot = '38,126 58,126 59,134 37,134'
-  const bootFacet = '38,126 58,126 58,129 38,129'
-  const headlight = '43,57 52,57 51,67 44,67'
-  const ear = '39,22 43,20 43,32 39,30'
+  const shin = '43,120 56,120 55,128 44,128'
+  const knee = '41,113 57,113 56,123 42,123'
+  const boot = '36,124 60,124 61,132 35,132'
+  const sole = '35,130 61,130 61,133 35,133'
+  const headlight = '42,58 51,58 50,68 43,68'
+  const ear = '38,21 42,19 42,33 38,31'
 
   return svgWrap(
     `
     <g>
-      <polygon points="36,133 84,133 78,139 42,139" fill="#000" opacity="0.09"/>
+      <polygon points="34,134 86,134 80,140 40,140" fill="#000" opacity="0.09"/>
 
       <polygon points="${fin}" fill="${accent}"/>
       <polygon points="${mirror(fin)}" fill="${accent}"/>
-      <polygon points="${finTip}" fill="${CHROME}"/>
-      <polygon points="${mirror(finTip)}" fill="${CHROME}"/>
 
       <polygon points="54,34 66,34 65,44 55,44" fill="${MECH}"/>
 
@@ -104,24 +100,22 @@ export function heroRobot({
       <polygon points="${mirror(shin)}" fill="${accent}"/>
       <polygon points="${knee}" fill="${bodyColor}"/>
       <polygon points="${mirror(knee)}" fill="${bodyColor}"/>
-      <polygon points="${kneeNotch}" fill="${STEEL}"/>
-      <polygon points="${mirror(kneeNotch)}" fill="${STEEL}"/>
       <polygon points="${boot}" fill="${bodyColor}"/>
       <polygon points="${mirror(boot)}" fill="${bodyColor}"/>
-      <polygon points="${bootFacet}" fill="#fff" opacity="0.22"/>
-      <polygon points="${mirror(bootFacet)}" fill="#fff" opacity="0.22"/>
+      <polygon points="${sole}" fill="${MECH}"/>
+      <polygon points="${mirror(sole)}" fill="${MECH}"/>
 
       <polygon points="38,42 82,42 78,80 74,94 46,94 42,80" fill="${bodyColor}"/>
-      <polygon points="45,44 75,44 78,53 42,53" fill="${visorColor}"/>
-      <rect x="59" y="44" width="2.4" height="9" fill="${bodyColor}"/>
-      <polygon points="41,55 79,55 78,69 42,69" fill="${MECH_DEEP}"/>
-      <polygon points="${headlight}" fill="${CHROME}"/>
-      <polygon points="${mirror(headlight)}" fill="${CHROME}"/>
-      <rect x="53" y="58" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="58.2" y="58" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="63.4" y="58" width="3.6" height="8" fill="${STEEL}"/>
-      <polygon points="45,71 75,71 73,93 47,93" fill="${CHROME}"/>
-      <text x="60" y="89" text-anchor="middle" font-family="${FONT}" font-size="21" font-weight="800" fill="${accent}">${emblem}</text>
+      <polygon points="44,43 76,43 79,54 41,54" fill="${visorColor}"/>
+      <rect x="58.8" y="43" width="2.4" height="11" fill="${bodyColor}"/>
+      <polygon points="40,56 80,56 79,70 41,70" fill="${MECH_DEEP}"/>
+      <polygon points="${headlight}" fill="#eafcff"/>
+      <polygon points="${mirror(headlight)}" fill="#eafcff"/>
+      <rect x="53" y="59" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="58.2" y="59" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="63.4" y="59" width="3.6" height="8" fill="${STEEL}"/>
+      <polygon points="45,72 75,72 73,94 47,94" fill="${CHROME}"/>
+      <text x="60" y="90" text-anchor="middle" font-family="${FONT}" font-size="21" font-weight="800" fill="${accent}">${emblem}</text>
 
       <polygon points="${shoulder}" fill="${bodyColor}"/>
       <polygon points="${mirror(shoulder)}" fill="${bodyColor}"/>
@@ -147,11 +141,14 @@ export function heroRobot({
 
       <polygon points="${ear}" fill="${accent}"/>
       <polygon points="${mirror(ear)}" fill="${accent}"/>
-      <polygon points="43,16 77,16 79,28 72,39 48,39 41,28" fill="${bodyColor}"/>
-      <polygon points="45,21 75,21 74,24 46,24" fill="${MECH}"/>
-      <polygon points="46,24 74,24 72,31 48,31" fill="${visorColor}"/>
-      <polygon points="51,32 69,32 68,38 52,38" fill="${STEEL}"/>
-      <polygon points="52,18 60,3 68,18 60,12" fill="${CHROME}"/>
+      <polygon points="42,15 78,15 80,28 73,40 47,40 40,28" fill="${bodyColor}"/>
+      <polygon points="44,20 76,20 75,24 45,24" fill="${MECH}"/>
+      <polygon points="45,24 75,24 73,32 47,32" fill="${visorColor}"/>
+      <polygon points="49,33 71,33 69,40 51,40" fill="${MECH}"/>
+      <rect x="52" y="34" width="16" height="1.8" fill="${STEEL}"/>
+      <polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>
+      <polygon points="43,15 33,7 41,18" fill="${accent}"/>
+      <polygon points="${mirror('43,15 33,7 41,18')}" fill="${accent}"/>
     </g>
   `
   )
@@ -170,9 +167,8 @@ export function heroDeluxeRobot({
   const finTip = '2,12 0,32 11,25'
   const shoulder = '31,40 6,47 2,74 28,68'
   const shoulderFacet = '31,40 8,46 10,54 31,48'
-  const carBody = '5,36 10,28 25,28 30,36 30,44 4,44'
-  const carWindow = '12,30 23,30 25,35 11,35'
-  const carSill = '4,40 30,40 30,44 4,44'
+  const carBody = '4,35 10,26 25,26 31,35 31,45 3,45'
+  const carWindow = '11,28 24,28 27,35 8,35'
   const upperArm = '13,68 30,64 29,84 15,88'
   const armPlate = '10,70 22,68 21,84 9,86'
   const forearm = '12,84 28,81 29,100 14,102'
@@ -222,8 +218,8 @@ export function heroDeluxeRobot({
       <polygon points="38,42 82,42 85,53 35,53" fill="${visorColor}"/>
       <rect x="58.8" y="42" width="2.6" height="11" fill="${bodyColor}"/>
       <polygon points="34,55 86,55 85,71 35,71" fill="${MECH_DEEP}"/>
-      <polygon points="${headlight}" fill="${panelColor}"/>
-      <polygon points="${mirror(headlight)}" fill="${panelColor}"/>
+      <polygon points="${headlight}" fill="#eafcff"/>
+      <polygon points="${mirror(headlight)}" fill="#eafcff"/>
       <rect x="51" y="58" width="4.4" height="10" fill="${STEEL}"/>
       <rect x="57.8" y="58" width="4.4" height="10" fill="${STEEL}"/>
       <rect x="64.6" y="58" width="4.4" height="10" fill="${STEEL}"/>
@@ -244,14 +240,12 @@ export function heroDeluxeRobot({
 
       <polygon points="${carBody}" fill="${panelColor}"/>
       <polygon points="${mirror(carBody)}" fill="${panelColor}"/>
-      <polygon points="${carWindow}" fill="${visorColor}"/>
-      <polygon points="${mirror(carWindow)}" fill="${visorColor}"/>
-      <polygon points="${carSill}" fill="${accent}"/>
-      <polygon points="${mirror(carSill)}" fill="${accent}"/>
-      <circle cx="11" cy="44" r="3.8" fill="${MECH_DEEP}"/>
-      <circle cx="24" cy="44" r="3.8" fill="${MECH_DEEP}"/>
-      <circle cx="109" cy="44" r="3.8" fill="${MECH_DEEP}"/>
-      <circle cx="96" cy="44" r="3.8" fill="${MECH_DEEP}"/>
+      <polygon points="${carWindow}" fill="${MECH_DEEP}"/>
+      <polygon points="${mirror(carWindow)}" fill="${MECH_DEEP}"/>
+      <circle cx="10" cy="45" r="4.6" fill="${MECH_DEEP}"/>
+      <circle cx="25" cy="45" r="4.6" fill="${MECH_DEEP}"/>
+      <circle cx="110" cy="45" r="4.6" fill="${MECH_DEEP}"/>
+      <circle cx="95" cy="45" r="4.6" fill="${MECH_DEEP}"/>
 
       <polygon points="${upperArm}" fill="${MECH}"/>
       <polygon points="${mirror(upperArm)}" fill="${MECH}"/>
@@ -271,7 +265,9 @@ export function heroDeluxeRobot({
       <polygon points="40,13 80,13 82,27 74,39 46,39 38,27" fill="${bodyColor}"/>
       <polygon points="43,20 77,20 76,23 44,23" fill="${MECH}"/>
       <polygon points="44,23 76,23 74,31 46,31" fill="${visorColor}"/>
-      <polygon points="49,32 71,32 70,39 50,39" fill="${STEEL}"/>
+      <polygon points="49,32 71,32 70,39 50,39" fill="${MECH}"/>
+      <rect x="52" y="34" width="16" height="1.8" fill="${STEEL}"/>
+      <rect x="53" y="37" width="14" height="1.8" fill="${STEEL}"/>
       <polygon points="56,14 60,4 64,14" fill="${panelColor}"/>
     </g>
   `
@@ -328,8 +324,9 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
 
       <polygon points="38,42 82,42 78,80 74,94 46,94 42,80" fill="${bodyColor}"/>
       <polygon points="43,45 79,45 75,70 47,70" fill="${accent}"/>
-      <polygon points="43,45 58,45 52,58 43,54" fill="#000" opacity="0.22"/>
-      <path d="M59 45 L67 55 L57 60 L65 70" stroke="${MECH_DEEP}" stroke-width="3.6" fill="none"/>
+      <polygon points="43,45 60,45 54,57 43,53" fill="#000" opacity="0.26"/>
+      <polygon points="65,45 68,45 63,57 70,70 66,70 60,57" fill="${MECH_DEEP}"/>
+      <polygon points="52,60 55,58 51,70 48,70" fill="${MECH_DEEP}"/>
       <polygon points="47,72 73,72 71,93 49,93" fill="${MECH_DEEP}"/>
       <polygon points="60,74 71,82.5 60,91 49,82.5" fill="${HOSTILE}"/>
       <polygon points="60,79 64.5,82.5 60,86 55.5,82.5" fill="${CHROME}"/>
@@ -345,8 +342,8 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
       <polygon points="8,62 14,57 14,67" fill="${STEEL}"/>
       <polygon points="34,62 28,57 28,67" fill="${STEEL}"/>
       <circle cx="21" cy="62" r="4" fill="${MECH_DEEP}"/>
-      <circle cx="99" cy="63" r="8.5" fill="${MECH_DEEP}"/>
-      <circle cx="99" cy="63" r="3.6" fill="${accent}"/>
+      <polygon points="99,54 107,58 107,68 99,72 91,68 91,58" fill="${MECH_DEEP}"/>
+      <polygon points="99,58 103,60 103,66 99,68 95,66 95,60" fill="${accent}"/>
 
       <polygon points="${upperArm}" fill="${MECH}"/>
       <polygon points="${mirror(upperArm)}" fill="${MECH}"/>
@@ -391,7 +388,7 @@ export function villainDeluxeRobot({
   const shoulder = '31,40 5,48 1,74 27,68'
   const spikeA = '31,40 12,18 27,38'
   const spikeB = '5,48 0,26 18,44'
-  const spikeC = '1,74 -2,56 14,58'
+  const spikeC = '2,74 0,55 14,58'
   const upperArm = '13,68 30,64 29,84 15,88'
   const armPlate = '10,70 22,68 21,84 9,86'
   const forearm = '12,84 28,81 29,100 14,102'
@@ -403,7 +400,7 @@ export function villainDeluxeRobot({
   const knee = '35,113 57,113 56,125 37,125'
   const boot = '32,126 59,126 60,135 31,135'
   const footClaw = '33,134 40,134 36,140'
-  const horn = '44,14 30,-2 40,20'
+  const horn = '44,14 29,0 40,20'
 
   return svgWrap(
     `
@@ -411,8 +408,8 @@ export function villainDeluxeRobot({
       <polygon points="28,137 92,137 86,140 34,140" fill="#000" opacity="0.15"/>
 
       <polygon points="38,38 4,64 14,126 40,110 60,120 80,110 106,126 116,64 82,38" fill="${capeColor}"/>
-      <polygon points="${capeEdge}" fill="${accent}" opacity="0.28"/>
-      <polygon points="${mirror(capeEdge)}" fill="${accent}" opacity="0.28"/>
+      <polygon points="${capeEdge}" fill="${accent}" opacity="0.45"/>
+      <polygon points="${mirror(capeEdge)}" fill="${accent}" opacity="0.45"/>
 
       <polygon points="52,34 68,34 67,44 53,44" fill="${MECH}"/>
 
@@ -434,8 +431,9 @@ export function villainDeluxeRobot({
 
       <polygon points="32,40 88,40 84,80 79,96 41,96 36,80" fill="${bodyColor}"/>
       <polygon points="37,42 83,42 79,74 41,74" fill="${accent}" opacity="0.35"/>
-      <path d="M58 42 L68 54 L55 60 L64 74" stroke="${MECH_DEEP}" stroke-width="4" fill="none"/>
-      <polygon points="42,46 78,46 74,90 46,90" fill="${MECH_DEEP}"/>
+      <polygon points="62,42 67,42 60,56 70,74 64,74 55,56" fill="${MECH_DEEP}"/>
+      <polygon points="46,42 74,42 80,52 76,84 60,94 44,84 40,52" fill="${accent}"/>
+      <polygon points="47,46 73,46 76,54 72,82 60,90 48,82 44,54" fill="${MECH_DEEP}"/>
       <polygon points="60,50 76,68 60,86 44,68" fill="${visorColor}"/>
       <polygon points="60,58 68,68 60,78 52,68" fill="${MECH_DEEP}"/>
       <polygon points="60,63 65,68 60,73 55,68" fill="${CHROME}"/>
@@ -467,9 +465,11 @@ export function villainDeluxeRobot({
       <polygon points="${horn}" fill="${accent}"/>
       <polygon points="${mirror(horn)}" fill="${accent}"/>
       <polygon points="40,13 80,13 82,28 72,41 48,41 38,28" fill="${bodyColor}"/>
-      <polygon points="42,19 78,19 77,23 43,23" fill="${MECH_DEEP}"/>
-      <polygon points="43,23 77,23 73,33 47,33" fill="${MECH_DEEP}"/>
-      <polygon points="46,25 74,25 71,31 49,31" fill="${visorColor}"/>
+      <polygon points="40,13 80,13 81,20 39,20" fill="${accent}"/>
+      <polygon points="38,25 45,25 43,39 39,32" fill="${accent}"/>
+      <polygon points="${mirror('38,25 45,25 43,39 39,32')}" fill="${accent}"/>
+      <polygon points="43,21 77,21 73,33 47,33" fill="${MECH_DEEP}"/>
+      <polygon points="46,24 74,24 71,31 49,31" fill="${visorColor}"/>
       <polygon points="49,34 71,34 69,41 51,41" fill="${MECH_DEEP}"/>
       <polygon points="51,34 55,40 59,34" fill="${accent}"/>
       <polygon points="61,34 65,40 69,34" fill="${accent}"/>
