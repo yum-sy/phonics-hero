@@ -85,11 +85,38 @@ villainArt(villainOrName)
 스타일 계열은 파일로 분리한다 — 함수 두어 개를 넘기면 `src/art/<family>.js` 로 빼고
 `art.js` 가 import 해서 `HERO_STYLES`/`VILLAIN_STYLES` 에 등록한다. 그래야 디자이너를
 계열별로 병렬 투입할 수 있다(같은 파일이면 서로 덮어쓴다).
-- `art/robots.js` — `robot`, `robot-deluxe` (히어로/빌런). 각진 변신자동차 문법:
-  가슴=자동차 앞면(앞유리+그릴 슬랫+헤드라이트), 어깨 바퀴, 스포일러, V 크레스트, `rx` 금지
-- `art.js` 내 슈퍼히어로 계열 — `superhero`, `superhero-acrobat/-shield/-thunder/-armor`,
-  `supervillain-fog/-eraser/-stop/-jumble/-king`
+- `art/robots.js` — `robot`, `robot-deluxe` (히어로/빌런, 챕터 1 = Carbot 계열). 각진
+  변신자동차 문법: 가슴=자동차 앞면(앞유리+그릴 슬랫+헤드라이트), 어깨 바퀴, 스포일러,
+  V 크레스트, `rx` 금지
+- `art.js` 내 슈퍼히어로 계열(챕터 2 = Marvel 히어로 계열) — `superhero`,
+  `superhero-acrobat/-shield/-thunder/-armor`, `supervillain-fog/-eraser/-stop/-jumble/-king`
+- `art/dinosaurs.js` — `dino-raptor/-armored/-flyer/-horned` (챕터 3 = 공룡 계열),
+  `dino-blink/-echo/-upside/-swamp/-shadow-rex`. 유기적 `path` 곡선, 큰 흰 눈, 온색 중립색
+  — 로봇 계열과 반대 문법
+- `art/platformer.js` — `plat-jumper/-spring/-block/-powerup`, `plat-flip/-slime/
+  -magnetjack/-brick/-glitch`. 2.5헤드 정면 스프라이트, 큰 흰 장갑·신발. **현재 챕터
+  4 에 임시로 쓰이고 있으나 챕터 4 의 실제 자리는 포켓몬 계열이다 — 아래 세계관
+  순서 참조. 이 계열은 원래 마리오 계열(챕터 5) 용으로 재배치될 예정.**
 - 모든 SVG: viewBox `"0 0 120 140"`, flat color, 그라디언트/필터 금지, 기하 프리미티브만
+
+### 세계관 순서 (챕터 스타일 계열 사이클, 7개씩 반복)
+1. **Carbot** — 각진 변신로봇 (완료: `art/robots.js`)
+2. **Marvel 히어로 계열** — 원형만 차용한 원작 디자인, 로고·정확한 의상 색배치 금지
+   (완료: `art.js` 슈퍼히어로 계열)
+3. **공룡** — (완료: `art/dinosaurs.js`)
+4. **포켓몬 계열** — 포획형 동료 크리처, 원작 종 디자인 금지, 포켓볼 특유의
+   빨강/흰/중앙버튼 배색도 피할 것 (미착수 — 현재 플랫포머로 임시 대체됨, 재작업 필요)
+5. **마리오 계열** — 모자+장갑 점프 플랫포머, 원작 얼굴/콧수염/색배치 금지
+   (아트 완료: `art/platformer.js` — 챕터 4용으로 만들었으나 이 자리로 재배치)
+6. **토이스토리 계열** — 살아있는 장난감들, 원작 캐릭터 얼굴·의상 디테일 금지 (미착수)
+7. **DC 히어로 계열** — 챕터 2와 다른 원형(케이프+카울 탐정, 비행 능력자 등), 로고 금지
+   (미착수)
+
+**저작권 원칙**: 사용자가 내부 교육용 자료로 확인했고 특정 캐릭터를 "닮게" 만들라고
+지시했더라도, **알아볼 수 있는 특정 상표 캐릭터(피카츄, 마리오, 우디/버즈, 배트맨/
+슈퍼맨 등)를 그대로 재현하지 않는다.** 그 프랜차이즈의 장르·정서·재미 요소(포획-배틀,
+점프 플랫폼, 살아있는 장난감, 케이프 히어로)만 가져와 **원작 실루엣·색배치·로고를
+피한 원본 디자인**으로 만든다. 디자인 에이전트에게 항상 이 경계를 명시해서 브리핑할 것.
 
 **표시 크기가 여러 개다**: 66px(합체 연출 미니봇) / 96px(챕터 카드) / 110px(전투 스프라이트)
 / 132px(합체 최종 형태). 66px 에서 1 viewBox 단위 ≈ 0.47px 이므로 **3단위 미만 디테일은

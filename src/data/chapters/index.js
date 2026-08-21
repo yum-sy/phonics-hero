@@ -23,8 +23,15 @@ export const chapters = [chapter1, chapter2, chapter3, chapter4]
 export const stages = chapters.flatMap((c) => c.stages)
 
 // The curriculum is planned as 33 chapters total, cycling through 7
-// character styles per world (robot -> superhero -> dinosaur -> platformer
-// -> dark-vigilante -> jet-pilot -> mecha, then repeat). Only `chapters`
+// character-style "flavors" per world, chapter 1 of each world always
+// landing on the first flavor: Carbot -> Marvel-flavored heroes -> dinosaurs
+// -> Pokemon-flavored creatures -> Mario-flavored platformer -> Toy-Story-
+// flavored living toys -> DC-flavored heroes, then repeat. These are original
+// designs evoking each property's genre, not likenesses of the trademarked
+// characters themselves -- see the design-agent brief in CLAUDE.md. Chapter 4
+// currently renders with the platformer style (`plat-*`) as a placeholder;
+// it needs a creature-flavored redesign to match its intended slot (see
+// CLAUDE.md's "진행 중 / 미완료" list). Only `chapters`
 // above actually has authored content right now; `worlds` below still
 // enumerates every planned chapter *slot* so the world/chapter-select
 // screens can render a locked "???" placeholder card for chapters that
