@@ -20,6 +20,12 @@ import {
   dinoSwamp,
   dinoShadowRex,
 } from './art/dinosaurs.js'
+import {
+  platJumper,
+  platSpring,
+  platBlock,
+  platPowerup,
+} from './art/platformer.js'
 
 // Shared by every style family defined *in this file*; ./art/robots.js
 // keeps its own copy so it stays importable without this module.
@@ -559,35 +565,62 @@ export function villainShadowKing({
 // their deluxe art's own signature palette.
 const HERO_PALETTES = {
   '새미': { bodyColor: '#3b9922', accent: '#27500a', emblem: 'S' },
+  'sammy': { bodyColor: '#3b9922', accent: '#27500a', emblem: 'S' },
   '에이스': { bodyColor: '#ef9f27', accent: '#854f0b', emblem: 'A' },
+  'ace': { bodyColor: '#ef9f27', accent: '#854f0b', emblem: 'A' },
   '터보': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T' },
+  'turbo': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T' },
   '카본': { style: 'robot-deluxe' },
+  'carbon': { style: 'robot-deluxe' },
   '잉키': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
+  'inky': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
   '파워피': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
+  'pip': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
   '나이토': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
+  'nord': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
   '캡틴핀': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', emblem: '★' },
+  'captain-pin': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', emblem: '★' },
   '케이라': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#1f6b45', emblem: 'C' },
+  'coco': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#1f6b45', emblem: 'C' },
   '에디': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
+  'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
   '허비': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
+  'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
   '트라이케라': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
+  'trike': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
 }
 
 const VILLAIN_PALETTES = {
   '노이즈봇': { bodyColor: '#888780', accent: '#444441' },
+  'noisebot': { bodyColor: '#888780', accent: '#444441' },
   '무음괴물': { bodyColor: '#7f77dd', accent: '#3c3489' },
+  'hushbot': { bodyColor: '#7f77dd', accent: '#3c3489' },
   '그림자봇': { bodyColor: '#5f5e5a', accent: '#2c2c2a' },
+  'shadowbot': { bodyColor: '#5f5e5a', accent: '#2c2c2a' },
   '타이머봇': { bodyColor: '#d85a30', accent: '#712b13' },
+  'tickbot': { bodyColor: '#d85a30', accent: '#712b13' },
   '다크스파크': { style: 'robot-deluxe' },
+  'dark-spark': { style: 'robot-deluxe' },
   '흐림괴물': { style: 'supervillain-fog', bodyColor: '#7a8b99', accent: '#3d4852', collarColor: '#222a30' },
+  'blurry': { style: 'supervillain-fog', bodyColor: '#7a8b99', accent: '#3d4852', collarColor: '#222a30' },
   '지우개맨': { style: 'supervillain-eraser', bodyColor: '#c96a9b', accent: '#6b2f4c', collarColor: '#2a1420' },
+  'eraser-man': { style: 'supervillain-eraser', bodyColor: '#c96a9b', accent: '#6b2f4c', collarColor: '#2a1420' },
   '멈춤맨': { style: 'supervillain-stop', bodyColor: '#8a7f4b', accent: '#4a4222', collarColor: '#231f10' },
+  'stop-man': { style: 'supervillain-stop', bodyColor: '#8a7f4b', accent: '#4a4222', collarColor: '#231f10' },
   '뒤죽박죽': { style: 'supervillain-jumble', bodyColor: '#6b8f3a', accent: '#39501c', collarColor: '#1b260d' },
+  'jumble': { style: 'supervillain-jumble', bodyColor: '#6b8f3a', accent: '#39501c', collarColor: '#1b260d' },
   '섀도우킹': { style: 'supervillain-king', bodyColor: '#4b3f6b', accent: '#211b33', collarColor: '#1c1c1c' },
+  'shadow-king': { style: 'supervillain-king', bodyColor: '#4b3f6b', accent: '#211b33', collarColor: '#1c1c1c' },
   '깜빡괴물': { style: 'dino-blink', bodyColor: '#8f7fd4', accent: '#463a80' },
+  'blinky': { style: 'dino-blink', bodyColor: '#8f7fd4', accent: '#463a80' },
   '메아리도둑': { style: 'dino-echo', bodyColor: '#5aa6a0', accent: '#1f5a56' },
+  'echo': { style: 'dino-echo', bodyColor: '#5aa6a0', accent: '#1f5a56' },
   '거꾸로용': { style: 'dino-upside', bodyColor: '#c96a9b', accent: '#6b2f4c' },
+  'upsy': { style: 'dino-upside', bodyColor: '#c96a9b', accent: '#6b2f4c' },
   '늪지괴물': { style: 'dino-swamp', bodyColor: '#7d9b3a', accent: '#3c4d18' },
+  'muddy': { style: 'dino-swamp', bodyColor: '#7d9b3a', accent: '#3c4d18' },
   '그림자렉스': { style: 'dino-shadow-rex', bodyColor: '#4a4a52', accent: '#22222a' },
+  'shadow-rex': { style: 'dino-shadow-rex', bodyColor: '#4a4a52', accent: '#22222a' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -609,6 +642,10 @@ const HERO_STYLES = {
   'dino-armored': dinoArmored,
   'dino-flyer': dinoFlyer,
   'dino-horned': dinoHorned,
+  'plat-jumper': platJumper,
+  'plat-spring': platSpring,
+  'plat-block': platBlock,
+  'plat-powerup': platPowerup,
 }
 
 const VILLAIN_STYLES = {
@@ -632,17 +669,30 @@ const VILLAIN_STYLES = {
 // would render all four of a chapter's heroes as the same figure, so a named
 // character's own archetype outranks a family request. A concrete style in
 // the data still wins, and an unknown name still gets the family default.
-const FAMILY_STYLES = new Set(['superhero', 'dino', 'dinosaur'])
+const FAMILY_STYLES = new Set([
+  'superhero',
+  'dino',
+  'dinosaur',
+  'plat',
+  'platformer',
+])
 
 // Explicit spec colors win over the name palette, which wins over the art
 // function's own defaults. Undefined spec fields are dropped so a partially
 // filled chapter entry doesn't blank out palette colors.
+// `art` is a stable identity slug; `name` is display text and may be
+// translated at any time. Looking a palette up by display text means every
+// rename silently drops the character's own colours, so `art` is tried first
+// and `name` only as a fallback for entries that predate the slug.
+const ART_META_KEYS = new Set(['name', 'style', 'art'])
+
 function resolveArt(input, palettes, styles) {
   const spec = typeof input === 'string' ? { name: input } : input || {}
-  const { style: namedStyle, ...namedColors } = palettes[spec.name] || {}
+  const entry = palettes[spec.art] || palettes[spec.name] || {}
+  const { style: namedStyle, ...namedColors } = entry
   const colors = { ...namedColors }
   for (const [key, value] of Object.entries(spec)) {
-    if (key !== 'name' && key !== 'style' && value !== undefined) colors[key] = value
+    if (!ART_META_KEYS.has(key) && value !== undefined) colors[key] = value
   }
   const requested =
     namedStyle && FAMILY_STYLES.has(spec.style) ? namedStyle : spec.style
