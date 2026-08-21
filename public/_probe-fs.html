@@ -659,10 +659,10 @@
     }
     const failed = results.filter((r) => !r.pass)
     check(
-      'all-20-stages-playthrough',
+      'all-stages-playthrough',
       failed.length === 0,
       failed.length === 0
-        ? `20/20 stages clean: ${results.map((r) => r.id).join(', ')}`
+        ? `${results.length}/${results.length} stages clean: ${results.map((r) => r.id).join(', ')}`
         : `${results.length - failed.length}/${results.length} clean; FAILED: ` +
           failed
             .map(
@@ -711,6 +711,193 @@
     check('matchshape-real-shot-reached', shown)
   }
 
+  // --- digraph (2-letter) rendering check -- ai/oa are the project's first
+  // two-letter graphemes (chapter 7, phonics data not landed yet), and
+  // every place a "letter" gets displayed was built and tested against
+  // single characters only. Exercise each render path with a synthetic
+  // 2-letter beat before real data exists, and measure for the thing that
+  // actually matters for a 5-year-old: does it fit without scrolling, and
+  // is it legible (not so small it reads as noise, not so cramped it
+  // clips) -- not just "does it render without throwing".
+  async function digraphRender() {
+    const stage = chapters[0].stages[0]
+    const saved = stage.beats
+    const noScroll = () => {
+      const de = document.documentElement
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const ovfX = Math.max(de.scrollWidth, document.body.scrollWidth) - vw
+      const ovfY = Math.max(de.scrollHeight, document.body.scrollHeight) - vh
+      return { ovfX, ovfY, ok: ovfX <= 0 && ovfY <= 0 }
+    }
+    const results = {}
+    try {
+      // 1) teach beat's beat.letter -> .big-letter
+      stage.beats = [
+        { kind: 'teach', instructionKo: 'ai 소리를 배워봐요', letter: 'ai', repeatAudio: ['ai'] },
+      ]
+      await enterStage('chapter-1', 0)
+      await until('.big-letter')
+      const bigLetterEl = document.querySelector('.big-letter')
+      results.teachLetter = {
+        text: bigLetterEl.textContent,
+        rect: bigLetterEl.getBoundingClientRect().width,
+        ...noScroll(),
+      }
+
+      // 2) choose beat's promptLetter -> .big-letter, plus letterTile options
+      //    with 2-letter labels (the actual thing that would ship for a
+      //    diphthong-matching round: "which word has the ai sound").
+      stage.beats = [
+        {
+          kind: 'choose',
+          instructionKo: 'ai 소리가 나는 글자를 찾아보세요',
+          promptLetter: 'ai',
+          scored: false,
+          options: [
+            { id: 'ai', icon: 'letterTile', label: 'ai', correct: true },
+            { id: 'oa', icon: 'letterTile', label: 'oa', correct: false },
+            { id: 'ee', icon: 'letterTile', label: 'ee', correct: false },
+          ],
+        },
+      ]
+      state.clearCheckpoint()
+      await enterStage('chapter-1', 0)
+      await until('.big-letter')
+      const promptEl = document.querySelector('.big-letter')
+      const tiles = [...document.querySelectorAll('.option-btn')]
+      results.choosePromptLetter = {
+        text: promptEl.textContent,
+        rect: promptEl.getBoundingClientRect().width,
+        ...noScroll(),
+      }
+      results.optionLabelVisible = tiles.map((btn) => {
+        const label = btn.querySelector('.option-label')
+        const cs = getComputedStyle(label)
+        return {
+          text: label.textContent,
+          srOnly: label.classList.contains('sr-only'),
+          // sr-only in this app's CSS clips to a 1x1px box off-screen --
+          // check the box, not just the class name, in case that ever
+          // changes underneath this check.
+          visuallyHidden: parseFloat(cs.width) <= 1 && parseFloat(cs.height) <= 1,
+        }
+      })
+
+      // 3) match-shape beat with 2-letter options (the shape-discrimination
+      // path -- does it survive a digraph the way it does b/d).
+      stage.beats = [
+        {
+          kind: 'match-shape',
+          instructionKo: 'ai 모양을 찾아보세요',
+          promptLetter: 'ai',
+          options: [
+            { id: 'ai', icon: 'letterTile', label: 'ai', correct: true },
+            { id: 'oa', icon: 'letterTile', label: 'oa', correct: false },
+          ],
+        },
+      ]
+      state.clearCheckpoint()
+      await enterStage('chapter-1', 0)
+      await until('.options-grid')
+      spoken = []
+      document.querySelector('[data-id="ai"]').click()
+      await wait(300)
+      results.matchShapeTapSpoke = [...spoken]
+      results.matchShapeNoScroll = noScroll()
+    } finally {
+      stage.beats = saved
+      state.clearCheckpoint()
+    }
+
+    const allNoScroll =
+      results.teachLetter.ok && results.choosePromptLetter.ok && results.matchShapeNoScroll.ok
+    check(
+      'digraph-fits-without-scroll',
+      allNoScroll,
+      JSON.stringify({
+        teach: { text: results.teachLetter.text, w: Math.round(results.teachLetter.rect), ovfX: results.teachLetter.ovfX },
+        choose: { text: results.choosePromptLetter.text, w: Math.round(results.choosePromptLetter.rect), ovfX: results.choosePromptLetter.ovfX },
+        matchShape: results.matchShapeNoScroll,
+      })
+    )
+    // A digraph letterTile ("ai") is one taught letterform, same as a
+    // single letter -- the icon already embosses it, so the plain-text
+    // label underneath must be screen-reader-only, not a visible duplicate
+    // (that duplicate is exactly the "two renderings of one letterform"
+    // problem the sr-only rule exists to prevent -- see optionLabelHtml()).
+    const allSrOnlyCorrect = results.optionLabelVisible.every(
+      (o) => o.srOnly === true && o.visuallyHidden === true
+    )
+    check(
+      'digraph-option-label-sr-only-consistent',
+      allSrOnlyCorrect,
+      JSON.stringify(results.optionLabelVisible)
+    )
+    check(
+      'digraph-matchshape-speaks-label-not-say',
+      results.matchShapeTapSpoke.join() === 'ai',
+      JSON.stringify(results.matchShapeTapSpoke)
+    )
+    document.documentElement.setAttribute('data-digraph-detail', JSON.stringify(results))
+  }
+
+  async function digraphShotChoose() {
+    const stage = chapters[0].stages[0]
+    stage.beats = [
+      {
+        kind: 'choose',
+        instructionKo: 'ai 소리가 나는 글자를 찾아보세요',
+        promptLetter: 'ai',
+        scored: false,
+        options: [
+          { id: 'ai', icon: 'letterTile', label: 'ai', correct: true },
+          { id: 'oa', icon: 'letterTile', label: 'oa', correct: false },
+          { id: 'ee', icon: 'letterTile', label: 'ee', correct: false },
+        ],
+      },
+    ]
+    await enterStage('chapter-1', 0)
+    await until('.big-letter')
+    check('digraphshot-choose-rendered', !!document.querySelector('.big-letter'))
+  }
+
+  async function digraphShotTeach() {
+    const stage = chapters[0].stages[0]
+    stage.beats = [
+      { kind: 'teach', instructionKo: 'ai 소리를 배워봐요', letter: 'ai', repeatAudio: ['ai'] },
+    ]
+    await enterStage('chapter-1', 0)
+    await until('.big-letter')
+    check('digraphshot-teach-rendered', !!document.querySelector('.big-letter'))
+  }
+
+  // renderBuildBeat's tiles are plain text buttons (not the letterTile SVG
+  // icon), fixed-size via CSS -- worth checking a digraph tile there too,
+  // since a future "rain" = r + ai + n blend round is a plausible next
+  // step for chapter 7 content.
+  // Purely a visual/crash check for a 2-letter tile.text -- NOT a claim
+  // that drag-build's target-matching would actually work for one (see
+  // the finding in the report: beat.target is a plain string sliced via
+  // .split(''), which only ever produces single-character slots, so an
+  // "ai" tile could never satisfy a target[nextIndex] comparison as-is).
+  async function digraphShotBuild() {
+    const stage = chapters[0].stages[4] // stage-5, has a drag-build beat
+    const saved = stage.beats
+    stage.beats = [
+      {
+        kind: 'drag-build',
+        instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요!',
+        target: 'sat',
+        letters: ['s', { text: 'ai', say: 'ai' }, 't'],
+      },
+    ]
+    await enterStage('chapter-1', 4)
+    await until('.tile-row')
+    check('digraphshot-build-rendered', !!document.querySelector('.tile-row'))
+    stage.beats = saved
+  }
+
   const CASES = {
     tap: tapBacklog,
     poison: queuePoison,
@@ -732,6 +919,10 @@
     matchshapeshot: matchShapeShot,
     allstages: allStagesPlaythrough,
     matchshapereal: matchShapeRealShot,
+    digraph: digraphRender,
+    digraphshotchoose: digraphShotChoose,
+    digraphshotteach: digraphShotTeach,
+    digraphshotbuild: digraphShotBuild,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

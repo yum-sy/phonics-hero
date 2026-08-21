@@ -100,17 +100,23 @@ function renderStage(stageId) {
   )
 }
 
-// A single-letter tile already embosses the letter inside the icon itself
-// (see icons.js's letterTile), so a second plain-text copy of the same
-// glyph underneath is visual noise, not reinforcement -- per the phonics
-// team, two differently-styled renderings of one letterform at once risks
-// undermining the single stable template a 5-year-old is trying to form.
-// Multi-letter tiles (e.g. "SAT"/"TAS"/"ATS") and picture-word options
+// A single-letterform tile already embosses the grapheme inside the icon
+// itself (see icons.js's letterTile), so a second plain-text copy of the
+// same glyph underneath is visual noise, not reinforcement -- per the
+// phonics team, two differently-styled renderings of one letterform at
+// once risks undermining the single stable template a 5-year-old is
+// trying to form. That reasoning is about the grapheme being ONE taught
+// unit, not literally about character count: a digraph ("ai"/"oa", one
+// sound spelled with two letters -- the project's first ones land in
+// chapter 7) is exactly as much a single letterform as "S" is, so it gets
+// the same treatment. Multi-letter tiles that spell a whole blended word
+// (e.g. "SAT"/"TAS"/"ATS", 3+ letters) and picture-word options are a
+// different thing -- testing whole-word reading, not one letterform -- and
 // keep their visible label as before. The letter stays in the DOM as
 // screen-reader-only text either way, for accessibility.
 function optionLabelHtml(opt) {
-  const isSingleLetterTile = opt.icon === 'letterTile' && opt.label.length === 1
-  const cls = isSingleLetterTile ? 'option-label sr-only' : 'option-label'
+  const isLetterformTile = opt.icon === 'letterTile' && opt.label.length <= 2
+  const cls = isLetterformTile ? 'option-label sr-only' : 'option-label'
   return `<span class="${cls}">${opt.label}</span>`
 }
 
