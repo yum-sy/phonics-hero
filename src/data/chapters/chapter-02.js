@@ -16,20 +16,19 @@
 // 표시/발화 규칙 (챕터 3+ 작성자용 계약): 화면에는 항상 실제 글자·단어를,
 // 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'I', say: 'iii' },
 // readAloud는 { targetText: 'I', say: 'iii' }. 화면에 안 나오는
-// repeatAudio/promptAudio는 소리 표기('iii','p-p-p')를 그대로 쓴다.
+// repeatAudio/promptAudio는 소리 표기('iii','puh')를 그대로 쓴다.
 
 export const chapter2 = {
   id: 'chapter-2',
   order: 2,
-  title: '수수께끼 도시의 히어로',
+  title: 'Heroes of Riddle City',
   stages: [
     {
       id: 'c2-stage-1',
-      theme: 'superhero',
       order: 1,
-      title: '숨어버린 소리',
-      villain: { name: '흐림괴물', style: 'superhero' },
-      hero: { name: '잉키', style: 'superhero' },
+      title: 'The Hidden Sound',
+      villain: { name: 'Blurry', art: 'blurry', style: 'superhero' },
+      hero: { name: 'Inky', art: 'inky', style: 'superhero' },
       chapterBoss: false,
       beats: [
         {
@@ -118,15 +117,18 @@ export const chapter2 = {
         },
       ],
       recapKo: '/i/ 소리를 찾았어요! Ink, igloo, insect — 모두 iii로 시작해요!',
+      recapAudio: {
+        ko: '아이 소리를 찾았어요! 잘 들어보세요.',
+        en: ['iii', 'ink', 'igloo', 'insect'],
+      },
     },
 
     {
       id: 'c2-stage-2',
-      theme: 'superhero',
       order: 2,
-      title: 'I의 힘',
-      villain: { name: '지우개맨', style: 'superhero' },
-      hero: { name: '잉키', style: 'superhero' },
+      title: 'Power of I',
+      villain: { name: 'Eraser Man', art: 'eraser-man', style: 'superhero' },
+      hero: { name: 'Inky', art: 'inky', style: 'superhero' },
       chapterBoss: false,
       beats: [
         {
@@ -145,8 +147,8 @@ export const chapter2 = {
           promptAudio: 'iii',
           options: [
             { id: 'c2s2-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
-            { id: 'c2s2-O1', icon: 'letterTile', label: 'O', say: 'aw', correct: false },
-            { id: 'c2s2-T1', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+            { id: 'c2s2-O1', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+            { id: 'c2s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
         },
         {
@@ -238,15 +240,18 @@ export const chapter2 = {
         },
       ],
       recapKo: 'I는 iii 소리를 내요 — ink, igloo, insect도 모두 기억해요!',
+      recapAudio: {
+        ko: '아이는 이런 소리를 내요. 따라 말해볼까요?',
+        en: ['iii', 'ink', 'igloo', 'insect'],
+      },
     },
 
     {
       id: 'c2-stage-3',
-      theme: 'superhero',
       order: 3,
-      title: 'P의 힘',
-      villain: { name: '멈춤맨', style: 'superhero' },
-      hero: { name: '파워피', style: 'superhero' },
+      title: 'Power of P',
+      villain: { name: 'Stop Man', art: 'stop-man', style: 'superhero' },
+      hero: { name: 'Pip', art: 'pip', style: 'superhero' },
       chapterBoss: false,
       reviewTargets: ['I'],
       beats: [
@@ -256,17 +261,17 @@ export const chapter2 = {
           instructionKo: 'P는 파워피가 힘을 쏠 때처럼 p-p-p 소리를 내요!',
           art: 'hero',
           letter: 'P',
-          repeatAudio: ['P', 'p-p-p', 'P', 'p-p-p'],
+          repeatAudio: ['P', 'puh', 'P', 'puh'],
         },
         {
           id: 'c2s3-r1-warmup',
           kind: 'choose',
           scored: false,
           instructionKo: 'p-p-p 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'p-p-p',
+          promptAudio: 'puh',
           options: [
-            { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: true },
-            { id: 'c2s3-B1', icon: 'letterTile', label: 'B', say: 'b-b-b', correct: false },
+            { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+            { id: 'c2s3-B1', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
             { id: 'c2s3-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -289,7 +294,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 P를 따라 그리면서 p-p-p 소리를 내보세요!',
-          words: [{ text: 'P', say: 'p-p-p' }],
+          words: [{ text: 'P', say: 'puh' }],
         },
         {
           id: 'c2s3-break',
@@ -297,7 +302,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 P를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'P',
-          repeatAudio: ['p-p-p', 'Power P', 'pow!'],
+          repeatAudio: ['puh', 'Pip', 'pow!'],
         },
         {
           id: 'c2s3-r4-multiselect',
@@ -319,13 +324,13 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: 'p-p-p 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'p-p-p',
+          promptAudio: 'puh',
           options: [
-            { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: true },
-            { id: 'c2s3-D3', icon: 'letterTile', label: 'D', say: 'd-d-d', correct: false },
+            { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+            { id: 'c2s3-D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
             { id: 'c2s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
           ],
-          readAloud: { targetText: 'P', say: 'p-p-p' },
+          readAloud: { targetText: 'P', say: 'puh' },
         },
         {
           id: 'c2s3-r6-reversed',
@@ -355,19 +360,22 @@ export const chapter2 = {
           scored: true,
           hits: 2,
           instructionKo: '마지막 공격! P 소리로 크게 외쳐보세요!',
-          words: [{ text: 'P', say: 'p-p-p' }, 'pig'],
+          words: [{ text: 'P', say: 'puh' }, 'pig'],
         },
       ],
-      recapKo: 'P는 p-p-p 소리를 내요 — 그리고 I의 iii 소리도 아직 기억하고 있어요!',
+      recapKo: 'P는 puh 소리를 내요 — 그리고 I의 iii 소리도 아직 기억하고 있어요!',
+      recapAudio: {
+        ko: '피는 이런 소리를 내요. 아이 소리도 기억하고 있어요.',
+        en: ['puh', 'pig', 'pen', 'iii'],
+      },
     },
 
     {
       id: 'c2-stage-4',
-      theme: 'superhero',
       order: 4,
-      title: 'N의 힘',
-      villain: { name: '뒤죽박죽', style: 'superhero' },
-      hero: { name: '나이토', style: 'superhero' },
+      title: 'Power of N',
+      villain: { name: 'Jumble', art: 'jumble', style: 'superhero' },
+      hero: { name: 'Nord', art: 'nord', style: 'superhero' },
       chapterBoss: false,
       reviewTargets: ['I', 'P'],
       beats: [
@@ -481,14 +489,14 @@ export const chapter2 = {
               promptAudio: 'iii',
               options: [
                 { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
-                { id: 'c2s4-cP', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: false },
+                { id: 'c2s4-cP', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
                 { id: 'c2s4-cN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
               ],
             },
             {
-              promptAudio: 'p-p-p',
+              promptAudio: 'puh',
               options: [
-                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: true },
+                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s4-cN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
                 { id: 'c2s4-cI2', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
               ],
@@ -498,7 +506,7 @@ export const chapter2 = {
               options: [
                 { id: 'c2s4-cN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
                 { id: 'c2s4-cI3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
-                { id: 'c2s4-cP3', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: false },
+                { id: 'c2s4-cP3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
               ],
             },
           ],
@@ -513,15 +521,18 @@ export const chapter2 = {
         },
       ],
       recapKo: '이제 I, P, N을 모두 알아요! 잉키, 파워피, 나이토가 합체할 준비를 해요!',
+      recapAudio: {
+        ko: '엔은 이런 소리를 내요. 세 소리를 모두 배웠어요.',
+        en: ['nnn', 'net', 'nut', 'nose'],
+      },
     },
 
     {
       id: 'c2-stage-5',
-      theme: 'superhero',
       order: 5,
-      title: '챕터 보스: PIN 합체!',
-      villain: { name: '섀도우킹', style: 'superhero' },
-      hero: { name: '캡틴핀', style: 'superhero' },
+      title: 'Boss: PIN Combine!',
+      villain: { name: 'Shadow King', art: 'shadow-king', style: 'superhero' },
+      hero: { name: 'Captain Pin', art: 'captain-pin', style: 'superhero' },
       chapterBoss: true,
       reviewTargets: ['I', 'P', 'N'],
       beats: [
@@ -530,7 +541,7 @@ export const chapter2 = {
           kind: 'teach',
           instructionKo: '파워피 + 잉키 + 나이토가 합체해요! 천천히 들어보세요.',
           emoji: '🐷🖊️🥜➡️🦸',
-          repeatAudio: ['p-p-p', 'iii', 'nnn', 'pin', 'pin'],
+          repeatAudio: ['puh', 'iii', 'nnn', 'pin', 'pin'],
         },
         {
           id: 'c2s5-r1-warmup',
@@ -538,7 +549,7 @@ export const chapter2 = {
           scored: false,
           instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
           letters: [
-            { text: 'P', say: 'p-p-p' },
+            { text: 'P', say: 'puh' },
             { text: 'I', say: 'iii' },
             { text: 'N', say: 'nnn' },
           ],
@@ -551,7 +562,7 @@ export const chapter2 = {
           hits: 1,
           instructionKo: '천천히 따라 말해보세요.',
           words: [
-            { text: 'P', say: 'p-p-p' },
+            { text: 'P', say: 'puh' },
             { text: 'I', say: 'iii' },
             { text: 'N', say: 'nnn' },
             'pin',
@@ -562,7 +573,7 @@ export const chapter2 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['p-p-p', 'iii', 'nnn', 'pin'],
+          repeatAudio: ['puh', 'iii', 'nnn', 'pin'],
         },
         {
           id: 'c2s5-r3-quickfire',
@@ -572,9 +583,9 @@ export const chapter2 = {
           instructionKo: 'I, P, N을 빠르게 찾아볼까요?',
           steps: [
             {
-              promptAudio: 'p-p-p',
+              promptAudio: 'puh',
               options: [
-                { id: 'c2s5-qP', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: true },
+                { id: 'c2s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s5-qI', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
                 { id: 'c2s5-qN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
               ],
@@ -584,14 +595,14 @@ export const chapter2 = {
               options: [
                 { id: 'c2s5-qI2', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
                 { id: 'c2s5-qN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
-                { id: 'c2s5-qP2', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: false },
+                { id: 'c2s5-qP2', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
               ],
             },
             {
               promptAudio: 'nnn',
               options: [
                 { id: 'c2s5-qN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-                { id: 'c2s5-qP3', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: false },
+                { id: 'c2s5-qP3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
                 { id: 'c2s5-qI3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
               ],
             },
@@ -605,7 +616,7 @@ export const chapter2 = {
           instructionKo: '이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.',
           letters: [
             { text: 'N', say: 'nnn' },
-            { text: 'P', say: 'p-p-p' },
+            { text: 'P', say: 'puh' },
             { text: 'I', say: 'iii' },
           ],
           target: 'PIN',
@@ -633,7 +644,7 @@ export const chapter2 = {
           letters: [
             { text: 'I', say: 'iii' },
             { text: 'N', say: 'nnn' },
-            { text: 'P', say: 'p-p-p' },
+            { text: 'P', say: 'puh' },
           ],
           target: 'PIN',
           readAloud: { targetText: 'pin' },
@@ -656,6 +667,10 @@ export const chapter2 = {
         },
       ],
       recapKo: 'P-I-N은 PIN! 두 번째 진짜 단어를 만들었어요! 챕터 2 클리어!',
+      recapAudio: {
+        ko: '세 소리를 합쳐서 두 번째 단어를 만들었어요!',
+        en: ['puh', 'iii', 'nnn', 'pin'],
+      },
     },
   ],
 }

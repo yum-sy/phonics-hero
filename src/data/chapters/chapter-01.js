@@ -14,20 +14,19 @@
 // 표시/발화 규칙 (챕터 3+ 작성자용 계약): 화면에는 항상 실제 글자·단어를,
 // 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'S', say: 'sss' },
 // readAloud는 { targetText: 'S', say: 'sss' }. 화면에 안 나오는
-// repeatAudio/promptAudio는 소리 표기('sss','t-t-t')를 그대로 쓴다.
+// repeatAudio/promptAudio는 소리 표기('sss','tuh')를 그대로 쓴다.
 
 export const chapter1 = {
   id: 'chapter-1',
   order: 1,
-  title: '카봇의 소리 마을',
+  title: 'Carbot Sound Town',
   stages: [
     {
       id: 'stage-1',
-      theme: 'carbot',
       order: 1,
-      title: '이상한 소리',
-      villain: { name: '노이즈봇' },
-      hero: { name: '새미' },
+      title: 'A Strange Sound',
+      villain: { name: 'Noisebot', art: 'noisebot' },
+      hero: { name: 'Sammy', art: 'sammy' },
       chapterBoss: false,
       beats: [
         {
@@ -116,15 +115,18 @@ export const chapter1 = {
         },
       ],
       recapKo: '/s/ 소리를 찾았어요! Sun, sock, star, snake — 모두 sss로 시작해요!',
+      recapAudio: {
+        ko: '에스 소리를 찾았어요! 잘 들어보세요.',
+        en: ['sss', 'sun', 'sock', 'star'],
+      },
     },
 
     {
       id: 'stage-2',
-      theme: 'carbot',
       order: 2,
-      title: 'S의 힘',
-      villain: { name: '무음괴물' },
-      hero: { name: '새미' },
+      title: 'Power of S',
+      villain: { name: 'Hushbot', art: 'hushbot' },
+      hero: { name: 'Sammy', art: 'sammy' },
       chapterBoss: false,
       beats: [
         {
@@ -143,7 +145,7 @@ export const chapter1 = {
           promptAudio: 'sss',
           options: [
             { id: 'S1', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
-            { id: 'T1', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+            { id: 'T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'M1', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
           ],
         },
@@ -200,7 +202,7 @@ export const chapter1 = {
           options: [
             { id: 'S3', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
             { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zzz', correct: false },
-            { id: 'C3', icon: 'letterTile', label: 'C', say: 'k-k-k', correct: false },
+            { id: 'C3', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
           ],
           readAloud: { targetText: 'S', say: 'sss' },
         },
@@ -236,15 +238,18 @@ export const chapter1 = {
         },
       ],
       recapKo: 'S는 sss 소리를 내요 — sun, sock, star도 모두 기억해요!',
+      recapAudio: {
+        ko: '에스는 이런 소리를 내요. 따라 말해볼까요?',
+        en: ['sss', 'sun', 'sock', 'star'],
+      },
     },
 
     {
       id: 'stage-3',
-      theme: 'carbot',
       order: 3,
-      title: 'A의 힘',
-      villain: { name: '그림자봇' },
-      hero: { name: '에이스' },
+      title: 'Power of A',
+      villain: { name: 'Shadowbot', art: 'shadowbot' },
+      hero: { name: 'Ace', art: 'ace' },
       chapterBoss: false,
       reviewTargets: ['S'],
       beats: [
@@ -264,7 +269,7 @@ export const chapter1 = {
           promptAudio: 'aaa',
           options: [
             { id: 'A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
-            { id: 'O1', icon: 'letterTile', label: 'O', say: 'aw', correct: false },
+            { id: 'O1', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
             { id: 'U1', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
           ],
         },
@@ -321,7 +326,7 @@ export const chapter1 = {
           options: [
             { id: 'A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
             { id: 'E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
-            { id: 'O3', icon: 'letterTile', label: 'O', say: 'aw', correct: false },
+            { id: 'O3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
           ],
           readAloud: { targetText: 'A', say: 'aaa' },
         },
@@ -357,15 +362,18 @@ export const chapter1 = {
         },
       ],
       recapKo: 'A는 aaa 소리를 내요 — 그리고 S도 아직 기억하고 있어요!',
+      recapAudio: {
+        ko: '에이는 이런 소리를 내요. 에스도 기억하고 있어요.',
+        en: ['aaa', 'ant', 'apple', 'sss'],
+      },
     },
 
     {
       id: 'stage-4',
-      theme: 'carbot',
       order: 4,
-      title: 'T의 힘',
-      villain: { name: '타이머봇' },
-      hero: { name: '터보' },
+      title: 'Power of T',
+      villain: { name: 'Tickbot', art: 'tickbot' },
+      hero: { name: 'Turbo', art: 'turbo' },
       chapterBoss: false,
       reviewTargets: ['S', 'A'],
       beats: [
@@ -375,18 +383,18 @@ export const chapter1 = {
           instructionKo: 'T는 터보의 엔진처럼 t-t-t 소리를 내요!',
           art: 'hero',
           letter: 'T',
-          repeatAudio: ['T', 't-t-t', 'T', 't-t-t'],
+          repeatAudio: ['T', 'tuh', 'T', 'tuh'],
         },
         {
           id: 's4-r1-warmup',
           kind: 'choose',
           scored: false,
           instructionKo: 't-t-t 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 't-t-t',
+          promptAudio: 'tuh',
           options: [
-            { id: 'T1', icon: 'letterTile', label: 'T', say: 't-t-t', correct: true },
+            { id: 'T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
             { id: 'L1', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
-            { id: 'D1', icon: 'letterTile', label: 'D', say: 'd-d-d', correct: false },
+            { id: 'D1', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
           ],
         },
         {
@@ -408,7 +416,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 T를 따라 그리면서 t-t-t 소리를 내보세요!',
-          words: [{ text: 'T', say: 't-t-t' }],
+          words: [{ text: 'T', say: 'tuh' }],
         },
         {
           id: 's4-break',
@@ -416,7 +424,7 @@ export const chapter1 = {
           instructionKo: '손가락으로 T를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'T',
-          repeatAudio: ['t-t-t', 'Turbo', 'go!'],
+          repeatAudio: ['tuh', 'Turbo', 'go!'],
         },
         {
           id: 's4-r4-multiselect',
@@ -438,13 +446,13 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: 't-t-t 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 't-t-t',
+          promptAudio: 'tuh',
           options: [
-            { id: 'T3', icon: 'letterTile', label: 'T', say: 't-t-t', correct: true },
-            { id: 'D3', icon: 'letterTile', label: 'D', say: 'd-d-d', correct: false },
-            { id: 'P3', icon: 'letterTile', label: 'P', say: 'p-p-p', correct: false },
+            { id: 'T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
+            { id: 'D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
+            { id: 'P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
           ],
-          readAloud: { targetText: 'T', say: 't-t-t' },
+          readAloud: { targetText: 'T', say: 'tuh' },
         },
         {
           id: 's4-r6-reversed',
@@ -480,7 +488,7 @@ export const chapter1 = {
               options: [
                 { id: 'cS', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
                 { id: 'cA', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-                { id: 'cT', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+                { id: 'cT', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
             {
@@ -488,13 +496,13 @@ export const chapter1 = {
               options: [
                 { id: 'cA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'cS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
-                { id: 'cT2', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+                { id: 'cT2', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
             {
-              promptAudio: 't-t-t',
+              promptAudio: 'tuh',
               options: [
-                { id: 'cT3', icon: 'letterTile', label: 'T', say: 't-t-t', correct: true },
+                { id: 'cT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
                 { id: 'cS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
                 { id: 'cA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
               ],
@@ -507,19 +515,22 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '마지막 공격! T 소리로 크게 외쳐보세요!',
-          words: [{ text: 'T', say: 't-t-t' }, 'top'],
+          words: [{ text: 'T', say: 'tuh' }, 'top'],
         },
       ],
       recapKo: '이제 S, A, T를 모두 알아요! 새미, 에이스, 터보가 합체할 준비를 해요!',
+      recapAudio: {
+        ko: '티는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
+        en: ['tuh', 'top', 'tap'],
+      },
     },
 
     {
       id: 'stage-5',
-      theme: 'carbot',
       order: 5,
-      title: '챕터 보스: SAT 합체!',
-      villain: { name: '다크스파크' },
-      hero: { name: '카본' },
+      title: 'Boss: SAT Combine!',
+      villain: { name: 'Dark Spark', art: 'dark-spark' },
+      hero: { name: 'Carbon', art: 'carbon' },
       chapterBoss: true,
       reviewTargets: ['S', 'A', 'T'],
       beats: [
@@ -528,7 +539,7 @@ export const chapter1 = {
           kind: 'teach',
           instructionKo: '새미 + 에이스 + 터보가 합체해요! 천천히 들어보세요.',
           emoji: '🐍🐜🚙➡️🤖',
-          repeatAudio: ['sss', 'aaa', 't-t-t', 'sat', 'sat'],
+          repeatAudio: ['sss', 'aaa', 'tuh', 'sat', 'sat'],
         },
         {
           id: 's5-r1-warmup',
@@ -538,7 +549,7 @@ export const chapter1 = {
           letters: [
             { text: 'S', say: 'sss' },
             { text: 'A', say: 'aaa' },
-            { text: 'T', say: 't-t-t' },
+            { text: 'T', say: 'tuh' },
           ],
           target: 'SAT',
         },
@@ -551,7 +562,7 @@ export const chapter1 = {
           words: [
             { text: 'S', say: 'sss' },
             { text: 'A', say: 'aaa' },
-            { text: 'T', say: 't-t-t' },
+            { text: 'T', say: 'tuh' },
             'sat',
           ],
         },
@@ -560,7 +571,7 @@ export const chapter1 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['sss', 'aaa', 't-t-t', 'sat'],
+          repeatAudio: ['sss', 'aaa', 'tuh', 'sat'],
         },
         {
           id: 's5-r3-quickfire',
@@ -574,7 +585,7 @@ export const chapter1 = {
               options: [
                 { id: 'qS', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
                 { id: 'qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-                { id: 'qT', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+                { id: 'qT', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
             {
@@ -582,13 +593,13 @@ export const chapter1 = {
               options: [
                 { id: 'qA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'qS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
-                { id: 'qT2', icon: 'letterTile', label: 'T', say: 't-t-t', correct: false },
+                { id: 'qT2', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
             {
-              promptAudio: 't-t-t',
+              promptAudio: 'tuh',
               options: [
-                { id: 'qT3', icon: 'letterTile', label: 'T', say: 't-t-t', correct: true },
+                { id: 'qT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
                 { id: 'qS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
                 { id: 'qA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
               ],
@@ -602,7 +613,7 @@ export const chapter1 = {
           hits: 1,
           instructionKo: '이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.',
           letters: [
-            { text: 'T', say: 't-t-t' },
+            { text: 'T', say: 'tuh' },
             { text: 'S', say: 'sss' },
             { text: 'A', say: 'aaa' },
           ],
@@ -630,7 +641,7 @@ export const chapter1 = {
           instructionKo: '단어를 만들고, 큰 소리로 읽어보세요!',
           letters: [
             { text: 'A', say: 'aaa' },
-            { text: 'T', say: 't-t-t' },
+            { text: 'T', say: 'tuh' },
             { text: 'S', say: 'sss' },
           ],
           target: 'SAT',
@@ -654,6 +665,10 @@ export const chapter1 = {
         },
       ],
       recapKo: 'S-A-T는 SAT! 첫 번째 진짜 단어를 만들었어요! 챕터 1 클리어!',
+      recapAudio: {
+        ko: '세 소리를 합쳐서 첫 번째 단어를 만들었어요!',
+        en: ['sss', 'aaa', 'tuh', 'sat'],
+      },
     },
   ],
 }

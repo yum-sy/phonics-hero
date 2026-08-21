@@ -80,6 +80,24 @@
     return false
   }
 
+  // Buttons like #mic-btn/#continue-btn get reused by id across a beat's
+  // own re-renders (disabled while its click is being processed, then a
+  // fresh enabled one on the next word/step) -- matching on presence alone
+  // can grab the stale disabled instance mid-transition. Poll for enabled
+  // too, and click through the *live* element each time in case the node
+  // was replaced between the check and the click.
+  async function clickWhenEnabled(sel, tries = 200) {
+    for (let i = 0; i < tries; i++) {
+      const el = document.querySelector(sel)
+      if (el && !el.disabled) {
+        el.click()
+        return true
+      }
+      await wait(100)
+    }
+    return false
+  }
+
   const instruction = () =>
     (document.querySelector('.beat-instruction') || {}).textContent || ''
 
@@ -374,6 +392,173 @@
     )
   }
 
+  // Leaves the reward screen on screen for a screenshot (shortens the stage
+  // so the finale is two taps away).
+  async function rewardShot() {
+    const stage = chapters[0].stages[1]
+    const saved = stage.beats
+    stage.beats = [saved[0], saved[saved.length - 1]]
+    const words = saved[saved.length - 1].words
+    try {
+      await enterStage('chapter-1', 1)
+      document.getElementById('continue-btn').click()
+      await until('.listen-beat')
+      for (let i = 0; i < words.length; i++) {
+        document.getElementById('mic-btn').click()
+        await wait(2600)
+      }
+      await until('.reward-screen', 60)
+      check('rewardshot-rendered', !!document.querySelector('.reward-screen'))
+    } finally {
+      stage.beats = saved
+    }
+  }
+
+  // --- recapAudio: Korean explanation, then each English word/sound as its
+  // own utterance, in that order, through the shared queue -----------------
+  // Drives a stage to completion using the actual beat data (which option
+  // is correct, what the build target is) rather than blindly clicking the
+  // first available control -- a multiselect's wrong option never disables
+  // itself, so a kind-blind walker can get stuck reclicking it forever.
+  async function playThroughStage(stage) {
+    for (const beat of stage.beats) {
+      if (beat.kind === 'teach' || beat.kind === 'break') {
+        await clickWhenEnabled('#continue-btn')
+      } else if (beat.kind === 'choose') {
+        await until('.options-grid')
+        const id = beat.options.find((o) => o.correct).id
+        document.querySelector(`[data-id="${id}"]`).click()
+      } else if (beat.kind === 'choose-sequence') {
+        for (const step of beat.steps) {
+          await until('.options-grid')
+          const id = step.options.find((o) => o.correct).id
+          document.querySelector(`[data-id="${id}"]`).click()
+          await wait(150)
+        }
+      } else if (beat.kind === 'multiselect') {
+        await until('.options-grid')
+        for (const opt of beat.options.filter((o) => o.correct)) {
+          document.querySelector(`[data-id="${opt.id}"]`).click()
+          await wait(150)
+        }
+      } else if (beat.kind === 'drag-build') {
+        await until('.build-slots')
+        for (const ch of beat.target.split('')) {
+          const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
+            (t) => t.dataset.letter === ch
+          )
+          tile.click()
+          await wait(150)
+        }
+      } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
+        for (let i = 0; i < beat.words.length; i++) {
+          await clickWhenEnabled('#mic-btn')
+          await wait(150)
+        }
+      }
+      // A scored beat with readAloud lands on the read-aloud confirmation
+      // screen next, regardless of which branch above just ran.
+      if (beat.scored && beat.readAloud) {
+        await clickWhenEnabled('#mic-btn')
+      }
+      await wait(200)
+    }
+  }
+
+  async function recapAudioOrder() {
+    const stage = chapters[0].stages[0]
+    await enterStage('chapter-1', 0)
+    await playThroughStage(stage)
+    const reached = await until('.reward-screen', 30)
+    // whenAudioIdle() only reflects the queue as constructed *so far* --
+    // speakSequence() enqueues its items one at a time across ticks, each
+    // gated on its own 1100ms gap, so reading whenAudioIdle() right away can
+    // resolve after just ko + en[0] and miss the rest entirely (the same
+    // pitfall wireTeachButtons()'s comment calls out for teach beats). Wait
+    // out worst-case total sequence time first, then confirm idle.
+    await wait(1500 + stage.recapAudio.en.length * 1300)
+    await audio.whenAudioIdle()
+    const ko = stage.recapAudio.ko
+    const en = stage.recapAudio.en
+    // The stage's own beats say several of these same English words already
+    // (each option's `say`), so the FIRST occurrence in the whole transcript
+    // is not necessarily the reward screen's. Anchor the search at ko's
+    // position instead: each word only has to appear after the previous
+    // match, starting from there -- exactly the order the two calls in
+    // renderReward() enqueue them in.
+    const idxKo = spoken.lastIndexOf(ko)
+    let cursor = idxKo
+    const enIdx = en.map((w) => {
+      const idx = spoken.indexOf(w, cursor + 1)
+      if (idx !== -1) cursor = idx
+      return idx
+    })
+    const enInOrder = enIdx.every((v) => v !== -1)
+    check(
+      'reward-recapaudio-ko-then-en-in-order',
+      reached && idxKo !== -1 && enInOrder,
+      `reached=${reached} ko@${idxKo} en@${JSON.stringify(enIdx)} tail=${JSON.stringify(spoken.slice(idxKo))}`
+    )
+  }
+
+  // --- match-shape: tap never speaks a `say` sound, only opt.label --------
+  async function matchShapeNoSoundLeak() {
+    const stage = chapters[0].stages[0]
+    const saved = stage.beats
+    // Synthetic beat: deliberately gives the wrong option a `say` field, the
+    // exact mistake the renderer must be immune to (a copy-pasted `say` from
+    // a choose beat leaking a phonics sound into a shape round).
+    stage.beats = [
+      {
+        kind: 'match-shape',
+        instructionKo: 'b 모양을 찾아보세요',
+        options: [
+          { id: 'b', icon: 'letterTile', label: 'b', say: 'buh', correct: true },
+          { id: 'd', icon: 'letterTile', label: 'd', say: 'buh', correct: false },
+        ],
+      },
+    ]
+    try {
+      await enterStage('chapter-1', 0)
+      await until('.options-grid')
+      spoken = []
+      document.querySelector('[data-id="d"]').click()
+      await wait(300)
+      const wrongTapSpoke = [...spoken]
+      spoken = []
+      document.querySelector('[data-id="b"]').click()
+      await wait(2000)
+      const correctTapSpoke = [...spoken]
+      check(
+        'match-shape-never-speaks-say-field',
+        wrongTapSpoke.join() === 'd' && correctTapSpoke.includes('b') && !correctTapSpoke.includes('buh'),
+        `wrongTap=${JSON.stringify(wrongTapSpoke)} correctTap=${JSON.stringify(correctTapSpoke)}`
+      )
+    } finally {
+      stage.beats = saved
+      state.clearCheckpoint()
+    }
+  }
+
+  async function matchShapeShot() {
+    const stage = chapters[0].stages[0]
+    const saved = stage.beats
+    stage.beats = [
+      {
+        kind: 'match-shape',
+        instructionKo: '모양이 다른 글자를 찾아보세요',
+        promptLetter: 'b',
+        options: [
+          { id: 'b', icon: 'letterTile', label: 'b', correct: true },
+          { id: 'd', icon: 'letterTile', label: 'd', correct: false },
+        ],
+      },
+    ]
+    await enterStage('chapter-1', 0)
+    await until('.options-grid')
+    check('matchshapeshot-rendered', !!document.querySelector('.options-grid'))
+    stage.beats = saved
+  }
   const CASES = {
     tap: tapBacklog,
     poison: queuePoison,
@@ -389,6 +574,10 @@
     cpresume: checkpointResume,
     screenfail: screenFailureRecovery,
     norecog: noRecognition,
+    rewardshot: rewardShot,
+    recapaudio: recapAudioOrder,
+    matchshape: matchShapeNoSoundLeak,
+    matchshapeshot: matchShapeShot,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

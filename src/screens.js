@@ -67,7 +67,7 @@ function runScreen(render, retry) {
     render()
   } catch (e) {
     console.error('[screen] 렌더 실패', e)
-    app.innerHTML = `<div class="screen">${failurePanelHtml('월드 목록으로')}</div>`
+    app.innerHTML = `<div class="screen">${failurePanelHtml('◀ Worlds')}</div>`
     document.getElementById('retry-beat').addEventListener('click', retry)
     document
       .getElementById('failure-escape')
@@ -182,19 +182,19 @@ function worldSelectScreen() {
       const [start, end] = world.chapterRange
       return `
         <button class="${cls}" data-world="${world.id}" ${
-        unlocked ? '' : 'disabled aria-label="잠긴 월드"'
+        unlocked ? '' : 'disabled aria-label="Locked world"'
       }>
           <div class="chapter-card-art">${inner}</div>
           <div class="chapter-card-order">${world.title}</div>
-          <div class="chapter-card-title">챕터 ${start}-${end}</div>
-          ${cleared ? '<div class="chapter-card-badge">클리어! ⭐</div>' : ''}
+          <div class="chapter-card-title">Chapters ${start}-${end}</div>
+          ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
         </button>`
     })
     .join('')
 
   app.innerHTML = `
     <div class="screen chapter-select-screen">
-      <div class="map-header">카봇 파닉스 대작전 · 월드를 골라보세요</div>
+      <div class="map-header">Carbot Phonics · Pick a World</div>
       <div class="chapter-grid">${cards}</div>
     </div>
   `
@@ -219,9 +219,9 @@ function chapterSelectScreen(worldId) {
         // Planned chapter slot with no authored content yet -- a
         // permanently-locked placeholder, not a broken link.
         return `
-          <button class="chapter-card locked" disabled aria-label="아직 준비되지 않은 챕터">
+          <button class="chapter-card locked" disabled aria-label="Chapter coming soon">
             <div class="chapter-card-art"><i class="lock">🔒</i></div>
-            <div class="chapter-card-order">챕터 ${order}</div>
+            <div class="chapter-card-order">Chapter ${order}</div>
             <div class="chapter-card-title">???</div>
           </button>`
       }
@@ -235,20 +235,20 @@ function chapterSelectScreen(worldId) {
         : '<i class="lock">🔒</i>'
       return `
         <button class="${cls}" data-chapter="${chapter.id}" ${
-        unlocked ? '' : 'disabled aria-label="잠긴 챕터"'
+        unlocked ? '' : 'disabled aria-label="Locked chapter"'
       }>
           <div class="chapter-card-art">${inner}</div>
-          <div class="chapter-card-order">챕터 ${chapter.order}</div>
+          <div class="chapter-card-order">Chapter ${chapter.order}</div>
           <div class="chapter-card-title">${unlocked ? chapter.title : '???'}</div>
-          ${cleared ? '<div class="chapter-card-badge">클리어! ⭐</div>' : ''}
+          ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
         </button>`
     })
     .join('')
 
   app.innerHTML = `
     <div class="screen chapter-select-screen">
-      <button class="back-btn" id="back-to-worlds" aria-label="월드 목록으로">◀ 월드 목록</button>
-      <div class="map-header">${world.title} · 챕터를 골라보세요</div>
+      <button class="back-btn" id="back-to-worlds" aria-label="Back to worlds">◀ Worlds</button>
+      <div class="map-header">${world.title} · Pick a Chapter</div>
       <div class="chapter-grid">${cards}</div>
     </div>
   `
@@ -294,7 +294,7 @@ function mapScreen(chapterId) {
       return `
         <div class="stage-node-wrap">
           <button class="${cls}" data-stage="${stage.id}" ${
-        unlocked ? '' : 'disabled aria-label="잠긴 스테이지"'
+        unlocked ? '' : 'disabled aria-label="Locked stage"'
       }>${inner}</button>
           <div class="stage-label">${unlocked ? stage.title : ''}</div>
           ${starRow}
@@ -304,8 +304,8 @@ function mapScreen(chapterId) {
 
   app.innerHTML = `
     <div class="screen map-screen">
-      <button class="back-btn" id="back-to-chapters" aria-label="챕터 목록으로">◀ 챕터 목록</button>
-      <div class="map-header">챕터 ${chapter.order} · ${chapter.title}</div>
+      <button class="back-btn" id="back-to-chapters" aria-label="Back to chapters">◀ Chapters</button>
+      <div class="map-header">Chapter ${chapter.order} · ${chapter.title}</div>
       <div class="map-path">${nodes}</div>
     </div>
   `
@@ -359,12 +359,12 @@ function renderHealthShell(runtime) {
   const { stage } = runtime
   app.innerHTML = `
     <div class="screen stage-screen">
-      <button class="back-btn" id="exit-stage" aria-label="스테이지 나가기">◀ 나가기</button>
+      <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
       <div class="battle-scene">
         <div class="villain-slot">
           <div class="nameplate">
             <div class="nameplate-name">${stage.villain.name}</div>
-            <div class="health-track" role="img" aria-label="악당 체력">
+            <div class="health-track" role="img" aria-label="Villain health">
               <div class="health-fill" id="health-fill" style="width:100%"></div>
             </div>
           </div>
@@ -435,6 +435,8 @@ function runBeat(runtime) {
       renderNonScoredBeat(runtime, beat)
     } else if (beat.kind === 'choose') {
       renderChooseBeat(runtime, beat)
+    } else if (beat.kind === 'match-shape') {
+      renderMatchShapeBeat(runtime, beat)
     } else if (beat.kind === 'choose-sequence') {
       renderChooseSequenceBeat(runtime, beat)
     } else if (beat.kind === 'multiselect') {
@@ -463,7 +465,7 @@ function failurePanelHtml(escapeLabel) {
     <div class="beat teach-beat">
       <div class="beat-instruction">앗, 여기서 잠깐 문제가 생겼어요.</div>
       <div class="beat-emoji">🔧</div>
-      <button class="primary-btn" id="retry-beat">다시 해볼까요? ▶</button>
+      <button class="primary-btn" id="retry-beat">Try Again ▶</button>
       <button class="secondary-btn" id="failure-escape">${escapeLabel}</button>
     </div>
   `
@@ -473,7 +475,7 @@ function renderBeatFailure(runtime, err) {
   console.error('[beat] 렌더 실패', err)
   const area = beatArea()
   if (!area) return
-  area.innerHTML = failurePanelHtml('맵으로 돌아가기')
+  area.innerHTML = failurePanelHtml('◀ Map')
   document
     .getElementById('retry-beat')
     .addEventListener('click', () => runBeat(runtime))
@@ -513,7 +515,7 @@ function dealHit(runtime, beat) {
 function flashCorrect(container) {
   const el = document.createElement('div')
   el.className = 'flash-correct'
-  el.textContent = '정답! ✨'
+  el.textContent = 'Correct! ✨'
   container.appendChild(el)
   setTimeout(() => el.remove(), 900)
 }
@@ -647,8 +649,8 @@ function renderNonScoredBeat(runtime, beat) {
     <div class="beat-instruction">${beat.instructionKo}</div>
     ${visual}
     ${beat.letter ? `<div class="big-letter">${beat.letter}</div>` : ''}
-    <button class="replay-btn" id="replay-btn">🔊 다시 듣기</button>
-    <button class="primary-btn" id="continue-btn">다음 ▶</button>
+    <button class="replay-btn" id="replay-btn">🔊 Listen</button>
+    <button class="primary-btn" id="continue-btn">Next ▶</button>
   `
 
   // Boss-stage teach beats (always the very first beat of the boss stage)
@@ -680,8 +682,8 @@ function renderNonScoredBeat(runtime, beat) {
 
     area.innerHTML = `
       <div class="beat teach-beat">
-        <div class="boss-intro" id="boss-intro" role="button" tabindex="0" aria-label="합체 연출 넘기기" style="cursor:pointer">
-          <div class="boss-intro-label">합체!</div>
+        <div class="boss-intro" id="boss-intro" role="button" tabindex="0" aria-label="Skip intro" style="cursor:pointer">
+          <div class="boss-intro-label">UNITE!</div>
           <div class="boss-intro-robots">${robotsHtml}</div>
           <div class="boss-intro-flash"></div>
           <div class="boss-intro-hero">${heroArt(runtime.stage.hero)}</div>
@@ -743,7 +745,7 @@ function renderChooseBeat(runtime, beat) {
     ? `<div class="beat-emoji">${beat.promptEmoji}</div>`
     : ''
   const replayHtml = beat.promptAudio
-    ? `<button class="replay-btn" id="replay-btn">🔊 소리 듣기</button>`
+    ? `<button class="replay-btn" id="replay-btn">🔊 Listen</button>`
     : ''
 
   area.innerHTML = `
@@ -799,6 +801,91 @@ function renderChooseBeat(runtime, beat) {
   })
 }
 
+// ---- match-shape (letterform discrimination -- b/d etc, never by sound) ----
+//
+// choose beats speak the tapped option's *sound* (opt.say, falling back to
+// opt.label), which is exactly why b/d can never share a choose beat: Alex
+// renders "buh" and "duh" identically, so a sound-based round can't teach
+// that distinction at all -- see the collision-pair check in
+// validateChapters(). match-shape exists for the pairs that have to be
+// taught by *shape* instead (stroke direction, mirror symmetry), so tapping
+// speaks only the letter's own name -- via opt.label directly, never
+// optionSpeech()/opt.say -- so a phonics sound can never leak into a shape
+// round even if a future data author mistakenly copies a `say` field onto
+// one of these options. Everything else -- options[], readAloud,
+// promptLetter/promptEmoji, scored/hits -- matches renderChooseBeat's data
+// contract exactly on purpose: this is choose, minus the one thing that
+// made choose unsafe for a shape-only pair. validateChapters()'s spoken
+// collision-pair check must skip 'match-shape' beats for the same reason.
+
+function redemonstrateShapeOption(area, correctOpt) {
+  if (!correctOpt || !area.isConnected) return
+  speakEN(correctOpt.label)
+  pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
+}
+
+function renderMatchShapeBeat(runtime, beat) {
+  const area = beatArea()
+  const optionsHtml = beat.options
+    .map(
+      (opt) => `
+      <button class="option-btn" data-id="${opt.id}">
+        <span class="option-emoji">${wordIcon(opt.icon, opt.label)}</span>
+        ${optionLabelHtml(opt)}
+      </button>`
+    )
+    .join('')
+
+  const promptHtml = beat.promptLetter
+    ? `<div class="big-letter">${beat.promptLetter}</div>`
+    : beat.promptEmoji
+    ? `<div class="beat-emoji">${beat.promptEmoji}</div>`
+    : ''
+
+  area.innerHTML = `
+    <div class="beat choose-beat">
+      <div class="beat-instruction">${beat.instructionKo}</div>
+      ${promptHtml}
+      <div class="options-grid">${optionsHtml}</div>
+      <div class="beat-feedback" id="beat-feedback"></div>
+    </div>
+  `
+
+  const wrongStreak = makeWrongStreakTracker()
+  // Same double-fire guard as choose -- see the comment there.
+  let settled = false
+
+  area.querySelectorAll('.option-btn').forEach((btn) => {
+    btn.addEventListener('click', withRecovery(runtime, async () => {
+      if (settled) return
+      const opt = beat.options.find((o) => o.id === btn.dataset.id)
+      // opt.label, deliberately not optionSpeech(opt) -- see block comment above.
+      speakTap(opt.label)
+      if (opt.correct) {
+        settled = true
+        flashCorrect(area)
+        if (beat.scored && beat.readAloud) {
+          await whenAudioIdle()
+          runReadAloud(runtime, beat, beat.readAloud)
+        } else {
+          await waitForTransition(600)
+          advanceBeat(runtime)
+        }
+      } else {
+        shakeEl(btn)
+        // "Listen again?" would be nonsense here -- nothing was played --
+        // so this round gets its own look-again phrasing rather than
+        // choose's "들어볼까요?".
+        document.getElementById('beat-feedback').textContent = '다시 봐볼까요?'
+        if (wrongStreak.registerWrong()) {
+          const correct = beat.options.find((o) => o.correct)
+          setTimeout(() => redemonstrateShapeOption(area, correct), 1200)
+        }
+      }
+    }))
+  })
+}
+
 // ---- choose-sequence (rapid-fire cycling review, e.g. S -> A -> T) ----
 
 function renderChooseSequenceBeat(runtime, beat) {
@@ -821,7 +908,7 @@ function renderChooseSequenceBeat(runtime, beat) {
         <div class="beat-instruction">${beat.instructionKo} (${
       stepIndex + 1
     }/${beat.steps.length})</div>
-        <button class="replay-btn" id="replay-btn">🔊 소리 듣기</button>
+        <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <div class="options-grid">${optionsHtml}</div>
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
@@ -960,7 +1047,7 @@ function renderBuildBeat(runtime, beat) {
       <div class="beat-instruction">${beat.instructionKo}</div>
       <div class="build-slots">${slotsHtml}</div>
       <div class="tile-row">${tilesHtml}</div>
-      <button class="secondary-btn" id="clear-btn">지우기</button>
+      <button class="secondary-btn" id="clear-btn">↺ Undo</button>
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
@@ -1050,8 +1137,8 @@ function renderListenRepeatBeat(runtime, beat) {
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
         <div class="beat-instruction">${beat.instructionKo}</div>
         ${wordHtml}
-        <button class="replay-btn" id="replay-btn">🔊 듣기</button>
-        <button class="mic-btn" id="mic-btn">🎤 다 읽었어요!</button>
+        <button class="replay-btn" id="replay-btn">🔊 Listen</button>
+        <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
@@ -1062,7 +1149,7 @@ function renderListenRepeatBeat(runtime, beat) {
     const micBtn = document.getElementById('mic-btn')
     micBtn.addEventListener('click', withRecovery(runtime, async () => {
       micBtn.disabled = true
-      document.getElementById('beat-feedback').textContent = '잘했어요! 🎉'
+      document.getElementById('beat-feedback').textContent = 'Great! 🎉'
       // No speech recognition here on purpose -- see tryRecognize() in
       // audio.js. The 🎤 button is purely the child's "I read it" signal.
       // Wait for any in-flight audio (e.g. the child tapped "듣기" again
@@ -1099,8 +1186,8 @@ function runReadAloud(runtime, beat, readAloud) {
     <div class="beat readaloud-beat">
       <div class="beat-instruction">정답이에요! 이제 소리내어 읽어볼까요?</div>
       <div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>
-      <button class="replay-btn" id="replay-btn">🔊 듣기</button>
-      <button class="mic-btn" id="mic-btn">🎤 다 읽었어요!</button>
+      <button class="replay-btn" id="replay-btn">🔊 Listen</button>
+      <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
@@ -1112,7 +1199,7 @@ function runReadAloud(runtime, beat, readAloud) {
   micBtn.addEventListener('click', withRecovery(runtime, async () => {
     micBtn.disabled = true
     dealHit(runtime, beat)
-    document.getElementById('beat-feedback').textContent = '명중! 💥'
+    document.getElementById('beat-feedback').textContent = 'Hit! 💥'
     await waitForTransition(500)
     advanceBeat(runtime)
   }))
@@ -1125,23 +1212,31 @@ function renderReward(runtime) {
   markStageCleared(stage.id, 3)
   app.innerHTML = `
     <div class="screen reward-screen">
-      <div class="reward-title">${stage.title} 클리어!</div>
+      <div class="reward-title">${stage.title} Clear!</div>
       <div class="reward-scene">
         <span class="reward-hero">${heroArt(stage.hero)}</span>
         <span class="reward-bolt">⚡</span>
         <span class="reward-villain">${villainArt(stage.villain)}</span>
       </div>
-      <div class="reward-line">${stage.villain.name}을(를) 물리쳤어요!</div>
+      <div class="reward-line">You beat ${stage.villain.name}!</div>
       <div class="stars-row">
         <span class="star on">★</span>
         <span class="star on">★</span>
         <span class="star on">★</span>
       </div>
       <div class="recap-line">${stage.recapKo}</div>
-      <button class="primary-btn" id="back-to-map">맵으로 돌아가기</button>
+      <button class="primary-btn" id="back-to-map">◀ Back to Map</button>
     </div>
   `
-  speakKO(stage.recapKo)
+  // recapKo now has plain English letters/words mixed into the Korean
+  // explanation (deliberate -- environmental print on screen), so speaking
+  // *that* string with speakKO would read the English through a Korean
+  // voice. recapAudio keeps the two languages separate for speech: Korean
+  // explanation first, then each English target read as its own utterance
+  // (speakSequence, not one crammed string) -- both still go through the
+  // shared queue, so this never overlaps whatever the last beat was saying.
+  speakKO(stage.recapAudio.ko)
+  speakSequence(stage.recapAudio.en, 'en-US')
   document
     .getElementById('back-to-map')
     .addEventListener('click', () => {
