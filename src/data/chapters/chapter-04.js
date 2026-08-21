@@ -39,7 +39,7 @@ export const chapter4 = {
       order: 1,
       title: 'The Running Sound',
       villain: { name: 'Flippy', art: 'flippy', style: 'creature' },
-      hero: { name: 'Raichu', art: 'raichu', style: 'creature' },
+      hero: { name: 'Rocket', art: 'rocket', style: 'creature' },
       chapterBoss: false,
       beats: [
         {
@@ -63,7 +63,7 @@ export const chapter4 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['rrr', 'rrr', 'Raichu', 'rrr', 'rrr', 'rat'],
+          repeatAudio: ['rrr', 'rrr', 'Rocket', 'rrr', 'rrr', 'rat'],
         },
         {
           id: 'c4s1-r2',
@@ -137,7 +137,7 @@ export const chapter4 = {
       order: 2,
       title: 'Power of R',
       villain: { name: 'Slippy', art: 'slippy', style: 'creature' },
-      hero: { name: 'Raichu', art: 'raichu', style: 'creature' },
+      hero: { name: 'Rocket', art: 'rocket', style: 'creature' },
       chapterBoss: false,
       beats: [
         {
@@ -188,7 +188,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 R을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'R',
-          repeatAudio: ['R', 'Raichu', 'rrr'],
+          repeatAudio: ['R', 'Rocket', 'rrr'],
         },
         {
           id: 'c4s2-r4-multiselect',
@@ -265,7 +265,7 @@ export const chapter4 = {
       order: 3,
       title: 'Power of M',
       villain: { name: 'Grabby', art: 'grabby', style: 'creature' },
-      hero: { name: 'Munchlax', art: 'munchlax', style: 'creature' },
+      hero: { name: 'Magno', art: 'magno', style: 'creature' },
       chapterBoss: false,
       reviewTargets: ['R'],
       beats: [
@@ -318,7 +318,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 M을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'M',
-          repeatAudio: ['M', 'Munchlax', 'mmm'],
+          repeatAudio: ['M', 'Magno', 'mmm'],
         },
         {
           id: 'c4s3-r4-multiselect',
@@ -395,7 +395,7 @@ export const chapter4 = {
       order: 4,
       title: 'Power of D',
       villain: { name: 'Corky', art: 'corky', style: 'creature' },
-      hero: { name: 'Drilbur', art: 'drilbur', style: 'creature' },
+      hero: { name: 'Drillo', art: 'drillo', style: 'creature' },
       chapterBoss: false,
       reviewTargets: ['R', 'M'],
       beats: [
@@ -449,7 +449,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 D를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'D',
-          repeatAudio: ['D', 'Drilbur', 'duh'],
+          repeatAudio: ['D', 'Drillo', 'duh'],
         },
         {
           id: 'c4s4-r4-multiselect',
@@ -578,7 +578,7 @@ export const chapter4 = {
       order: 5,
       title: 'Boss: MAT and RED!',
       villain: { name: 'Pixel Muncher', art: 'pixel-muncher', style: 'creature' },
-      hero: { name: 'Charizard', art: 'charizard', style: 'creature' },
+      hero: { name: 'Captain Red', art: 'captain-red', style: 'creature' },
       chapterBoss: true,
       reviewTargets: ['R', 'M', 'D'],
       beats: [
