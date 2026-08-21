@@ -592,10 +592,10 @@ const HERO_PALETTES = {
   'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
   'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
   'trike': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
-  'rocket': { style: 'creature-rocket', bodyColor: '#3a63c7', accent: '#1f3c88', emblem: 'R' },
-  'magno': { style: 'creature-magno', bodyColor: '#2f8f4a', accent: '#155225', emblem: 'M' },
-  'drillo': { style: 'creature-drillo', bodyColor: '#b5762a', accent: '#6b4014', emblem: 'D' },
-  'captain-red': { style: 'creature-boss', bodyColor: '#d1332f', accent: '#f4c95d', panelColor: '#fff3c4' },
+  'raichu': { style: 'creature-rocket', bodyColor: '#e8a33d', accent: '#6b4a24', emblem: 'R' },
+  'munchlax': { style: 'creature-magno', bodyColor: '#e3d3ab', accent: '#2c2822', emblem: 'M' },
+  'drilbur': { style: 'creature-drillo', bodyColor: '#e08a3c', accent: '#7a4a1e', emblem: 'D' },
+  'charizard': { style: 'creature-boss', bodyColor: '#f0742e', accent: '#3ea8b0', panelColor: '#fff3c4' },
 }
 
 const VILLAIN_PALETTES = {
