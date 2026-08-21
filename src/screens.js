@@ -143,6 +143,18 @@ function optionSpeech(opt) {
   return spokenPair({ text: opt.label, say: opt.say }).say
 }
 
+// A drag-build target is a list of SLOTS, not of characters. Two forms:
+//   'SAT'            -- every slot is one letter (chapters 1-6)
+//   ['R','AI','N']   -- explicit slots, so a digraph occupies one slot
+// The array form exists because a digraph is one grapheme: building "rain"
+// from r+a+i+n would teach the child that A and I are separate sounds --
+// the exact opposite of the lesson the beat is there to deliver. Splitting
+// happens here and nowhere else, so slot count, tile matching and the
+// wrong-answer hint lookup all agree on what one slot is.
+function targetSlots(target) {
+  return typeof target === 'string' ? target.split('') : target
+}
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))
 }
@@ -579,12 +591,13 @@ function redemonstrateOption(area, beatOrStep, correctOpt) {
   pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
 }
 
-// Re-demonstrates the next needed letter in a drag-build round: speaks its
-// sound and pulses a still-available tile showing it. `beat.target` only
-// ever carries plain letterforms, so the sound has to be looked back up in
-// the round's normalized tile list; duplicate tiles of one letterform all
-// share that letterform's sound, so the first match is always the right
-// one, and any still-enabled tile is an equally valid thing to point at.
+// Re-demonstrates the next needed slot in a drag-build round: speaks its
+// sound and pulses a still-available tile showing it. A target slot carries
+// only the letterform ('S', or a digraph's 'AI'), never its sound, so the
+// sound has to be looked back up in the round's normalized tile list;
+// duplicate tiles of one letterform all share that letterform's sound, so
+// the first match is always the right one, and any still-enabled tile is an
+// equally valid thing to point at.
 function redemonstrateLetterTile(area, letters, letter) {
   if (!area.isConnected) return
   const match = letters.find((l) => l.text === letter)
@@ -1032,7 +1045,7 @@ function renderMultiselectBeat(runtime, beat) {
 
 function renderBuildBeat(runtime, beat) {
   const area = beatArea()
-  const target = beat.target.split('')
+  const target = targetSlots(beat.target)
   const slotsHtml = target
     .map((_, i) => `<div class="build-slot" data-slot="${i}"></div>`)
     .join('')
@@ -1041,6 +1054,30 @@ function renderBuildBeat(runtime, beat) {
   // sound is read from this list by tile index instead, so blending a word
   // sounds out "sss-aaa-t" rather than spelling "ess-ay-tee".
   const letters = beat.letters.map(spokenPair)
+
+  // Slots and tiles are two independent lists, so they can disagree in a way
+  // that just collecting their characters would hide: letters [r,a,i,n] and
+  // target [R,AI,N] both "spell rain" but no tile can ever fill the AI slot.
+  // The child would tap every tile forever with nothing to find and no way to
+  // know why -- a silent trap, which this session has repeatedly found to be
+  // worse than a visible failure. validateChapters() catches the mismatch in
+  // dev, but it is compiled out of production, so fail into the recovery
+  // panel (which offers a retry and a way back to the map) instead.
+  const unfilled = letters.map((l) => l.text)
+  for (const slot of target) {
+    const at = unfilled.indexOf(slot)
+    // Sub-multiset, not equality: extra distractor tiles are a legitimate
+    // difficulty knob, a slot with no tile is never legitimate.
+    if (at === -1) {
+      throw new Error(
+        `drag-build target slot "${slot}" has no matching tile in [${letters
+          .map((l) => l.text)
+          .join(', ')}]`
+      )
+    }
+    unfilled.splice(at, 1)
+  }
+
   const tilesHtml = letters
     .map(
       (l, i) =>

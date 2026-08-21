@@ -42,6 +42,17 @@ import {
   creatureCorky,
   creatureMuncher,
 } from './art/creatures.js'
+import {
+  toyLeo,
+  toyFifi,
+  toyBobo,
+  toyCaptainBig,
+  toyWobbly,
+  toyTangly,
+  toyBoxxy,
+  toyTumbles,
+  toyWindDown,
+} from './art/toys.js'
 
 // Shared by every style family defined *in this file*; ./art/robots.js
 // keeps its own copy so it stays importable without this module.
@@ -600,6 +611,10 @@ const HERO_PALETTES = {
   'ollie': { style: 'plat-spring', bodyColor: '#3a8fd6', accent: '#1c4a72', emblem: 'O' },
   'umo': { style: 'plat-block', bodyColor: '#2f9d8f', accent: '#155048', emblem: 'U' },
   'captain-gum': { style: 'plat-powerup', bodyColor: '#e05a9e', accent: '#f4c95d', panelColor: '#fff3c4' },
+  'leo': { style: 'toy-soldier', bodyColor: '#3f7d55', accent: '#f4c95d', emblem: 'L' },
+  'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#8a5426', emblem: 'F' },
+  'bobo': { style: 'toy-block', bodyColor: '#7fd6a3', accent: '#2f7a52', emblem: 'B' },
+  'captain-big': { style: 'toy-boss', bodyColor: '#3a5fa8', accent: '#f4c95d', panelColor: '#f5f2ea' },
 }
 
 const VILLAIN_PALETTES = {
@@ -628,6 +643,11 @@ const VILLAIN_PALETTES = {
   'snatchy': { style: 'plat-magnetjack', bodyColor: '#d1662f', accent: '#6b2f14' },
   'blocko': { style: 'plat-brick', bodyColor: '#8a6a3a', accent: '#4a3618' },
   'bug-king': { style: 'plat-glitch', bodyColor: '#8a1f2f', accent: '#3a0f16' },
+  'wobbly': { style: 'toy-wobbly', bodyColor: '#c9622f', accent: '#6b3013' },
+  'tangly': { style: 'toy-tangly', bodyColor: '#8f5fc9', accent: '#4a2f80' },
+  'boxxy': { style: 'toy-boxxy', bodyColor: '#c9a35a', accent: '#6b4423' },
+  'tumbles': { style: 'toy-tumbles', bodyColor: '#4f8fc9', accent: '#245080' },
+  'wind-down': { style: 'toy-wind-down', bodyColor: '#332c45', accent: '#6f5bd0' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -657,6 +677,10 @@ const HERO_STYLES = {
   'creature-magno': creatureMagno,
   'creature-drillo': creatureDrillo,
   'creature-boss': creatureCaptainRed,
+  'toy-soldier': toyLeo,
+  'toy-plush': toyFifi,
+  'toy-block': toyBobo,
+  'toy-boss': toyCaptainBig,
 }
 
 const VILLAIN_STYLES = {
@@ -683,6 +707,11 @@ const VILLAIN_STYLES = {
   'creature-grabby': creatureGrabby,
   'creature-corky': creatureCorky,
   'creature-glitch': creatureMuncher,
+  'toy-wobbly': toyWobbly,
+  'toy-tangly': toyTangly,
+  'toy-boxxy': toyBoxxy,
+  'toy-tumbles': toyTumbles,
+  'toy-wind-down': toyWindDown,
 }
 
 // Styles that name a family rather than a final look. Chapter data written
@@ -697,6 +726,7 @@ const FAMILY_STYLES = new Set([
   'plat',
   'platformer',
   'creature',
+  'toy',
 ])
 
 // Explicit spec colors win over the name palette, which wins over the art

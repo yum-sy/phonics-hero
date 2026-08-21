@@ -31,6 +31,12 @@
   const stored = () => JSON.parse(localStorage.getItem(KEY) || 'null')
 
   let errors = 0
+  const errorLog = []
+  const origConsoleError = console.error.bind(console)
+  console.error = (...args) => {
+    errorLog.push(args.map((a) => (a && a.stack ? a.stack : String(a))).join(' '))
+    origConsoleError(...args)
+  }
   window.addEventListener('error', () => { errors += 1 })
   window.addEventListener('unhandledrejection', () => { errors += 1 })
 
@@ -86,6 +92,9 @@
   // can grab the stale disabled instance mid-transition. Poll for enabled
   // too, and click through the *live* element each time in case the node
   // was replaced between the check and the click.
+  const slotsOf = (target) =>
+    typeof target === 'string' ? target.split('') : target
+
   async function clickWhenEnabled(sel, tries = 200) {
     for (let i = 0; i < tries; i++) {
       const el = document.querySelector(sel)
@@ -421,7 +430,11 @@
   // first available control -- a multiselect's wrong option never disables
   // itself, so a kind-blind walker can get stuck reclicking it forever.
   async function playThroughStage(stage) {
-    for (let bi = 0; bi < stage.beats.length; bi++) {
+    return walkBeats(stage, 0, stage.beats.length)
+  }
+
+  async function walkBeats(stage, from, to) {
+    for (let bi = from; bi < to; bi++) {
       const beat = stage.beats[bi]
       try {
       if (beat.kind === 'teach' || beat.kind === 'break') {
@@ -458,9 +471,13 @@
         }
       } else if (beat.kind === 'drag-build') {
         await until('.build-slots')
-        for (const ch of beat.target.split('')) {
+        // Same normalisation the renderer does: a target is a list of
+        // SLOTS, either a plain word or an explicit array whose entries can
+        // be digraphs ('AI'). Splitting characters here would look for an
+        // 'A' tile in a round whose only tile is 'AI'.
+        for (const slot of slotsOf(beat.target)) {
           const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
-            (t) => t.dataset.letter === ch
+            (t) => t.dataset.letter === slot
           )
           tile.click()
           await wait(150)
@@ -876,26 +893,258 @@
   // icon), fixed-size via CSS -- worth checking a digraph tile there too,
   // since a future "rain" = r + ai + n blend round is a plausible next
   // step for chapter 7 content.
-  // Purely a visual/crash check for a 2-letter tile.text -- NOT a claim
-  // that drag-build's target-matching would actually work for one (see
-  // the finding in the report: beat.target is a plain string sliced via
-  // .split(''), which only ever produces single-character slots, so an
-  // "ai" tile could never satisfy a target[nextIndex] comparison as-is).
-  async function digraphShotBuild() {
-    const stage = chapters[0].stages[4] // stage-5, has a drag-build beat
+  // --- chapter-7 boss stage: the first stage whose drag-build targets are
+  // slot ARRAYS (['R','AI','N']) rather than plain words. Plays it to the
+  // end and measures whether a 2-character slot/tile actually fits its
+  // fixed-size box, since those boxes were sized for one character.
+  async function digraphBuildStage() {
+    const stage = chapters[6].stages[4] // c7-stage-5
+    const buildIdx = stage.beats.findIndex((b) => b.kind === 'drag-build')
+    errors = 0
+    state.clearCheckpoint()
+    const measurements = []
+    let threw = null
+    // scrollWidth > clientWidth means the glyphs are wider than the box --
+    // these boxes have no overflow:hidden, so the text spills past the
+    // border rather than being clipped.
+    // scrollWidth alone under-reports here: these boxes centre their text
+    // with flexbox, and centred content that is too wide spills equally out
+    // of BOTH sides without ever growing scrollWidth. Measure the glyphs
+    // themselves with a Range over the text node and compare against the
+    // element's own box.
+    const measure = (el, kind) => {
+      const box = el.getBoundingClientRect()
+      let textW = 0
+      if (el.firstChild) {
+        const r = document.createRange()
+        r.selectNodeContents(el)
+        textW = r.getBoundingClientRect().width
+      }
+      return {
+        kind,
+        text: el.textContent,
+        textW: Math.round(textW),
+        boxW: Math.round(box.width),
+        scrollW: el.scrollWidth,
+        clientW: el.clientWidth,
+        // Compare against the content box: the border is 5px a side and the
+        // glyphs sitting on top of it is already visually wrong.
+        overflows: textW > el.clientWidth + 0.5,
+      }
+    }
+    try {
+      await enterStage('chapter-7', 4)
+      await walkBeats(stage, 0, buildIdx) // advance to the first build beat
+      await until('.build-slots')
+      for (const t of [...document.querySelectorAll('.letter-tile')]) {
+        measurements.push(measure(t, 'letter-tile'))
+      }
+      const beat = stage.beats[buildIdx]
+      for (const slot of slotsOf(beat.target)) {
+        const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
+          (t) => t.dataset.letter === slot
+        )
+        tile.click()
+        await wait(220)
+      }
+      for (const sl of [...document.querySelectorAll('.build-slot')]) {
+        measurements.push(measure(sl, 'build-slot'))
+      }
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    const overflow = measurements.filter((m) => m.overflows)
+    const twoChar = measurements.filter((m) => m.text.length === 2)
+    check(
+      'ch7-digraph-build-boxes-fit',
+      !threw && errors === 0 && overflow.length === 0,
+      `threw=${threw} errors=${errors} twoCharBoxes=${JSON.stringify(twoChar)} overflowing=${JSON.stringify(overflow)}`
+    )
+    document.documentElement.setAttribute('data-digraph-css', JSON.stringify(measurements))
+    state.clearCheckpoint()
+  }
+
+  // Plays c7-stage-5 end to end through the generic walker (all 3 array-target
+  // build beats included) -- the primary "is the boss stage completable" check.
+  async function digraphBossStageFull() {
+    const stage = chapters[6].stages[4]
+    errors = 0
+    state.clearCheckpoint()
+    let threw = null
+    try {
+      await enterStage('chapter-7', 4)
+      await playThroughStage(stage)
+      await until('.reward-screen', 60)
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    const reached = !!document.querySelector('.reward-screen')
+    check(
+      'ch7-boss-stage-completable',
+      !threw && reached && errors === 0,
+      `threw=${threw} reachedReward=${reached} errors=${errors}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // Screenshot-only: stops ON the chapter-7 build beat with the digraph slot
+  // filled and one slot still empty, so both states are visible at once.
+  async function ch7BuildShot() {
+    const stage = chapters[6].stages[4]
+    const buildIdx = stage.beats.findIndex((b) => b.kind === 'drag-build')
+    state.clearCheckpoint()
+    await enterStage('chapter-7', 4)
+    await walkBeats(stage, 0, buildIdx)
+    await until('.build-slots')
+    const beat = stage.beats[buildIdx]
+    const slots = slotsOf(beat.target)
+    // Fill all but the last slot -> a digraph sitting in a slot, plus an
+    // empty slot for comparison, without completing the round.
+    for (const slot of slots.slice(0, -1)) {
+      const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
+        (t) => t.dataset.letter === slot
+      )
+      tile.click()
+      await wait(220)
+    }
+    check('ch7buildshot-rendered', !!document.querySelector('.build-slots'))
+  }
+
+  // --- every drag-build beat in the curriculum, both target forms, each
+  // solved from a fresh render: proves the legacy string form still works
+  // and the new slot-array form works, in one comparable table.
+  async function allBuildBeats() {
+    const rows = []
+    for (const chapter of chapters) {
+      for (let si = 0; si < chapter.stages.length; si++) {
+        const stage = chapter.stages[si]
+        const buildIdxs = stage.beats
+          .map((b, i) => (b.kind === 'drag-build' ? i : -1))
+          .filter((i) => i >= 0)
+        if (!buildIdxs.length) continue
+        for (const bi of buildIdxs) {
+          const beat = stage.beats[bi]
+          errors = 0
+          state.clearCheckpoint()
+          let threw = null
+          let slotCount = null
+          let completed = false
+          try {
+            await enterStage(chapter.id, si)
+            await walkBeats(stage, 0, bi)
+            await until('.build-slots')
+            slotCount = document.querySelectorAll('.build-slot').length
+            const slots = slotsOf(beat.target)
+            for (const slot of slots) {
+              const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
+                (t) => t.dataset.letter === slot
+              )
+              tile.click()
+              await wait(200)
+            }
+            // Completed rounds either jump to read-aloud or advance a beat;
+            // either way the build slots are gone.
+            completed =
+              !!document.querySelector('.readaloud-beat') ||
+              !document.querySelector('.build-slots') ||
+              [...document.querySelectorAll('.build-slot')].every((s) => s.textContent)
+          } catch (e) {
+            threw = e.message || String(e)
+          }
+          rows.push({
+            stage: stage.id,
+            beat: beat.id,
+            form: Array.isArray(beat.target) ? 'array' : 'string',
+            target: JSON.stringify(beat.target),
+            expectedSlots: slotsOf(beat.target).length,
+            slotCount,
+            completed,
+            threw,
+            errors,
+            ok: !threw && errors === 0 && completed && slotCount === slotsOf(beat.target).length,
+          })
+          state.clearCheckpoint()
+        }
+      }
+    }
+    const bad = rows.filter((r) => !r.ok)
+    const strings = rows.filter((r) => r.form === 'string')
+    const arrays = rows.filter((r) => r.form === 'array')
+    check(
+      'all-drag-build-beats-solvable',
+      bad.length === 0,
+      bad.length === 0
+        ? `${rows.length} build beats OK (${strings.length} legacy string-target, ${arrays.length} slot-array): ` +
+          rows.map((r) => `${r.beat}=${r.target}/${r.slotCount}slots`).join(' ')
+        : `FAILED ${bad.length}/${rows.length}: ` +
+          bad.map((r) => `${r.beat}[${r.form} ${r.target} slots=${r.slotCount}/${r.expectedSlots} completed=${r.completed} threw=${r.threw}]`).join(' | ')
+    )
+    document.documentElement.setAttribute('data-build-ledger', JSON.stringify(rows))
+  }
+
+  // The mismatch the phonics validator now catches: tiles [R,A,I,N] cannot
+  // fill slots [R,AI,N] even though both "spell rain". In production the
+  // validator is compiled out, so the renderer must fail loudly into the
+  // recovery panel instead of leaving the child tapping forever.
+  async function buildMismatchGuard() {
+    const stage = chapters[0].stages[4]
     const saved = stage.beats
-    stage.beats = [
-      {
-        kind: 'drag-build',
-        instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요!',
-        target: 'sat',
-        letters: ['s', { text: 'ai', say: 'ai' }, 't'],
-      },
-    ]
-    await enterStage('chapter-1', 4)
-    await until('.tile-row')
-    check('digraphshot-build-rendered', !!document.querySelector('.tile-row'))
-    stage.beats = saved
+    errors = 0
+    let panel = false
+    let stuckRound = false
+    try {
+      stage.beats = [
+        {
+          kind: 'drag-build',
+          instructionKo: 'mismatch fixture',
+          target: ['R', 'AI', 'N'],
+          letters: ['R', 'A', 'I', 'N'],
+        },
+      ]
+      state.clearCheckpoint()
+      await enterStage('chapter-1', 4)
+      panel = await until('#retry-beat', 40)
+      stuckRound = !!document.querySelector('.build-slots')
+    } finally {
+      stage.beats = saved
+      state.clearCheckpoint()
+    }
+    check(
+      'build-slot-tile-mismatch-fails-loudly',
+      panel && !stuckRound,
+      `recoveryPanel=${panel} leftChildOnUnwinnableRound=${stuckRound}`
+    )
+  }
+
+  // Which characters can't be drawn? Calls the art layer directly for every
+  // hero/villain in the curriculum so the blast radius is exact.
+  async function artCrashScan() {
+    const art = await import(sameAsApp('art.js'))
+    const broken = []
+    for (const chapter of chapters) {
+      for (const stage of chapter.stages) {
+        for (const [role, spec] of [['hero', stage.hero], ['villain', stage.villain]]) {
+          try {
+            const fn = role === 'hero' ? art.heroArt : art.villainArt
+            fn(spec)
+          } catch (e) {
+            broken.push({
+              stage: stage.id,
+              role,
+              name: spec.name,
+              art: spec.art,
+              style: spec.style,
+              err: e.message,
+            })
+          }
+        }
+      }
+    }
+    check(
+      'every-character-drawable',
+      broken.length === 0,
+      broken.length === 0 ? 'all heroes/villains render' : JSON.stringify(broken)
+    )
   }
 
   const CASES = {
@@ -922,7 +1171,12 @@
     digraph: digraphRender,
     digraphshotchoose: digraphShotChoose,
     digraphshotteach: digraphShotTeach,
-    digraphshotbuild: digraphShotBuild,
+    ch7build: digraphBuildStage,
+    ch7boss: digraphBossStageFull,
+    ch7buildshot: ch7BuildShot,
+    allbuilds: allBuildBeats,
+    buildmismatch: buildMismatchGuard,
+    artscan: artCrashScan,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

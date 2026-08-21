@@ -19,8 +19,9 @@ import { chapter3 } from './chapter-03.js'
 import { chapter4 } from './chapter-04.js'
 import { chapter5 } from './chapter-05.js'
 import { chapter6 } from './chapter-06.js'
+import { chapter7 } from './chapter-07.js'
 
-export const chapters = [chapter1, chapter2, chapter3, chapter4, chapter5, chapter6]
+export const chapters = [chapter1, chapter2, chapter3, chapter4, chapter5, chapter6, chapter7]
 
 export const stages = chapters.flatMap((c) => c.stages)
 
@@ -274,18 +275,30 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
 
         if (beat.kind === 'drag-build') {
           const tiles = (beat.letters || []).map((l) => (typeof l === 'string' ? l : l && l.text))
+          // target 은 문자열(챕터1-6, 한 슬롯 = 한 글자) 이거나 슬롯 배열
+          // (챕터7+, 'ai'/'oa' 같은 다이그래프가 한 슬롯을 차지) 이다 --
+          // 슬롯 배열을 문자열로 강제하면 Array.toString() 이 쉼표로 이어붙여
+          // 완전히 다른 문자열이 나오므로 여기서 분기해야 한다.
+          const slots = Array.isArray(beat.target) ? beat.target : String(beat.target).split('')
           if (tiles.some((t) => typeof t !== 'string' || !t)) {
             problems.push(`${at}: letters 항목이 문자열도 { text } 객체도 아님`)
-          } else if (tiles.slice().sort().join('') !== String(beat.target).split('').sort().join('')) {
-            problems.push(
-              `${at}: letters [${tiles.join('')}] 와 target '${beat.target}' 의 글자 집합 불일치`
-            )
+          } else {
+            // '|' 로 이어붙여 멀티셋 비교한다 -- 구분자 없이 이어붙이면
+            // ['a','i','n','r'] 와 ['ai','n','r'] 가 둘 다 정렬 후 "ainr" 로
+            // 같아져서 타일 4개 vs 슬롯 3개(구조가 다른 라운드)를 놓친다.
+            const tileKey = tiles.slice().sort().join('|')
+            const slotKey = slots.slice().sort().join('|')
+            if (tileKey !== slotKey) {
+              problems.push(
+                `${at}: letters [${tiles.join('+')}] 와 target 슬롯 [${slots.join('+')}] 불일치`
+              )
+            }
           }
           tiles.forEach((t, i) => displayed.push([`${at} letters[${i}]`, t]))
           for (const [i, l] of (beat.letters || []).entries()) {
             if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say])
           }
-          displayed.push([`${at} target`, beat.target])
+          slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
         }
 
         if (beat.readAloud) {
