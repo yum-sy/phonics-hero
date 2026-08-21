@@ -38,8 +38,8 @@ export const chapter4 = {
       id: 'c4-stage-1',
       order: 1,
       title: 'The Running Sound',
-      villain: { name: 'Flippy', art: 'flippy', style: 'platformer' },
-      hero: { name: 'Rocket', art: 'rocket', style: 'platformer' },
+      villain: { name: 'Flippy', art: 'flippy', style: 'creature' },
+      hero: { name: 'Rocket', art: 'rocket', style: 'creature' },
       chapterBoss: false,
       beats: [
         {
@@ -136,8 +136,8 @@ export const chapter4 = {
       id: 'c4-stage-2',
       order: 2,
       title: 'Power of R',
-      villain: { name: 'Slippy', art: 'slippy', style: 'platformer' },
-      hero: { name: 'Rocket', art: 'rocket', style: 'platformer' },
+      villain: { name: 'Slippy', art: 'slippy', style: 'creature' },
+      hero: { name: 'Rocket', art: 'rocket', style: 'creature' },
       chapterBoss: false,
       beats: [
         {
@@ -264,8 +264,8 @@ export const chapter4 = {
       id: 'c4-stage-3',
       order: 3,
       title: 'Power of M',
-      villain: { name: 'Grabby', art: 'grabby', style: 'platformer' },
-      hero: { name: 'Magno', art: 'magno', style: 'platformer' },
+      villain: { name: 'Grabby', art: 'grabby', style: 'creature' },
+      hero: { name: 'Magno', art: 'magno', style: 'creature' },
       chapterBoss: false,
       reviewTargets: ['R'],
       beats: [
@@ -394,8 +394,8 @@ export const chapter4 = {
       id: 'c4-stage-4',
       order: 4,
       title: 'Power of D',
-      villain: { name: 'Corky', art: 'corky', style: 'platformer' },
-      hero: { name: 'Drillo', art: 'drillo', style: 'platformer' },
+      villain: { name: 'Corky', art: 'corky', style: 'creature' },
+      hero: { name: 'Drillo', art: 'drillo', style: 'creature' },
       chapterBoss: false,
       reviewTargets: ['R', 'M'],
       beats: [
@@ -577,8 +577,8 @@ export const chapter4 = {
       id: 'c4-stage-5',
       order: 5,
       title: 'Boss: MAT and RED!',
-      villain: { name: 'Pixel Muncher', art: 'pixel-muncher', style: 'platformer' },
-      hero: { name: 'Captain Red', art: 'captain-red', style: 'platformer' },
+      villain: { name: 'Pixel Muncher', art: 'pixel-muncher', style: 'creature' },
+      hero: { name: 'Captain Red', art: 'captain-red', style: 'creature' },
       chapterBoss: true,
       reviewTargets: ['R', 'M', 'D'],
       beats: [

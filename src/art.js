@@ -31,6 +31,17 @@ import {
   platBrick,
   platGlitch,
 } from './art/platformer.js'
+import {
+  creatureRocket,
+  creatureMagno,
+  creatureDrillo,
+  creatureCaptainRed,
+  creatureFlippy,
+  creatureSlippy,
+  creatureGrabby,
+  creatureCorky,
+  creatureMuncher,
+} from './art/creatures.js'
 
 // Shared by every style family defined *in this file*; ./art/robots.js
 // keeps its own copy so it stays importable without this module.
@@ -581,10 +592,10 @@ const HERO_PALETTES = {
   'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
   'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
   'trike': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
-  'rocket': { style: 'plat-jumper', bodyColor: '#3a63c7', accent: '#1f3c88', emblem: 'R' },
-  'magno': { style: 'plat-spring', bodyColor: '#2f8f4a', accent: '#155225', emblem: 'M' },
-  'drillo': { style: 'plat-block', bodyColor: '#b5762a', accent: '#6b4014', emblem: 'D' },
-  'captain-red': { style: 'plat-powerup', bodyColor: '#d1332f', accent: '#f4c95d', panelColor: '#fff3c4' },
+  'rocket': { style: 'creature-rocket', bodyColor: '#3a63c7', accent: '#1f3c88', emblem: 'R' },
+  'magno': { style: 'creature-magno', bodyColor: '#2f8f4a', accent: '#155225', emblem: 'M' },
+  'drillo': { style: 'creature-drillo', bodyColor: '#b5762a', accent: '#6b4014', emblem: 'D' },
+  'captain-red': { style: 'creature-boss', bodyColor: '#d1332f', accent: '#f4c95d', panelColor: '#fff3c4' },
 }
 
 const VILLAIN_PALETTES = {
@@ -603,11 +614,11 @@ const VILLAIN_PALETTES = {
   'upsy': { style: 'dino-upside', bodyColor: '#c96a9b', accent: '#6b2f4c' },
   'muddy': { style: 'dino-swamp', bodyColor: '#7d9b3a', accent: '#3c4d18' },
   'shadow-rex': { style: 'dino-shadow-rex', bodyColor: '#4a4a52', accent: '#22222a' },
-  'flippy': { style: 'plat-flip', bodyColor: '#7a5fd1', accent: '#3d2f80' },
-  'slippy': { style: 'plat-slime', bodyColor: '#4aa87a', accent: '#1e5c3f' },
-  'grabby': { style: 'plat-magnetjack', bodyColor: '#c9542f', accent: '#6b2814' },
-  'corky': { style: 'plat-brick', bodyColor: '#a67c52', accent: '#5a4126' },
-  'pixel-muncher': { style: 'plat-glitch', bodyColor: '#3a3a42', accent: '#e0455a' },
+  'flippy': { style: 'creature-flippy', bodyColor: '#7a5fd1', accent: '#3d2f80' },
+  'slippy': { style: 'creature-slippy', bodyColor: '#4aa87a', accent: '#1e5c3f' },
+  'grabby': { style: 'creature-grabby', bodyColor: '#c9542f', accent: '#6b2814' },
+  'corky': { style: 'creature-corky', bodyColor: '#a67c52', accent: '#5a4126' },
+  'pixel-muncher': { style: 'creature-glitch', bodyColor: '#3a3a42', accent: '#e0455a' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -633,6 +644,10 @@ const HERO_STYLES = {
   'plat-spring': platSpring,
   'plat-block': platBlock,
   'plat-powerup': platPowerup,
+  'creature-rocket': creatureRocket,
+  'creature-magno': creatureMagno,
+  'creature-drillo': creatureDrillo,
+  'creature-boss': creatureCaptainRed,
 }
 
 const VILLAIN_STYLES = {
@@ -654,6 +669,11 @@ const VILLAIN_STYLES = {
   'plat-magnetjack': platMagnetjack,
   'plat-brick': platBrick,
   'plat-glitch': platGlitch,
+  'creature-flippy': creatureFlippy,
+  'creature-slippy': creatureSlippy,
+  'creature-grabby': creatureGrabby,
+  'creature-corky': creatureCorky,
+  'creature-glitch': creatureMuncher,
 }
 
 // Styles that name a family rather than a final look. Chapter data written
@@ -667,6 +687,7 @@ const FAMILY_STYLES = new Set([
   'dinosaur',
   'plat',
   'platformer',
+  'creature',
 ])
 
 // Explicit spec colors win over the name palette, which wins over the art
