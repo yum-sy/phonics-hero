@@ -58,6 +58,16 @@ function speakNow(text, lang, rate) {
       resolve()
       return
     }
+    // Never let a bad argument reject: this promise is a link in the shared
+    // queue chain, and one rejected link would leave every later utterance
+    // and every whenAudioIdle()-gated transition waiting on a promise that
+    // can never settle -- silent app, dead buttons, reload required. A
+    // missing/empty string is a content bug worth surviving, not crashing on.
+    const raw = text == null ? '' : String(text)
+    if (!raw.trim()) {
+      resolve()
+      return
+    }
     let done = false
     const finish = () => {
       if (done) return
@@ -71,7 +81,7 @@ function speakNow(text, lang, rate) {
     // wrong for phonics teaching, where case is a visual-only distinction
     // and never a pronunciation cue. Lowercasing everything sent to the
     // English voice sidesteps both misreadings; it's a no-op for Korean.
-    const spoken = lang.startsWith('en') ? text.toLowerCase() : text
+    const spoken = lang.startsWith('en') ? raw.toLowerCase() : raw
     const utter = new SpeechSynthesisUtterance(spoken)
     utter.lang = lang
     utter.rate = rate
@@ -85,9 +95,14 @@ function speakNow(text, lang, rate) {
     // fix. A generous length-based estimate means this essentially never
     // fires under normal conditions -- real completion via onend is
     // still what resolves things almost every time.
-    const estimatedMs = Math.min(12000, Math.max(2500, 1500 + text.length * 120))
+    const estimatedMs = Math.min(12000, Math.max(2500, 1500 + raw.length * 120))
     const safetyTimer = setTimeout(finish, estimatedMs)
-    window.speechSynthesis.speak(utter)
+    try {
+      window.speechSynthesis.speak(utter)
+    } catch (e) {
+      // speak() itself throwing would otherwise reject this link of the queue
+      finish()
+    }
   })
 }
 
@@ -96,12 +111,22 @@ function speakNow(text, lang, rate) {
 // own extra pacing on top if they want), while the queue itself also
 // reserves MIN_GAP_MS of silence afterward before the *next* queued
 // utterance is allowed to start.
-function enqueueSpeak(text, lang, rate) {
+// `onStart` fires when this item actually reaches the front of the queue and
+// begins speaking (never, if it gets dropped by clearAudioQueue first).
+function enqueueSpeak(text, lang, rate, onStart) {
   const myGeneration = generation
-  const spoken = queueTail.then(() => {
-    if (myGeneration !== generation) return undefined // dropped by clearAudioQueue()
-    return speakNow(text, lang, rate)
-  })
+  // The rejection handler on `queueTail` is load-bearing, not decoration:
+  // every future utterance and every whenAudioIdle()-gated transition chains
+  // onto this same promise, so a single rejected link anywhere would kill all
+  // audio and freeze all beat transitions app-wide until reload.
+  const spoken = queueTail.then(
+    () => {
+      if (myGeneration !== generation) return undefined // dropped by clearAudioQueue()
+      if (onStart) onStart()
+      return speakNow(text, lang, rate)
+    },
+    () => undefined
+  )
   queueTail = spoken.then(() => sleep(MIN_GAP_MS))
   return spoken
 }
@@ -126,10 +151,38 @@ export function whenAudioIdle() {
 export function clearAudioQueue() {
   generation += 1
   queueTail = Promise.resolve()
+  // A dropped item never reaches its onStart, so release the coalescing slot
+  // by hand or all later tap feedback would be swallowed for good.
+  pendingTap = null
 }
 
 export function speakEN(text, rate = 0.85) {
   return enqueueSpeak(text, 'en-US', rate)
+}
+
+// ---- tap feedback ----
+//
+// A 5-year-old taps the same tile, option or 🔊 button over and over. The
+// queue deliberately never interrupts, so N taps meant N utterances plus N
+// MIN_GAP_MS gaps: a multi-second backlog that every whenAudioIdle()-gated
+// transition then had to sit through, so the screen looked frozen for
+// seconds right when the child finally tapped the correct answer.
+//
+// Tap feedback is therefore coalesced into a single queue slot: while one
+// tap sound is still waiting its turn, further taps reuse it instead of
+// queueing more. The backlog from tapping is bounded at one utterance
+// speaking plus one waiting, no matter how fast the child taps. Deliberate
+// content playback (a beat's own auto-played prompt, teach sequences) keeps
+// using speakEN/speakSequence and is never droppable.
+let pendingTap = null
+
+export function speakTap(text, rate = 0.85) {
+  if (pendingTap) return pendingTap
+  const p = enqueueSpeak(text, 'en-US', rate, () => {
+    if (pendingTap === p) pendingTap = null
+  })
+  pendingTap = p
+  return p
 }
 
 export function speakKO(text, rate = 1) {
@@ -156,6 +209,20 @@ export function speechRecognitionAvailable() {
   return !!SpeechRecognitionImpl
 }
 
+// NOT CURRENTLY CALLED -- kept for when a design actually consumes the
+// result. Three reasons it was unwired from the read-aloud beats:
+//   1. nothing read the { attempted, matched } it resolves with, so it bought
+//      no pedagogy at all;
+//   2. the iPadOS permission prompt fires on the first start(), which landed
+//      exactly on the child's reward moment ("명중! 💥");
+//   3. an active recognition session can suppress speechSynthesis on iOS for
+//      the length of its window, eating the *next* beat's auto-played audio --
+//      breaking this app's core guarantee that every sound is heard as its own
+//      distinct event.
+// Zero benefit against a broken guarantee is a pure loss, so the calls went
+// away and the capability stayed. Wire it back up only together with
+// something that uses the result.
+//
 // Best-effort listen. Resolves { attempted, matched } - never rejects,
 // and always resolves within ~4s so it can never block the UI.
 export function tryRecognize(targetText, timeoutMs = 4000) {

@@ -1,17 +1,54 @@
 const STORAGE_KEY = 'carbot-phonics-progress-v1'
 
-// TEMPORARY dev flag: content is still being reviewed stage-by-stage, so
-// unlock gating is disabled to let the parent jump straight to any stage.
-// Flip this back to false before shipping.
-const DEV_UNLOCK_ALL = true
+// Content is still being reviewed stage-by-stage, so unlock gating is off
+// during development to let the parent jump straight to any stage. Vite
+// statically replaces import.meta.env.DEV, so a production build folds this
+// to `false` and drops the unlock branches entirely -- the dev convenience
+// cannot survive into a shipped bundle even if someone forgets a checklist
+// step. The typeof guard keeps the module importable outside Vite.
+const DEV_UNLOCK_ALL =
+  typeof import.meta.env !== 'undefined' && import.meta.env.DEV === true
 
+function emptyProgress() {
+  return { clearedStages: [], stars: {}, checkpoint: null }
+}
+
+// A checkpoint written by an older build (or truncated mid-write) must never
+// reach renderStage as a half-shape: a bad beatIndex would resume the child
+// into a beat that does not exist.
+function sanitizeCheckpoint(cp) {
+  if (!cp || typeof cp !== 'object') return null
+  if (typeof cp.stageId !== 'string' || !cp.stageId) return null
+  if (!Number.isInteger(cp.beatIndex) || cp.beatIndex < 0) return null
+  if (!Number.isInteger(cp.hitsDealt) || cp.hitsDealt < 0) return null
+  return {
+    stageId: cp.stageId,
+    beatIndex: cp.beatIndex,
+    hitsDealt: cp.hitsDealt,
+  }
+}
+
+// Anything persisted by an older/never-shipped build (or hand-edited, or
+// truncated by a crash mid-write) still has to produce a *usable* shape:
+// every screen touches progress.clearedStages and progress.stars on render,
+// so one wrong type here would throw on the very first paint and leave the
+// child staring at a blank app that only clearing Safari data can fix.
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { clearedStages: [], stars: {} }
-    return JSON.parse(raw)
+    if (!raw) return emptyProgress()
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return emptyProgress()
+    return {
+      clearedStages: Array.isArray(parsed.clearedStages)
+        ? parsed.clearedStages.filter((id) => typeof id === 'string')
+        : [],
+      stars:
+        parsed.stars && typeof parsed.stars === 'object' ? parsed.stars : {},
+      checkpoint: sanitizeCheckpoint(parsed.checkpoint),
+    }
   } catch (e) {
-    return { clearedStages: [], stars: {} }
+    return emptyProgress()
   }
 }
 
@@ -35,6 +72,36 @@ export function markStageCleared(stageId, stars = 3) {
   }
   const prevStars = progress.stars[stageId] || 0
   progress.stars[stageId] = Math.max(prevStars, stars)
+  progress.checkpoint = null
+  save()
+}
+
+// ---- mid-stage checkpoint ----
+//
+// A stage runs ~15 minutes; losing all of it to an iPad going to sleep or a
+// Safari tab reload is a real accident for a 5-year-old. This checkpoint is
+// deliberately fragile so it only ever rescues an accident: every *intentional*
+// leave (the 나가기 button, the recovery panel's exit, clearing the stage)
+// erases it, so starting a stage over from the beginning always works and the
+// child is never asked to choose between resume and restart.
+
+export function saveCheckpoint(stageId, beatIndex, hitsDealt) {
+  const cp = progress.checkpoint
+  if (cp && cp.stageId === stageId && cp.beatIndex === beatIndex && cp.hitsDealt === hitsDealt) {
+    return
+  }
+  progress.checkpoint = { stageId, beatIndex, hitsDealt }
+  save()
+}
+
+export function getCheckpoint(stageId) {
+  const cp = progress.checkpoint
+  return cp && cp.stageId === stageId ? cp : null
+}
+
+export function clearCheckpoint() {
+  if (!progress.checkpoint) return
+  progress.checkpoint = null
   save()
 }
 

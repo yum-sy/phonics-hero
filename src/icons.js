@@ -89,7 +89,6 @@ const ICONS = {
 
   cup: () =>
     wrap(`
-      <path d="M14 40 Q14 22 32 22 Q40 22 40 30" fill="none" stroke="#8a5a33" stroke-width="4" stroke-linecap="round" opacity="0"/>
       <rect x="12" y="22" width="30" height="24" rx="4" fill="#d1332f"/>
       <path d="M42 26 Q54 26 54 34 Q54 42 42 42 Z" fill="none" stroke="#d1332f" stroke-width="5"/>
       <g stroke="#b8b8b8" stroke-width="3" stroke-linecap="round">
@@ -344,6 +343,229 @@ const ICONS = {
       <path d="M25 53 Q32 57 39 53" fill="none" stroke="#b5573c" stroke-width="3" stroke-linecap="round"/>
     `)
   },
+
+  // -- Group 2: C/K, E, H (chapter 3) --
+
+  // Head-only like `dog`, so the split has to come from silhouette and hue:
+  // ears are fused spikes on one continuous outline (dog has two detached
+  // triangles over a circle), the coat is cool gray instead of dog's tan, and
+  // the slit pupils plus whiskers that run past the cheeks are cat-only cues.
+  cat: () =>
+    wrap(`
+      <path d="M8 6 L25 21 H39 L56 6 L53 31 C56 45 46 56 32 56 C18 56 8 45 11 31 Z"
+        fill="#8e8e96" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      <polygon points="13,13 24,23 12,26" fill="#f0a0b4"/>
+      <polygon points="51,13 40,23 52,26" fill="#f0a0b4"/>
+      <g stroke="#2c2c2a" stroke-width="2.4" stroke-linecap="round">
+        <line x1="26" y1="44" x2="3" y2="40"/>
+        <line x1="26" y1="47" x2="4" y2="51"/>
+        <line x1="38" y1="44" x2="61" y2="40"/>
+        <line x1="38" y1="47" x2="60" y2="51"/>
+      </g>
+      <ellipse cx="23" cy="34" rx="5.4" ry="6.4" fill="#ffd43b"/>
+      <ellipse cx="41" cy="34" rx="5.4" ry="6.4" fill="#ffd43b"/>
+      <ellipse cx="23" cy="34" rx="1.7" ry="5.2" fill="#2c2c2a"/>
+      <ellipse cx="41" cy="34" rx="1.7" ry="5.2" fill="#2c2c2a"/>
+      <polygon points="28,43 36,43 32,48" fill="#e24b4a"/>
+    `),
+
+  // Full-body bird, so it never competes with the head-only `dog`/`cat`: the
+  // red comb, gold beak and dark tail fan are the three shapes that survive
+  // 60px, and the dark outline keeps the pale body off a white button.
+  hen: () =>
+    wrap(`
+      <g stroke="#ef9f27" stroke-width="4.5" stroke-linecap="round">
+        <line x1="25" y1="50" x2="25" y2="57"/>
+        <line x1="37" y1="50" x2="37" y2="57"/>
+        <line x1="19" y1="59" x2="31" y2="59"/>
+        <line x1="31" y1="59" x2="43" y2="59"/>
+      </g>
+      <g fill="#2c2c2a">
+        <ellipse cx="9" cy="31" rx="5.6" ry="13" transform="rotate(-38 9 31)"/>
+        <ellipse cx="11" cy="23" rx="5.6" ry="13" transform="rotate(-18 11 23)"/>
+        <ellipse cx="17" cy="18" rx="5" ry="11" transform="rotate(-2 17 18)"/>
+      </g>
+      <path d="M13 36 Q13 16 32 16 Q51 16 51 34 Q51 52 32 52 Q13 52 13 36 Z"
+        fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6"/>
+      <path d="M34 15 Q36 3 42 11 Q46 1 50 12 Q55 5 56 17 Z" fill="#e24b4a"/>
+      <circle cx="44" cy="23" r="12" fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6"/>
+      <polygon points="54,21 62,26 54,30" fill="#ef9f27"/>
+      <ellipse cx="50" cy="34" rx="3.6" ry="5.4" fill="#e24b4a"/>
+      <path d="M20 34 Q31 30 38 40 Q28 47 20 42 Z" fill="#ef9f27"/>
+      <circle cx="45" cy="21" r="2.8" fill="#2c2c2a"/>
+    `),
+
+  // A plain white oval disappears on a light button and says nothing, so the
+  // egg is drawn mid-crack: lifted cap, zigzag break line and a yellow yolk
+  // dome are what make it read as "egg" rather than "ball" at 60px.
+  egg: () =>
+    wrap(`
+      <path d="M13 32 L18 26 L23 32 L28 26 L32 32 L37 26 L42 32 L47 26 L51 32
+          C51 47 43 58 32 58 C21 58 13 47 13 32 Z"
+        fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      <circle cx="31" cy="33" r="9" fill="#ffd43b" stroke="#ef9f27" stroke-width="2.4"/>
+      <g transform="rotate(-14 32 11)">
+        <path d="M13 20 L18 14 L23 20 L28 14 L32 20 L37 14 L42 20 L47 14 L51 20
+            C51 9 43 2 32 2 C21 2 13 9 13 20 Z"
+          fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      </g>
+    `),
+
+  // The brim is the whole point: it spans the full 64 units so the outline
+  // can never be mistaken for the tall red `cup`, and brown/gold keeps it out
+  // of every other icon's palette.
+  hat: () =>
+    wrap(`
+      <path d="M17 44 Q14 14 32 14 Q50 14 47 44 Z" fill="#712b13"/>
+      <rect x="16" y="30" width="32" height="10" fill="#ef9f27"/>
+      <path d="M2 44 Q32 32 62 44 Q32 58 2 44 Z" fill="#712b13"/>
+    `),
+
+  // One even-odd path: the bow's hole is a real hole, so a single outline
+  // wraps the whole key and no <mask> id can collide. Drawn flat-horizontal
+  // to stay clear of the diagonal `pen`, with teeth 7 units wide so they
+  // still separate at 60px.
+  key: () =>
+    wrap(`
+      <path fill-rule="evenodd" fill="#f4c95d" stroke="#ef9f27" stroke-width="2.6"
+        stroke-linejoin="round"
+        d="M31.8 25 L60 25 L60 49 L53 49 L53 37 L46 37 L46 49 L39 49 L39 37 L31.8 37
+           A15 15 0 1 1 31.8 25 Z
+           M25 31 A7 7 0 1 0 11 31 A7 7 0 1 0 25 31 Z"/>
+    `),
+
+  // Ears wider than the head plus a hanging trunk: the two shapes that hold
+  // up at 60px. Neutral gray, not the cool gray of `cat`, and nothing about
+  // the outline invites comparison with the head-only `pig`.
+  elephant: () =>
+    wrap(`
+      <ellipse cx="12" cy="29" rx="12" ry="14" fill="#78787f"/>
+      <ellipse cx="52" cy="29" rx="12" ry="14" fill="#78787f"/>
+      <path d="M20 12 H44 Q50 12 50 20 V34 Q50 44 40 44 H24 Q14 44 14 34 V20 Q14 12 20 12 Z"
+        fill="#a3a3ab"/>
+      <path d="M31 42 V50 Q31 59 40 58" fill="none" stroke="#a3a3ab" stroke-width="10"
+        stroke-linecap="round"/>
+      <polygon points="21,42 26,42 17,54" fill="#f5f2ea"/>
+      <polygon points="38,42 43,42 47,54" fill="#f5f2ea"/>
+      <circle cx="25" cy="27" r="3.2" fill="#2c2c2a"/>
+      <circle cx="39" cy="27" r="3.2" fill="#2c2c2a"/>
+    `),
+
+  // Fingers are separate fills with 3-unit background gaps instead of one
+  // stroked outline -- at 60px a stroked gap fills in and the fingers fuse
+  // into a mitten. The green cuff anchors the wrist on any button color.
+  hand: () =>
+    wrap(`
+      <rect x="12" y="30" width="6.4" height="18" rx="3.2" fill="#e0a273"
+        transform="rotate(-32 15.2 48)"/>
+      <rect x="17.5" y="14" width="6.2" height="24" rx="3.1" fill="#e0a273"/>
+      <rect x="26.7" y="10" width="6.2" height="28" rx="3.1" fill="#e0a273"/>
+      <rect x="35.9" y="14" width="6.2" height="24" rx="3.1" fill="#e0a273"/>
+      <rect x="45.1" y="21" width="6.2" height="17" rx="3.1" fill="#e0a273"/>
+      <rect x="15" y="32" width="36" height="20" rx="9" fill="#e0a273"/>
+      <rect x="20" y="50" width="26" height="9" rx="4" fill="#3b9922"/>
+    `),
+
+  // Crown-dominant so it can't trade places with `nose`, the app's other
+  // face icon: gold spikes over the whole top third, a red band, and a gray
+  // beard that `nose` has no equivalent of.
+  king: () =>
+    wrap(`
+      <circle cx="32" cy="37" r="16" fill="#f5d6b0"/>
+      <path d="M16 38 Q15 58 32 58 Q49 58 48 38 Q40 46 32 46 Q24 46 16 38 Z" fill="#b8b8b8"/>
+      <path d="M26 40 Q32 45 38 40" fill="none" stroke="#b5573c" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="25" cy="34" r="2.8" fill="#2c2c2a"/>
+      <circle cx="39" cy="34" r="2.8" fill="#2c2c2a"/>
+      <polygon points="13,29 13,7 22,17 32,4 42,17 51,7 51,29" fill="#ffd43b"/>
+      <rect x="12" y="25" width="40" height="8" fill="#e24b4a"/>
+      <circle cx="22" cy="29" r="2.4" fill="#5dd6e0"/>
+      <circle cx="32" cy="29" r="2.4" fill="#5dd6e0"/>
+      <circle cx="42" cy="29" r="2.4" fill="#5dd6e0"/>
+    `),
+
+  // Candles and a dripping frosting edge on a plate -- a plain layered slab
+  // reads as a box, and the lid-and-handles silhouette of `pot` shares none
+  // of these three cues.
+  cake: () =>
+    wrap(`
+      <g fill="#e24b4a">
+        <rect x="17" y="8" width="5" height="14"/>
+        <rect x="29.5" y="6" width="5" height="16"/>
+        <rect x="42" y="8" width="5" height="14"/>
+      </g>
+      <g fill="#ffd43b">
+        <circle cx="19.5" cy="6" r="3.4"/>
+        <circle cx="32" cy="4" r="3.4"/>
+        <circle cx="44.5" cy="6" r="3.4"/>
+      </g>
+      <rect x="9" y="32" width="46" height="19" fill="#f4c95d"/>
+      <path d="M9 22 H55 V34 Q49 40 43 34 Q37 40 32 34 Q26 40 21 34 Q15 40 9 34 Z"
+        fill="#f0a0b4"/>
+      <rect x="4" y="51" width="56" height="6" rx="3" fill="#b8b8b8"/>
+    `),
+
+  // Profile head with ears and a mane, so the front-facing round `dog` face
+  // never comes close: the long muzzle is the whole silhouette.
+  horse: () =>
+    wrap(`
+      <path d="M7 37 L18 22 Q23 14 31 14 L25 1 L36 11 L43 1 L47 17
+          Q52 21 54 30 L58 58 L36 58 Q25 54 19 44 L7 41 Z"
+        fill="#8a5a33"/>
+      <path d="M45 14 L52 26 L58 56 L48 56 L45 30 L38 16 Z" fill="#2c2c2a"/>
+      <polygon points="9,37 18,26 22,29 13,40" fill="#f5f2ea"/>
+      <circle cx="27" cy="27" r="3" fill="#2c2c2a"/>
+      <ellipse cx="12" cy="34" rx="2.2" ry="1.8" fill="#2c2c2a"/>
+    `),
+
+  // Four solid quadrants make the spars readable without drawing hairlines,
+  // and the bowed tail is what separates the diamond from the `star`.
+  kite: () =>
+    wrap(`
+      <polygon points="32,2 32,24 12,24" fill="#e24b4a"/>
+      <polygon points="32,2 52,24 32,24" fill="#ffd43b"/>
+      <polygon points="12,24 32,24 32,46" fill="#378add"/>
+      <polygon points="32,24 52,24 32,46" fill="#3b9922"/>
+      <path d="M32 46 Q41 51 34 56 Q27 61 34 63" fill="none" stroke="#2c2c2a"
+        stroke-width="2.8" stroke-linecap="round"/>
+      <polygon points="34,48 42,45 42,53" fill="#5dd6e0"/>
+      <polygon points="28,55 35,52 35,60" fill="#5dd6e0"/>
+    `),
+
+  // Two rows of five: a child can subitize the fives instead of counting ten
+  // scattered dots, and no numeral is drawn -- a "10" glyph next to letter
+  // tiles is exactly the kind of fake character a phonics app must avoid.
+  ten: () =>
+    wrap(`
+      <g fill="#e24b4a">
+        <circle cx="8" cy="22" r="5.6"/>
+        <circle cx="20" cy="22" r="5.6"/>
+        <circle cx="32" cy="22" r="5.6"/>
+        <circle cx="44" cy="22" r="5.6"/>
+        <circle cx="56" cy="22" r="5.6"/>
+      </g>
+      <g fill="#ef9f27">
+        <circle cx="8" cy="42" r="5.6"/>
+        <circle cx="20" cy="42" r="5.6"/>
+        <circle cx="32" cy="42" r="5.6"/>
+        <circle cx="44" cy="42" r="5.6"/>
+        <circle cx="56" cy="42" r="5.6"/>
+      </g>
+    `),
+
+  // Side view: the tall headboard on the left and the low footboard on the
+  // right give the asymmetric outline a bed needs, and the green blanket
+  // keeps the white sheet from washing out on a light button.
+  bed: () =>
+    wrap(`
+      <rect x="4" y="12" width="9" height="42" rx="3" fill="#712b13"/>
+      <rect x="54" y="28" width="8" height="26" rx="3" fill="#712b13"/>
+      <rect x="8" y="31" width="50" height="11" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="2"/>
+      <rect x="26" y="28" width="32" height="14" fill="#3b9922"/>
+      <rect x="11" y="22" width="16" height="10" rx="5" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="2"/>
+      <rect x="6" y="42" width="54" height="7" fill="#8a5a33"/>
+      <rect x="9" y="48" width="7" height="10" fill="#712b13"/>
+      <rect x="50" y="48" width="7" height="10" fill="#712b13"/>
+    `),
 
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.

@@ -9,6 +9,8 @@ import {
   worlds,
 } from './data/stages.js'
 import {
+  clearCheckpoint,
+  getCheckpoint,
   isChapterCleared,
   isChapterUnlocked,
   isStageCleared,
@@ -17,13 +19,14 @@ import {
   isWorldUnlocked,
   markStageCleared,
   progress,
+  saveCheckpoint,
 } from './state.js'
 import {
   clearAudioQueue,
   speakEN,
   speakKO,
   speakSequence,
-  tryRecognize,
+  speakTap,
   unlockAudio,
   whenAudioIdle,
 } from './audio.js'
@@ -31,6 +34,71 @@ import { heroArt, villainArt } from './art.js'
 import { wordIcon, shoutBurst } from './icons.js'
 
 const app = document.getElementById('app')
+
+// ---- screen lifetime token ----
+//
+// Beat transitions deliberately await audio before moving on, and a
+// 5-year-old taps 나가기 in the middle of that wait. The continuation then
+// resumes against a screen that no longer exists: at best it renders a beat
+// into a #beat-area that has been replaced (TypeError), at worst it paints
+// the reward screen -- and banks a stage clear -- on top of the map the
+// child just navigated to. Every top-level screen render invalidates the
+// previous one, and anything resuming after an await checks it still owns
+// the screen.
+let navGeneration = 0
+
+function beginScreen() {
+  navGeneration += 1
+  return navGeneration
+}
+
+function ownsScreen(runtime) {
+  return runtime.nav === navGeneration
+}
+
+// A top-level screen replaces all of #app, so a throw in one is worse than a
+// failed beat: the card the child tapped just does nothing, which to them is
+// the app being broken. Reuse the beat recovery panel, with the one escape
+// that exists from anywhere -- the world list. If the world list itself is
+// what failed, the escape lands back on this panel rather than a blank
+// screen, so there is still always something that responds.
+function runScreen(render, retry) {
+  try {
+    render()
+  } catch (e) {
+    console.error('[screen] 렌더 실패', e)
+    app.innerHTML = `<div class="screen">${failurePanelHtml('월드 목록으로')}</div>`
+    document.getElementById('retry-beat').addEventListener('click', retry)
+    document
+      .getElementById('failure-escape')
+      .addEventListener('click', () => renderWorldSelect())
+  }
+}
+
+export function renderWorldSelect() {
+  runScreen(worldSelectScreen, renderWorldSelect)
+}
+
+export function renderChapterSelect(worldId) {
+  runScreen(
+    () => chapterSelectScreen(worldId),
+    () => renderChapterSelect(worldId)
+  )
+}
+
+export function renderMap(chapterId) {
+  runScreen(
+    () => mapScreen(chapterId),
+    () => renderMap(chapterId)
+  )
+}
+
+function renderStage(stageId) {
+  runScreen(
+    () => stageScreen(stageId),
+    () => renderStage(stageId)
+  )
+}
 
 // A single-letter tile already embosses the letter inside the icon itself
 // (see icons.js's letterTile), so a second plain-text copy of the same
@@ -90,7 +158,8 @@ function waitForTransition(minDelayMs) {
 // single grid the player sees down to ~5-7 cards, so none of them need to
 // scroll even once all 33 chapters exist.
 
-export function renderWorldSelect() {
+function worldSelectScreen() {
+  beginScreen()
   // Entering a top-level screen -- drop any audio still queued from
   // wherever the player just came from (see clearAudioQueue() in
   // audio.js: it lets anything already mid-speech finish naturally, it
@@ -140,7 +209,8 @@ export function renderWorldSelect() {
 
 // ---------- CHAPTER SELECT SCREEN (scoped to one world) ----------
 
-export function renderChapterSelect(worldId) {
+function chapterSelectScreen(worldId) {
+  beginScreen()
   clearAudioQueue()
   const world = getWorldById(worldId)
   const cards = world.slots
@@ -197,7 +267,8 @@ export function renderChapterSelect(worldId) {
 
 // ---------- MAP SCREEN ----------
 
-export function renderMap(chapterId) {
+function mapScreen(chapterId) {
+  beginScreen()
   clearAudioQueue()
   const chapter = getChapterById(chapterId)
   const chapterStages = chapter.stages
@@ -256,14 +327,29 @@ export function renderMap(chapterId) {
 
 // ---------- STAGE SCREEN ----------
 
-function renderStage(stageId) {
+function stageScreen(stageId) {
   clearAudioQueue()
   const stage = getStageById(stageId)
   const runtime = {
     stage,
+    nav: beginScreen(),
     beatIndex: 0,
     healthMax: stageHealthMax(stage),
     hitsDealt: 0,
+  }
+  // Silent resume, no dialog: a checkpoint only exists if the last visit
+  // ended in an accident (sleep, reload, crash), never if the child left on
+  // purpose -- so there is nothing for them to decide. A checkpoint pointing
+  // past the end of the stage means the content changed underneath it; drop
+  // it and start clean rather than resuming into a beat that isn't there.
+  const cp = getCheckpoint(stageId)
+  if (cp) {
+    if (cp.beatIndex < stage.beats.length) {
+      runtime.beatIndex = cp.beatIndex
+      runtime.hitsDealt = Math.min(runtime.healthMax, cp.hitsDealt)
+    } else {
+      clearCheckpoint()
+    }
   }
   renderHealthShell(runtime)
   runBeat(runtime)
@@ -298,6 +384,8 @@ function renderHealthShell(runtime) {
   `
 
   document.getElementById('exit-stage').addEventListener('click', () => {
+    // Leaving on purpose means "start this one over next time".
+    clearCheckpoint()
     const chapter = getChapterForStage(stage.id)
     renderMap(chapter.id)
   })
@@ -332,26 +420,82 @@ function beatArea() {
 }
 
 function runBeat(runtime) {
+  if (!ownsScreen(runtime)) return
   const { stage, beatIndex } = runtime
-  if (beatIndex >= stage.beats.length) {
-    renderReward(runtime)
-    return
-  }
-  const beat = stage.beats[beatIndex]
-  updateHealthBar(runtime)
+  try {
+    if (beatIndex >= stage.beats.length) {
+      renderReward(runtime)
+      return
+    }
+    saveCheckpoint(stage.id, beatIndex, runtime.hitsDealt)
+    const beat = stage.beats[beatIndex]
+    updateHealthBar(runtime)
 
-  if (beat.kind === 'teach' || beat.kind === 'break') {
-    renderNonScoredBeat(runtime, beat)
-  } else if (beat.kind === 'choose') {
-    renderChooseBeat(runtime, beat)
-  } else if (beat.kind === 'choose-sequence') {
-    renderChooseSequenceBeat(runtime, beat)
-  } else if (beat.kind === 'multiselect') {
-    renderMultiselectBeat(runtime, beat)
-  } else if (beat.kind === 'drag-build') {
-    renderBuildBeat(runtime, beat)
-  } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
-    renderListenRepeatBeat(runtime, beat)
+    if (beat.kind === 'teach' || beat.kind === 'break') {
+      renderNonScoredBeat(runtime, beat)
+    } else if (beat.kind === 'choose') {
+      renderChooseBeat(runtime, beat)
+    } else if (beat.kind === 'choose-sequence') {
+      renderChooseSequenceBeat(runtime, beat)
+    } else if (beat.kind === 'multiselect') {
+      renderMultiselectBeat(runtime, beat)
+    } else if (beat.kind === 'drag-build') {
+      renderBuildBeat(runtime, beat)
+    } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
+      renderListenRepeatBeat(runtime, beat)
+    } else {
+      // An unknown kind would otherwise leave the *previous* beat's spent
+      // controls on screen, which reads to a child as "the app froze".
+      throw new Error(`unknown beat kind: ${beat.kind}`)
+    }
+  } catch (e) {
+    renderBeatFailure(runtime, e)
+  }
+}
+
+// The child must never be left holding a screen with nothing that responds.
+// validateChapters() catches contract violations in dev, but it is compiled
+// out of the production bundle, so a live content bug has no other net: this
+// keeps a working way forward (retry) and a working way out (map), and the
+// stage's own 나가기 button stays on screen throughout.
+function failurePanelHtml(escapeLabel) {
+  return `
+    <div class="beat teach-beat">
+      <div class="beat-instruction">앗, 여기서 잠깐 문제가 생겼어요.</div>
+      <div class="beat-emoji">🔧</div>
+      <button class="primary-btn" id="retry-beat">다시 해볼까요? ▶</button>
+      <button class="secondary-btn" id="failure-escape">${escapeLabel}</button>
+    </div>
+  `
+}
+
+function renderBeatFailure(runtime, err) {
+  console.error('[beat] 렌더 실패', err)
+  const area = beatArea()
+  if (!area) return
+  area.innerHTML = failurePanelHtml('맵으로 돌아가기')
+  document
+    .getElementById('retry-beat')
+    .addEventListener('click', () => runBeat(runtime))
+  document.getElementById('failure-escape').addEventListener('click', () => {
+    // Also an intentional leave -- and it must clear, or a beat that throws
+    // every time would resume straight back into this panel forever.
+    clearCheckpoint()
+    const chapter = getChapterForStage(runtime.stage.id)
+    renderMap(chapter.id)
+  })
+}
+
+// Click handlers do their work *after* awaiting audio, so a throw in there
+// escapes as an unhandled rejection and freezes the round with no visible
+// cause. Route those to the same recovery panel.
+function withRecovery(runtime, fn) {
+  return async (...args) => {
+    try {
+      await fn(...args)
+    } catch (e) {
+      renderBeatFailure(runtime, e)
+    }
   }
 }
 
@@ -418,8 +562,11 @@ function pulseHint(el) {
 // (the beat/step's own promptAudio when it has one -- that's the exact
 // sound being tested -- otherwise just the correct word itself) and
 // pulses the button so the eye is drawn to it.
+// Runs on a 1.2 s timer, by which time the child may have left the stage --
+// the pulse would no-op on a detached node, but the *speech* would talk over
+// whatever screen they went to, so bail unless the round is still on screen.
 function redemonstrateOption(area, beatOrStep, correctOpt) {
-  if (!correctOpt) return
+  if (!correctOpt || !area.isConnected) return
   speakEN(beatOrStep.promptAudio || optionSpeech(correctOpt))
   pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
 }
@@ -431,6 +578,7 @@ function redemonstrateOption(area, beatOrStep, correctOpt) {
 // share that letterform's sound, so the first match is always the right
 // one, and any still-enabled tile is an equally valid thing to point at.
 function redemonstrateLetterTile(area, letters, letter) {
+  if (!area.isConnected) return
   const match = letters.find((l) => l.text === letter)
   speakEN(match ? match.say : letter)
   const tile = [...area.querySelectorAll('.letter-tile:not(:disabled)')].find(
@@ -453,8 +601,22 @@ function redemonstrateLetterTile(area, letters, letter) {
 // *whole* sequence, not a snapshot of it.
 function wireTeachButtons(beat, runtime) {
   let playPromise = null
+  // One tap on 다시 듣기 queues the *whole* repeatAudio sequence. Letting
+  // taps stack meant a few impatient taps could queue 20+ seconds of speech
+  // that the 다음 button then had to wait out with nothing happening on
+  // screen, so a replay is ignored while its sequence is still playing.
+  let playing = false
   const play = () => {
-    playPromise = speakSequence(beat.repeatAudio || [], 'en-US')
+    if (playing) return playPromise
+    playing = true
+    playPromise = speakSequence(beat.repeatAudio || [], 'en-US').then(
+      () => {
+        playing = false
+      },
+      () => {
+        playing = false
+      }
+    )
     return playPromise
   }
   play()
@@ -462,7 +624,7 @@ function wireTeachButtons(beat, runtime) {
   const continueBtn = document.getElementById('continue-btn')
   if (replayBtn) replayBtn.addEventListener('click', play)
   if (continueBtn)
-    continueBtn.addEventListener('click', async () => {
+    continueBtn.addEventListener('click', withRecovery(runtime, async () => {
       // Acknowledge the tap immediately (don't leave it feeling unresponsive)
       // even though we wait for any in-flight teach/break audio to finish
       // before actually moving to the next beat, so its own auto-played
@@ -471,7 +633,7 @@ function wireTeachButtons(beat, runtime) {
       await playPromise
       await whenAudioIdle()
       advanceBeat(runtime)
-    })
+    }))
 }
 
 function renderNonScoredBeat(runtime, beat) {
@@ -595,18 +757,27 @@ function renderChooseBeat(runtime, beat) {
   `
 
   if (beat.promptAudio) {
-    const playPrompt = () => speakEN(beat.promptAudio)
-    playPrompt()
-    document.getElementById('replay-btn').addEventListener('click', playPrompt)
+    speakEN(beat.promptAudio)
+    document
+      .getElementById('replay-btn')
+      .addEventListener('click', () => speakTap(beat.promptAudio))
   }
 
   const wrongStreak = makeWrongStreakTracker()
+  // The correct answer is acted on after an await, so a 5-year-old's second
+  // excited tap used to run the whole branch again and advance twice --
+  // skipping a beat outright, and with it any damage that beat was supposed
+  // to deal (a boss whose health can then never reach 0). Wrong taps stay
+  // unlimited: the no-fail rule is about retries, not double-fires.
+  let settled = false
 
   area.querySelectorAll('.option-btn').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', withRecovery(runtime, async () => {
+      if (settled) return
       const opt = beat.options.find((o) => o.id === btn.dataset.id)
-      speakEN(optionSpeech(opt))
+      speakTap(optionSpeech(opt))
       if (opt.correct) {
+        settled = true
         flashCorrect(area)
         if (beat.scored && beat.readAloud) {
           await whenAudioIdle()
@@ -624,7 +795,7 @@ function renderChooseBeat(runtime, beat) {
           setTimeout(() => redemonstrateOption(area, beat, correct), 1200)
         }
       }
-    })
+    }))
   })
 }
 
@@ -655,19 +826,25 @@ function renderChooseSequenceBeat(runtime, beat) {
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
-    const playPrompt = () => speakEN(step.promptAudio)
-    playPrompt()
-    document.getElementById('replay-btn').addEventListener('click', playPrompt)
+    speakEN(step.promptAudio)
+    document
+      .getElementById('replay-btn')
+      .addEventListener('click', () => speakTap(step.promptAudio))
 
     // Fresh streak per step -- each step is effectively its own mini
     // question, so 2 wrong taps within *that* step trigger the hint.
     const wrongStreak = makeWrongStreakTracker()
+    // Per-step lock: a double tap on the right answer would otherwise skip a
+    // step, or on the last step deal its damage twice and skip the next beat.
+    let settled = false
 
     area.querySelectorAll('.option-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', withRecovery(runtime, async () => {
+        if (settled) return
         const opt = step.options.find((o) => o.id === btn.dataset.id)
-        speakEN(optionSpeech(opt))
+        speakTap(optionSpeech(opt))
         if (opt.correct) {
+          settled = true
           flashCorrect(area)
           stepIndex += 1
           if (stepIndex < beat.steps.length) {
@@ -687,7 +864,7 @@ function renderChooseSequenceBeat(runtime, beat) {
             setTimeout(() => redemonstrateOption(area, step, correct), 1200)
           }
         }
-      })
+      }))
     })
   }
 
@@ -721,11 +898,13 @@ function renderMultiselectBeat(runtime, beat) {
   )
   const picked = new Set()
   const wrongStreak = makeWrongStreakTracker()
+  let settled = false
 
   area.querySelectorAll('.option-btn').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', withRecovery(runtime, async () => {
+      if (settled) return
       const opt = beat.options.find((o) => o.id === btn.dataset.id)
-      speakEN(optionSpeech(opt))
+      speakTap(optionSpeech(opt))
       if (opt.correct) {
         if (picked.has(opt.id)) {
           picked.delete(opt.id)
@@ -736,6 +915,7 @@ function renderMultiselectBeat(runtime, beat) {
         picked.add(opt.id)
         btn.classList.add('selected')
         if (picked.size === correctIds.size) {
+          settled = true
           flashCorrect(area)
           await whenAudioIdle()
           runReadAloud(runtime, beat, beat.readAloud)
@@ -751,7 +931,7 @@ function renderMultiselectBeat(runtime, beat) {
           setTimeout(() => redemonstrateOption(area, beat, remaining), 1200)
         }
       }
-    })
+    }))
   })
 }
 
@@ -796,19 +976,25 @@ function renderBuildBeat(runtime, beat) {
     })
   }
 
+  // Set once the word is complete: the tiles are all disabled by then, but
+  // 지우기 stays tappable during the await and would otherwise re-arm the
+  // round while the transition to the next beat was already under way.
+  let settled = false
+
   tiles.forEach((tile) => {
-    tile.addEventListener('click', async () => {
-      if (tile.disabled) return
+    tile.addEventListener('click', withRecovery(runtime, async () => {
+      if (settled || tile.disabled) return
       const { text: letter, say } = letters[Number(tile.dataset.tile)]
       const nextIndex = placed.length
       if (nextIndex >= target.length) return
-      speakEN(say)
+      speakTap(say)
       if (letter === target[nextIndex]) {
         placed.push({ letter, tileIndex: tile.dataset.tile })
         tile.disabled = true
         tile.classList.add('used')
         redraw()
         if (placed.length === target.length) {
+          settled = true
           flashCorrect(area)
           if (beat.scored && beat.readAloud) {
             await whenAudioIdle()
@@ -830,10 +1016,11 @@ function renderBuildBeat(runtime, beat) {
           )
         }
       }
-    })
+    }))
   })
 
   document.getElementById('clear-btn').addEventListener('click', () => {
+    if (settled) return
     placed = []
     tiles.forEach((t) => {
       t.disabled = false
@@ -868,17 +1055,16 @@ function renderListenRepeatBeat(runtime, beat) {
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
-    const play = () => speakEN(say)
-    play()
-    document.getElementById('replay-btn').addEventListener('click', play)
-    document.getElementById('mic-btn').addEventListener('click', async () => {
-      document.getElementById('mic-btn').disabled = true
+    speakEN(say)
+    document
+      .getElementById('replay-btn')
+      .addEventListener('click', () => speakTap(say))
+    const micBtn = document.getElementById('mic-btn')
+    micBtn.addEventListener('click', withRecovery(runtime, async () => {
+      micBtn.disabled = true
       document.getElementById('beat-feedback').textContent = '잘했어요! 🎉'
-      // Best-effort background listen; never blocks progress either way.
-      // Matches against the on-screen word, not `say`: the recognizer
-      // scores against real words, so a phoneme spelling like "iii" could
-      // never match whatever the child actually says.
-      tryRecognize(text)
+      // No speech recognition here on purpose -- see tryRecognize() in
+      // audio.js. The 🎤 button is purely the child's "I read it" signal.
       // Wait for any in-flight audio (e.g. the child tapped "듣기" again
       // right before tapping the mic) so the next word's auto-play never
       // lands on top of it.
@@ -892,7 +1078,7 @@ function renderListenRepeatBeat(runtime, beat) {
         await waitForTransition(500)
         advanceBeat(runtime)
       }
-    })
+    }))
   }
 
   showWord()
@@ -903,6 +1089,7 @@ function renderListenRepeatBeat(runtime, beat) {
 // Takes the beat's whole `readAloud` object: { targetText, say? } -- same
 // display/speech split as words[] above, keyed by targetText.
 function runReadAloud(runtime, beat, readAloud) {
+  if (!ownsScreen(runtime)) return
   const area = beatArea()
   const { text, say } = spokenPair({
     text: readAloud.targetText,
@@ -917,17 +1104,18 @@ function runReadAloud(runtime, beat, readAloud) {
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
-  const play = () => speakEN(say)
-  play()
-  document.getElementById('replay-btn').addEventListener('click', play)
-  document.getElementById('mic-btn').addEventListener('click', async () => {
-    document.getElementById('mic-btn').disabled = true
-    tryRecognize(text)
+  speakEN(say)
+  document
+    .getElementById('replay-btn')
+    .addEventListener('click', () => speakTap(say))
+  const micBtn = document.getElementById('mic-btn')
+  micBtn.addEventListener('click', withRecovery(runtime, async () => {
+    micBtn.disabled = true
     dealHit(runtime, beat)
     document.getElementById('beat-feedback').textContent = '명중! 💥'
     await waitForTransition(500)
     advanceBeat(runtime)
-  })
+  }))
 }
 
 // ---------- REWARD SCREEN ----------
