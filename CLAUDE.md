@@ -120,6 +120,29 @@ villainArt(name) // 이름으로 dispatch
 - 주석은 "왜"가 비자명한 경우만 (what 설명 금지)
 - 에러 핸들링은 실제 발생 가능한 경우만 (내부 보장 신뢰)
 
+### 챕터 데이터 계약 (챕터 3–33 작성자 필수)
+- **표시 / 발화 분리**: 화면에는 실제 글자·단어만, 발화에는 소리만.
+  둘이 다르면 `words: [{ text: 'S', say: 'sss' }]`,
+  `readAloud: { targetText: 'S', say: 'sss' }`,
+  `options: [{ label: 'S', say: 'sss' }]`,
+  `letters: [{ text: 'S', say: 'sss' }]`.
+  화면에 안 나오는 `repeatAudio`/`promptAudio`는 소리 표기를 직접 쓴다.
+  단일 문자를 그대로 발화하면 글자 **이름**("에스", "아이")으로 읽힌다.
+- **소리 표기 규칙**: 지속음은 반복문자(`sss`/`nnn`/`iii`), 파열음은 하이픈
+  절단(`t-t-t`/`p-p-p`), 반복 시 장모음이 되어버리는 모음은 근사 철자(`eh`/`aw`/`uh`).
+  S `sss` · A `aaa` · T `t-t-t` · I `iii` · P `p-p-p` · N `nnn` · M `mmm` ·
+  L `lll` · Z `zzz` · B `b-b-b` · D `d-d-d` · C `k-k-k` (Jolly는 c를 /k/로 가르침) ·
+  E `eh` · O `aw` · U `uh`
+- **캐릭터 색·외형은 `art.js` 소유**: 데이터는 `hero: { name, style }` 만 준다.
+  색이나 엠블럼을 데이터에서 넘기면 캐릭터 고유색을 덮어쓴다.
+- **`scored: true` 인 `choose`/`multiselect`/`drag-build` 에는 `readAloud` 필수.**
+  없으면 `multiselect` 는 크래시, 나머지는 데미지가 영원히 안 들어가서 체력바가
+  0에 도달하지 못한다 — 크래시보다 진단이 어려운 실패다.
+- **stage/beat id 는 전역 유니크** (`getStageById()` 가 전체 챕터를 flat 검색).
+  챕터 N 은 `cN-stage-*` / `cNsM-*` 접두사를 쓴다.
+- 위 전부 `validateChapters()` 가 dev 로드 시 `console.error` 로 잡는다.
+  **콘솔에 `[chapters]` 가 보이면 커밋하지 마라.**
+
 ## 개발 서버
 
 ```bash

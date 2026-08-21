@@ -111,27 +111,28 @@ const ICONS = {
       <circle cx="46" cy="48" r="3" fill="#b8b8b8"/>
     `),
 
-  // Legs are drawn first and rooted well inside the thorax circle, so the
-  // body shapes paint over their anchor points -- anchoring them on the
-  // outline left them visibly detached at 60px.
+  // Legs are drawn first and rooted deep inside the thorax, so the body
+  // paints over their anchor points -- anchored on the outline they read as
+  // detached at 60px. The three body blobs keep visible pinch gaps between
+  // them, which is what separates an ant from a two-part spider.
   ant: () =>
     wrap(`
       <g stroke="#2c2c2a" stroke-width="4" stroke-linecap="round" fill="none">
-        <path d="M31 28 L38 21 L46 20"/>
-        <path d="M33 31 L46 28 L56 31"/>
-        <path d="M29 27 L21 22 L13 24"/>
-        <path d="M29 32 L19 36 L11 44"/>
-        <path d="M32 35 L28 47 L20 54"/>
-        <path d="M36 36 L40 50 L35 58"/>
+        <path d="M30 27 L38 21 L46 21"/>
+        <path d="M32 30 L45 28 L55 32"/>
+        <path d="M28 26 L21 21 L13 23"/>
+        <path d="M28 31 L19 35 L11 43"/>
+        <path d="M31 34 L28 46 L20 53"/>
+        <path d="M34 35 L38 48 L33 57"/>
       </g>
       <g stroke="#2c2c2a" stroke-width="3" stroke-linecap="round" fill="none">
-        <path d="M18 13 Q13 6 7 5"/>
-        <path d="M23 11 Q24 4 30 2"/>
+        <path d="M16 12 Q11 5 5 4"/>
+        <path d="M21 10 Q22 3 28 1"/>
       </g>
-      <circle cx="20" cy="16" r="8" fill="#2c2c2a"/>
-      <circle cx="32" cy="30" r="9.5" fill="#2c2c2a"/>
-      <ellipse cx="47" cy="40" rx="13" ry="11" fill="#2c2c2a"/>
-      <circle cx="22" cy="14" r="2.2" fill="#f5f2ea"/>
+      <circle cx="18" cy="15" r="7.5" fill="#2c2c2a"/>
+      <circle cx="31" cy="29" r="8.5" fill="#2c2c2a"/>
+      <ellipse cx="49" cy="43" rx="12.5" ry="10.5" fill="#2c2c2a"/>
+      <circle cx="20" cy="13" r="2.2" fill="#f5f2ea"/>
     `),
 
   apple: () =>

@@ -5,7 +5,8 @@
       "name": "carbot-phonics-dev",
       "runtimeExecutable": "/Users/kami.san/.nvm/versions/node/v24.19.0/bin/node",
       "runtimeArgs": ["node_modules/vite/bin/vite.js", "--host"],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
     }
   ]
 }

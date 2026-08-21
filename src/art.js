@@ -201,10 +201,13 @@ export function heroSuperhero({
 // only mask-eyes silhouette), no cape, one arm thrown forward mid-leap.
 // Having no cape, `capeColor` doubles as the darker panel tone.
 export function heroAcrobat({
-  bodyColor = '#3a63c7',
-  accent = '#f4c95d',
+  bodyColor = '#d1332f',
+  accent = '#1f3c88',
   capeColor = '#1f3c88',
   maskColor = bodyColor,
+  // Web line-work needs its own colour: it has to stay legible on both the
+  // suit and the white mask lenses, so it can't reuse any of the above.
+  webColor = '#0f2350',
   emblem = 'I',
 } = {}) {
   return svgWrap(
@@ -218,17 +221,33 @@ export function heroAcrobat({
       <polygon points="42,56 51,63 38,94 28,89" fill="${bodyColor}"/>
       <circle cx="32" cy="93" r="7" fill="${accent}"/>
       <polygon points="48,58 72,58 68,98 52,98" fill="${bodyColor}"/>
-      <path d="M50 63 L60 72 L70 63" fill="none" stroke="${capeColor}" stroke-width="3.5"/>
+      <g stroke="${webColor}" stroke-width="1.5" fill="none" opacity="0.8">
+        <line x1="60" y1="58" x2="60" y2="90"/>
+        <line x1="50" y1="66" x2="70" y2="66"/>
+        <line x1="51" y1="78" x2="69" y2="78"/>
+        <line x1="49" y1="60" x2="69" y2="88"/>
+        <line x1="71" y1="60" x2="51" y2="88"/>
+      </g>
       <circle cx="60" cy="80" r="9" fill="#fff"/>
       <text x="60" y="85" text-anchor="middle" font-size="12" font-weight="800" fill="${bodyColor}">${emblem}</text>
       <rect x="51" y="90" width="18" height="6" fill="${accent}"/>
+      <path d="M106 61 L118 50" stroke="#f5f2ea" stroke-width="2.5" fill="none"/>
+      <path d="M108 58 L116 56 M110 64 L118 63" stroke="#f5f2ea" stroke-width="1.8" fill="none"/>
       <circle cx="47" cy="61" r="8" fill="${bodyColor}"/>
       <circle cx="73" cy="61" r="8" fill="${bodyColor}"/>
       <rect x="76" y="56" width="32" height="11" rx="5" fill="${bodyColor}"/>
       <circle cx="106" cy="61" r="8" fill="${accent}"/>
       <circle cx="60" cy="32" r="19" fill="${maskColor}"/>
-      <polygon points="47,26 58,30 56,41 46,37" fill="#fff" stroke="${capeColor}" stroke-width="2"/>
-      <polygon points="73,26 62,30 64,41 74,37" fill="#fff" stroke="${capeColor}" stroke-width="2"/>
+      <g stroke="${webColor}" stroke-width="1.6" fill="none" opacity="0.85">
+        <line x1="60" y1="13" x2="60" y2="51"/>
+        <line x1="41" y1="32" x2="79" y2="32"/>
+        <line x1="47" y1="19" x2="73" y2="45"/>
+        <line x1="73" y1="19" x2="47" y2="45"/>
+        <circle cx="60" cy="32" r="7"/>
+        <circle cx="60" cy="32" r="13"/>
+      </g>
+      <polygon points="47,26 58,30 56,41 46,37" fill="#fff" stroke="${webColor}" stroke-width="2"/>
+      <polygon points="73,26 62,30 64,41 74,37" fill="#fff" stroke="${webColor}" stroke-width="2"/>
     </g>
   `,
     '0 0 120 140'
@@ -241,9 +260,9 @@ export function heroAcrobat({
 // biggest, highest-contrast spot in the figure for the letter being taught.
 // No cape, so `capeColor` becomes the boots.
 export function heroShield({
-  bodyColor = '#d1332f',
-  accent = '#ffd43b',
-  capeColor = '#791f1f',
+  bodyColor = '#3a63c7',
+  accent = '#f5f2ea',
+  capeColor = '#c0272d',
   maskColor = '#2c2c2a',
   emblem = 'P',
 } = {}) {
@@ -256,21 +275,30 @@ export function heroShield({
       <rect x="52" y="118" width="21" height="13" rx="4" fill="${capeColor}"/>
       <rect x="69" y="118" width="21" height="13" rx="4" fill="${capeColor}"/>
       <polygon points="48,58 86,58 82,102 52,102" fill="${bodyColor}"/>
-      <rect x="52" y="94" width="30" height="8" fill="${accent}"/>
+      <g>
+        <rect x="55" y="82" width="5" height="13" fill="${capeColor}"/>
+        <rect x="60" y="82" width="5" height="13" fill="${accent}"/>
+        <rect x="65" y="82" width="5" height="13" fill="${capeColor}"/>
+        <rect x="70" y="82" width="5" height="13" fill="${accent}"/>
+        <rect x="75" y="82" width="5" height="13" fill="${capeColor}"/>
+      </g>
+      <polygon points="67,62 69.5,68.6 76.5,68.9 71,73.3 72.9,80.1 67,76.2 61.1,80.1 63,73.3 57.5,68.9 64.5,68.6" fill="${accent}"/>
+      <rect x="52" y="94" width="30" height="8" fill="${capeColor}"/>
       <circle cx="50" cy="63" r="10" fill="${bodyColor}"/>
       <circle cx="84" cy="63" r="10" fill="${bodyColor}"/>
       <rect x="36" y="70" width="15" height="24" rx="6" fill="${bodyColor}"/>
       <rect x="84" y="70" width="15" height="26" rx="6" fill="${bodyColor}"/>
       <circle cx="91" cy="98" r="8" fill="${accent}"/>
       <circle cx="67" cy="32" r="19" fill="${bodyColor}"/>
-      <polygon points="63,14 67,3 71,14" fill="${accent}"/>
+      <polygon points="50,22 38,26 50,31" fill="${accent}"/>
+      <polygon points="84,22 96,26 84,31" fill="${accent}"/>
       <rect x="54" y="27" width="26" height="10" rx="5" fill="${maskColor}"/>
       <circle cx="61" cy="32" r="3" fill="#fff"/>
       <circle cx="74" cy="32" r="3" fill="#fff"/>
-      <circle cx="34" cy="76" r="25" fill="${accent}"/>
-      <circle cx="34" cy="76" r="19" fill="${bodyColor}"/>
-      <circle cx="34" cy="76" r="13" fill="#f5f2ea"/>
-      <text x="34" y="83" text-anchor="middle" font-size="19" font-weight="800" fill="${bodyColor}">${emblem}</text>
+      <circle cx="34" cy="76" r="25" fill="${capeColor}"/>
+      <circle cx="34" cy="76" r="18" fill="#f5f2ea"/>
+      <circle cx="34" cy="76" r="11" fill="${bodyColor}"/>
+      <text x="34" y="81" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${emblem}</text>
     </g>
   `,
     '0 0 120 140'
@@ -439,10 +467,10 @@ const HERO_PALETTES = {
   '에이스': { bodyColor: '#ef9f27', accent: '#854f0b', emblem: 'A' },
   '터보': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T' },
   '카본': { style: 'robot-deluxe' },
-  '잉키': { style: 'superhero-acrobat', bodyColor: '#3a63c7', accent: '#f4c95d', capeColor: '#1f3c88', emblem: 'I' },
-  '파워피': { style: 'superhero-shield', bodyColor: '#d1332f', accent: '#ffd43b', capeColor: '#791f1f', emblem: 'P' },
-  '나이토': { style: 'superhero-thunder', bodyColor: '#2f8f6b', accent: '#eafcff', capeColor: '#14513c', emblem: 'N' },
-  '캡틴핀': { style: 'superhero-armor', bodyColor: '#534ab7', accent: '#f4c95d', capeColor: '#d1332f', emblem: '★' },
+  '잉키': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
+  '파워피': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
+  '나이토': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
+  '캡틴핀': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', emblem: '★' },
 }
 
 const VILLAIN_PALETTES = {
