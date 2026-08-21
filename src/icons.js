@@ -701,6 +701,109 @@ const ICONS = {
       <path d="M32 54 Q32 61 23 61" fill="none" stroke="#712b13" stroke-width="4" stroke-linecap="round"/>
     `),
 
+  // -- Group 4 additions: L / F / B (chapter 6) --
+
+  // A fluffy ring of overlapping fur tufts (computed, alternating radii) is
+  // what separates lion from `dog`/`horse` -- a first draft used sharp
+  // triangular spikes here (same technique as `shoutBurst`) and it rendered
+  // as a smiling `sun`, since a thin radiating halo around a plain circle is
+  // exactly what makes `sun` legible. Round tufts plus ear peaks read as fur
+  // instead of rays, and the face keeps eyes/nose/mouth that `sun` has none of.
+  lion: () => {
+    const cx = 32
+    const cy = 34
+    const tufts = 16
+    const rInner = 19
+    let mane = ''
+    for (let i = 0; i < tufts; i++) {
+      const a = (i / tufts) * Math.PI * 2
+      const rad = i % 2 === 0 ? 9.5 : 7.5
+      const x = (cx + Math.cos(a) * rInner).toFixed(1)
+      const y = (cy + Math.sin(a) * rInner).toFixed(1)
+      mane += `<circle cx="${x}" cy="${y}" r="${rad}" fill="#a9611f"/>`
+    }
+    return wrap(`
+      ${mane}
+      <circle cx="${cx}" cy="${cy}" r="17" fill="#f4c95d"/>
+      <polygon points="19,20 25,7 31,21" fill="#a9611f"/>
+      <polygon points="45,20 39,7 33,21" fill="#a9611f"/>
+      <circle cx="24" cy="31" r="2.6" fill="#2c2c2a"/>
+      <circle cx="40" cy="31" r="2.6" fill="#2c2c2a"/>
+      <ellipse cx="32" cy="39" rx="4" ry="3" fill="#712b13"/>
+      <path d="M28 42 Q32 46 36 42" fill="none" stroke="#712b13" stroke-width="2" stroke-linecap="round"/>
+    `)
+  },
+
+  // A bent knee (thigh, round joint, offset shin) ending in a shoe --
+  // built from solid blocks, not five parallel fingers, so it can never be
+  // mistaken for `hand`. The shorts band anchors it as a leg, not an arm.
+  leg: () =>
+    wrap(`
+      <rect x="21" y="14" width="18" height="26" rx="8" fill="#e0a273"/>
+      <rect x="19" y="4" width="22" height="14" rx="6" fill="#378add"/>
+      <circle cx="30" cy="38" r="10" fill="#e0a273"/>
+      <rect x="28" y="34" width="16" height="24" rx="8" fill="#e0a273"/>
+      <ellipse cx="44" cy="58" rx="15" ry="7" fill="#2c2c2a"/>
+      <rect x="31" y="60" width="26" height="4" rx="2" fill="#b8b8b8"/>
+    `),
+
+  // Oval body + triangular tail fin + dorsal spike carry the silhouette
+  // instead of scale texture (which dies at 60px); a lighter belly band
+  // splits the body into back/belly so it reads as fish, not a plain blob.
+  fish: () =>
+    wrap(`
+      <polygon points="46,32 62,18 62,46" fill="#0c447c"/>
+      <ellipse cx="28" cy="32" rx="24" ry="15" fill="#378add"/>
+      <path d="M6 38 Q28 50 50 38 Q28 46 6 38 Z" fill="#5dd6e0"/>
+      <polygon points="22,17 32,17 27,5" fill="#0c447c"/>
+      <circle cx="16" cy="28" r="3.6" fill="#f5f2ea"/>
+      <circle cx="15" cy="28" r="1.9" fill="#2c2c2a"/>
+    `),
+
+  // Chose a desk fan (wire-cage ring + pinwheel blades + stand) over a
+  // folding hand fan: the circular cage-and-blade silhouette is a more
+  // universal "fan" reading for a 5-year-old than a pleated paper wedge,
+  // which risks reading as a peacock tail, and its round-cage-on-a-stand
+  // shape can't trade places with `top`'s solid triangle or `kite`'s
+  // diamond even at 60px.
+  fan: () =>
+    wrap(`
+      <rect x="26" y="46" width="12" height="14" rx="3" fill="#b8b8b8"/>
+      <rect x="18" y="58" width="28" height="5" rx="2.5" fill="#b8b8b8"/>
+      <circle cx="32" cy="30" r="26" fill="none" stroke="#b8b8b8" stroke-width="4"/>
+      <g fill="#f4c95d">
+        <path d="M32 30 Q32 8 46 10 Q40 24 32 30 Z"/>
+        <path d="M32 30 Q52 34 48 50 Q34 44 32 30 Z"/>
+        <path d="M32 30 Q12 40 16 54 Q28 46 32 30 Z"/>
+      </g>
+      <circle cx="32" cy="30" r="5" fill="#712b13"/>
+    `),
+
+  // A solid orange sphere with basketball-style seam curves, not the
+  // cream-and-red bowling `pin` -- round silhouette and a warm solid color
+  // that shares nothing with pin's white cylinder + red stripes.
+  ball: () =>
+    wrap(`
+      <circle cx="32" cy="32" r="26" fill="#ef9f27"/>
+      <path d="M32 6 Q20 32 32 58" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
+      <path d="M32 6 Q44 32 32 58" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
+      <path d="M6 32 Q32 22 58 32" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
+      <path d="M18 15 Q23 10 29 11" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    `),
+
+  // A ribbon-less corrugated shipping box: a folded-flap ridge on top and
+  // a cream tape cross instead of `gift`'s bow, and a flat rectangular body
+  // instead of `pot`'s handled, lidded silhouette.
+  box: () =>
+    wrap(`
+      <rect x="8" y="24" width="48" height="34" rx="2" fill="#c9975c"/>
+      <rect x="8" y="24" width="48" height="34" rx="2" fill="none" stroke="#8a5a33" stroke-width="2"/>
+      <polygon points="8,24 32,14 56,24 32,32" fill="#b8874f"/>
+      <polygon points="8,24 32,32 32,14" fill="#8a5a33" opacity="0.35"/>
+      <rect x="27" y="14" width="10" height="44" fill="#d8cfb8" opacity="0.9"/>
+      <rect x="8" y="37" width="48" height="8" fill="#d8cfb8" opacity="0.9"/>
+    `),
+
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.
   letterTile: (label = '') =>
