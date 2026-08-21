@@ -462,7 +462,7 @@ function runBeat(runtime) {
 // stage's own 나가기 button stays on screen throughout.
 function failurePanelHtml(escapeLabel) {
   return `
-    <div class="beat teach-beat">
+    <div class="beat teach-beat recovery-beat">
       <div class="beat-instruction">앗, 여기서 잠깐 문제가 생겼어요.</div>
       <div class="beat-emoji">🔧</div>
       <button class="primary-btn" id="retry-beat">Try Again ▶</button>
@@ -687,7 +687,7 @@ function renderNonScoredBeat(runtime, beat) {
           <div class="boss-intro-robots">${robotsHtml}</div>
           <div class="boss-intro-flash"></div>
           <div class="boss-intro-hero">${heroArt(runtime.stage.hero)}</div>
-          <div class="beat-instruction" style="font-size:20px;opacity:0.55">화면을 탭하면 넘어가요</div>
+          <div class="boss-intro-skip">화면을 탭하면 넘어가요</div>
         </div>
         <div class="teach-content" id="teach-content" style="display:none">${teachInner}</div>
       </div>
