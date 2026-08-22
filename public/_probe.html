@@ -266,9 +266,21 @@
       let rules
       try { rules = sheet.cssRules } catch { continue }
       if (!rules) continue
+      // Index loop, not for..of: CSSRuleList is a legacy array-like, not a
+      // declared iterable. And `r.cssRules && ... continue` would skip every
+      // rule in the sheet -- since nested CSS shipped, a plain CSSStyleRule
+      // also carries a cssRules list (empty, but an object, so truthy), so
+      // that shape reported zero findings on a stylesheet full of them.
       const walk = (list) => {
-        for (const r of list) {
-          if (r.cssRules) { walk(r.cssRules); continue }
+        for (let i = 0; i < list.length; i++) {
+          const r = list[i]
+          // A media block that does not apply to THIS orientation is not a
+          // finding: the landscape overrides are flat px on purpose and are
+          // measured by the landscape run.
+          if (r.cssRules && r.cssRules.length) {
+            if (r.conditionText && !window.matchMedia(r.conditionText).matches) continue
+            walk(r.cssRules)
+          }
           if (!r.selectorText || !r.style) continue
           let matches = false
           try { matches = !!document.querySelector(r.selectorText.replace(/:(active|hover|focus|disabled|empty)\b/g, '')) } catch { continue }
