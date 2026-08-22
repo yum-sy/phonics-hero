@@ -50,10 +50,13 @@ const ICONS = {
       <ellipse cx="32" cy="40" rx="3.4" ry="2.6" fill="#161615"/>
     `),
 
+  // The body fill is off-white on a near-white button, so without the contour
+  // 72% of the drawing measures as background and only the cuff and sole are
+  // left to read -- the same contour every other off-white icon here carries.
   sock: () =>
     wrap(`
       <path d="M24 6 H38 V32 Q38 36 44 38 L56 44 Q58 48 54 50 H26 Q20 50 20 44 V6 Z"
-        fill="#f5f2ea"/>
+        fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
       <rect x="24" y="6" width="14" height="9" fill="#378add"/>
       <path d="M20 44 H54 Q54 48 50 48 H24 Q20 48 20 44 Z" fill="#d1332f"/>
     `),
@@ -126,7 +129,7 @@ const ICONS = {
       </g>
       <g stroke="#2c2c2a" stroke-width="3" stroke-linecap="round" fill="none">
         <path d="M16 12 Q11 5 5 4"/>
-        <path d="M21 10 Q22 3 28 1"/>
+        <path d="M21 10 Q22 4 28 2.5"/>
       </g>
       <circle cx="18" cy="15" r="7.5" fill="#2c2c2a"/>
       <circle cx="31" cy="29" r="8.5" fill="#2c2c2a"/>
@@ -218,16 +221,21 @@ const ICONS = {
       <circle cx="36" cy="16" r="2" fill="#f5f2ea"/>
     `),
 
+  // Head + two ears + a muzzle ellipse is the exact skeleton dog uses, and the
+  // two share beat c6s1-r3, so the pig has to differ where a hard cutout can
+  // see it: the ears flop out past the head instead of spiking up, and the
+  // snout breaks the chin outline. With the snout tucked inside the head
+  // circle the two silhouettes were 87% identical.
   pig: () =>
     wrap(`
-      <polygon points="13,12 27,10 24,26" fill="#dd7f9a"/>
-      <polygon points="51,12 37,10 40,26" fill="#dd7f9a"/>
-      <circle cx="32" cy="34" r="21" fill="#f0a0b4"/>
-      <ellipse cx="32" cy="42" rx="13" ry="10" fill="#dd7f9a"/>
-      <ellipse cx="27" cy="42" rx="3" ry="4" fill="#2c2c2a"/>
-      <ellipse cx="37" cy="42" rx="3" ry="4" fill="#2c2c2a"/>
-      <circle cx="23" cy="27" r="3.4" fill="#2c2c2a"/>
-      <circle cx="41" cy="27" r="3.4" fill="#2c2c2a"/>
+      <ellipse cx="15" cy="19" rx="7" ry="9.5" transform="rotate(-28 15 19)" fill="#dd7f9a"/>
+      <ellipse cx="49" cy="19" rx="7" ry="9.5" transform="rotate(28 49 19)" fill="#dd7f9a"/>
+      <circle cx="32" cy="32" r="20" fill="#f0a0b4"/>
+      <ellipse cx="32" cy="47" rx="13" ry="10" fill="#dd7f9a"/>
+      <ellipse cx="27" cy="47" rx="3" ry="4" fill="#2c2c2a"/>
+      <ellipse cx="37" cy="47" rx="3" ry="4" fill="#2c2c2a"/>
+      <circle cx="23" cy="26" r="3.4" fill="#2c2c2a"/>
+      <circle cx="41" cy="26" r="3.4" fill="#2c2c2a"/>
     `),
 
   // Drawn on the diagonal so barrel, cap and nib all stay chunky inside the
@@ -264,6 +272,9 @@ const ICONS = {
     const clipId = nextId('pin-clip')
     // Local pin coords: waist at 0, top at 0, base at 54 -- placed by the
     // per-pin transform below, so one clip path serves all three.
+    // The white separator stroke is 8 wide, so every placement needs 4 units
+    // of viewBox margin past the body -- that is what caps ty at 13.5 for the
+    // 0.86 pin (13.5 + 54*0.86 + 4 = 63.94).
     const body =
       'M0 0 C5 0 7 4 7 10 C7 16 4 18 4 22 C4 29 14 30 14 40 C14 48 11 54 8 54 L-8 54 C-11 54 -14 48 -14 40 C-14 30 -4 29 -4 22 C-4 18 -7 16 -7 10 C-7 4 -5 0 0 0 Z'
     const pin = (tx, ty, s) => `
@@ -278,9 +289,9 @@ const ICONS = {
       </g>`
     return wrap(`
       <clipPath id="${clipId}"><path d="${body}"/></clipPath>
-      ${pin(22, 10, 0.66)}
-      ${pin(42, 10, 0.66)}
-      ${pin(32, 15, 0.86)}
+      ${pin(22, 8.5, 0.66)}
+      ${pin(42, 8.5, 0.66)}
+      ${pin(32, 13.5, 0.86)}
     `)
   },
 
@@ -381,7 +392,7 @@ const ICONS = {
         <line x1="31" y1="59" x2="43" y2="59"/>
       </g>
       <g fill="#2c2c2a">
-        <ellipse cx="9" cy="31" rx="5.6" ry="13" transform="rotate(-38 9 31)"/>
+        <ellipse cx="9.4" cy="31" rx="5.6" ry="13" transform="rotate(-38 9.4 31)"/>
         <ellipse cx="11" cy="23" rx="5.6" ry="13" transform="rotate(-18 11 23)"/>
         <ellipse cx="17" cy="18" rx="5" ry="11" transform="rotate(-2 17 18)"/>
       </g>
@@ -525,7 +536,7 @@ const ICONS = {
       <polygon points="32,2 52,24 32,24" fill="#ffd43b"/>
       <polygon points="12,24 32,24 32,46" fill="#378add"/>
       <polygon points="32,24 52,24 32,46" fill="#3b9922"/>
-      <path d="M32 46 Q41 51 34 56 Q27 61 34 63" fill="none" stroke="#2c2c2a"
+      <path d="M32 46 Q41 51 34 56 Q27 60 34 62" fill="none" stroke="#2c2c2a"
         stroke-width="2.8" stroke-linecap="round"/>
       <polygon points="34,48 42,45 42,53" fill="#5dd6e0"/>
       <polygon points="28,55 35,52 35,60" fill="#5dd6e0"/>
@@ -569,7 +580,7 @@ const ICONS = {
   // one continuous curl instead of a detached blob.
   rat: () =>
     wrap(`
-      <path d="M16 42 Q4 46 4 56 Q4 64 14 62" fill="none" stroke="#e0a273" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M16 42 Q4 46 4 54 Q4 61 14 59" fill="none" stroke="#e0a273" stroke-width="4.5" stroke-linecap="round"/>
       <ellipse cx="26" cy="36" rx="20" ry="15" fill="#9b9ba3"/>
       <circle cx="44" cy="22" r="10" fill="#9b9ba3"/>
       <polygon points="52,19 63,22 52,26" fill="#7c7c86"/>
@@ -935,7 +946,7 @@ const ICONS = {
         <rect x="46" y="18" width="4.5" height="6"/>
         <rect x="46" y="45" width="4.5" height="6"/>
       </g>
-      <polygon points="49,12 49,58 27,63 27,4" fill="#a9611f" stroke="#712b13" stroke-width="2"/>
+      <polygon points="49,12 49,58 27,62 27,4" fill="#a9611f" stroke="#712b13" stroke-width="2"/>
       <g fill="#8a5a33" stroke="#712b13" stroke-width="1.6">
         <polygon points="31,12 45,16 45,30 31,28"/>
         <polygon points="31,37 45,36 45,50 31,53"/>
