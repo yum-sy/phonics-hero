@@ -1,0 +1,795 @@
+// DC-family character art (chapter 7 onward): the night-city vigilante cast.
+// This family shares a genre with the chapter-2 superhero cast in src/art.js,
+// so it is drawn to be the *opposite* of that file in every measurable way.
+// If a figure here could be dropped into chapter 2 unnoticed, it is wrong.
+//
+// DESIGN GRAMMAR (every figure obeys all of it)
+//
+//  1. LEAN ADULT PROPORTIONS. Head radius 12–15 on a 120x140 box, torso
+//     44–56 wide, legs running from y≈94 to y≈136. That is roughly 4.9 head
+//     heights, against the chapter-2 chibi cast's 3.1. Small head + long legs
+//     is the single strongest tell between the two superhero families and it
+//     survives the hard cut-out test.
+//  2. LIMBS ARE ROUND-CAPPED STROKES, not stacked rounded rects. Elbows,
+//     wrists and knees exist because the caps put them there. Chapter 2 draws
+//     arms as `rect ... rx`, so this reads as a different hand at a glance.
+//  3. THE CAPE IS THE BIGGEST SHAPE. Heroes get a SCALLOPED hem (round
+//     arcs); villains that have a cape get a JAGGED hem (sharp teeth). The
+//     chapter-2 capes are narrow straight-sided triangles.
+//  4. COWL, NOT FACE. Heroes are fully masked: one dark skull shape with two
+//     pale angular lenses and no mouth. Chapter 2 shows a round face under a
+//     domino mask.
+//  5. LIGHT IS A HARD-EDGED FLAT WEDGE. Every beam is three nested polygons
+//     at fixed opacity plus a dark rim line. No gradients, no filters (project
+//     rule), and no soft glow circles either -- this family's light has an
+//     edge you could cut on, and on the app's pale cards the rim is the only
+//     reason the light is visible at all (measured: gold on cream is 1.35:1).
+//  6. HERO / VILLAIN SPLIT ON FOUR AXES, never on brightness alone (that
+//     mistake was rejected once already in the chapter-4 family):
+//       a. HUE NEIGHBOURHOOD -- heroes live in the 200-235 degree azure/teal/
+//          indigo band; villains live outside it (plum, magenta, acid olive,
+//          rust). No hero uses a villain hue and no villain uses azure.
+//       b. THE GOLD IS THE HEROES'. Warm gold trim appears on heroes only.
+//          Villain emission is violet, mint, acid green, cyan-white or red.
+//       c. CHEST TONE -- every hero carries a large cream emblem plate high
+//          on the torso. No villain has any cream on its torso at all; a
+//          villain's brights are lamps, eyes and beams, never a chest plate.
+//       d. STANCE -- heroes are upright/symmetric or flying forward; villains
+//          are tilted, asymmetric and silhouette-jagged.
+//  7. EYES ALWAYS SIT ON A PLATE THAT IS LIGHTER THAN THE BODY. The chapter-4
+//     round measured ink-dot eyes on a dark body at 2.0:1; the fix was to put
+//     them on a bright plate. The darkest figures here (Blackout, Nightfall)
+//     get the brightest eye plates in the file for exactly that reason.
+//  8. THE EMBLEM PLATE IS CURRICULUM CONTENT, not decoration. Chapter 7
+//     teaches AI / J / OA, so two of the four labels are two characters wide;
+//     the plate is a wide BORDERED rounded nameplate (not the other families'
+//     ellipse), sized to the chest rather than worn as a badge, and the font
+//     size steps down by label length so both fit one plate geometry. The
+//     border colour differs per hero. See `emblemPlate` for the A/B that
+//     settled the size and for the two limits it must not cross.
+//
+// This file must not import ../art.js (circular); it carries its own svgWrap.
+
+function svgWrap(inner, viewBox = '0 0 120 140') {
+  return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="carbot-art">${inner}</svg>`
+}
+
+const CREAM = '#f7f3e6' // emblem plate and hero mask lenses
+const PLATE_INK = '#0f1830' // emblem letter colour, measured against CREAM
+const GOLD = '#ffcf4a' // hero-only warm emission and trim
+const BEAM_RIM = '#c07a10' // deep amber: the only tone that edges gold light
+                           // without reading as a dark pole (see `beam`)
+const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+
+// Mirrors arbitrary drawing content about the centre line. Done with a
+// transform rather than by rewriting point lists: `polygon points` are
+// absolute coordinates here, and hand-flipping them is where the x-goes-
+// negative mistakes come from.
+function mirrored(inner) {
+  return `<g transform="translate(120,0) scale(-1,1)">${inner}</g>`
+}
+
+// A hem of `n` round arcs bulging by `depth`, used for hero cape bottoms.
+// Returned as path commands that continue from (x1,y1) to (x2,y2).
+function scallop(x1, y1, x2, y2, n, depth) {
+  let d = ''
+  for (let i = 0; i < n; i++) {
+    const ax = x1 + ((x2 - x1) * i) / n
+    const ay = y1 + ((y2 - y1) * i) / n
+    const bx = x1 + ((x2 - x1) * (i + 1)) / n
+    const by = y1 + ((y2 - y1) * (i + 1)) / n
+    d += ` Q ${((ax + bx) / 2).toFixed(1)},${((ay + by) / 2 + depth).toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)}`
+  }
+  return d
+}
+
+// The villain counterpart of `scallop`: the same hem as sharp teeth. Heroes
+// round, villains point -- readable in a pure cut-out with the colour gone.
+function jagged(x1, y1, x2, y2, n, depth) {
+  let d = ''
+  for (let i = 0; i < n; i++) {
+    const ax = x1 + ((x2 - x1) * i) / n
+    const ay = y1 + ((y2 - y1) * i) / n
+    const bx = x1 + ((x2 - x1) * (i + 1)) / n
+    const by = y1 + ((y2 - y1) * (i + 1)) / n
+    d += ` L ${((ax + bx) / 2).toFixed(1)},${((ay + by) / 2 + depth).toFixed(1)} L ${bx.toFixed(1)},${by.toFixed(1)}`
+  }
+  return d
+}
+
+// Hard-edged flat light: three nested wedges of increasing opacity instead of
+// a gradient (banned inside SVG here), edged with a thin `rimColor` line.
+// Both parts were forced by measurement, in two rounds:
+//  - The app renders these on near-white cards and gold on cream is about
+//    1.35:1. A fully opaque gold core was still invisible at 250 px, so the
+//    light needs a boundary darker than itself to exist at all.
+//  - But the rim must be a MID-TONE, warm relative to the beam, and thin. The
+//    first attempt used the figure's ink accent at 1.8 wide and the result read
+//    as a dark pole or a fishing rod held in the hand, not as light. A 1-wide
+//    deep-amber edge around an opaque gold core reads as a beam.
+// NOTE for callers: the rim is a stroke, so a far-edge endpoint placed exactly
+// on the viewBox boundary clips by half its width. Keep endpoints a unit
+// inside the frame.
+function beam(ax, ay, x1, y1, x2, y2, color, rimColor) {
+  const at = (t) => [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t]
+  const wedge = (t0, t1, o) => {
+    const [px, py] = at(t0)
+    const [qx, qy] = at(t1)
+    return `<polygon points="${ax},${ay} ${px.toFixed(1)},${py.toFixed(1)} ${qx.toFixed(1)},${qy.toFixed(1)}" fill="${color}" opacity="${o}"/>`
+  }
+  const rim = rimColor
+    ? `<path d="M ${x1},${y1} L ${ax},${ay} L ${x2},${y2}" stroke="${rimColor}" stroke-width="1" fill="none" stroke-linejoin="round"/>`
+    : ''
+  return wedge(0, 1, 0.3) + wedge(0.26, 0.74, 0.66) + wedge(0.4, 0.6, 1) + rim
+}
+
+// A flat dark wash over an already-drawn shape. This family builds volume by
+// stacking opaque faces; this is the one place transparency stands in for a
+// second palette colour, so that `accent` stays free for trim.
+function shade(d, o = 0.22) {
+  return `<path d="${d}" fill="#000" opacity="${o}"/>`
+}
+
+// Tilted parallelogram: the eye shape shared by heroes (pale lenses) and
+// villains (glowing slits), so the whole cast reads as one world.
+function slit(cx, cy, w, h, tilt, color) {
+  const l = cx - w / 2
+  const r = cx + w / 2
+  return `<polygon points="${l.toFixed(1)},${(cy - h / 2 + tilt).toFixed(1)} ${r.toFixed(1)},${(cy - h / 2 - tilt).toFixed(1)} ${r.toFixed(1)},${(cy + h / 2 - tilt).toFixed(1)} ${l.toFixed(1)},${(cy + h / 2 + tilt).toFixed(1)}" fill="${color}"/>`
+}
+
+// Hero mask: two pale angular lenses, outer ends lifted. No pupils and no
+// mouth -- a cowl reads as a cowl because the face is unreadable.
+function lenses(cx, cy, color = CREAM, scale = 1) {
+  const w = 9 * scale
+  const h = 5.6 * scale
+  const off = 6.2 * scale
+  return slit(cx - off, cy, w, h, 1.5 * scale, color) + slit(cx + off, cy, w, h, -1.5 * scale, color)
+}
+
+// Villain eyes. Three layers, because a villain has to glow AND be legible
+// and those pull against each other: a bright plate (must out-light the body
+// it sits on), a near-ink slit on it (the slit SHAPE is what carries
+// legibility -- the chapter-4 family measured ink eyes straight on a dark body
+// at 2.0:1 and only reached 10.7:1 by lifting them onto a plate), and a small
+// saturated core inside the slit that supplies the glow. The core is small
+// enough that its own contrast is not load bearing.
+function eyePlate(cx, cy, w, h, plateColor, slitColor, coreColor, tilt = 1.6) {
+  const l = cx - w / 2
+  const r = cx + w / 2
+  const off = w * 0.24
+  const sw = w * 0.3
+  const sh = h * 0.42
+  const core = coreColor
+    ? slit(cx - off, cy, sw * 0.5, sh * 0.5, tilt, coreColor) +
+      slit(cx + off, cy, sw * 0.5, sh * 0.5, -tilt, coreColor)
+    : ''
+  return `
+    <polygon points="${l},${cy - h / 2} ${r},${cy - h / 2 - 1} ${r},${cy + h / 2 - 1} ${l},${cy + h / 2}" fill="${plateColor}"/>
+    ${slit(cx - off, cy, sw, sh, tilt, slitColor)}
+    ${slit(cx + off, cy, sw, sh, -tilt, slitColor)}
+    ${core}`
+}
+
+// Emblem nameplate. Wide and rectangular rather than the other families'
+// ellipse because chapter 7 teaches the digraphs AI and OA: half of this
+// cast's labels are two glyphs wide and must survive the same 96 px render
+// as the single-glyph 'J'. `size` therefore steps down by label length, so
+// both fit one plate geometry.
+//
+// It is a BORDERED plate sized to the chest, not a small badge. An A/B render
+// of the two settled it: the plate the body can carry gives a 21-22 unit
+// letter (about 20 px at a 132 px render, 15 px at 96 px), against 18-19 for a
+// badge -- worth having when the letter is the curriculum.
+// Two hard limits came out of that A/B and both are respected here:
+//  - The plate must stay INSIDE the torso outline. An oversized plate poked
+//    1.6 units past the body edge, which changes the hard cut-out silhouette;
+//    an internal detail must never do that. The upright heroes' chests were
+//    widened to 50-56 units to earn the bigger plate honestly instead.
+//  - The border colour VARIES per character. Four heroes wearing one identical
+//    cream slab, on bodies that are all dark, puts the only bright shape in
+//    the figure in the same place with the same outline every time; the frame
+//    colour is what keeps them apart. The plate shape stays constant because
+//    it is the same teaching device on every hero.
+// The plate is a rounded rectangle throughout: this family risks its art
+// being misread as a letter, and a rounded rect is not one. Villains get no
+// plate at all, which is one of the four hero/villain axes.
+function emblemPlate(
+  cx,
+  cy,
+  label,
+  w = 42,
+  borderColor = GOLD,
+  plateColor = CREAM,
+  textColor = PLATE_INK,
+  border = 2.2
+) {
+  const text = String(label)
+  const h = w * 0.63
+  const size = text.length > 1 ? h * 0.79 : h * 1.0
+  const rx = w * 0.11
+  return `
+    <rect x="${(cx - w / 2 - border).toFixed(1)}" y="${(cy - h / 2 - border).toFixed(1)}"
+      width="${(w + border * 2).toFixed(1)}" height="${(h + border * 2).toFixed(1)}"
+      rx="${(rx + border).toFixed(1)}" fill="${borderColor}"/>
+    <rect x="${(cx - w / 2).toFixed(1)}" y="${(cy - h / 2).toFixed(1)}" width="${w}" height="${h.toFixed(1)}" rx="${rx.toFixed(1)}" fill="${plateColor}"/>
+    <text x="${cx}" y="${(cy + size * 0.355).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+      font-size="${size.toFixed(1)}" font-weight="800" fill="${textColor}">${text}</text>`
+}
+
+// ---------------------------------------------------------------------------
+// HEROES. Azure/teal/indigo bodies, gold trim, cream chest slab, scalloped
+// cape, cowl with pale lenses. Three distinct silhouettes plus the boss:
+// Ray = raised lantern arm; Jett = the only diagonal flying figure; Cloak =
+// eared cowl over the widest cape; Nightray = all three, oversized.
+// ---------------------------------------------------------------------------
+
+// Ray. The light-bringer: a lantern held overhead throws a hard wedge into
+// the top-right corner, and the raised arm is the whole read at small sizes,
+// so the other arm stays down at the hip.
+// The cape is swept to one side rather than hung symmetrically. The first
+// pass hung it symmetrically and the hard cut-out came back reading "figure
+// in a dress" -- a symmetric hem that ends above the knees closes the gap
+// between the legs and stops being a cape. Sweeping it clears one leg
+// completely and the drape direction is what says "cape".
+export function dcRay({
+  bodyColor = '#2f5fb3',
+  accent = '#16233f',
+  capeColor = '#122a55',
+  liningColor = '#3b74d1',
+  emblem = 'AI',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="58" cy="134" rx="28" ry="5" fill="#000" opacity="0.12"/>
+
+      ${beam(99, 22, 57, 1, 119, 52, GOLD, BEAM_RIM)}
+
+      <path d="M 73,48 L 6,88 ${scallop(6, 88, 40, 110, 3, 9)} L 56,56 Z" fill="${capeColor}"/>
+      <path d="M 68,52 L 20,84 ${scallop(20, 84, 42, 100, 2, 7)} L 57,60 Z" fill="${liningColor}"/>
+      ${shade(`M 68,52 L 20,84 ${scallop(20, 84, 42, 100, 2, 7)} L 57,60 Z`, 0.3)}
+
+      <path d="M 45,95 L 43,120 L 44,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 74,95 L 76,120 L 76,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="34,124 51,124 51,136 32,136" fill="${accent}"/>
+      <polygon points="86,124 69,124 69,136 88,136" fill="${accent}"/>
+      <rect x="34" y="124" width="17" height="3.4" fill="${GOLD}"/>
+      <rect x="69" y="124" width="17" height="3.4" fill="${GOLD}"/>
+
+      <polygon points="35,47 85,47 83,80 78,98 42,98 37,80" fill="${bodyColor}"/>
+      <polygon points="35,47 49,47 45,86 38,78" fill="${accent}"/>
+      <polygon points="85,47 71,47 75,86 82,78" fill="${accent}"/>
+
+      <path d="M 38,55 L 30,77 L 32,91" stroke="${bodyColor}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="32" cy="94" r="6.2" fill="${accent}"/>
+      <circle cx="32" cy="94" r="2.6" fill="${GOLD}"/>
+
+      <path d="M 82,55 L 95,40 L 99,25" stroke="${bodyColor}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="99" cy="24" r="6.2" fill="${accent}"/>
+      <polygon points="93,22 105,22 108,11 90,11" fill="${GOLD}"/>
+      <polygon points="90,11 108,11 105,5 93,5" fill="${accent}"/>
+      <polygon points="95,20 103,20 104,13 94,13" fill="${CREAM}"/>
+
+      <rect x="40" y="89" width="40" height="8" fill="${accent}"/>
+      <rect x="53" y="88" width="14" height="10" fill="${GOLD}"/>
+      ${emblemPlate(60, 64, emblem, 41, GOLD)}
+
+      <circle cx="60" cy="27" r="12.5" fill="${accent}"/>
+      <path d="M 47.5,27 A 12.5,12.5 0 0 1 72.5,27 Z" fill="${bodyColor}"/>
+      <rect x="47.6" y="25.4" width="24.8" height="3.2" fill="${GOLD}"/>
+      ${lenses(60, 32.5)}
+      <polygon points="56,16 64,16 60,3" fill="${GOLD}"/>
+      <polygon points="58,16 62,16 60,6" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// Jett. The only diagonal figure in the app: hips low-left, cowl high-right,
+// one fist thrown forward past the frame's shoulder, cape streaming behind.
+// Drawn by hand rather than rotated because a rotate about the body centre
+// pushes the fist and the cape hem straight out of the viewBox.
+// The cape streams ABOVE the trailing legs, not through them. The first pass
+// overlapped the two and the cut-out came back as one undifferentiated
+// diagonal streak with no body in it.
+// This is also the one figure that needed a dedicated front-facing CHEST
+// FACET. A foreshortened diagonal slab is about 17 units thick and an
+// axis-aligned nameplate is 25 tall, so the plate poked past the body outline
+// -- a pixel diff of the cut-out with and without it came back at 382 pixels.
+// The facet is body, so it is a deliberate silhouette choice; the plate now
+// sits inside it and the same diff is 0.
+export function dcJett({
+  bodyColor = '#1a7d9e',
+  accent = '#0b3a4c',
+  capeColor = '#a8272c',
+  liningColor = '#d8443f',
+  emblem = 'J',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="46" cy="136" rx="26" ry="4" fill="#000" opacity="0.08"/>
+
+      <path d="M 76,42 L 4,74 ${scallop(4, 74, 34, 100, 3, 8)} L 66,60 Z" fill="${capeColor}"/>
+      <path d="M 72,48 L 20,72 ${scallop(20, 72, 40, 92, 2, 6)} L 64,60 Z" fill="${liningColor}"/>
+      ${shade(`M 72,48 L 20,72 ${scallop(20, 72, 40, 92, 2, 6)} L 64,60 Z`, 0.26)}
+
+      <rect x="4" y="86" width="18" height="3.4" fill="${CREAM}" opacity="0.55"/>
+      <rect x="10" y="96" width="13" height="3" fill="${CREAM}" opacity="0.4"/>
+
+      <path d="M 50,84 L 32,100 L 18,110" stroke="${bodyColor}" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="22,105 10,116 18,125 30,114" fill="${accent}"/>
+      <path d="M 56,88 L 44,108 L 34,122" stroke="${bodyColor}" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="38,117 27,129 35,137 46,125" fill="${accent}"/>
+
+      <polygon points="76,46 88,58 58,92 44,80" fill="${bodyColor}"/>
+      <polygon points="76,46 84,54 60,78 52,70" fill="${accent}" opacity="0.45"/>
+      <polygon points="36,46 84,40 88,70 45,82" fill="${bodyColor}"/>
+      <polygon points="36,46 52,44 56,80 45,82" fill="${accent}"/>
+
+      <path d="M 60,62 L 46,74 L 40,86" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="88" r="6" fill="${accent}"/>
+
+      <path d="M 80,54 L 95,38 L 106,25" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="107" cy="23" r="6.4" fill="${accent}"/>
+      <polygon points="102,18 112,18 113,12 103,12" fill="${GOLD}"/>
+
+      <polygon points="48,78 70,74 68,86 47,88" fill="${accent}"/>
+      <rect x="54" y="76" width="12" height="11" fill="${GOLD}"/>
+      ${emblemPlate(62, 58, emblem, 32, liningColor)}
+
+      <circle cx="87" cy="41" r="12" fill="${accent}"/>
+      <path d="M 75.4,38 A 12,12 0 0 1 97.4,33 Z" fill="${bodyColor}"/>
+      ${lenses(87, 45, CREAM, 0.95)}
+      <polygon points="78,33 88,28 70,25" fill="${accent}"/>
+      <polygon points="79,37 87,32 72,30" fill="${GOLD}"/>
+    </g>
+  `
+  )
+}
+
+// Cloak. The detective: the family's signature figure. Two long pointed cowl
+// ears run to the very top of the viewBox and the widest cape in the hero set
+// spreads off the shoulders, so the cut-out reads "eared cowl over a
+// bat-shaped cape" with every colour thrown away.
+// The cape is TWO LOBES WITH A DEEP CENTRE NOTCH, not one hem: the notch is
+// what keeps the legs visible as legs. Cowl ears belong to Cloak and to the
+// boss that merges from him -- Ray and Jett deliberately have none, or the
+// three heroes' heads stop being distinguishable.
+export function dcCloak({
+  bodyColor = '#28304f',
+  accent = '#101628',
+  capeColor = '#151a2e',
+  liningColor = '#5d688f',
+  emblem = 'OA',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="135" rx="32" ry="5" fill="#000" opacity="0.13"/>
+
+      <path d="M 44,44 L 4,98 ${scallop(4, 98, 42, 108, 2, 9)} L 60,80 L 78,108 ${scallop(78, 108, 116, 98, 2, 9)} L 76,44 Z" fill="${capeColor}"/>
+      <path d="M 48,47 L 20,92 ${scallop(20, 92, 46, 100, 1, 7)} L 60,84 L 74,100 ${scallop(74, 100, 100, 92, 1, 7)} L 72,47 Z" fill="${liningColor}"/>
+      ${shade(`M 48,47 L 20,92 ${scallop(20, 92, 46, 100, 1, 7)} L 60,84 L 74,100 ${scallop(74, 100, 100, 92, 1, 7)} L 72,47 Z`, 0.34)}
+
+      <path d="M 47,94 L 45,118 L 46,129" stroke="${bodyColor}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 73,94 L 75,118 L 74,129" stroke="${bodyColor}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="36,122 53,122 53,137 34,137" fill="${accent}"/>
+      <polygon points="84,122 67,122 67,137 86,137" fill="${accent}"/>
+      <rect x="36" y="122" width="17" height="3.6" fill="${GOLD}"/>
+      <rect x="67" y="122" width="17" height="3.6" fill="${GOLD}"/>
+
+      <polygon points="34,45 86,45 84,80 79,97 41,97 36,80" fill="${bodyColor}"/>
+      <polygon points="34,45 48,45 44,86 37,78" fill="${accent}"/>
+      <polygon points="86,45 72,45 76,86 83,78" fill="${accent}"/>
+
+      <path d="M 37,53 L 26,74 L 25,90" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="20,58 33,64 29,80 17,74" fill="${capeColor}"/>
+      <circle cx="25" cy="93" r="6.4" fill="${accent}"/>
+      <path d="M 83,53 L 94,74 L 95,90" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="100,58 87,64 91,80 103,74" fill="${capeColor}"/>
+      <circle cx="95" cy="93" r="6.4" fill="${accent}"/>
+
+      <rect x="39" y="88" width="42" height="9" fill="${accent}"/>
+      <rect x="43" y="89" width="7" height="7" fill="${GOLD}"/>
+      <rect x="56" y="87" width="9" height="11" fill="${GOLD}"/>
+      <rect x="71" y="89" width="7" height="7" fill="${GOLD}"/>
+      ${emblemPlate(60, 64, emblem, 43, liningColor)}
+
+      <circle cx="60" cy="30" r="13" fill="${accent}"/>
+      <polygon points="49,21 57,20 45,2" fill="${accent}"/>
+      <polygon points="71,21 63,20 75,2" fill="${accent}"/>
+      <path d="M 47.2,28 A 13,13 0 0 1 72.8,28 Z" fill="${bodyColor}"/>
+      ${lenses(60, 34.5, CREAM, 1.02)}
+      <polygon points="53,42 67,42 64,46 56,46" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// Nightray, the chapter-7 boss and the combined form. Deliberately the
+// largest hero in the app: cowl ears touch y=1, the scalloped cape spans the
+// full 120 units, the torso is 56 wide against the others' 44-48. The three
+// earlier heroes are all still visible in it -- Cloak's eared cowl, Jett's
+// crimson cape lining, Ray's lantern in BOTH fists with a beam off each --
+// so "the three merged" reads without narration. Size is bought with clear
+// separate shapes (wide arm gaps, split legs) rather than with overlap.
+export function dcNightray({
+  bodyColor = '#2b3aa0',
+  accent = '#0f1436',
+  capeColor = '#0d1024',
+  liningColor = '#c0332f',
+  panelColor = '#7c88c8',
+  emblem = '★',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="135" rx="42" ry="4.6" fill="#000" opacity="0.15"/>
+
+      ${beam(16, 78, 1, 98, 1, 132, GOLD, BEAM_RIM)}
+      ${beam(104, 78, 119, 98, 119, 132, GOLD, BEAM_RIM)}
+
+      <path d="M 40,42 L 2,104 ${scallop(2, 104, 40,116, 2, 10)} L 60,84 L 80,116 ${scallop(80, 116, 118, 104, 2, 10)} L 80,42 Z" fill="${capeColor}"/>
+      <path d="M 44,45 L 18,98 ${scallop(18, 98, 44, 108, 1, 8)} L 60,88 L 76,108 ${scallop(76, 108, 102, 98, 1, 8)} L 76,45 Z" fill="${liningColor}"/>
+      ${shade(`M 44,45 L 18,98 ${scallop(18, 98, 44, 108, 1, 8)} L 60,88 L 76,108 ${scallop(76, 108, 102, 98, 1, 8)} L 76,45 Z`, 0.34)}
+
+      <path d="M 47,98 L 42,122 L 42,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 73,98 L 78,122 L 78,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="30,124 51,124 51,139 28,139" fill="${accent}"/>
+      <polygon points="90,124 69,124 69,139 92,139" fill="${accent}"/>
+      <rect x="30" y="124" width="21" height="4" fill="${GOLD}"/>
+      <rect x="69" y="124" width="21" height="4" fill="${GOLD}"/>
+
+      <polygon points="30,43 90,43 88,82 82,100 38,100 32,82" fill="${bodyColor}"/>
+      <polygon points="30,43 46,43 42,90 34,80" fill="${accent}"/>
+      <polygon points="90,43 74,43 78,90 86,80" fill="${accent}"/>
+      <polygon points="38,100 82,100 78,106 42,106" fill="${accent}"/>
+
+      <polygon points="24,42 48,42 44,60 20,58" fill="${bodyColor}"/>
+      <polygon points="96,42 72,42 76,60 100,58" fill="${bodyColor}"/>
+      <rect x="22" y="42" width="24" height="4.4" fill="${GOLD}"/>
+      <rect x="74" y="42" width="24" height="4.4" fill="${GOLD}"/>
+
+      <path d="M 34,54 L 20,66 L 17,76" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 86,54 L 100,66 L 103,76" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="16" cy="78" r="7.2" fill="${accent}"/>
+      <circle cx="104" cy="78" r="7.2" fill="${accent}"/>
+      <polygon points="9,76 23,76 25,66 7,66" fill="${GOLD}"/>
+      <polygon points="97,76 111,76 113,66 95,66" fill="${GOLD}"/>
+      <polygon points="11,74 21,74 22,68 10,68" fill="${CREAM}"/>
+      <polygon points="99,74 109,74 110,68 98,68" fill="${CREAM}"/>
+
+      <rect x="36" y="88" width="48" height="10" fill="${accent}"/>
+      <rect x="52" y="86" width="16" height="14" fill="${GOLD}"/>
+      <rect x="32" y="43" width="56" height="3.6" fill="${panelColor}"/>
+      ${emblemPlate(60, 64, emblem, 49, GOLD)}
+
+      <circle cx="60" cy="27" r="15" fill="${accent}"/>
+      <polygon points="47,17 56,16 41,1" fill="${accent}"/>
+      <polygon points="73,17 64,16 79,1" fill="${accent}"/>
+      <path d="M 45.2,25 A 15,15 0 0 1 74.8,25 Z" fill="${bodyColor}"/>
+      <rect x="45.4" y="22.4" width="29.2" height="3.6" fill="${GOLD}"/>
+      ${lenses(60, 31.5, CREAM, 1.18)}
+      <polygon points="52,40 68,40 64,45 56,45" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// ---------------------------------------------------------------------------
+// VILLAINS. Same night-city drawing language, inverted on all four axes:
+// hues outside the heroes' azure band, no gold anywhere, no cream on the
+// torso, and tilted/jagged silhouettes. None of them carries an emblem --
+// the letters belong to the heroes. Each one's own name is made literal in
+// the silhouette, which is how the chapter-2 and chapter-3 villains worked.
+// ---------------------------------------------------------------------------
+
+// Blackout. The dead streetlamp: a hooded lamp head, a post for a body, no
+// legs at all (a heavy flared base instead) and two drooping lamp arms whose
+// bulbs are cracked. Having no legs is the sharpest silhouette break from the
+// four heroes, and the hood plus base make it read as "the one who switched
+// the lights off" rather than as a person.
+export function dcBlackout({
+  bodyColor = '#241a38',
+  accent = '#120c1e',
+  lensColor = '#c99bff',
+  glowColor = '#ff5cf0',
+} = {}) {
+  const bulb = (cx, cy) => `
+    <circle cx="${cx}" cy="${cy}" r="8.4" fill="${accent}"/>
+    <circle cx="${cx}" cy="${cy}" r="5.6" fill="${bodyColor}"/>
+    <path d="M ${cx - 3.6},${cy + 1.6} L ${cx - 3.6},${cy - 1.2} L ${cx - 1.4},${cy - 2.6}"
+      stroke="${lensColor}" stroke-width="1.6" fill="none" opacity="0.9"/>
+    <path d="M ${cx + 1.4},${cy - 2.6} L ${cx + 3.6},${cy - 1.2} L ${cx + 3.6},${cy + 1.6}"
+      stroke="${lensColor}" stroke-width="1.6" fill="none" opacity="0.9"/>
+    <rect x="${cx - 3.4}" y="${cy - 12}" width="6.8" height="4.4" fill="${accent}"/>`
+
+  return svgWrap(
+    `
+    <g>
+      <polygon points="60,104 18,138 102,138" fill="#000" opacity="0.24"/>
+
+      <path d="M 55,64 L 34,72 L 22,82" stroke="${bodyColor}" stroke-width="8.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 66,62 L 88,68 L 100,76" stroke="${bodyColor}" stroke-width="8.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      ${bulb(17, 92)}
+      ${bulb(104, 86)}
+
+      <polygon points="49,56 71,56 68,104 52,104" fill="${bodyColor}"/>
+      <polygon points="49,56 57,56 55,104 52,104" fill="${accent}"/>
+      <rect x="47" y="72" width="26" height="5" fill="${accent}"/>
+      <rect x="47" y="88" width="26" height="5" fill="${accent}"/>
+
+      <polygon points="52,104 68,104 76,122 44,122" fill="${bodyColor}"/>
+      <polygon points="44,122 76,122 84,132 36,132" fill="${accent}"/>
+      <polygon points="36,132 84,132 88,138 32,138" fill="${bodyColor}"/>
+
+      <polygon points="56,56 64,56 64,40 56,40" fill="${accent}"/>
+      <polygon points="34,32 86,32 78,52 42,52" fill="${bodyColor}"/>
+      <polygon points="34,32 86,32 80,18 40,18" fill="${accent}"/>
+      <polygon points="40,18 80,18 78,12 42,12" fill="${bodyColor}"/>
+      ${eyePlate(60, 42, 34, 13, lensColor, '#0b0512', glowColor, 2)}
+      <polygon points="43,49 77,49 75,53 45,53" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// Mirage. Two heads on one body: the solid one plus an illusion rising from
+// the same shoulders on a visible second neck, so the cut-out itself asks
+// which is real. A mirror shard in the far hand carries a third, tiny face.
+// Hem is jagged (villain rule) and the body is split down the middle into two
+// tones so nothing about the figure agrees with itself.
+// The second head needs a NECK and 30-plus units of separation. The first
+// pass put it 20 units away with no neck and the cut-out read as one head
+// with two horns, which is a different villain entirely.
+export function dcMirage({
+  bodyColor = '#6e2352',
+  accent = '#37102a',
+  ghostColor = '#a3468a',
+  shimmerColor = '#5ff0d8',
+} = {}) {
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="56" cy="134" rx="26" ry="4.6" fill="#000" opacity="0.1"/>
+
+      <polygon points="80,30 92,42 80,52 68,44" fill="${ghostColor}"/>
+      <rect x="79" y="24" width="7" height="9" fill="${ghostColor}"/>
+      <circle cx="84" cy="16" r="10.5" fill="${ghostColor}"/>
+      ${eyePlate(84, 18, 15, 7, '#b8f0e4', '#3a1030', null, 1.2)}
+
+      <path d="M 50,92 L 46,114 L 45,126" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 68,92 L 72,114 L 73,126" stroke="${accent}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="36,122 51,122 51,134 34,134" fill="${accent}"/>
+      <polygon points="82,122 67,122 67,134 84,134" fill="${bodyColor}"/>
+
+      <polygon points="40,46 78,46 74,94 45,94" fill="${bodyColor}"/>
+      <polygon points="59,46 78,46 74,94 59,94" fill="${accent}"/>
+      <path d="M 40,66 L 50,60 L 60,70 L 70,62 L 78,68 L 78,76 L 70,70 L 60,78 L 50,68 L 40,74 Z" fill="${shimmerColor}" opacity="0.62"/>
+
+      <path d="M 44,52 L 30,68 L 28,84" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="28" cy="86" r="5.8" fill="${accent}"/>
+      <path d="M 74,52 L 92,60 L 100,68" stroke="${accent}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="101" cy="70" r="5.8" fill="${bodyColor}"/>
+      <polygon points="94,50 116,42 118,72 100,78" fill="${shimmerColor}" opacity="0.5"/>
+      <polygon points="97,52 112,46 114,68 101,72" fill="${shimmerColor}"/>
+      <circle cx="106" cy="57" r="5" fill="${accent}"/>
+      <polygon points="101,72 114,68 113,74 102,76" fill="${accent}" opacity="0.5"/>
+
+      <path d="M 40,94 L 78,94 ${jagged(78, 94, 40, 94, 5, 12)} Z" fill="${accent}"/>
+
+      <circle cx="50" cy="34" r="11.5" fill="${bodyColor}"/>
+      <path d="M 38.5,32 A 11.5,11.5 0 0 1 61.5,32 Z" fill="${accent}"/>
+      ${eyePlate(50, 37, 17, 8, shimmerColor, '#25081c', '#eaffff', 1.5)}
+      <polygon points="40,25 46,27 41,16" fill="${accent}"/>
+      <polygon points="60,25 54,27 59,16" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// Gridlock. The jam: a traffic-signal box for a head and a diamond-mesh
+// barrier strung between two outstretched fists across the whole lower frame.
+// The mesh is diamonds rather than squares on purpose -- a square grid reads
+// as a hash mark, and this family already risks being misread as letters.
+export function dcGridlock({
+  bodyColor = '#4d5a25',
+  accent = '#212a0d',
+  lampColor = '#c2e83a',
+  barColor = '#6f7d3d',
+} = {}) {
+  // The barrier is clipped to its own rectangle by arithmetic rather than by
+  // a <clipPath id>: the same figure can appear several times on one page
+  // (gallery, battle scene, reward), and duplicate ids in a document are a
+  // real bug waiting to happen.
+  const mesh = (() => {
+    const X0 = 8
+    const X1 = 112
+    const Y0 = 78
+    const Y1 = 126
+    const line = (xa, ya, xb, yb) =>
+      `<path d="M ${xa.toFixed(1)},${ya.toFixed(1)} L ${xb.toFixed(1)},${yb.toFixed(1)}" stroke="${lampColor}" stroke-width="2" opacity="0.5" fill="none"/>`
+    let d = ''
+    const span = Y1 - Y0
+    for (let x0 = X0 - span; x0 <= X1 + span; x0 += 11) {
+      const ra = Math.max(X0, x0)
+      const rb = Math.min(X1, x0 + span)
+      if (rb > ra) d += line(ra, Y0 + (ra - x0), rb, Y0 + (rb - x0))
+      const la = Math.max(X0, x0 - span)
+      const lb = Math.min(X1, x0)
+      if (lb > la) d += line(la, Y0 + (x0 - la), lb, Y0 + (x0 - lb))
+    }
+    return d
+  })()
+
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="132" rx="34" ry="5" fill="#000" opacity="0.12"/>
+
+      ${mesh}
+      <rect x="8" y="76" width="104" height="4" fill="${accent}"/>
+      <rect x="8" y="122" width="104" height="4" fill="${accent}"/>
+
+      <path d="M 44,94 L 42,114 L 42,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 76,94 L 78,114 L 78,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="32,120 51,120 51,133 30,133" fill="${accent}"/>
+      <polygon points="88,120 69,120 69,133 90,133" fill="${accent}"/>
+
+      <polygon points="34,52 86,52 80,96 40,96" fill="${bodyColor}"/>
+      <rect x="36" y="60" width="48" height="6" fill="${accent}"/>
+      <rect x="36" y="72" width="46" height="6" fill="${accent}"/>
+      <rect x="37" y="84" width="44" height="6" fill="${accent}"/>
+      <polygon points="34,52 86,52 84,58 36,58" fill="${barColor}"/>
+
+      <path d="M 38,58 L 22,62 L 12,66" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 82,58 L 98,62 L 108,66" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="4,60 18,60 18,74 4,74" fill="${accent}"/>
+      <polygon points="116,60 102,60 102,74 116,74" fill="${accent}"/>
+
+      <polygon points="46,14 74,14 74,50 46,50" fill="${accent}"/>
+      <polygon points="46,14 74,14 76,10 44,10" fill="${bodyColor}"/>
+      <polygon points="42,20 46,20 46,26 42,26" fill="${bodyColor}"/>
+      <polygon points="78,20 74,20 74,26 78,26" fill="${bodyColor}"/>
+      <circle cx="54" cy="24" r="5.2" fill="${lampColor}"/>
+      <circle cx="66" cy="24" r="5.2" fill="${lampColor}"/>
+      <circle cx="54" cy="24" r="2.2" fill="${accent}"/>
+      <circle cx="66" cy="24" r="2.2" fill="${accent}"/>
+      <circle cx="60" cy="40" r="5.4" fill="${bodyColor}"/>
+      <rect x="47" y="31" width="26" height="2.6" fill="${barColor}"/>
+    </g>
+  `
+  )
+}
+
+// Floodlight. The blinder: the head is a tilted bank of six stadium lamps in
+// a frame, its two centre lamps doubling as eyes, and a hard glare wedge
+// falls across the lower-left of the frame. Broad and short so it reads as a
+// machine on legs next to the tall lean heroes.
+// The overhanging visor hood on top of the frame is load bearing: without it
+// the cut-out reads "television head", which is a different joke.
+export function dcFloodlight({
+  bodyColor = '#8a3f1c',
+  accent = '#3f1608',
+  lampColor = '#eaffff',
+  glareColor = '#9fe8f5',
+} = {}) {
+  const lamp = (cx, cy, pupil) => `
+    <circle cx="${cx}" cy="${cy}" r="6.4" fill="${accent}"/>
+    <circle cx="${cx}" cy="${cy}" r="5.1" fill="${lampColor}"/>
+    ${pupil ? `<circle cx="${cx}" cy="${cy}" r="2.1" fill="${accent}"/>` : ''}`
+
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="62" cy="134" rx="30" ry="5" fill="#000" opacity="0.12"/>
+
+      ${beam(52, 44, 1, 84, 5, 134, glareColor, '#2a7f96')}
+
+      <path d="M 52,96 L 48,116 L 48,128" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 76,96 L 80,116 L 80,128" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="38,122 57,122 57,135 36,135" fill="${accent}"/>
+      <polygon points="92,122 73,122 73,135 94,135" fill="${accent}"/>
+
+      <polygon points="40,54 88,54 84,98 46,98" fill="${bodyColor}"/>
+      <polygon points="40,54 56,54 52,90 44,82" fill="${accent}"/>
+      <rect x="45" y="88" width="38" height="8" fill="${accent}"/>
+      <path d="M 84,60 C 100,66 102,84 92,94" stroke="${accent}" stroke-width="4" fill="none"/>
+      <path d="M 80,58 C 94,64 96,80 88,90" stroke="${accent}" stroke-width="3" fill="none"/>
+
+      <path d="M 46,60 L 30,72 L 26,86" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="26" cy="88" r="6.4" fill="${accent}"/>
+      <path d="M 82,60 L 98,72 L 102,86" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="102" cy="88" r="6.4" fill="${accent}"/>
+
+      <polygon points="44,52 56,42 60,52" fill="${accent}"/>
+      <polygon points="72,50 84,40 86,50" fill="${accent}"/>
+
+      <polygon points="38,20 92,12 96,44 42,50" fill="${accent}"/>
+      <polygon points="41,23 89,16 92,41 45,47" fill="${bodyColor}"/>
+      <polygon points="30,26 38,20 42,50 32,52" fill="${accent}"/>
+      <polygon points="32,29 38,25 41,47 34,48" fill="${bodyColor}"/>
+      ${lamp(52, 27, false)}
+      ${lamp(67, 25, true)}
+      ${lamp(82, 23, false)}
+      ${lamp(54, 41, true)}
+      ${lamp(69, 39, false)}
+      ${lamp(84, 37, false)}
+      <polygon points="36,17 94,9 96,2 34,10" fill="${accent}"/>
+      <polygon points="34,10 96,2 96,6 36,14" fill="${bodyColor}"/>
+      <polygon points="20,20 34,10 36,17 24,28" fill="${accent}"/>
+    </g>
+  `
+  )
+}
+
+// Nightfall, the chapter-7 boss villain and the largest ink mass in the file.
+// Two enormous jagged wings sweep UP to the top corners and the cloak tapers
+// DOWN to a single point, so the whole figure is an hourglass with nothing
+// touching the floor.
+// That shape is chosen against a specific collision: the chapter-2 boss
+// villain (Shadow King, src/art.js) is also a big cloaked figure with a
+// spiked crown and a jagged hem that flares outward at the bottom. The first
+// pass here drew exactly that and the two were indistinguishable in cut-out
+// side by side. Raised wings plus a downward point inverts the shape while
+// keeping the menace, and it is the only figure in this family with no
+// ground contact at all.
+export function dcNightfall({
+  bodyColor = "#221436",
+  accent = "#0b0616",
+  lensColor = "#f0dcff",
+  eyeColor = "#ff2e4d",
+  glowColor = "#a45cff",
+} = {}) {
+  const shard = (x, y, s) =>
+    `<polygon points="${x},${y} ${x + 6 * s},${y + 2 * s} ${x + 2 * s},${y + 9 * s}" fill="${glowColor}" opacity="0.55"/>`
+
+  // Leading edge sweeps out to the frame corner; the trailing edge comes back
+  // in as three teeth. Sharp, never scalloped -- that hem shape is this
+  // family reserved marker for a villain.
+  const wing = `
+    <path d="M 34,56 L 3,8 L 9,26 L 4,31 L 15,45 L 10,51 L 23,64 L 20,71 L 33,77 Z" fill="${accent}"/>
+    <path d="M 33,58 L 12,26 L 15,38 L 12,41 L 20,50 L 17,54 L 25,63 L 23,68 L 31,72 Z" fill="${bodyColor}"/>`
+
+  return svgWrap(
+    `
+    <g>
+      <ellipse cx="60" cy="136" rx="20" ry="3.6" fill="#000" opacity="0.16"/>
+
+      ${shard(96, 66, 0.85)}
+      ${shard(16, 74, 0.7)}
+      ${shard(100, 96, 0.6)}
+      ${shard(14, 100, 0.55)}
+
+      ${wing}
+      ${mirrored(wing)}
+
+      <path d="M 24,56 L 96,56 L 78,104 L 60,132 L 42,104 Z" fill="${accent}"/>
+      <path d="M 34,62 L 86,62 L 73,102 L 60,124 L 47,102 Z" fill="${bodyColor}"/>
+      <path d="M 46,76 L 74,76 L 66,100 L 60,114 L 54,100 Z" fill="${accent}"/>
+
+      <path d="M 36,60 L 24,74 L 20,86" stroke="${accent}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 84,60 L 96,74 L 100,86" stroke="${accent}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="13,84 27,84 24,96 16,96" fill="${bodyColor}"/>
+      <polygon points="107,84 93,84 96,96 104,96" fill="${bodyColor}"/>
+      <polygon points="13,94 16,106 19,94" fill="${glowColor}"/>
+      <polygon points="20,94 23,104 26,94" fill="${glowColor}"/>
+      <polygon points="94,94 97,104 100,94" fill="${glowColor}"/>
+      <polygon points="101,94 104,106 107,94" fill="${glowColor}"/>
+
+      <polygon points="22,58 98,58 88,34 32,34" fill="${accent}"/>
+      <polygon points="22,58 32,34 34,46 26,50" fill="${accent}"/>
+      <polygon points="98,58 88,34 86,46 94,50" fill="${accent}"/>
+      <polygon points="38,34 60,10 82,34 78,38 42,38" fill="${accent}"/>
+      <polygon points="42,38 78,38 74,44 46,44" fill="${bodyColor}"/>
+
+      <polygon points="44,26 76,26 78,50 42,50" fill="${accent}"/>
+      ${eyePlate(60, 38, 26, 12, lensColor, "#1a0426", eyeColor, 2.2)}
+      <polygon points="50,46 70,46 66,52 54,52" fill="${accent}"/>
+      <polygon points="52,52 68,52 64,58 56,58" fill="${glowColor}" opacity="0.55"/>
+    </g>
+  `
+  )
+}
