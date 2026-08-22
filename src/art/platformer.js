@@ -358,6 +358,57 @@ const STITCH = '#ffd75e'
 const BUTTON = '#ffcf3a'
 const BUTTON_SHADE = '#b8801a'
 
+// The dungaree cloth is a TONE SET rather than four loose constants because
+// the boss wears the same garment in a different colourway (see FIRE_TONE).
+// Threading a default-valued tone through denimLimb/bibPanel/strapPiece is
+// what keeps the other eight figures byte-identical: they never pass one.
+const DENIM_TONE = { base: DENIM, lit: DENIM_LIT, deep: DENIM_DEEP, stitch: STITCH }
+
+// FIRE POWERUP WARDROBE (the boss only).
+//
+// The reference is the fire-flower powerup: the everyday red-cap/blue-dungaree
+// mario with BOTH halves swapped — white cap, white shirt, red dungarees — and
+// a fireball in the hand. That inversion is the whole reason this figure can be
+// "the special combined one" without growing: the previous round bought bigness
+// with MASS (head 38->42, shoulders 56->64) and the round before that spent the
+// entire torso budget on human leg proportion, so there is nothing left to
+// inflate. A colourway swap costs zero units of silhouette.
+//
+// Fixed, not palette-driven, for the same reason DENIM is: these are the
+// reference's colours, not a slot. `bodyColor` is therefore accepted and
+// ignored — see the note on platPowerup's signature.
+//
+// The whites are the risk, not the reds. Four near-whites meet on this figure
+// (shirt, glove #f7f0e0, plate #fff3c4, halo #fffefb) and the app's own
+// --surface is #fffdf4, so on a chapter card the figure's largest area sits on
+// a background it cannot out-contrast: shirt/surface is 1.05:1 at BEST. What
+// carries every one of those boundaries is LINE (#221a2c), which is 15.7:1
+// against this white — so the whites are chosen for the two things a ratio
+// cannot buy: a COOL white against warm cream neighbours (hue separation the
+// luminance ratio does not see), and the largest surface-vs-glove compromise.
+// #f8f8f2 measures 1.046 on --surface and 1.065 on the glove; pure #ffffff is
+// 1.019/1.135 and every warmer option trades the background away faster than
+// it gains on the glove.
+const FIRE_WHITE = '#f8f8f2'
+// The brim is a cool grey-white rather than the dome's white so dome-and-brim
+// do not depend solely on the brim's 30 % black underside to separate.
+const FIRE_BRIM = '#e9e9df'
+const FIRE_RED = '#d92b23'
+const FIRE_RED_LIT = '#ff8375'
+const FIRE_RED_DEEP = '#7d130f'
+const FIRE_TONE = { base: FIRE_RED, lit: FIRE_RED_LIT, deep: FIRE_RED_DEEP, stitch: STITCH }
+// Star on the white cap. The reference's cap mark is RED on white, the exact
+// inverse of the everyday cap — so the mark cannot stay gold: gold on this
+// white is 1.7:1 and would hang on its outline alone. #c9231d is 5.27:1.
+const FIRE_MARK = '#c9231d'
+// Flame layers, light to dark from the core out. Flat nested fills, no
+// gradient: SVG gradients are banned in this family.
+const FLAME_OUT = '#e8400c'
+const FLAME_MID = '#ffa81c'
+const FLAME_CORE = '#fff2a0'
+const LEAF = '#3fa03a'
+const LEAF_DEEP = '#1f6b23'
+
 // ---------------------------------------------------------------------------
 // SKELETON PRIMITIVES (v4). See style rules S1–S4.
 // ---------------------------------------------------------------------------
@@ -486,13 +537,13 @@ function villainArm(pts, color, cuffColor, gloveR) {
 // A trouser leg with a knee. `pts` is [hip, knee, cuffTop, ankle]: the crease
 // lands on the knee, the turn-up is the last segment only, and the boot is
 // drawn after so it swallows the ankle.
-function denimLimb(pts) {
+function denimLimb(pts, t = DENIM_TONE) {
   const tail = pts.slice(pts.length - 2)
   return [
-    P(limbOutline(pts), DENIM, ink(3)),
-    P(limbBand(pts, 0.95, 0.25), DENIM_LIT, { opacity: 0.5, nohalo: true }),
+    P(limbOutline(pts), t.base, ink(3)),
+    P(limbBand(pts, 0.95, 0.25), t.lit, { opacity: 0.5, nohalo: true }),
     limbCrease(pts, 1, 1.7, 0.45),
-    P(limbBand(tail, 1.05, -1.05), DENIM_DEEP, {
+    P(limbBand(tail, 1.05, -1.05), t.deep, {
       opacity: 0.9,
       stroke: LINE,
       'stroke-width': 1.6,
@@ -816,16 +867,16 @@ function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
 // topstitch border and two patch pockets. Always drawn WIDER than the shirt
 // above it — see casting rule 3, the outline step is what carries "wearing
 // dungarees" into a flat silhouette.
-function bibPanel(x, y, w, h, r = 10, flare = 4) {
+function bibPanel(x, y, w, h, r = 10, flare = 4, t = DENIM_TONE) {
   return [
     // Flared: a trapezoid widening downward, so the widest point of the whole
     // figure is the hips and the waist step is a real angle rather than a
     // rectangle edge.
     D(`M ${x},${y} L ${x + w},${y} L ${x + w + flare},${y + h - r} Q ${x + w + flare},${y + h} ${x + w + flare - r},${y + h}
-       L ${x - flare + r},${y + h} Q ${x - flare},${y + h} ${x - flare},${y + h - r} Z`, DENIM, ink(3.2)),
-    R(x + 1, y + 1, w * 0.38, h - 2, r, DENIM_LIT, { opacity: 0.5, nohalo: true }),
+       L ${x - flare + r},${y + h} Q ${x - flare},${y + h} ${x - flare},${y + h - r} Z`, t.base, ink(3.2)),
+    R(x + 1, y + 1, w * 0.38, h - 2, r, t.lit, { opacity: 0.5, nohalo: true }),
     R(x + 4, y + 4, w - 8, h - 8, r * 0.8, 'none', {
-      stroke: STITCH,
+      stroke: t.stitch,
       'stroke-width': 1.6,
       'stroke-dasharray': '4.5,3.5',
       opacity: 0.9,
@@ -834,17 +885,17 @@ function bibPanel(x, y, w, h, r = 10, flare = 4) {
     // Pushed right out to the bib's flared corners: v4's narrower hips left no
     // room between the emblem plate and the pockets, and the plate is drawn
     // after, so a centred pocket was simply painted over.
-    pocket(x - 0.5, y + h * 0.5, h),
-    pocket(x + w - 8.5, y + h * 0.5, h),
+    pocket(x - 0.5, y + h * 0.5, h, t),
+    pocket(x + w - 8.5, y + h * 0.5, h, t),
   ]
 }
 
 // Patch pocket, at the bib's lower corners rather than its middle, where the
 // emblem plate always sits.
-function pocket(px, py, h) {
+function pocket(px, py, h, t = DENIM_TONE) {
   return [
-    R(px, py, 9, h * 0.34, 2.5, DENIM_DEEP, { opacity: 0.55, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
-    S(`M ${px + 1},${py + 3} L ${px + 8},${py + 3}`, STITCH, 1.5, { opacity: 0.75, nohalo: true }),
+    R(px, py, 9, h * 0.34, 2.5, t.deep, { opacity: 0.55, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
+    S(`M ${px + 1},${py + 3} L ${px + 8},${py + 3}`, t.stitch, 1.5, { opacity: 0.75, nohalo: true }),
   ]
 }
 
@@ -852,10 +903,10 @@ function pocket(px, py, h) {
 // It deliberately runs past the shoulder line: the two strap tops are knobs on
 // the silhouette, which is how the dungarees survive a colour-stripped read.
 // v4 keeps them INBOARD of the deltoid balls so the new arms cannot cover them.
-function strapPiece(outer, stitch) {
+function strapPiece(outer, stitch, t = DENIM_TONE) {
   return [
-    P(outer, DENIM, ink(2.8)),
-    S(stitch, STITCH, 1.6, { 'stroke-dasharray': '4.5,3.5', opacity: 0.85, nohalo: true }),
+    P(outer, t.base, ink(2.8)),
+    S(stitch, t.stitch, 1.6, { 'stroke-dasharray': '4.5,3.5', opacity: 0.85, nohalo: true }),
   ]
 }
 
@@ -1145,11 +1196,28 @@ export function platBlock({
 // other families' bosses follow. The glow is a flat ray burst: translucent
 // discs behind the figure are painted straight over by the white sticker halo,
 // so rays reaching past the silhouette are the only kind of glow that survives.
+// THE FIRE POWERUP BOSS. The colourway is INVERTED against the everyday
+// figure — white cap with a red mark, white shirt, red dungarees — because the
+// brief for "the combined form has to look special" has already spent every
+// other lever: v6 bought bigness with mass (head 38->42 wide, shoulders 56->64,
+// hips 60->72, limbs +20 %) and v5 spent the whole 84-unit chin-to-sole budget
+// on human leg proportion. A colourway swap is the one change that reads as
+// "powered up" at 96 px and costs the silhouette nothing — this figure's hard
+// cutout is unchanged from v7 except for the fireballs.
+//
+// `bodyColor` IS ACCEPTED AND IGNORED. art.js's palette entry for `captain-gum`
+// still passes the old pink #e05a9e, and the palette overrides a function
+// default, so a default could not ship this. The wardrobe is fixed here for the
+// same reason DENIM is (casting rule 2): it is the reference's colourway, not a
+// slot. accent / panelColor / inkColor / visorColor all stay live.
 export function platPowerup({
-  bodyColor = '#c8342f',
-  panelColor = '#fff6df',
+  bodyColor = '#f8f8f2',
+  panelColor = '#fff6e2',
   accent = '#f0b429',
-  visorColor = '#ffe066',
+  // Aura rays. Orange rather than the old pale yellow, and that is load-bearing
+  // now rather than decorative: a white figure needs the ring behind it to be
+  // warm, or the whole upper body sits on nothing.
+  visorColor = '#ff8a1f',
   // The star used to be inked in `bodyColor` straight onto the cream plate,
   // which measured 3.08:1 -- the worst emblem in the app, and a full point
   // below the next worst. The cause was not the plate and not the size: this
@@ -1161,10 +1229,13 @@ export function platPowerup({
   // stays 34x20 at the same anchor, and the two-tone dungarees, the buttons and
   // the topstitch that v6 fought for are untouched.
   //
-  // The three non-boss heroes ink their letter with `accent`; this one cannot,
-  // because Captain Gum's accent is gold. A deepened plum is the same hue as
-  // its body, pushed dark: 11.0:1.
-  inkColor = '#5c1a3d',
+  // The colourway inversion did NOT move this number, and that was the one
+  // thing worth checking before shipping it: the plate is bounded on all four
+  // sides by the bib, so the bib turning red changes nothing the star sits on.
+  // art.js's #5c1a3d measures 11.30:1 on the shipped plate and is left alone;
+  // the default below is the same value pulled toward the new red identity
+  // (10.74:1), for callers that do not override.
+  inkColor = '#6e1210',
 } = {}) {
   const star = (cx, cy, r, fill, extra) => {
     const pts = []
@@ -1179,13 +1250,74 @@ export function platPowerup({
     star(cx, cy, r, visorColor, { opacity: 0.85 }),
     C(cx, cy, r * 0.3, panelColor, { opacity: 0.9 }),
   ]
+  // The fire flower itself, small and in the backdrop. It is here because the
+  // reference sheet shows the item beside the figure, and it is THIS SIZE and
+  // THIS HIGH because there is nowhere bigger or lower: the frame's two free
+  // pockets are the lower corners, and a boot's halo claims everything from
+  // x 14 (mirrored: 106) and y 112.5 down. Measured, an earlier seat at
+  // (11,100) put the lower leaf at y 114.8 and CLOSED a background gap that
+  // used to be 4.8 units wide at y 114. Seated at y 96 the whole plant ends at
+  // y 109.2 and is clear of it.
+  //
+  // What replacing the two lower sparkles DOES cost, measured and not hidden:
+  // the pocket outboard of the left boot at (23,108) used to be an ENCLOSED
+  // hole of 120 units, because the old sparkle at (14,116) walled it in from
+  // below. It is now an OPEN bay reaching the frame edge — scanline y 114 went
+  // from three ink runs ([8.3,19.8] [24.6,95.4] [98.3,109.8]) to one. That is
+  // the opposite of a fusion, but a hole count alone reads it as a loss, so:
+  // no ink merged, one decoration moved 20 units up. The hole that matters —
+  // the 48-unit enclosure between the boots at (60,124) — is untouched.
+  // Between the boots is wider but that gap IS the family's only cutout hole
+  // and cannot be filled.
+  // No halo (backdrop), so it carries its own thin ink.
+  const fireFlower = (cx, cy) => {
+    const petal = (dx, dy) => C(cx + dx, cy + dy, 3.4, FLAME_OUT, ink(1.8))
+    return [
+      S(`M ${cx},${cy + 3} L ${cx},${cy + 12}`, LEAF_DEEP, 2.4),
+      E(cx - 4.4, cy + 6.6, 3.6, 2, LEAF, ink(1.6)),
+      E(cx + 4.4, cy + 9, 3.6, 2, LEAF, ink(1.6)),
+      petal(0, -4.6),
+      petal(-4.4, -1.4),
+      petal(4.4, -1.4),
+      petal(-2.7, 3.7),
+      petal(2.7, 3.7),
+      C(cx, cy, 3.6, FLAME_CORE, ink(1.8)),
+      C(cx - 1.3, cy - 0.5, 0.9, LINE, { opacity: 0.85 }),
+      C(cx + 1.3, cy - 0.5, 0.9, LINE, { opacity: 0.85 }),
+    ]
+  }
+  // The fireball, one per raised fist. The reference holds one; this figure is
+  // mirror-symmetric in every other part, and a single ball made the pose look
+  // like a mistake rather than a stance. Sized and seated to add NOTHING to the
+  // clip envelope the raised arm already owns: the ball plus licks span
+  // x 9..27, y 24..47.4, and the glove's own thumb already reaches x 1.5 (it is
+  // r*0.88 out from the lobe centre plus r*0.46 of its own). Nested flat fills,
+  // darkest outside, because gradients are banned here.
+  const fireball = (cx, cy) => {
+    const lick = (x1, y1, tx, ty, x2, y2) =>
+      P(`${x1},${y1} ${tx},${ty} ${x2},${y2}`, FLAME_OUT, ink(2.2))
+    return [
+      lick(cx - 6.5, cy - 1, cx - 9.5, cy - 12, cx - 1.5, cy - 5),
+      lick(cx - 3, cy - 3, cx + 0.5, cy - 16, cx + 4, cy - 3),
+      lick(cx + 1.5, cy - 1, cx + 8.5, cy - 11, cx + 6.5, cy - 2),
+      C(cx, cy, 7.4, FLAME_OUT, ink(2.4)),
+      C(cx + 0.6, cy + 0.8, 4.6, FLAME_MID, { nohalo: true }),
+      C(cx + 1.1, cy + 1.4, 2.2, FLAME_CORE, { nohalo: true }),
+    ]
+  }
   // One broad wing with a serrated trailing edge. Smooth rounded lobes read as
   // rabbit ears, a single sharp wedge as a devil horn, and thin separate
   // feathers as insect antennae; a wide mass plus notches is the only version
   // that stayed a wing down to 66 px.
+  //
+  // v8 changes the FILLS ONLY — the two polygons are byte-identical, so the
+  // hard cutout is untouched — and the serrated edge that was fighting to read
+  // as feathers now reads as what it always looked like: flame. Three nested
+  // tones instead of gold-over-cream.
   const wing = [
-    P('42,18 10,7 15,15 9,14 16,20 9,23 19,28 42,29', accent, ink(2.8)),
-    P('42,19 16,11 18,16 26,21 42,25', panelColor, { nohalo: true }),
+    P('42,18 10,7 15,15 9,14 16,20 9,23 19,28 42,29', FLAME_OUT, ink(2.8)),
+    P('42,19 16,11 18,16 26,21 42,25', FLAME_MID, { nohalo: true }),
+    P('42,20 24,15 27,19 42,23', FLAME_CORE, { nohalo: true }),
   ]
   // Narrow: wider, the two panels plus the emblem plate covered the bib edge
   // to edge and the denim — half of the family's two-tone — disappeared on the
@@ -1198,7 +1330,7 @@ export function platPowerup({
   // The spring's trace, moved from the ankles to the shins so it sits ON the
   // new tapered leg instead of floating between leg and boot.
   const coilRing = (cx, cy) => E(cx, cy, 11, 3, accent, ink(2.2))
-  const strapL = strapPiece('35,47 47,52 45,80 34,80', 'M 41,56 L 39,76')
+  const strapL = strapPiece('35,47 47,52 45,80 34,80', 'M 41,56 L 39,76', FIRE_TONE)
   // v6: BOTH ARMS RAISED, and thicker than any other figure's. Two problems at
   // once. (a) Silhouette: this figure is 64 units across the hips, so a hanging
   // arm has nowhere to be except against the flank — measured, the glove
@@ -1206,7 +1338,8 @@ export function platPowerup({
   // fused shape of the nine. Raised, the background between forearm and jaw is
   // an open notch instead. (b) Size: arms up push the figure's mass to the top
   // corners of a frame the minibots leave empty, which is most of what makes
-  // this one read as the bigger, combined form.
+  // this one read as the bigger, combined form. v8 also gives the pose its job:
+  // the fists are where the fireballs are.
   // Hand height is set by the HEAD's jaw taper, not by the arm: at y 42+ the
   // 42-unit head narrows to 43.2..76.8, so a fist parked there clears the face
   // by 12 units of background instead of 8. And the binding clip is not the
@@ -1245,8 +1378,9 @@ export function platPowerup({
     // between them and the body, which is what an aura has to be here.
     ...Array.from({ length: 16 }, (_, i) => ray(i * 22.5 + 11, 44, 78, 6.5, visorColor, 0.85)),
     ...Array.from({ length: 8 }, (_, i) => ray(i * 45 + 22.5, 44, 82, 4, panelColor, 0.9)),
-    sparkle(14, 116, 6),
-    sparkle(104, 116, 6),
+    // The two LOWER sparkles become the item; the upper pair stay motes.
+    fireFlower(11, 96),
+    mirror(fireFlower(11, 96)),
     sparkle(11, 70, 4.4),
     sparkle(108, 76, 4.4),
   ]
@@ -1255,36 +1389,58 @@ export function platPowerup({
     mirror(strapL),
     neck(60, 44, 59, 10, 11),
 
-    denimLimb(legL),
-    mirror(denimLimb(legL)),
+    denimLimb(legL, FIRE_TONE),
+    mirror(denimLimb(legL, FIRE_TONE)),
     coilRing(44, 110),
     coilRing(42.5, 117),
     mirror([coilRing(44, 110), coilRing(42.5, 117)]),
     heroBoot(36, 124, 16, 8),
     mirror(heroBoot(36, 124, 16, 8)),
 
-    D('M 28,67 C 28,58 38,56 46,56 L 74,56 C 82,56 92,58 92,67 L 87,77 L 33,77 Z', bodyColor, ink(3.4)),
+    D('M 28,67 C 28,58 38,56 46,56 L 74,56 C 82,56 92,58 92,67 L 87,77 L 33,77 Z', FIRE_WHITE, ink(3.4)),
     P('74,57 92,67 87,77 75,77', '#000', { opacity: 0.15, nohalo: true }),
-    P('40,59 72,59 70,64 42,64', '#fff', { opacity: 0.22, nohalo: true }),
+    // Was a #fff lit plane, which on a white shirt is a no-op — measured, #fff
+    // at 0.22 over #f8f8f2 moves the pixel by under half a percent. Same
+    // polygon, inverted into the collar's cast shadow, which is where the light
+    // actually leaves a mark on a white shirt.
+    P('40,59 72,59 70,64 42,64', '#000', { opacity: 0.09, nohalo: true }),
 
-    bibPanel(28, 74, 64, 21, 12, 4),
+    bibPanel(28, 74, 64, 21, 12, 4, FIRE_TONE),
     plankPanel(27),
     plankPanel(82),
     bigButton(26, 84.5, 8),
     mirror(bigButton(26, 84.5, 8)),
     emblemPlate(43, 74.5, 34, 20, panelColor, inkColor, '★', 24),
 
-    heroArm(armL, bodyColor, bodyColor, 10.5),
-    mirror(heroArm(armL, bodyColor, bodyColor, 10.5)),
+    // Red cuffs on white sleeves. Not decoration: the sleeve, the glove and the
+    // halo are all near-whites within 1.07:1 of each other, so the wrist is the
+    // one boundary on this figure with three whites meeting at it. The cuff is
+    // 4.4:1 against both of its neighbours and settles it.
+    heroArm(armL, FIRE_WHITE, FIRE_RED, 10.5),
+    mirror(heroArm(armL, FIRE_WHITE, FIRE_RED, 10.5)),
 
     wing,
     mirror(wing),
-    heroHead(60, 3, 10, 42, 41, 24, bodyColor, bodyColor, null, 1.108),
+    // AFTER the wings on purpose: the licks rise into the wing's serrated edge
+    // and the two flames read as one. Before them, the wing simply covered the
+    // licks (the wing's own mass ends at y 29, the licks reach y 24).
+    fireball(18.5, 40),
+    mirror(fireball(18.5, 40)),
+    heroHead(60, 3, 10, 42, 41, 24, FIRE_WHITE, FIRE_BRIM, null, 1.108),
     // Sits in the same slot as the other three heroes' cap disc. Higher and
     // larger, its top point pushed through the dome's crown and left a stray
     // nub of ink and halo above the cap.
-    star(60, 14, 7.5, accent, ink(2.2)),
-    star(60, 14, 3.4, panelColor, { nohalo: true }),
+    // Ink 2.2 -> 1.7 and the inner pip 3.4 -> 2.6, because a five-pointed star of
+    // r 7.5 with a valley at 0.44r has arms THINNER THAN ITS OWN OUTLINE:
+    // measured, the 2.2 stroke left the red fill at 10.0 units2 against 14.1 for
+    // the gold pip, so the mark read gold, not red. That was survivable while the
+    // ring was gold on a pink dome; against the reference's red-on-white cap it
+    // inverts the one detail the whole colourway is built on. Measured after:
+    // 24.5 units2 red against 8.1 gold, and the figure's top edge backs off from
+    // y 0.8 to y 1.0. The ink is now thinner than the family's 2.4 cap disc —
+    // accepted, because the alternative is a mark whose own outline eats it.
+    star(60, 14, 7.5, FIRE_MARK, ink(1.7)),
+    star(60, 14, 2.6, accent, { nohalo: true }),
   ]
   return sticker(backdrop, body)
 }

@@ -765,7 +765,9 @@ const HERO_PALETTES = {
   'ollie': { style: 'plat-spring', bodyColor: '#e8732a', accent: '#6b2c07', emblem: 'O' },
   'umo': { style: 'plat-block', bodyColor: '#3aa15a', accent: '#1c5c30', emblem: 'U' },
   // 3.08 -> 11.0 by moving the ink, not the plate. See platPowerup's note.
-  'captain-gum': { style: 'plat-powerup', bodyColor: '#e05a9e', accent: '#f4c95d', panelColor: '#fff3c4', inkColor: '#5c1a3d' },
+  // platPowerup 은 bodyColor 를 받아서 무시한다 -- 파이어 파워업의 흰색이
+  // 함수 기본값이고 팔레트 색이 기본값을 이기므로, 여기 색을 넣으면 반전이 깨진다.
+  'captain-gum': { style: 'plat-powerup', accent: '#f4c95d', panelColor: '#fff3c4', inkColor: '#5c1a3d' },
   'leo': { style: 'toy-soldier', bodyColor: '#3f7d55', accent: '#f4c95d', emblem: 'L' },
   // 5.76 -> 8.60
   'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#6b3d15', emblem: 'F' },
