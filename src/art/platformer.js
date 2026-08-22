@@ -1,6 +1,31 @@
 // Platformer-family character art — chapter 5, the jump-platformer genre slot
 // in the world order.
 //
+// REVISION NOTE (v5): FINISHING v4. v4 built the skeleton primitives and wired
+// them into all nine figures, but it was never rendered or measured — and it
+// had shipped four kinds of fault that only measurement and a hard cutout find:
+//
+//  * FOUR FIGURES CLIPPED. platJumper's speed lines at y 140.9, platFlip's
+//    flipped head at y 145.4 (chin sheared off), platMagnetjack's antenna at
+//    y -2.1, platBrick at x -1.4 / y -0.9 / y 142.1, platGlitch at x 121.3.
+//    v4 gave the figures joints, which made them longer, and never re-measured
+//    the 6-unit halo budget. All nine now measure inside 0..120 / 0..140 with
+//    `getBBox` -> CTM -> stroke/2 inflation (NOT getBoundingClientRect, which
+//    omits stroke in this Chrome build).
+//  * TWO FIGURES DREW THE ARMS BEFORE THE TORSO — platSlime and platBrick — so
+//    the torso covered every deltoid and those two kept v3's exact fault while
+//    the file claimed rule S2 was applied everywhere.
+//  * THREE FIGURES HAD AN INVISIBLE NECK. platFlip, platBrick and (all but two
+//    units of) platMagnetjack drew the neck quad inside the union of head and
+//    collar, so rule S5 was satisfied in code and not on screen.
+//  * FEATURES OUTSIDE THEIR OWN SILHOUETTE: platSlime's brows crossed the
+//    blob's crown and read as ANTENNAE; platGlitch's left horn sat inside the
+//    skull and read as nothing while the right one read as a horn.
+//
+// v5 also finished two things v4 left half-done: hero arms reached only to the
+// waist (fingertips above the hip), and the deltoid's bright crescent was broad
+// enough that the shoulder read as a sphere stuck on the flank.
+//
 // REVISION NOTE (v4): the SKELETON. v2 fixed the casting (proportions and
 // colour placement), v3 fixed the rendering style (inked sticker art), and
 // both left the skeleton wrong — which is what the user finally put a finger
@@ -374,9 +399,12 @@ function deltoid(cx, cy, r, color, dark) {
   return [
     C(cx, cy, r, color, ink(3)),
     D(
-      `M ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} A ${(r * 0.84).toFixed(1)},${(r * 0.84).toFixed(1)} 0 0 1 ${(cx + r * 0.28).toFixed(1)},${(cy - r * 0.8).toFixed(1)} A ${r},${r} 0 0 0 ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} Z`,
+      `M ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} A ${(r * 0.92).toFixed(1)},${(r * 0.92).toFixed(1)} 0 0 1 ${(cx + r * 0.28).toFixed(1)},${(cy - r * 0.8).toFixed(1)} A ${r},${r} 0 0 0 ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} Z`,
       dark ? '#000' : '#fff',
-      { opacity: dark ? 0.16 : 0.24, nohalo: true }
+      // v5: a broad bright crescent turned the deltoid into a SPHERE stuck on
+      // the flank. Thinned (0.84 -> 0.92 inner radius) and dimmed, it reads as
+      // the top light on a rounded shoulder instead.
+      { opacity: dark ? 0.11 : 0.15, nohalo: true }
     ),
   ]
 }
@@ -784,14 +812,21 @@ function bigButton(cx, cy, r = 7.5) {
 //   neck    43..56, 7 units of it visible under the jaw
 //   shirt   collar 54, shoulders 52 @ y 64, waist 44 @ y 76
 //   bib     52 wide @ 74, flaring to 58 @ 101
-//   arm     shoulder {34,64,9.5} elbow {26,75,8} wrist {22,86,6.3}
+//   arm     shoulder {34,64,9.5} elbow {25.5,76,8} wrist {21,90,6.3}
 //   leg     hip {50,96,11} knee {45,110,8.6} cuff {45.6,116,7.4} ankle {46,120,7.2}
+//
+// v5 lengthened the arm by 4 units at the wrist. At v4's wrist y 86 the glove
+// centre landed at y 92.6 — level with the WAIST — so the hands sat in the
+// armpit region and the fingertips stopped above the hip. A real arm's
+// fingertips reach mid-thigh; seating the glove at y ~96.6 puts it beside the
+// hip, which is also what finally clears the dungaree buttons (casting rule 3)
+// instead of grazing them.
 // ---------------------------------------------------------------------------
 
 const HERO_ARM_L = [
   { x: 34, y: 64, w: 9.5 },
-  { x: 26, y: 75, w: 8 },
-  { x: 22, y: 86, w: 6.3 },
+  { x: 25.5, y: 76, w: 8 },
+  { x: 21, y: 90, w: 6.3 },
 ]
 
 const HERO_LEG_L = [
@@ -837,8 +872,8 @@ export function platJumper({
   ]
   const armPunch = [
     { x: 86, y: 63, w: 9.5 },
-    { x: 95, y: 50, w: 8 },
-    { x: 97, y: 38, w: 6.3 },
+    { x: 94, y: 49, w: 8 },
+    { x: 95, y: 35, w: 6.3 },
   ]
   const backdrop = [
     E(60, 135, 12, 3, '#000', { opacity: 0.14 }),
@@ -846,8 +881,10 @@ export function platJumper({
     // small far-below shadow are the whole "airborne" cue, so they sit in the
     // gap between boot and ground rather than beside the torso, where they
     // read as scratches on the character.
+    // Held at y <= 136: at v4's y 139 the 3.8-wide round cap reached y 140.9
+    // and the bottom line was shaved off by the viewBox edge.
     S(
-      'M 12,132 L 24,124 M 108,132 L 98,126 M 44,138 L 52,130 M 78,138 L 70,131 M 60,139 L 60,132',
+      'M 12,130 L 24,122 M 108,130 L 98,124 M 44,136 L 52,128 M 78,136 L 70,129 M 60,136 L 60,129',
       accent,
       3.8,
       { opacity: 0.7 }
@@ -898,15 +935,15 @@ export function platSpring({
   const strapL = strapPiece('39,47 49,52 47,88 38,88', 'M 45,56 L 43,84')
   const armL = [
     { x: 46, y: 66, w: 9 },
-    { x: 34, y: 76, w: 7.6 },
-    { x: 28, y: 87, w: 6 },
+    { x: 33, y: 77, w: 7.6 },
+    { x: 27, y: 91, w: 6 },
   ]
   // Deliberately not a mirror: the spring's two arms hang at different heights,
   // which is the one asymmetry the upright heroes get.
   const armR = [
     { x: 74, y: 69, w: 9 },
-    { x: 86, y: 79, w: 7.6 },
-    { x: 92, y: 90, w: 6 },
+    { x: 87, y: 80, w: 7.6 },
+    { x: 93, y: 94, w: 6 },
   ]
   const legL = [
     { x: 50, y: 100, w: 10.5 },
@@ -969,8 +1006,8 @@ export function platBlock({
   const strapL = strapPiece('39,46 49,50 47,86 38,86', 'M 45,54 L 43,82')
   const armL = [
     { x: 34, y: 56, w: 9.5 },
-    { x: 25, y: 68, w: 8 },
-    { x: 21, y: 79, w: 6.3 },
+    { x: 24.5, y: 69, w: 8 },
+    { x: 20, y: 83, w: 6.3 },
   ]
   const legL = [
     { x: 50, y: 99, w: 11 },
@@ -1062,10 +1099,13 @@ export function platPowerup({
   // new tapered leg instead of floating between leg and boot.
   const coilRing = (cx, cy) => E(cx, cy, 10.5, 3, accent, ink(2.2))
   const strapL = strapPiece('37,49 48,54 46,86 36,86', 'M 43,58 L 41,82')
+  // Pulled INBOARD as it was lengthened: at v4's wrist x 21 the r=11 glove's
+  // halo reached x 1.8, and adding reach on the same line would have pushed it
+  // off the frame. Steeper arm, longer reach, more margin.
   const armL = [
     { x: 34, y: 66, w: 10.5 },
-    { x: 25, y: 79, w: 9 },
-    { x: 21, y: 91, w: 7 },
+    { x: 25.5, y: 80, w: 9 },
+    { x: 22, y: 97, w: 7 },
   ]
   const legL = [
     { x: 50, y: 98, w: 12 },
@@ -1207,7 +1247,7 @@ function villainFaceParts(cx, cy, opts = {}) {
 // upside down, the eye lands on the knees and the hands, so a leg with no knee
 // is the first thing a child sees.
 export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
-  const FLIP = 138 // y' = FLIP - y
+  const FLIP = 131 // y' = FLIP - y
   const armL = [
     { x: 38, y: 58, w: 8.5 },
     { x: 28, y: 68, w: 7.2 },
@@ -1222,20 +1262,24 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
   // other is the family's villain tell, and upside down it reads immediately.
   const legL = [
     { x: 50, y: 86, w: 9.5 },
-    { x: 46, y: 98, w: 7.6 },
-    { x: 47, y: 108, w: 6.6 },
+    { x: 46, y: 96, w: 7.6 },
+    { x: 47, y: 104, w: 6.6 },
   ]
   const legR = [
     { x: 70, y: 86, w: 9.5 },
-    { x: 76, y: 99, w: 7.6 },
-    { x: 74, y: 111, w: 6.6 },
+    { x: 76, y: 97, w: 7.6 },
+    { x: 74, y: 106, w: 6.6 },
   ]
   const sock = (pts, y0) => [
     P(limbBand(pts.slice(1), 1.02, -1.02), accent, { opacity: 0.9, stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
     S(`M ${pts[2].x - 6},${y0} L ${pts[2].x + 6},${y0}`, bodyColor, 3, { nohalo: true }),
   ]
   const upright = [
-    neck(60, 42, 56, 7.5, 8.5, bodyColor, '#000'),
+    // v4 drew this neck and then covered every unit of it: the head reached
+    // y 54 and the torso started at 48, so the 42..56 quad was inside their
+    // union and nothing showed. A 40-unit head ending at 42 leaves the
+    // family's 6 visible units above the collar.
+    neck(60, 38, 52, 7.5, 8.5, bodyColor, '#000'),
 
     // Hourglass torso: shoulders 44, waist 36, hips 42. v3 had a single
     // rounded rect, which is the shape that made the flip read as a box on a
@@ -1252,23 +1296,37 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
     C(60, 77.2, 3.2, bodyColor, ink(1.8)),
 
     plainLimb(legL, accent),
-    sock(legL, 104),
+    sock(legL, 100),
     plainLimb(legR, accent),
-    sock(legR, 106),
-    villainShoe(46, 112, 13, 8),
-    villainShoe(76, 116, 14, 8.5),
+    sock(legR, 102),
+    villainShoe(46, 108, 13, 8),
+    villainShoe(76, 111, 14, 8.5),
 
     villainArm(armL, bodyColor, accent, 9),
     villainArm(armR, bodyColor, accent, 9),
 
-    D('M 39,8 C 39,-2 81,-2 81,8 L 81,38 C 81,50 72,54 60,54 C 48,54 39,50 39,38 Z', bodyColor, ink(3.2)),
-    P('70,4 79,8 79,42 72,50 70,50', '#000', { opacity: 0.14, nohalo: true }),
+    // 48 wide against 40 tall. The height had to come down for the halo to
+    // fit; widening keeps the head from reading as a small knob on a big body.
+    D('M 36,10 C 36,2 84,2 84,10 L 84,32 C 84,39 74,42 60,42 C 46,42 36,39 36,32 Z', bodyColor, ink(3.2)),
+    P('72,5 82,10 82,33 74,39 72,39', '#000', { opacity: 0.14, nohalo: true }),
   ]
-  const backdrop = [E(63, 133, 24, 4, '#000', { opacity: 0.13 })]
+  const backdrop = [E(63, 128, 24, 4, '#000', { opacity: 0.13 })]
+  // Height is the whole problem with this figure and it is a HARD constraint,
+  // not a style choice: upright, v4 ran y -2..124.5, and a 6-unit halo on both
+  // ends makes 138.6 units of content for a 140-unit box — so the flipped head
+  // spilled to y 145.4 with its chin sheared off. v5 buys the room back inside
+  // the drawing instead of scaling the whole figure down (a scale wrapper cost
+  // 12% of the display size and made this one visibly the runt of the nine):
+  // a 40-unit head at y 2..42 instead of 56 units at y -2..54, and shins 4
+  // units shorter. Upright is now y 2..119.5, so FLIP 131 lands the flipped
+  // extent at y 5.4..139 with the halo counted.
   const body = [
     G('rotate(6 60 70)', [
       G(`translate(0,${FLIP}) scale(1,-1)`, upright),
-      villainFaceParts(60, FLIP - 28, { tilt: 1.1, mouthW: 9 }),
+      // mouthY is passed explicitly rather than left at its cy+16 default: the
+      // default put the lip at y 125 on a head whose (flipped) chin edge is
+      // y 129, so the mouth curve and both fangs hung outside the skull.
+      villainFaceParts(60, FLIP - 25, { tilt: 1.1, mouthW: 9, mouthY: 118 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1293,21 +1351,40 @@ export function platSlime({ bodyColor = '#4fb5c9', accent = '#1d6b78' } = {}) {
     accent,
     { opacity: 0.65, stroke: LINE, 'stroke-width': 2.2, 'stroke-linejoin': 'round', nohalo: true }
   )
+  // FOUR joints, not three. This is the one figure whose arm must not have a
+  // visible corner: a blob with a hard elbow angle read as a CRAB CLAW. Two
+  // shallow bends of ~14 degrees each, spread over the same drop, give the
+  // droop a curve instead. Both arms also start outboard of the blob's own
+  // outline (widest x 27 and x 90 around y 85), since they are painted after
+  // the body now — rooted inside it, an arm is just a stub with a hand.
+  // The blob is the one figure that must NOT get a visible joint. Two attempts
+  // failed before this one: a three-point arm rooted just outside the outline
+  // gave it a hard elbow corner and a flat shoulder cap, and the pair read as
+  // CRAB CLAWS; pushing the roots outboard only made the claws bigger. What a
+  // blob can have is the taper and the hand — so the arms run as four-point
+  // shallow curves ROOTED DEEP INSIDE the belly (x 46 and x 74, well inboard of
+  // the outline's x 26/x 92), painted before the body so the blob hides the
+  // flat root cap, and each one clears the outline around y 88 with a good
+  // 20 units of smooth tapering tube left to show.
   const armL = [
-    { x: 38, y: 72, w: 7.6 },
-    { x: 27, y: 82, w: 6.4 },
-    { x: 23, y: 94, w: 5.2 },
+    { x: 44, y: 80, w: 9.5 },
+    { x: 31, y: 88, w: 10 },
+    { x: 24, y: 97, w: 8.5 },
+    { x: 21, y: 106, w: 7 },
   ]
+  // Shorter and set higher: one arm still melting further than the other is
+  // what says the melt is ongoing rather than a finished shape.
   const armR = [
-    { x: 82, y: 74, w: 7.6 },
-    { x: 92, y: 82, w: 6.4 },
-    { x: 95, y: 92, w: 5.2 },
+    { x: 76, y: 82, w: 9.5 },
+    { x: 89, y: 90, w: 10 },
+    { x: 95, y: 98, w: 8 },
   ]
+  // No `limbCrease` here, unlike every other limb in the file: an elbow crease
+  // on a liquid arm is a joint where there is no bone.
   const noodle = (pts) => {
     const [hx, hy] = wristSeat(pts, 6.5)
     return [
       P(limbOutline(pts), bodyColor, ink(3)),
-      limbCrease(pts, 1, 1.6, 0.35),
       villainGlove(hx, hy, 8, accent, towardBody(pts, hx, hy)),
     ]
   }
@@ -1346,7 +1423,13 @@ export function platSlime({ bodyColor = '#4fb5c9', accent = '#1d6b78' } = {}) {
       D('M 44,104 C 40,114 41,124 47,127 C 53,124 53,111 49,103 Z', bodyColor, ink(2.6)),
       D('M 67,106 C 64,114 66,122 71,124 C 76,121 75,112 72,105 Z', bodyColor, ink(2.6)),
 
-      villainFaceParts(60, 60, { dx: 12, ex: 6.6, tilt: 1.2, mouthY: 88, mouthW: 12.5, fangs: 2 }),
+      // cy pushed 60 -> 64, dx 12 -> 11 and tilt 1.2 -> 0.7. The brow sits at
+      // cy - ey*(1.05 + 0.55*tilt) and spans px +- ex*1.5; at v4's numbers that
+      // put it at y 48 reaching x 38, while the blob's crown is y 46 and its
+      // outline at that height is x 42 — so both brows crossed the silhouette
+      // and read as a pair of ANTENNAE rather than a scowl. Now y 54, brow top
+      // 51.8 with its 4.4 stroke, inside the outline on all three sides.
+      villainFaceParts(60, 64, { dx: 11, ex: 6.6, tilt: 0.7, mouthY: 89, mouthW: 12.5, fangs: 2 }),
     ]),
   ]
   return sticker([], body)
@@ -1393,7 +1476,7 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
       TEXT(82.5, 54, 10, '#fff', 'S'),
       TEXT(108.5, 54, 10, '#fff', 'N'),
 
-      neck(60, 47, 61, 7, 8, bodyColor, '#000'),
+      neck(60, 44, 58, 7, 8, bodyColor, '#000'),
 
       // Shoulders 42, waist 34, hips 40 — the same hourglass as the heroes at
       // villain scale, so the two silhouettes belong to one world.
@@ -1422,10 +1505,16 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
       villainArm(armL, bodyColor, accent, 9),
       villainArm(armR, bodyColor, accent, 9),
 
-      D('M 40,13 C 40,4 80,4 80,13 L 80,40 C 80,50 72,53 60,53 C 48,53 40,50 40,40 Z', bodyColor, ink(3.2)),
-      R(58, 3, 4, 11, 1.5, accent, ink(2)),
-      C(60, 9, 4.4, accent, ink(2.2)),
-      villainFaceParts(60, 31, { tilt: 1, mouthY: 45 }),
+      // v5 shortened the head from 40 units to 40x40 and moved the whole
+      // assembly down 5. Two v4 faults at once: the antenna stalk started at
+      // y 3, so its halo (stroke 2 + 9, half 5.5) reached y -2.1 and the knob
+      // was shaved flat against the frame; and the head's chin at y 53 sat
+      // 2 units above the collar at 55, which is not a neck, it is a seam.
+      // Chin 50 against collar 55 gives this one the family's 5 visible units.
+      D('M 40,18 C 40,10 80,10 80,18 L 80,38 C 80,47 72,50 60,50 C 48,50 40,47 40,38 Z', bodyColor, ink(3.2)),
+      R(58, 10, 4, 9, 1.5, accent, ink(2)),
+      C(60, 14, 4, accent, ink(2.2)),
+      villainFaceParts(60, 30, { tilt: 1, mouthY: 40 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1446,53 +1535,64 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
     S(`M ${x + w * 0.74},${y + h * 0.56} L ${x + w * 0.74},${y + h - 1}`, LINE, 1.8, { opacity: 0.7, nohalo: true }),
   ]
   const armL = [
-    { x: 33, y: 70, w: 8 },
-    { x: 24, y: 77, w: 6.8 },
-    { x: 19, y: 83, w: 5.8 },
+    { x: 33, y: 66, w: 8 },
+    { x: 25, y: 74, w: 6.8 },
+    { x: 22, y: 83, w: 5.8 },
   ]
   const armR = [
-    { x: 87, y: 70, w: 8 },
-    { x: 96, y: 77, w: 6.8 },
-    { x: 101, y: 83, w: 5.8 },
+    { x: 87, y: 66, w: 8 },
+    { x: 95, y: 74, w: 6.8 },
+    { x: 97, y: 83, w: 5.8 },
   ]
   const legL = [
-    { x: 51, y: 106, w: 8 },
-    { x: 47, y: 115, w: 6.6 },
-    { x: 48, y: 122, w: 5.8 },
+    { x: 51, y: 102, w: 8 },
+    { x: 47, y: 111, w: 6.6 },
+    { x: 48, y: 117, w: 5.8 },
   ]
   const legR = [
-    { x: 69, y: 106, w: 8 },
-    { x: 74, y: 116, w: 6.6 },
-    { x: 73, y: 123, w: 5.8 },
+    { x: 69, y: 102, w: 8 },
+    { x: 74, y: 112, w: 6.6 },
+    { x: 73, y: 118, w: 5.8 },
   ]
   const backdrop = [E(58, 134, 24, 4.2, '#000', { opacity: 0.13 })]
+  // v5 pulled the whole stack up 4 units and the brick piles 7 units inboard.
+  // v4 ran from the head knob's halo at y -0.9 to the right shoe's halo at
+  // y 142.1 and the left brick's at x -1.4 — three edges off the frame at once,
+  // because a 6-unit halo on a figure this tall has nowhere to go.
   const body = [
     G('rotate(6 60 90)', [
-      villainArm(armL, bodyColor, accent, 8),
-      brick(6, 94, 25, 15),
-      brick(11, 110, 20, 13),
+      neck(60, 44, 58, 8, 9, bodyColor, '#000'),
 
-      villainArm(armR, bodyColor, accent, 8),
-      brick(89, 94, 23, 14),
+      D('M 32,64 C 32,58 40,56 48,56 L 72,56 C 80,56 88,58 88,64 L 77,106 L 43,106 Z', bodyColor, ink(3.2)),
+      P('72,57 88,64 77,106 71,106 71,57', '#000', { opacity: 0.15, nohalo: true }),
+      P('35,68 85,68 83,74 37,74', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      P('40,88 80,88 78,94 42,94', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
 
-      neck(60, 52, 66, 8, 9, bodyColor, '#000'),
-
-      D('M 32,68 C 32,62 40,60 48,60 L 72,60 C 80,60 88,62 88,68 L 77,110 L 43,110 Z', bodyColor, ink(3.2)),
-      P('72,61 88,68 77,110 71,110 71,61', '#000', { opacity: 0.15, nohalo: true }),
-      P('35,72 85,72 83,78 37,78', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
-      P('40,92 80,92 78,98 42,98', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
-
-      R(47, 80, 16, 15, 2, accent, ink(2.4)),
-      S('M 49,86 L 61,82 M 49,92 L 61,88', bodyColor, 2.6, { nohalo: true }),
+      R(47, 76, 16, 15, 2, accent, ink(2.4)),
+      S('M 49,82 L 61,78 M 49,88 L 61,84', bodyColor, 2.6, { nohalo: true }),
 
       plainLimb(legL, accent, 2.4),
       plainLimb(legR, accent, 2.4),
-      villainShoe(46, 125, 12, 7.5),
-      villainShoe(75, 126, 12, 7.5),
+      villainShoe(46, 120, 12, 7.5),
+      villainShoe(75, 121, 12, 7.5),
 
-      D('M 36,14 C 36,5 84,5 84,14 L 84,42 C 84,53 74,57 60,57 C 46,57 36,53 36,42 Z', bodyColor, ink(3.2)),
-      C(60, 10, 5, accent, ink(2.2)),
-      villainFaceParts(60, 33, { dx: 11.5, ex: 6.6, tilt: 0.9, mouthY: 48, mouthW: 11 }),
+      // Arms AFTER the torso, like the other eight. v4 painted them first and
+      // the torso then covered every deltoid, so this figure alone still had
+      // v3's bars-bolted-to-the-flank shoulders. The bricks stay after the arms
+      // so the hands read as holding them.
+      villainArm(armL, bodyColor, accent, 8),
+      brick(11, 91, 24, 14),
+      brick(16, 108, 20, 12),
+
+      villainArm(armR, bodyColor, accent, 8),
+      brick(86, 91, 23, 14),
+
+      // Chin at 52 against a collar at 56. v4's chin was 59 — BELOW the collar
+      // — so the neck quad it drew was covered on both ends and this figure had
+      // no visible neck at all, the same fault platFlip had.
+      D('M 36,21 C 36,12 84,12 84,21 L 84,40 C 84,48 74,52 60,52 C 46,52 36,48 36,40 Z', bodyColor, ink(3.2)),
+      C(60, 15, 4.6, accent, ink(2.2)),
+      villainFaceParts(60, 30, { dx: 11.5, ex: 6.6, tilt: 0.9, mouthY: 41, mouthW: 11 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1511,25 +1611,30 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   const armL = [
     { x: 31, y: 76, w: 11 },
     { x: 23, y: 88, w: 9.2 },
-    { x: 20, y: 99, w: 7.6 },
+    { x: 21, y: 99, w: 7.6 },
   ]
+  // Wrist pulled in 3 units: at x 100 the r=11 glove's halo reached x 121.3,
+  // i.e. off the right edge of the viewBox entirely.
   const armR = [
     { x: 89, y: 74, w: 11 },
-    { x: 97, y: 86, w: 9.2 },
-    { x: 100, y: 97, w: 7.6 },
+    { x: 96, y: 86, w: 9.2 },
+    { x: 97, y: 97, w: 7.6 },
   ]
+  // Hips lifted 102 -> 96 against a torso that now ends at 100. v4's torso ran
+  // to y 106 over legs starting at 102, so four units of thigh showed above the
+  // shoe and the boss read as a head-and-belly with no legs at all.
   const legL = [
-    { x: 52, y: 102, w: 11 },
-    { x: 48, y: 112, w: 9 },
-    { x: 49, y: 121, w: 8 },
+    { x: 52, y: 96, w: 11 },
+    { x: 48, y: 109, w: 9 },
+    { x: 49, y: 119, w: 8 },
   ]
   const legR = [
-    { x: 68, y: 102, w: 11 },
-    { x: 73, y: 113, w: 9 },
-    { x: 72, y: 122, w: 8 },
+    { x: 68, y: 96, w: 11 },
+    { x: 73, y: 110, w: 9 },
+    { x: 72, y: 120, w: 8 },
   ]
   const backdrop = [
-    E(60, 135, 44, 5, '#000', { opacity: 0.17 }),
+    E(60, 133, 44, 4.6, '#000', { opacity: 0.17 }),
     bit(7, 74, 6, accent, 0.5),
     bit(16, 92, 4, bodyColor, 0.6),
     bit(6, 100, 5, accent, 0.7),
@@ -1541,16 +1646,16 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   ]
   const body = [
     G('rotate(-4 60 78)', [
-      neck(60, 54, 68, 10, 11, bodyColor, '#000'),
+      neck(58, 52, 66, 10, 11, bodyColor, '#000'),
 
       plainLimb(legL, accent, 2.8),
       plainLimb(legR, accent, 2.8),
-      villainShoe(46, 124, 16, 8.5),
-      villainShoe(75, 125, 16, 8.5),
+      villainShoe(46, 121, 16, 8.5),
+      villainShoe(75, 122, 16, 8.5),
 
       D(
         `M 29,74 C 29,66 38,63 48,63 L 72,63 C 82,63 91,66 91,74
-         L 89,100 Q 89,106 83,106 L 37,106 Q 31,106 31,100 Z`,
+         L 89,95 Q 89,100 83,100 L 37,100 Q 31,100 31,95 Z`,
         bodyColor,
         ink(3.4)
       ),
@@ -1558,25 +1663,33 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // The void in the belly IS this one's mouth — so the head carries eyes
       // and brows only. Giving the head its own mouth as well produced a
       // figure with two mouths and neither read.
-      E(58, 86, 24, 15, SOLE, ink(3)),
-      R(46, 76, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(58, 76, 12, 12, 0, accent, { nohalo: true }),
-      R(46, 88, 12, 12, 0, accent, { nohalo: true }),
-      R(58, 88, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(46, 76, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
+      // Lifted with the shortened torso: the maw's own ink is haloed, so at
+      // v4's y 101 against a torso ending at 100 it left a white rim hanging
+      // below the belly outline.
+      E(58, 84, 23, 14, SOLE, ink(3)),
+      R(46, 72, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(58, 72, 12, 12, 0, accent, { nohalo: true }),
+      R(46, 84, 12, 12, 0, accent, { nohalo: true }),
+      R(58, 84, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(46, 72, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
       // Fangs at the maw's rim, as triangles rather than the chevron strokes a
       // first pass used — a '<' next to a '>' is exactly the accidental glyph
       // this app has been bitten by before.
-      P('36,77 42,77 39,85', '#fff', { nohalo: true }),
-      P('74,77 80,77 77,85', '#fff', { nohalo: true }),
+      P('37,74 43,74 40,82', '#fff', { nohalo: true }),
+      P('73,74 79,74 76,82', '#fff', { nohalo: true }),
 
       villainArm(armL, bodyColor, accent, 11),
       villainArm(armR, bodyColor, accent, 11),
 
-      horn('31,20 23,7 41,15'),
-      horn('86,18 96,6 100,20'),
-      D('M 28,16 C 28,6 84,6 84,16 L 84,46 C 84,58 73,63 56,63 C 39,63 28,58 28,46 Z', bodyColor, ink(3.4)),
-      villainFaceParts(56, 36, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
+      // v4's left horn had its tip at x 23 against a head whose left edge is
+      // x 28 — it was drawn INSIDE the skull and read as nothing at all, while
+      // the right one read as a triangle. Now both break the silhouette by the
+      // same 12 units and both tips sit at y 13, level with the shortened
+      // crown, which is what makes them horns rather than ears.
+      horn('38,18 15,9 33,27'),
+      horn('74,18 97,12 79,27'),
+      D('M 28,20 C 28,10 84,10 84,20 L 84,44 C 84,54 73,58 56,58 C 39,58 28,54 28,44 Z', bodyColor, ink(3.4)),
+      villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
     ]),
   ]
   return sticker(backdrop, body)
