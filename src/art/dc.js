@@ -689,6 +689,16 @@ export function dcBlackout({
 // The ghost's diamond shoulder and stub neck are also gone, replaced by one
 // tapering column: they made an angular pile at the right shoulder where the
 // real arm, the real shoulder and the illusion all met.
+//
+// THIRD ROUND -- THE ILLUSION HAD A NECK AND THE REAL HEAD DID NOT. The head
+// circle bottomed out at y=45.5 against a torso starting at y=46, so a
+// component scan returned the head (506u2) as its own piece. Half a unit is
+// invisible at every render size the app uses, which is why nobody caught it
+// by eye, but it is the same defect class the user reported on Gridlock and it
+// is one edge-case antialiasing away from showing. The head moved up 4 units
+// and got the same tapering column the illusion has. Cost, recorded because it
+// is a real one: the gap between the two heads' outlines drops 16.5 -> 14.8
+// units, so the "which one is real" read is slightly tighter than it was.
 export function dcMirage({
   bodyColor = '#6e2352',
   accent = '#37102a',
@@ -709,6 +719,8 @@ export function dcMirage({
       <polygon points="36,122 51,122 51,134 34,134" fill="${accent}"/>
       <polygon points="82,122 67,122 67,134 84,134" fill="${bodyColor}"/>
 
+      <polygon points="44,37 56,37 57,50 43,50" fill="${accent}"/>
+
       <polygon points="40,46 78,46 74,94 45,94" fill="${bodyColor}"/>
       <polygon points="59,46 78,46 74,94 59,94" fill="${accent}"/>
       <path d="M 44,66 L 51,60 L 60,70 L 69,62 L 75,68 L 75,76 L 69,70 L 60,78 L 51,68 L 44,74 Z" fill="${shimmerColor}" opacity="0.62"/>
@@ -724,10 +736,10 @@ export function dcMirage({
 
       <path d="M 36,92 L 82,92 ${jagged(82, 92, 36, 92, 3, 13)} Z" fill="${accent}"/>
 
-      <circle cx="50" cy="34" r="11.5" fill="${bodyColor}"/>
-      <path d="M 38.5,32 A 11.5,11.5 0 0 1 61.5,32 Z" fill="${accent}"/>
-      ${eyePlate(50, 37, 17, 8, shimmerColor, '#25081c', '#eaffff', 1.5)}
-      <polygon points="39,26 47,28 33,11" fill="${accent}"/>
+      <circle cx="50" cy="30" r="11.5" fill="${bodyColor}"/>
+      <path d="M 38.5,28 A 11.5,11.5 0 0 1 61.5,28 Z" fill="${accent}"/>
+      ${eyePlate(50, 33, 17, 8, shimmerColor, '#25081c', '#eaffff', 1.5)}
+      <polygon points="39,22 47,24 33,7" fill="${accent}"/>
     </g>
   `
   )
@@ -737,6 +749,47 @@ export function dcMirage({
 // barrier strung between two outstretched fists across the whole lower frame.
 // The mesh is diamonds rather than squares on purpose -- a square grid reads
 // as a hash mark, and this family already risks being misread as letters.
+//
+// THIRD ROUND -- THE USER SAW THIS ONE AND SAID THE HEAD WAS COMING OFF, and
+// it was literally true, not a matter of taste. A 4-connected component scan
+// of the hard cut-out returned TWO PARTS: the signal box 1177u2 at y[10,50]
+// and everything else 5766u2 at y[52,137], with 2.0 units of COMPLETELY EMPTY
+// ROWS at y=50..52 running the full width of the frame. The box was not
+// resting on anything. Three things came out of that:
+//
+//  1. THE HEAD NOW HAS A MAST TO SIT ON. The signal box moved up 5 units
+//     (y 14..50 -> 8..45, contents with it) purely to buy room, because the
+//     net's top rail is at y=54 and the shoulder line at y=52, so there was
+//     nowhere else for a neck to go. The mast spans y 40..57, which puts it
+//     4 units under the box and 5 units under the torso: overlap on both
+//     ends is what makes the figure ONE component instead of two, and the
+//     overlap is deliberate margin, not a touching pair of edges.
+//  2. SEVEN UNITS OF IT SHOW, and the bolt-on bracket plate is inside those
+//     seven. A neck that exists in code but is swallowed by the union of head
+//     and torso measures zero, which is what happened three times in the Mario
+//     family; the number here is measured off the row-width profile, not
+//     assumed.
+//  3. THE ARMS WERE A HORIZONTAL BAR. Fists (x4-18) + arms + torso (x34-86) +
+//     arms + fists (x102-116) added up to a SOLID 100% run across rows
+//     y=60..74 -- the profile read fill=112u out of a 112u span, i.e. fifteen
+//     rows carrying no shape information at all. They now have a shoulder ball
+//     drawn AFTER the torso (outer arc = the shoulder, inner arc = the armhole
+//     seam: the chapter-5 fix for this exact defect), an elbow below the
+//     shoulder-to-fist line, and a taper, 11 wide on the upper arm and 9 on
+//     the forearm. The joints are bolted plates rather than organic deltoids
+//     because this figure is a traffic machine.
+//
+//     DO NOT EXPECT THE FRAGMENTATION INDEX TO CONFIRM THIS -- IT GOES THE
+//     WRONG WAY, and the reason is measurable rather than mysterious. Whole
+//     figure: 37.0 -> 34.3. A per-10-unit-band census locates every unit of
+//     it: the neck band gains (y50-60: 0.0 -> 1.3, the shoulder caps flanking
+//     the mast) and the arm bands lose (y60-70: 2.0 -> 0.0, y70-80: 4.0 ->
+//     2.0). An articulated arm is BULKIER than a bar of the same reach, so it
+//     covers mesh-only air that used to count as a gap. The index rewards
+//     holes, not articulation -- the same lesson Mirage recorded one figure
+//     over. The measure that does track this is the body with the net
+//     stripped, where edge-to-edge solid rows fall 5.8 -> 2.8 and
+//     fragmentation rises 39.3 -> 41.3. Judge the arms there, or by eye.
 export function dcGridlock({
   bodyColor = '#4d5a25',
   accent = '#212a0d',
@@ -787,14 +840,30 @@ export function dcGridlock({
       <polygon points="32,120 51,120 51,133 30,133" fill="${accent}"/>
       <polygon points="88,120 69,120 69,133 90,133" fill="${accent}"/>
 
+      <polygon points="53,40 67,40 69,57 51,57" fill="${bodyColor}"/>
+      <polygon points="60,40 67,40 69,57 60,57" fill="${accent}"/>
+      <rect x="49.5" y="45.6" width="21" height="3.2" fill="${barColor}"/>
+
       <polygon points="34,52 86,52 80,96 40,96" fill="${bodyColor}"/>
       <rect x="36" y="60" width="48" height="6" fill="${accent}"/>
       <rect x="36" y="72" width="46" height="6" fill="${accent}"/>
       <rect x="37" y="84" width="44" height="6" fill="${accent}"/>
       <polygon points="34,52 86,52 84,58 36,58" fill="${barColor}"/>
 
-      <path d="M 38,58 L 22,62 L 12,66" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 82,58 L 98,62 L 108,66" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 37,59 L 25,70" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <path d="M 83,59 L 95,68" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <path d="M 25,70 L 14,67" stroke="${bodyColor}" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M 95,68 L 106,67" stroke="${bodyColor}" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <circle cx="25" cy="70" r="6.2" fill="${bodyColor}"/>
+      <circle cx="95" cy="68" r="6.2" fill="${bodyColor}"/>
+      <circle cx="25" cy="70" r="2.1" fill="${accent}"/>
+      <circle cx="95" cy="68" r="2.1" fill="${accent}"/>
+      <circle cx="37" cy="59" r="8.2" fill="${bodyColor}"/>
+      <circle cx="83" cy="59" r="8.2" fill="${bodyColor}"/>
+      <path d="M 39.7,53.1 A 6.5,6.5 0 0 1 39.7,64.9" stroke="${accent}" stroke-width="1.8" fill="none"/>
+      <path d="M 80.3,53.1 A 6.5,6.5 0 0 0 80.3,64.9" stroke="${accent}" stroke-width="1.8" fill="none"/>
+      <circle cx="37" cy="59" r="2.4" fill="${accent}"/>
+      <circle cx="83" cy="59" r="2.4" fill="${accent}"/>
       <polygon points="4,60 18,60 18,74 4,74" fill="${accent}"/>
       <polygon points="116,60 102,60 102,74 116,74" fill="${accent}"/>
 
@@ -802,16 +871,16 @@ export function dcGridlock({
       <rect x="6" y="54" width="108" height="4" fill="${accent}"/>
       <rect x="6" y="98" width="108" height="4" fill="${accent}"/>
 
-      <polygon points="46,14 74,14 74,50 46,50" fill="${accent}"/>
-      <polygon points="46,14 74,14 76,10 44,10" fill="${bodyColor}"/>
-      <polygon points="42,20 46,20 46,26 42,26" fill="${bodyColor}"/>
-      <polygon points="78,20 74,20 74,26 78,26" fill="${bodyColor}"/>
-      <circle cx="54" cy="24" r="5.2" fill="${lampColor}"/>
-      <circle cx="66" cy="24" r="5.2" fill="${lampColor}"/>
-      <circle cx="54" cy="24" r="2.2" fill="${accent}"/>
-      <circle cx="66" cy="24" r="2.2" fill="${accent}"/>
-      <circle cx="60" cy="40" r="5.4" fill="${bodyColor}"/>
-      <rect x="47" y="31" width="26" height="2.6" fill="${barColor}"/>
+      <polygon points="46,8 74,8 74,45 46,45" fill="${accent}"/>
+      <polygon points="46,8 74,8 76,4 44,4" fill="${bodyColor}"/>
+      <polygon points="42,14 46,14 46,20 42,20" fill="${bodyColor}"/>
+      <polygon points="78,14 74,14 74,20 78,20" fill="${bodyColor}"/>
+      <circle cx="54" cy="19" r="5.2" fill="${lampColor}"/>
+      <circle cx="66" cy="19" r="5.2" fill="${lampColor}"/>
+      <circle cx="54" cy="19" r="2.2" fill="${accent}"/>
+      <circle cx="66" cy="19" r="2.2" fill="${accent}"/>
+      <circle cx="60" cy="35.5" r="5.4" fill="${bodyColor}"/>
+      <rect x="47" y="26.2" width="26" height="2.6" fill="${barColor}"/>
     </g>
   `
   )
@@ -822,7 +891,13 @@ export function dcGridlock({
 // falls across the lower-left of the frame. Broad and short so it reads as a
 // machine on legs next to the tall lean heroes.
 // The overhanging visor hood on top of the frame is load bearing: without it
-// the cut-out reads "television head", which is a different joke.
+// the cut-out reads "television head", which is a different joke. IT WAS ALSO
+// FLOATING: its bottom edge ran 2.7-3.3 units clear of the lamp frame's top
+// edge all the way across, so a component scan of the cut-out returned the
+// hood (561u2) as a separate piece -- the same defect the user reported on
+// Gridlock, one figure over. Dropped 5 units so the edges overlap by 1.7-2.3.
+// The lamps set the floor on that number: the hood's underside now clears the
+// three top lamp rims by 0.8-0.9 units and must not be dropped further.
 export function dcFloodlight({
   bodyColor = '#8a3f1c',
   accent = '#3f1608',
@@ -870,9 +945,9 @@ export function dcFloodlight({
       ${lamp(54, 41, true)}
       ${lamp(69, 39, false)}
       ${lamp(84, 37, false)}
-      <polygon points="36,17 94,9 96,2 34,10" fill="${accent}"/>
-      <polygon points="34,10 96,2 96,6 36,14" fill="${bodyColor}"/>
-      <polygon points="20,20 34,10 36,17 24,28" fill="${accent}"/>
+      <polygon points="36,22 94,14 96,7 34,15" fill="${accent}"/>
+      <polygon points="34,15 96,7 96,11 36,19" fill="${bodyColor}"/>
+      <polygon points="20,25 34,15 36,22 24,33" fill="${accent}"/>
     </g>
   `
   )

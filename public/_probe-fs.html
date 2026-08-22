@@ -8,6 +8,38 @@
   // Behavioural harness for the fullstack agent's robustness fixes.
   // Separate from _probe.html (layout/screenshot harness owned by design 1)
   // so both can be edited without conflict.
+  //
+  // ---- HOW TO RUN IT, and the three ways it has lied ----
+  //   CH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  //   "$CH" --headless --disable-gpu --window-size=834,1281 \
+  //     --virtual-time-budget=200000 --dump-dom \
+  //     "http://localhost:5173/_probe-fs.html?only=onendearly" \
+  //     | perl -ne 'print "$1\n" if /data-results="([^"]*)"/'
+  // Read the verdict from `data-results` (or document.title). Every one of
+  // these cost a misdiagnosis, so check them before believing a failure:
+  //
+  // (1) `?only=` IS ORDER-DEPENDENT, and the order is the order you type.
+  //     Some cases set up state that a later case asserts on. `cpresume`
+  //     without `cpwrite` reports
+  //         FAIL checkpoint-survives-reload :: no checkpoint persisted
+  //     which reads like a broken feature and is really a missing setup step:
+  //     `?only=cpwrite,cpresume` passes both. When a case fails in isolation,
+  //     re-run it with no `?only=` at all before believing it.
+  //
+  // (2) THE BUDGET IS VIRTUAL TIME, AND TOO SMALL LOOKS LIKE A HANG. When the
+  //     budget runs out mid-run the page is simply frozen where it stood:
+  //     `data-results` is never written at all, so the extractor prints
+  //     nothing and it reads as "the harness hung". `allstages` walks all 35
+  //     stages and needs --virtual-time-budget=3000000; at 200000 it produces
+  //     no attribute. Measured: the 3000000 run finishes in 3.1s of WALL
+  //     time -- virtual time is not wall time, so a big budget is nearly free
+  //     and there is no reason to economise on it.
+  //
+  // (3) THERE IS NO `timeout` ON THIS MAC, and no `gtimeout` either (no
+  //     coreutils). `timeout 200 "$CH" ...` does not run Chrome at all -- the
+  //     shell exits 127, the pipeline prints nothing, and it looks exactly
+  //     like symptom (2). Do not wrap the command; if a run really needs a
+  //     wall-clock bound, background it and poll.
   const params = new URLSearchParams(location.search)
   const only = params.get('only')
 
@@ -1176,17 +1208,58 @@
   // utterance's REAL duration (measured on this machine with say/afinfo at
   // the app's own rate), then check whether the next speak() call lands
   // before the previous utterance's real audio would have finished.
+  // These are REAL durations, not the floor audio.js computes -- the whole
+  // test is "would the next utterance land on this one's tail", so a value
+  // that is too SMALL makes the harness pass a collision it should have
+  // caught. That is exactly what happened: the table was measured at the old
+  // EN_RATE of 0.85 and left behind when the rate dropped to 0.5, so every
+  // English row was ~9% short (a few much worse -- "sun" was 449 against a
+  // real 613). The Korean row was right, because speakKO's rate never moved.
+  //
+  // Re-measure like this, and keep the two traps in mind:
+  //   say -v Samantha -r 88 -o t.aiff "lll, lll, lll"   # rate 0.5
+  //   afinfo t.aiff | grep "estimated duration"
+  // (1) -r 88 is Web Speech rate 0.5: the voices' own default is 175 wpm, and
+  //     an unflagged `say` matches -r 175 to the millisecond -- verified again
+  //     here, "elephant" 587ms both ways. Samantha and Yuna are the voices
+  //     that matter; they are the iOS en-US/ko-KR defaults, and audio.js's
+  //     floor is fitted to Samantha.
+  // (2) Measure the string LOWERCASED. speakNow() lowercases before speaking
+  //     and hands the utterance the lowered text, so `u.text` -- the key this
+  //     table is looked up by -- is already lowercase. Measuring the data as
+  //     written turns `say "S"` into "Capital S" (1013ms vs 447ms) and invents
+  //     collisions that cannot happen. It also means an upper-case KEY here is
+  //     dead code that silently falls through to the estimate: `Leo: 490` was,
+  //     and is now `leo`.
   const REAL_MS = {
-    // measured with say/afinfo at this app's own rates
-    lll: 784, sss: 854, a: 366, oh: 386, Leo: 490, lap: 419, rain: 476,
-    sun: 449, sock: 486, star: 490, elephant: 656,
+    // Samantha, -r 88 (= EN_RATE 0.5), measured 2026-08-22
+    lll: 863, sss: 922, sssss: 689, a: 399, oh: 419, leo: 535, lap: 465,
+    rain: 469, sun: 613, sock: 578, star: 567, elephant: 712,
     // the tutorials' comma-repeat form -- one utterance, internal pauses
-    'lll, lll, lll': 2745, 'guh, guh, guh': 1718, 'a, a, a': 1504,
-    'oh, oh, oh': 1535, 'iii, iii': 1159,
-    // Korean recap lines, measured at speakKO's rate 1.0
+    'lll, lll, lll': 2988, 'guh, guh, guh': 1874, 'a, a, a': 1641,
+    'oh, oh, oh': 1673, 'iii, iii': 1266,
+    // Korean recap lines, Yuna at speakKO's rate 1.0
     '에스 소리를 찾았어요! 잘 들어보세요.': 2796,
   }
-  const realMsOf = (t) => REAL_MS[t] || Math.max(300, 60 * String(t).length)
+  // Strings that had to be estimated rather than looked up. Reported, and
+  // checked, because a silent fallback is how the table rotted in the first
+  // place: nothing announced that the rate had changed underneath it.
+  const realMsMisses = new Set()
+  // Deliberately an OVER-estimate -- it over-shoots every string in the
+  // corpus above (worst: "a", +251ms). An under-estimate here would hide
+  // collisions, which is the one failure mode this whole test exists for.
+  // Length is a poor predictor at this rate (3-character "sun" is 613ms and
+  // 4-character "sock" is 578ms), so this is an envelope, not a fit. Commas
+  // and Hangul get their own terms for the same reason audio.js gives them
+  // their own: a comma is an internal pause, and a Hangul block is a syllable.
+  const realMsOf = (t) => {
+    const s = String(t)
+    if (REAL_MS[s] != null) return REAL_MS[s]
+    realMsMisses.add(s)
+    if (/[가-힣]/.test(s)) return 170 * s.length
+    if (s.includes(',')) return Math.max(230 * s.length, 700 * s.split(',').length)
+    return Math.max(650, 95 * s.length)
+  }
 
   async function measureTimeline(onendDelayFn, run) {
     const origSpeak = window.speechSynthesis.speak
@@ -1269,6 +1342,19 @@
       'onend-early-overlap-within-tail-tolerance',
       teachEarly.worst <= TOLERATED_TAIL_MS && rewardEarly.worst <= TOLERATED_TAIL_MS,
       `tolerance=${TOLERATED_TAIL_MS}ms ` + JSON.stringify(detail)
+    )
+    // Everything the two scenarios speak must be a MEASURED duration. If a
+    // scenario grows a new string, or content changes what the reward screen
+    // says, the estimate above quietly takes over and the verdict stops
+    // meaning anything -- which is the failure this case had for a whole rate
+    // change. Fix by measuring the listed string into REAL_MS, not by
+    // widening the tolerance.
+    check(
+      'onend-early-durations-all-measured',
+      realMsMisses.size === 0,
+      realMsMisses.size === 0
+        ? 'no estimated durations'
+        : `estimated (add to REAL_MS): ${JSON.stringify([...realMsMisses])}`
     )
   }
 
