@@ -781,17 +781,42 @@ button {
   border: 0;
 }
 
+/* Elastic option grid. The grid takes whatever height the beat has left
+   over and `1fr` rows divide it, so ONE rule serves a 3-option beat with
+   335px of slack and a 5-option beat with none -- the cards (and the icons
+   inside them, which are sized in %) grow and shrink with the count instead
+   of every count sharing one vh-based cell size. Before this, portrait
+   overflowed by 52-373px as soon as a beat carried more than three options
+   with a prompt above them, which blocked the chapter 8-33 difficulty ramp.
+
+   `flex-basis: 0`, not `auto`: with `auto` the base size is resolved against
+   an indefinite height, so the `1fr` rows fall back to max-content and the
+   100%-tall icon reports its intrinsic size instead -- a 4-option portrait
+   beat overflowed by 141px that way.
+
+   max-height is the aesthetic stop, and it is per count because the useful
+   card height is set by the card WIDTH: the icon is bound by the narrower
+   axis, so past roughly 2x the cell width the extra height buys padding, not
+   picture. Whatever the cap leaves unused goes back to .beat's space-evenly
+   as breathing room, so a screen never looks glued to the top. */
 .options-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  grid-auto-rows: minmax(140px, clamp(140px, 30vh, 360px));
+  grid-auto-rows: minmax(130px, 1fr);
   gap: 18px;
   width: 100%;
-  max-width: 700px;
+  max-width: 760px;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 40vh;
 }
 
+/* No side padding: the icons carry their own margin inside a 64x64 viewBox,
+   so horizontal padding only shrinks the picture (211px -> 231px without it)
+   and pushes the long option words further outside the card. */
 .option-btn {
-  min-height: 180px;
+  min-height: 0;
+  padding: 10px 0;
   height: 100%;
   border-radius: 30px;
   border: 5px solid var(--border);
@@ -806,12 +831,34 @@ button {
 
 /* Four options read better as a 2x2 block of big squares on a portrait
    iPad than as four narrow columns; :has lets the count drive the layout
-   without touching the markup. */
-.options-grid:has(> :nth-child(4)) {
+   without touching the markup. The :not() guard matters -- without it this
+   rule also matched five options and pinned their rows to the 4-option
+   height, which left a 77px void inside the grid that read as "the cap is
+   too small" and got worse the more the cap was raised. */
+.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5))) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-rows: minmax(140px, clamp(140px, 21vh, 250px));
-  max-width: 500px;
+  grid-auto-rows: minmax(130px, 1fr);
+  max-width: 560px;
+  max-height: 56vh;
 }
+
+/* Five options: 3 over 2, the bottom pair centred. Every card spans two of
+   six columns, so the second row can start half a card in. The placement is
+   fully explicit because auto-placement put the 5th card on a third
+   (empty) implicit row, which cost 175px of void. */
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(130px, 1fr);
+  max-width: 760px;
+  max-height: 76vh;
+}
+
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > .option-btn:nth-child(1) { grid-area: 1 / 1 / 2 / 3; }
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > .option-btn:nth-child(2) { grid-area: 1 / 3 / 2 / 5; }
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > .option-btn:nth-child(3) { grid-area: 1 / 5 / 2 / 7; }
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > .option-btn:nth-child(4) { grid-area: 2 / 2 / 3 / 4; }
+.options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > .option-btn:nth-child(5) { grid-area: 2 / 4 / 3 / 6; }
 
 .option-btn:active:not(:disabled) {
   transform: translateY(8px);
@@ -827,25 +874,44 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
 }
 
+/* The icon is measured in % of the cell, not in vh, which is what makes the
+   grid elastic: the same rule draws a 200px picture on a 3-option beat and a
+   110px one on a 5-option beat. preserveAspectRatio (default) keeps the
+   drawing square inside a non-square box, so the narrower axis wins on its
+   own and no per-count icon rule is needed -- the two clamp() rules this
+   replaced are gone. */
 .option-emoji svg.word-icon-art {
-  width: clamp(84px, 14vh, 172px);
-  height: clamp(84px, 14vh, 172px);
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
-/* Four options stack into two rows, so their cells stay short -- the icon
-   has to come back down to fit one. */
-.options-grid:has(> :nth-child(4)) .option-emoji svg.word-icon-art {
-  width: clamp(84px, 12.5vh, 150px);
-  height: clamp(84px, 12.5vh, 150px);
-}
-
+/* PRE-EXISTING DEFECT, not fixed here: a single long word does not wrap, so
+   "orange"/"octopus"/"umbrella" (12 beats across chapters 3-7) render past
+   both edges of their card and collide with the neighbour's word. The card's
+   inner width is unchanged from before this pass (211px portrait), so this is
+   no worse -- but nothing in the harness could see it, hence the new SPILL
+   field in _probe.html.
+   It cannot be fixed from CSS alone: fitting text to a box needs the
+   character count. The fix follows the .beat-equation precedent -- have
+   optionLabelHtml() in screens.js emit style="--label-len:${label.length}"
+   and size this rule as
+     min(clamp(32px, 5.6vh, 67px), calc(<K>px / var(--label-len, 3)))
+   with K found by sweep. Shrinking the font unconditionally is the wrong
+   trade: 258 of the 306 labels are 3-4 characters and lose size for the 48
+   that are long. Breaking the word (overflow-wrap) was measured too and
+   removes the collision, but "umbrel/la" teaches a false syllable split in a
+   phonics app. */
 .option-label {
   font-size: clamp(32px, 5.6vh, 67px);
   font-weight: 700;
   color: var(--text);
+  flex: 0 0 auto;
 }
 
 .build-slots {
@@ -1230,29 +1296,46 @@ button {
     min-height: 26px;
   }
 
+  /* Landscape is wide but the BEAT is not: the battle rail takes a 244px
+     column, leaving the beat a 655x806 box -- taller than it is wide, the
+     same shape as portrait. The old rules treated it as "wide and short":
+     rows were pinned to 150px and icons to a flat 72px inside an 806px
+     column, so a 3-option beat held 175px (21.7%) of void and the pictures
+     were less than half the size they could be. Same tiers as portrait,
+     different caps because the caps are in vh and vh is the short axis
+     here. */
   .options-grid {
     max-width: 720px;
     gap: 12px;
-    grid-auto-rows: minmax(96px, 150px);
+    grid-auto-rows: minmax(96px, 1fr);
+    max-height: 60vh;
   }
 
-  /* Landscape is wide and short: keep four options in one row. */
-  .options-grid:has(> :nth-child(4)) {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  .options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5))) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(96px, 1fr);
+    max-width: 560px;
+    max-height: 76vh;
+  }
+
+  .options-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) {
+    grid-auto-rows: minmax(96px, 1fr);
     max-width: 720px;
+    max-height: 88vh;
   }
 
+  /* No side padding here, unlike portrait. Landscape cards are the narrowest
+     in the app (210px across for three options) and the long option words
+     ("umbrella" at 50px is 196px wide) already sit within a pixel or two of
+     the card's inner edge -- 10px a side pushed them out of it. See the
+     .option-label note about the real fix. */
   .option-btn {
-    min-height: 110px;
+    min-height: 0;
+    padding: 8px 0;
   }
 
   .option-label {
     font-size: 50px;
-  }
-
-  .option-emoji svg.word-icon-art {
-    width: 72px;
-    height: 72px;
   }
 
   .build-slot {
