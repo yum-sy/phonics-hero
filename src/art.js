@@ -43,6 +43,17 @@ import {
   creatureMuncher,
 } from './art/creatures.js'
 import {
+  dcRay,
+  dcJett,
+  dcCloak,
+  dcNightray,
+  dcBlackout,
+  dcMirage,
+  dcGridlock,
+  dcFloodlight,
+  dcNightfall,
+} from './art/dc.js'
+import {
   toyLeo,
   toyFifi,
   toyBobo,
@@ -619,6 +630,12 @@ const HERO_PALETTES = {
   'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#8a5426', emblem: 'F' },
   'bobo': { style: 'toy-block', bodyColor: '#7fd6a3', accent: '#2f7a52', emblem: 'B' },
   'captain-big': { style: 'toy-boss', bodyColor: '#6b4ea8', accent: '#f4c95d', panelColor: '#f5f2ea' },
+  // DC family: style only. Every colour lives in art/dc.js because the family
+  // is built on a narrow dark palette that a stray bodyColor here would break.
+  'ray': { style: 'dc-ray' },
+  'jett': { style: 'dc-jett' },
+  'cloak': { style: 'dc-cloak' },
+  'nightray': { style: 'dc-boss' },
 }
 
 const VILLAIN_PALETTES = {
@@ -653,6 +670,11 @@ const VILLAIN_PALETTES = {
   'boxxy': { style: 'toy-boxxy', bodyColor: '#c9a35a', accent: '#6b4423' },
   'tumbles': { style: 'toy-tumbles', bodyColor: '#4f8fc9', accent: '#245080' },
   'wind-down': { style: 'toy-wind-down', bodyColor: '#332c45', accent: '#6f5bd0' },
+  'blackout': { style: 'dc-blackout' },
+  'mirage': { style: 'dc-mirage' },
+  'gridlock': { style: 'dc-gridlock' },
+  'floodlight': { style: 'dc-floodlight' },
+  'nightfall': { style: 'dc-nightfall' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
@@ -686,6 +708,11 @@ const HERO_STYLES = {
   'toy-plush': toyFifi,
   'toy-block': toyBobo,
   'toy-boss': toyCaptainBig,
+  'dc-ray': dcRay,
+  'dc-jett': dcJett,
+  'dc-cloak': dcCloak,
+  'dc-boss': dcNightray,
+  'dc-hero': dcRay,
 }
 
 const VILLAIN_STYLES = {
@@ -717,6 +744,12 @@ const VILLAIN_STYLES = {
   'toy-boxxy': toyBoxxy,
   'toy-tumbles': toyTumbles,
   'toy-wind-down': toyWindDown,
+  'dc-blackout': dcBlackout,
+  'dc-mirage': dcMirage,
+  'dc-gridlock': dcGridlock,
+  'dc-floodlight': dcFloodlight,
+  'dc-nightfall': dcNightfall,
+  'dc-hero': dcBlackout,
 }
 
 // Styles that name a family rather than a final look. Chapter data written
@@ -732,6 +765,7 @@ const FAMILY_STYLES = new Set([
   'platformer',
   'creature',
   'toy',
+  'dc-hero',
 ])
 
 // Explicit spec colors win over the name palette, which wins over the art

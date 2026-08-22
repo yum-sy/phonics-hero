@@ -120,7 +120,13 @@ function beam(ax, ay, x1, y1, x2, y2, color, rimColor) {
   const rim = rimColor
     ? `<path d="M ${x1},${y1} L ${ax},${ay} L ${x2},${y2}" stroke="${rimColor}" stroke-width="1" fill="none" stroke-linejoin="round"/>`
     : ''
-  return wedge(0, 1, 0.3) + wedge(0.26, 0.74, 0.66) + wedge(0.4, 0.6, 1) + rim
+  // Third round on these numbers. 0.3 for the outer wedge was measured wrong:
+  // gold at 0.3 over the app's cream card is under 1.1:1, so only the opaque
+  // core was ever visible and the beam read as a pole again -- the exact
+  // failure the rim was added to cure. 0.48 is the lowest step where the outer
+  // wedge is visible on cream, and the width of the visible wedge is what
+  // makes it light rather than a stick.
+  return wedge(0, 1, 0.48) + wedge(0.26, 0.74, 0.76) + wedge(0.4, 0.6, 1) + rim
 }
 
 // A flat dark wash over an already-drawn shape. This family builds volume by
@@ -194,19 +200,39 @@ function eyePlate(cx, cy, w, h, plateColor, slitColor, coreColor, tilt = 1.6) {
 // The plate is a rounded rectangle throughout: this family risks its art
 // being misread as a letter, and a rounded rect is not one. Villains get no
 // plate at all, which is one of the four hero/villain axes.
+//
+// GEOMETRY LIVES IN ONE PLACE. `EMBLEM_BOX` below holds every hero's anchor
+// and `emblemPlate` is the only function that turns an anchor into shapes, so
+// the still-open question of WHERE the letter goes (chest badge / chest
+// nameplate / a disc held in the hand) is a change to two things, not to nine
+// figures. Each hero body draws its own chest so that any of the three fits.
+//
+// The proportions here were re-measured, not inherited. The first version used
+// h = 0.63w with the glyph at 0.79h, which spends most of the plate on padding:
+// Ray's plate was 41x25.8 units to carry a 14.7-unit letter, i.e. it ate the
+// whole torso for a letter a much smaller plate could hold. h = 0.60w with the
+// glyph at 0.94h (two glyphs) / 1.06h (one) keeps the letter the same height
+// on a plate 26% smaller in area. Measured glyph heights at the app's four
+// real render sizes are in `_dc-scan.html` section 3.
 function emblemPlate(
-  cx,
-  cy,
+  box,
   label,
-  w = 42,
   borderColor = GOLD,
   plateColor = CREAM,
   textColor = PLATE_INK,
   border = 2.2
 ) {
+  const { cx, cy, w } = box
   const text = String(label)
-  const h = w * 0.63
-  const size = text.length > 1 ? h * 0.79 : h * 1.0
+  const h = w * 0.6
+  // Non-letter labels get their own step. Measured inked heights: a capital
+  // letter fills about 0.72 of its font size, but the boss star fills 0.93, so
+  // one rule for both left the star with 0.5 units of margin inside the plate
+  // on three of the four heroes -- a plate crammed edge to edge stops reading
+  // as a plate. Letters keep the larger step because the letter is the
+  // curriculum and the star is not.
+  const lettery = /^[A-Za-z0-9]+$/.test(text)
+  const size = text.length > 1 ? h * 0.94 : lettery ? h * 1.06 : h * 0.82
   const rx = w * 0.11
   return `
     <rect x="${(cx - w / 2 - border).toFixed(1)}" y="${(cy - h / 2 - border).toFixed(1)}"
@@ -215,6 +241,19 @@ function emblemPlate(
     <rect x="${(cx - w / 2).toFixed(1)}" y="${(cy - h / 2).toFixed(1)}" width="${w}" height="${h.toFixed(1)}" rx="${rx.toFixed(1)}" fill="${plateColor}"/>
     <text x="${cx}" y="${(cy + size * 0.355).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
       font-size="${size.toFixed(1)}" font-weight="800" fill="${textColor}">${text}</text>`
+}
+
+// Where each hero carries the letter. Chapter 7's labels are AI / J / OA, so
+// `w` is sized for the two-glyph case and the one-glyph case just gets a
+// taller letter on the same plate; every hero is verified against all of
+// AI / OA / J / * in `_dc-scan.html` section 2.
+// Jett's box is the small one because its plate sits on a foreshortened chest
+// facet rather than a square-on torso.
+const EMBLEM_BOX = {
+  ray: { cx: 60, cy: 64, w: 36 },
+  jett: { cx: 66, cy: 58, w: 33 },
+  cloak: { cx: 60, cy: 64, w: 38 },
+  nightray: { cx: 60, cy: 63, w: 43 },
 }
 
 // ---------------------------------------------------------------------------
@@ -227,11 +266,12 @@ function emblemPlate(
 // Ray. The light-bringer: a lantern held overhead throws a hard wedge into
 // the top-right corner, and the raised arm is the whole read at small sizes,
 // so the other arm stays down at the hip.
-// The cape is swept to one side rather than hung symmetrically. The first
-// pass hung it symmetrically and the hard cut-out came back reading "figure
-// in a dress" -- a symmetric hem that ends above the knees closes the gap
-// between the legs and stops being a cape. Sweeping it clears one leg
-// completely and the drape direction is what says "cape".
+// The cape is a WING SWEPT UP AND TO ONE SIDE, and its hem stays above the
+// knees. Two earlier versions failed the hard cut-out for the same reason:
+// a hem that reaches down past y=100 fills the gap between the legs and the
+// figure reads "in a dress" no matter which way it is swept. Ending the hem at
+// y<=96 and x<=32 leaves both legs and the body edge free, which is what makes
+// it read as a cape at all. Do not lengthen it without re-running the cut-out.
 export function dcRay({
   bodyColor = '#2f5fb3',
   accent = '#16233f',
@@ -244,11 +284,11 @@ export function dcRay({
     <g>
       <ellipse cx="58" cy="134" rx="28" ry="5" fill="#000" opacity="0.12"/>
 
-      ${beam(99, 22, 57, 1, 119, 52, GOLD, BEAM_RIM)}
+      ${beam(99, 22, 46, 1, 119, 60, GOLD, BEAM_RIM)}
 
-      <path d="M 73,48 L 6,88 ${scallop(6, 88, 40, 110, 3, 9)} L 56,56 Z" fill="${capeColor}"/>
-      <path d="M 68,52 L 20,84 ${scallop(20, 84, 42, 100, 2, 7)} L 57,60 Z" fill="${liningColor}"/>
-      ${shade(`M 68,52 L 20,84 ${scallop(20, 84, 42, 100, 2, 7)} L 57,60 Z`, 0.3)}
+      <path d="M 74,44 L 2,62 ${scallop(2, 62, 26, 88, 3, 8)} L 58,52 Z" fill="${capeColor}"/>
+      <path d="M 70,48 L 18,60 ${scallop(18, 60, 30, 80, 2, 6)} L 58,54 Z" fill="${liningColor}"/>
+      ${shade(`M 70,48 L 18,60 ${scallop(18, 60, 30, 80, 2, 6)} L 58,54 Z`, 0.3)}
 
       <path d="M 45,95 L 43,120 L 44,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M 74,95 L 76,120 L 76,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -257,6 +297,7 @@ export function dcRay({
       <rect x="34" y="124" width="17" height="3.4" fill="${GOLD}"/>
       <rect x="69" y="124" width="17" height="3.4" fill="${GOLD}"/>
 
+      <rect x="53" y="36" width="14" height="13" fill="${accent}"/>
       <polygon points="35,47 85,47 83,80 78,98 42,98 37,80" fill="${bodyColor}"/>
       <polygon points="35,47 49,47 45,86 38,78" fill="${accent}"/>
       <polygon points="85,47 71,47 75,86 82,78" fill="${accent}"/>
@@ -273,7 +314,7 @@ export function dcRay({
 
       <rect x="40" y="89" width="40" height="8" fill="${accent}"/>
       <rect x="53" y="88" width="14" height="10" fill="${GOLD}"/>
-      ${emblemPlate(60, 64, emblem, 41, GOLD)}
+      ${emblemPlate(EMBLEM_BOX.ray, emblem, GOLD)}
 
       <circle cx="60" cy="27" r="12.5" fill="${accent}"/>
       <path d="M 47.5,27 A 12.5,12.5 0 0 1 72.5,27 Z" fill="${bodyColor}"/>
@@ -286,19 +327,28 @@ export function dcRay({
   )
 }
 
-// Jett. The only diagonal figure in the app: hips low-left, cowl high-right,
-// one fist thrown forward past the frame's shoulder, cape streaming behind.
+// Jett. The only diagonal figure in the app: cowl high-right, fist thrown
+// forward past the frame's shoulder, legs trailing low-left.
 // Drawn by hand rather than rotated because a rotate about the body centre
 // pushes the fist and the cape hem straight out of the viewBox.
-// The cape streams ABOVE the trailing legs, not through them. The first pass
-// overlapped the two and the cut-out came back as one undifferentiated
-// diagonal streak with no body in it.
-// This is also the one figure that needed a dedicated front-facing CHEST
-// FACET. A foreshortened diagonal slab is about 17 units thick and an
-// axis-aligned nameplate is 25 tall, so the plate poked past the body outline
-// -- a pixel diff of the cut-out with and without it came back at 382 pixels.
-// The facet is body, so it is a deliberate silhouette choice; the plate now
-// sits inside it and the same diff is 0.
+//
+// THE CAPE BILLOWS UP AND BACK, NOT DOWN AND BACK. Two passes drew the cape
+// trailing down-left, which is where a cape physically goes -- and both times
+// it landed on top of the trailing legs and the hard cut-out came back as one
+// featureless diagonal streak. The fragmentation index (rows whose filled runs
+// are split by >=6 units) measured 9.3 on that version, against 61 for a
+// figure that reads and 39 for the Mario lead. Lifting the cape into the band
+// above the shoulders puts a 12-30 unit hole between the cape and the cowl for
+// thirty rows, and splaying the two trailing legs adds another twenty-four.
+// Both gaps are the whole reason this figure is legible; closing either one
+// puts it straight back to a streak.
+//
+// This is also the one figure that needs a dedicated front-facing CHEST FACET.
+// A foreshortened diagonal slab is about 18 units thick and an axis-aligned
+// nameplate is 24 tall including its border, so the plate pokes past the body
+// outline -- a cut-out pixel diff with and without it measured 382 pixels. The
+// facet is body, so it is a deliberate silhouette choice, and the plate sits
+// inside it.
 export function dcJett({
   bodyColor = '#1a7d9e',
   accent = '#0b3a4c',
@@ -309,41 +359,39 @@ export function dcJett({
   return svgWrap(
     `
     <g>
-      <ellipse cx="46" cy="136" rx="26" ry="4" fill="#000" opacity="0.08"/>
+      <path d="M 74,44 L 6,12 ${scallop(6, 12, 20, 50, 3, 8)} L 66,58 Z" fill="${capeColor}"/>
+      <path d="M 70,48 L 20,24 ${scallop(20, 24, 28, 50, 2, 6)} L 64,58 Z" fill="${liningColor}"/>
+      ${shade(`M 70,48 L 20,24 ${scallop(20, 24, 28, 50, 2, 6)} L 64,58 Z`, 0.26)}
 
-      <path d="M 76,42 L 4,74 ${scallop(4, 74, 34, 100, 3, 8)} L 66,60 Z" fill="${capeColor}"/>
-      <path d="M 72,48 L 20,72 ${scallop(20, 72, 40, 92, 2, 6)} L 64,60 Z" fill="${liningColor}"/>
-      ${shade(`M 72,48 L 20,72 ${scallop(20, 72, 40, 92, 2, 6)} L 64,60 Z`, 0.26)}
+      <rect x="2" y="58" width="15" height="3.2" fill="${CREAM}" opacity="0.5"/>
+      <rect x="7" y="66" width="11" height="2.8" fill="${CREAM}" opacity="0.36"/>
 
-      <rect x="4" y="86" width="18" height="3.4" fill="${CREAM}" opacity="0.55"/>
-      <rect x="10" y="96" width="13" height="3" fill="${CREAM}" opacity="0.4"/>
+      <path d="M 52,84 L 40,104 L 30,120" stroke="${bodyColor}" stroke-width="12.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="24,113 36,118 32,131 20,125" fill="${accent}"/>
+      <path d="M 60,88 L 55,110 L 53,129" stroke="${bodyColor}" stroke-width="12.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <polygon points="46,123 60,125 60,137 46,136" fill="${accent}"/>
+      <rect x="46" y="123" width="14" height="3.2" fill="${GOLD}"/>
 
-      <path d="M 50,84 L 32,100 L 18,110" stroke="${bodyColor}" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="22,105 10,116 18,125 30,114" fill="${accent}"/>
-      <path d="M 56,88 L 44,108 L 34,122" stroke="${bodyColor}" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="38,117 27,129 35,137 46,125" fill="${accent}"/>
+      <polygon points="42,46 86,40 90,72 46,80" fill="${bodyColor}"/>
+      <polygon points="42,46 56,44 60,78 46,80" fill="${accent}"/>
+      <polygon points="86,40 90,72 82,74 78,42" fill="${accent}" opacity="0.5"/>
 
-      <polygon points="76,46 88,58 58,92 44,80" fill="${bodyColor}"/>
-      <polygon points="76,46 84,54 60,78 52,70" fill="${accent}" opacity="0.45"/>
-      <polygon points="36,46 84,40 88,70 45,82" fill="${bodyColor}"/>
-      <polygon points="36,46 52,44 56,80 45,82" fill="${accent}"/>
+      <path d="M 50,58 L 41,74 L 38,88" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="38" cy="90" r="6" fill="${accent}"/>
 
-      <path d="M 60,62 L 46,74 L 40,86" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="40" cy="88" r="6" fill="${accent}"/>
+      <path d="M 84,48 L 99,34 L 110,21" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="111" cy="20" r="6.4" fill="${accent}"/>
+      <polygon points="105,15 115,15 116,9 106,9" fill="${GOLD}"/>
 
-      <path d="M 80,54 L 95,38 L 106,25" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="107" cy="23" r="6.4" fill="${accent}"/>
-      <polygon points="102,18 112,18 113,12 103,12" fill="${GOLD}"/>
+      <polygon points="47,72 88,68 87,78 47,82" fill="${accent}"/>
+      <rect x="60" y="70" width="13" height="10" fill="${GOLD}"/>
+      ${emblemPlate(EMBLEM_BOX.jett, emblem, liningColor)}
 
-      <polygon points="48,78 70,74 68,86 47,88" fill="${accent}"/>
-      <rect x="54" y="76" width="12" height="11" fill="${GOLD}"/>
-      ${emblemPlate(62, 58, emblem, 32, liningColor)}
-
-      <circle cx="87" cy="41" r="12" fill="${accent}"/>
-      <path d="M 75.4,38 A 12,12 0 0 1 97.4,33 Z" fill="${bodyColor}"/>
-      ${lenses(87, 45, CREAM, 0.95)}
-      <polygon points="78,33 88,28 70,25" fill="${accent}"/>
-      <polygon points="79,37 87,32 72,30" fill="${GOLD}"/>
+      <circle cx="88" cy="36" r="11.5" fill="${accent}"/>
+      <path d="M 76.9,33 A 11.5,11.5 0 0 1 97.9,28 Z" fill="${bodyColor}"/>
+      ${lenses(88, 40, CREAM, 0.95)}
+      <polygon points="79,29 89,24 68,19" fill="${accent}"/>
+      <polygon points="80,33 88,28 71,25" fill="${GOLD}"/>
     </g>
   `
   )
@@ -395,7 +443,7 @@ export function dcCloak({
       <rect x="43" y="89" width="7" height="7" fill="${GOLD}"/>
       <rect x="56" y="87" width="9" height="11" fill="${GOLD}"/>
       <rect x="71" y="89" width="7" height="7" fill="${GOLD}"/>
-      ${emblemPlate(60, 64, emblem, 43, liningColor)}
+      ${emblemPlate(EMBLEM_BOX.cloak, emblem, liningColor)}
 
       <circle cx="60" cy="30" r="13" fill="${accent}"/>
       <polygon points="49,21 57,20 45,2" fill="${accent}"/>
@@ -408,13 +456,26 @@ export function dcCloak({
   )
 }
 
-// Nightray, the chapter-7 boss and the combined form. Deliberately the
-// largest hero in the app: cowl ears touch y=1, the scalloped cape spans the
-// full 120 units, the torso is 56 wide against the others' 44-48. The three
-// earlier heroes are all still visible in it -- Cloak's eared cowl, Jett's
-// crimson cape lining, Ray's lantern in BOTH fists with a beam off each --
-// so "the three merged" reads without narration. Size is bought with clear
-// separate shapes (wide arm gaps, split legs) rather than with overlap.
+// Nightray, the chapter-7 boss and the combined form. The three earlier heroes
+// are all still visible in it -- Cloak's eared cowl, Jett's crimson cape
+// lining, Ray's lantern in BOTH fists with a beam off each -- so "the three
+// merged" reads without narration.
+//
+// SIZE IS BOUGHT IN SHAPE, NOT IN AREA. The first version was the biggest
+// figure in the file by filled area (9295 square units against Cloak's 7090)
+// and still read as "Cloak again", because the extra area went into a wider
+// cape that lay over the arms and legs. Measured: its fragmentation index was
+// 37.8, BELOW the 47.8 of the ordinary hero it merges from -- the boss was
+// less articulate than its own component. Two changes fixed that:
+//   - THE CAPE IS TWO SEPARATE SIDE LOBES that stay outboard of the legs
+//     instead of one hem that spans the frame. The centre stays open, so the
+//     legs are legs and there are three holes across the lower rows.
+//   - THE LANTERN ARMS ARE RAISED CLEAR OF THE BODY, hands up at y=26 where
+//     the torso is not, which opens a 30-unit hole on each side for fifteen
+//     rows. Lowered arms sat inside the cape and contributed nothing.
+// The third mark of rank is the crest: Cloak has two cowl ears, Nightray has
+// two ears PLUS a gold centre spike, which is the difference a five-year-old
+// reads as a crown. Do not give the other heroes a third point.
 export function dcNightray({
   bodyColor = '#2b3aa0',
   accent = '#0f1436',
@@ -423,17 +484,31 @@ export function dcNightray({
   panelColor = '#7c88c8',
   emblem = '★',
 } = {}) {
+  // Hem ends at x<=22: anything further right lands on the leg and closes the
+  // gap that makes the lower half readable.
+  const capeLobe = `
+      <path d="M 42,44 L 2,88 ${scallop(2, 88, 22, 102, 2, 9)} L 52,68 Z" fill="${capeColor}"/>
+      <path d="M 44,48 L 14,84 ${scallop(14, 84, 24, 94, 1, 7)} L 50,66 Z" fill="${liningColor}"/>
+      ${shade(`M 44,48 L 14,84 ${scallop(14, 84, 24, 94, 1, 7)} L 50,66 Z`, 0.34)}`
+
+  const lanternArm = `
+      <path d="M 30,48 L 18,38 L 9,28" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="8" cy="26" r="7.2" fill="${accent}"/>
+      <polygon points="2,24 15,24 16,14 1,14" fill="${GOLD}"/>
+      <polygon points="4,22 13,22 14,16 3,16" fill="${CREAM}"/>`
+
+  const searchBeam = beam(8, 24, 1, 1, 36, 1, GOLD, BEAM_RIM)
+
   return svgWrap(
     `
     <g>
       <ellipse cx="60" cy="135" rx="42" ry="4.6" fill="#000" opacity="0.15"/>
 
-      ${beam(16, 78, 1, 98, 1, 132, GOLD, BEAM_RIM)}
-      ${beam(104, 78, 119, 98, 119, 132, GOLD, BEAM_RIM)}
+      ${searchBeam}
+      ${mirrored(searchBeam)}
 
-      <path d="M 40,42 L 2,104 ${scallop(2, 104, 40,116, 2, 10)} L 60,84 L 80,116 ${scallop(80, 116, 118, 104, 2, 10)} L 80,42 Z" fill="${capeColor}"/>
-      <path d="M 44,45 L 18,98 ${scallop(18, 98, 44, 108, 1, 8)} L 60,88 L 76,108 ${scallop(76, 108, 102, 98, 1, 8)} L 76,45 Z" fill="${liningColor}"/>
-      ${shade(`M 44,45 L 18,98 ${scallop(18, 98, 44, 108, 1, 8)} L 60,88 L 76,108 ${scallop(76, 108, 102, 98, 1, 8)} L 76,45 Z`, 0.34)}
+      ${capeLobe}
+      ${mirrored(capeLobe)}
 
       <path d="M 47,98 L 42,122 L 42,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M 73,98 L 78,122 L 78,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -452,19 +527,13 @@ export function dcNightray({
       <rect x="22" y="42" width="24" height="4.4" fill="${GOLD}"/>
       <rect x="74" y="42" width="24" height="4.4" fill="${GOLD}"/>
 
-      <path d="M 34,54 L 20,66 L 17,76" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 86,54 L 100,66 L 103,76" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="16" cy="78" r="7.2" fill="${accent}"/>
-      <circle cx="104" cy="78" r="7.2" fill="${accent}"/>
-      <polygon points="9,76 23,76 25,66 7,66" fill="${GOLD}"/>
-      <polygon points="97,76 111,76 113,66 95,66" fill="${GOLD}"/>
-      <polygon points="11,74 21,74 22,68 10,68" fill="${CREAM}"/>
-      <polygon points="99,74 109,74 110,68 98,68" fill="${CREAM}"/>
+      ${lanternArm}
+      ${mirrored(lanternArm)}
 
       <rect x="36" y="88" width="48" height="10" fill="${accent}"/>
       <rect x="52" y="86" width="16" height="14" fill="${GOLD}"/>
       <rect x="32" y="43" width="56" height="3.6" fill="${panelColor}"/>
-      ${emblemPlate(60, 64, emblem, 49, GOLD)}
+      ${emblemPlate(EMBLEM_BOX.nightray, emblem, GOLD)}
 
       <circle cx="60" cy="27" r="15" fill="${accent}"/>
       <polygon points="47,17 56,16 41,1" fill="${accent}"/>
@@ -473,6 +542,8 @@ export function dcNightray({
       <rect x="45.4" y="22.4" width="29.2" height="3.6" fill="${GOLD}"/>
       ${lenses(60, 31.5, CREAM, 1.18)}
       <polygon points="52,40 68,40 64,45 56,45" fill="${accent}"/>
+      <polygon points="54,15 66,15 60,0.6" fill="${GOLD}"/>
+      <polygon points="56.6,14 63.4,14 60,5" fill="${accent}"/>
     </g>
   `
   )
@@ -583,8 +654,7 @@ export function dcMirage({
       <circle cx="50" cy="34" r="11.5" fill="${bodyColor}"/>
       <path d="M 38.5,32 A 11.5,11.5 0 0 1 61.5,32 Z" fill="${accent}"/>
       ${eyePlate(50, 37, 17, 8, shimmerColor, '#25081c', '#eaffff', 1.5)}
-      <polygon points="40,25 46,27 41,16" fill="${accent}"/>
-      <polygon points="60,25 54,27 59,16" fill="${accent}"/>
+      <polygon points="39,26 47,28 33,11" fill="${accent}"/>
     </g>
   `
   )
@@ -604,11 +674,21 @@ export function dcGridlock({
   // a <clipPath id>: the same figure can appear several times on one page
   // (gallery, battle scene, reward), and duplicate ids in a document are a
   // real bug waiting to happen.
+  // The band is CHEST HEIGHT, strung between the two fists that hold it, and
+  // it stops at y=100. The first version ran it from 78 to 126, which is
+  // exactly the rows where the legs separate: the net filled the gap and the
+  // hard cut-out came back as a slab with no legs in it (fragmentation 23.8
+  // against 61 for a figure that reads). Holding it up at the hands is also
+  // the more literal read of the character.
+  // It is drawn IN FRONT of the torso and behind the head. Behind the torso,
+  // the body hid the middle of it and the net read as two green patches at the
+  // sides -- something growing out of him rather than something he is holding
+  // across himself, which is the whole character.
   const mesh = (() => {
-    const X0 = 8
-    const X1 = 112
-    const Y0 = 78
-    const Y1 = 126
+    const X0 = 6
+    const X1 = 114
+    const Y0 = 56
+    const Y1 = 100
     const line = (xa, ya, xb, yb) =>
       `<path d="M ${xa.toFixed(1)},${ya.toFixed(1)} L ${xb.toFixed(1)},${yb.toFixed(1)}" stroke="${lampColor}" stroke-width="2" opacity="0.5" fill="none"/>`
     let d = ''
@@ -629,10 +709,6 @@ export function dcGridlock({
     <g>
       <ellipse cx="60" cy="132" rx="34" ry="5" fill="#000" opacity="0.12"/>
 
-      ${mesh}
-      <rect x="8" y="76" width="104" height="4" fill="${accent}"/>
-      <rect x="8" y="122" width="104" height="4" fill="${accent}"/>
-
       <path d="M 44,94 L 42,114 L 42,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M 76,94 L 78,114 L 78,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <polygon points="32,120 51,120 51,133 30,133" fill="${accent}"/>
@@ -648,6 +724,10 @@ export function dcGridlock({
       <path d="M 82,58 L 98,62 L 108,66" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <polygon points="4,60 18,60 18,74 4,74" fill="${accent}"/>
       <polygon points="116,60 102,60 102,74 116,74" fill="${accent}"/>
+
+      ${mesh}
+      <rect x="6" y="54" width="108" height="4" fill="${accent}"/>
+      <rect x="6" y="98" width="108" height="4" fill="${accent}"/>
 
       <polygon points="46,14 74,14 74,50 46,50" fill="${accent}"/>
       <polygon points="46,14 74,14 76,10 44,10" fill="${bodyColor}"/>
