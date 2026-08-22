@@ -1,28 +1,68 @@
 // Platformer-family character art — chapter 5, the jump-platformer genre slot
 // in the world order.
 //
-// REVISION NOTE (v3): v2 fixed the CASTING — proportions and colour placement.
-// v1 had drawn generic 2.5-head sprites with a head wider than its own torso,
-// which read as a toddler mascot; v2 rebuilt them as squat grown-ups in
-// brimmed caps and dungarees, warm shirt above and cool denim below. That part
-// held up and is carried over unchanged.
+// REVISION NOTE (v4): the SKELETON. v2 fixed the casting (proportions and
+// colour placement), v3 fixed the rendering style (inked sticker art), and
+// both left the skeleton wrong — which is what the user finally put a finger
+// on: "몸과 팔다리가 너무 부자연스러워. 저런 비율이 세상에는 존재하지 않아서."
+// Concretely, v3 had: arms leaving the torso at a right angle as
+// constant-width bars with a balloon glove floating at the far end; legs that
+// were two logs plugged under the pelvis with no knee; hips 71 units against
+// 50-unit shoulders; and a head socketed straight into the shirt with no neck.
+// v4 changes ONLY joints and proportions. The ink hierarchy, the computed
+// white sticker halo, the eyes and mouths, the two-tone dungarees and every
+// colour value are v3's, untouched.
 //
-// What v2 still got wrong was the RENDERING STYLE. Every shape was an
-// unoutlined colour plane, which is this app's oldest habit and the reason
-// these figures stayed soft and flat next to the reference art for the genre.
-// v3 changes only that: the same cast, redrawn as INKED STICKER ART.
+// SKELETON GRAMMAR — v4, the load-bearing change.
 //
-// DRAWING STYLE — v3, the load-bearing change.
+//  S1. LIMBS ARE JOINTED POLYLINES, NOT QUADS. A limb is a list of
+//      {x,y,w} joints; `limbOutline` offsets each joint along the BISECTOR
+//      normal, so the outline keeps its width through a bend instead of
+//      pinching, and one primitive builds both a shoulder→elbow→wrist arm and
+//      a hip→knee→ankle leg. `limbCrease` puts the elbow/knee crease exactly
+//      on the bend. Widths always DECREASE outward (arm 9.5→8→6.3, leg
+//      11→8.6→7.2): a limb that does not taper cannot read as a limb no
+//      matter what is drawn on it.
+//  S2. THE SHOULDER IS A DELTOID BALL. `deltoid` puts a circle at the arm's
+//      first joint and it is drawn AFTER the torso so it overlaps the torso
+//      edge — its inner arc reads as the armhole seam, its outer arc as the
+//      round shoulder. v3 drew the arms first and the torso on top of them,
+//      which is precisely why the arms looked bolted to the flank.
+//  S3. THE WRIST IS THE NARROWEST POINT. The gloves stay oversized (that is
+//      the genre) but they are seated ON the wrist joint — centre = wrist + 7
+//      units along the limb direction, so the lobe overlaps the cuff — and
+//      the glove's own cuff band lands across that wrist. Attached, not
+//      adjacent.
+//  S4. KNEES BEND. Thigh angles inward from the hip, shin angles back out,
+//      crease at the break, turn-up cuff on the last segment only, boot
+//      swallowing the shin's end. The bend is ~25°, which is what makes it
+//      visible at 132 px without turning the pose into a squat.
+//  S5. A NECK EXISTS. `neck` is drawn before the torso and the shirt's collar
+//      line is dropped below the chin, so ~7 units of skin show. Nothing else
+//      separated a big head from a wide torso; without it the whole family
+//      read as dolls with the head pushed onto a peg.
+//  S6. PROPORTIONS head 34 / shoulders 52 / waist 44 / hips 58, against v3's
+//      36 / 50 / 71. The hips are still the widest point — the dungarees need
+//      that — but by 12%, not 42%. The torso now pinches at the waist and
+//      flares below it, which is what makes the outline read as a body rather
+//      than a bell.
+//  S7. THE VILLAINS GET THE SAME SKELETON. Applied to the heroes only, the
+//      villains look broken standing beside them. Their tilt, their
+//      deliberately mismatched limb lengths and every gimmick (inverted
+//      Topsy, melting Gloop, the stolen magnet, the brick stack, the belly
+//      maw) are untouched.
 //
-//  A. BLACK INK ON EVERY MASS. Nothing is a bare colour plane any more.
-//     `ink(w)` puts LINE (#221a2c, near-black with a violet cast so it sits
-//     with the palette instead of punching a hole in it) on a shape. Weights
-//     are a three-step hierarchy, not one value: 3.0–3.4 on silhouette masses
+// DRAWING STYLE — v3, unchanged.
+//
+//  A. BLACK INK ON EVERY MASS. Nothing is a bare colour plane. `ink(w)` puts
+//     LINE (#221a2c, near-black with a violet cast so it sits with the
+//     palette instead of punching a hole in it) on a shape. Weights are a
+//     three-step hierarchy, not one value: 3.0–3.4 on silhouette masses
 //     (torso, head, boots, gloves), 2.0–2.6 on parts sitting inside another
 //     mass (thumbs, brims, plates, bricks), 1.3–1.7 on surface detail
-//     (stitching, panel seams, plank courses). Uniform line weight is what
-//     makes inked art look like clip art; the hierarchy is what makes the
-//     silhouette read first and the detail second.
+//     (stitching, panel seams, plank courses, joint creases). Uniform line
+//     weight is what makes inked art look like clip art; the hierarchy is
+//     what makes the silhouette read first and the detail second.
 //
 //  B. THE WHITE STICKER BORDER IS REAL, AND IT IS COMPUTED, NOT DRAWN. Every
 //     figure is painted twice from one part list: `haloPaint` first, which
@@ -34,77 +74,73 @@
 //     limb moves. Parts whose halo would show OUTSIDE that union (ground
 //     shadows, speed lines, sparkles, glitch debris, the boss's glow) are
 //     marked `nohalo:true`, and text is skipped, since a haloed letter would
-//     lose its counters. Verified at 132/186/256 px: the rim is what makes
-//     these read as cut-out stickers rather than shapes on a page, and it is
-//     what keeps a dark villain legible against a dark battle backdrop.
-//     Consequence for geometry: the halo costs 4.5 units of margin on every
-//     side, so nothing may go past x 6..114 / y 5..135. v2 was already
-//     clipping platGlitch's right glove at x=131 and the boss's wings at x=0;
-//     both are pulled in here.
+//     lose its counters. Consequence for geometry: the halo costs 4.5 units
+//     of margin on every side, so nothing may go past x 6..114 / y 5..135.
 //
-//  C. BIG EXPRESSIVE EYES. v2 had 4-unit ink dots. v3 draws an outlined white
-//     sclera with a DOMINANT pupil (0.72 of the sclera) and a highlight. The
-//     pupil has to dominate: a small pupil in a big thin-rimmed sclera reads as
-//     SPECTACLES, which is exactly how the first v3 pass came out. Heroes get a
-//     heavy lid wedge sitting on the sclera (the cap brim leaves no room above
-//     the eye for a brow, and in practice the brim itself acts as the brow);
-//     villains have no cap, so they get real brows — thick strokes angled down
-//     toward the nose. That one difference is the whole hero/villain face split.
+//  C. BIG EXPRESSIVE EYES. An outlined white sclera with a DOMINANT pupil
+//     (0.72 of the sclera) and a highlight. The pupil has to dominate: a
+//     small pupil in a big thin-rimmed sclera reads as SPECTACLES. Heroes get
+//     a heavy lid wedge sitting on the sclera (the cap brim leaves no room
+//     above the eye for a brow, and in practice the brim acts as the brow);
+//     villains have no cap, so they get real brows — thick strokes angled
+//     down toward the nose. That one difference is the whole hero/villain
+//     face split.
 //
 //  D. OPEN MOUTHS WITH CORNER TICKS. A single curved stroke cannot carry an
 //     expression at any size. Heroes get an open smile — dark mouth shape,
-//     white teeth strip, ink ticks at the corners; villains get the same shape
-//     with fangs. Bug King is the exception: the void in its belly is its
-//     mouth, so its head carries eyes and brows only.
+//     white teeth strip, ink ticks at the corners; villains get the same
+//     shape with fangs. Bug King is the exception: the void in its belly is
+//     its mouth, so its head carries eyes and brows only.
 //
-//  E. ANGULAR CONSTRUCTION WHERE THE GENRE ALLOWS IT. The toy family's rule is
-//     "circles only for things that are really round", and most of it ports:
-//     torsos are trapezoids (shoulders 48, waist 56), the bib is a trapezoid
-//     flaring to the hips, trouser legs are tapered quads, boots are domed
+//  E. ANGULAR CONSTRUCTION WHERE THE GENRE ALLOWS IT. Torsos are tapered
+//     paths, the bib is a trapezoid flaring to the hips, boots are domed
 //     uppers on FLAT soles, the cap brim is a pointed lens, and the head is a
 //     jawed shape rather than a pill. It does NOT port all the way: this
 //     genre's face and its big round nose are round on purpose, so heads stay
-//     curve-topped and the nose, gloves, buttons, coil turns, cap disc and the
-//     spring's emblem plate remain circles. Everything else that was a rect or
-//     an ellipse in v2 is now a quad, a taper or a lens.
+//     curve-topped and the nose, gloves, buttons, coil turns, cap disc, the
+//     deltoid balls and the spring's emblem plate remain circles.
 //
 //  F. PUSHED PRIMARIES. With ink around them the fills can go louder without
-//     turning muddy, so denim, stitch yellow and button gold are all more
-//     saturated than v2's.
+//     turning muddy.
 //
-// CASTING GRAMMAR — v2's proportions and colour placement, kept.
+// CASTING GRAMMAR — v2's colour placement, kept; v4 restates the numbers.
 //
-//  1. SQUAT GROWN-UP PROPORTIONS, ~2.9–3.1 heads. The head is NARROWER than
-//     the shoulders, which are narrower than the hips: 36 / 50 / 71 units.
-//  2. DUNGAREE TWO-TONE, split top from bottom. Shirt, sleeves and cap dome
-//     take `bodyColor`; bib, straps and legs take the fixed DENIM constant.
-//     DENIM is deliberately not palette-driven — the genre read only survives
-//     if the bottom half is reliably cool whatever colour a chapter hands the
-//     shirt.
+//  1. SQUAT GROWN-UP PROPORTIONS, ~2.9 heads. Head 34 / shoulders 52 /
+//     waist 44 / hips 58 (see S6).
+//  2. DUNGAREE TWO-TONE, split top from bottom. Shirt, sleeves, deltoids and
+//     cap dome take `bodyColor`; bib, straps and legs take the fixed DENIM
+//     constant. DENIM is deliberately not palette-driven — the genre read
+//     only survives if the bottom half is reliably cool whatever colour a
+//     chapter hands the shirt.
 //  3. THE DUNGAREES MUST SURVIVE A FLAT GREY SILHOUETTE — three structural
-//     devices: the bib is WIDER than the shirt so the outline steps outward at
-//     the waist; the straps run PAST the shoulder line as knobs; the two big
-//     buttons are centred ON the bib's outer edge so half of each circle
-//     sticks out of the body.
+//     devices, all re-verified after the v4 skeleton moved the arms: the bib
+//     is WIDER than the shirt so the outline steps outward at the waist; the
+//     straps run PAST the shoulder line as knobs (and the knobs sit inboard
+//     of the new deltoid balls, which is why the arms do not eat them); the
+//     two big buttons are centred ON the bib's outer edge so half of each
+//     circle sticks out. The hanging arms occlude only the buttons' outermost
+//     tips — the arm keeps a background gap from the hip precisely so those
+//     three reads survive.
 //  4. OVERSIZED WHITE GLOVES AND BOOTS as separate masses. Heroes get
 //     `heroGlove`/`heroBoot` (thumb, cuff band, toe cap, sole slab); villains
 //     keep the plainer `villainGlove`/`villainShoe`, so hands differ on sight.
-//  5. CAP WITH A BRIM WIDER THAN THE SHOULDERS — with no neck in the family,
-//     those two protruding lips are the only thing separating head from torso
-//     in a colour-stripped read.
-//  6. BIG ROUND NOSE — the genre's loudest face tell. No moustache: that is
-//     one specific character's property, not the genre's.
+//  5. CAP WITH A BRIM WIDER THAN THE SHOULDERS. With v4's neck the brim is no
+//     longer the only thing separating head from torso, but it is still the
+//     genre's loudest headwear tell.
+//  6. BIG ROUND NOSE. No moustache: that is one specific character's
+//     property, not the genre's.
 //  7. NO GRADIENTS OR FILTERS anywhere. Volume is stacked planes plus ink.
 //  8. ONE POSE IDEA PER HERO: airborne / coiled / boxy / winged-and-massive.
 //     Villains are tilted and lopsided where heroes are upright.
 //  9. THE EMBLEM PLATE SITS ON THE BIB, not the shirt — on the shirt it plus
-//     the straps covered the warm half entirely and the two-tone died. On dark
-//     denim the bright plate also gets its strongest contrast.
+//     the straps covered the warm half entirely and the two-tone died. On
+//     dark denim the bright plate also gets its strongest contrast.
 //
 // SIZES: judged at 132–256 px, which is what style.css renders (132 combine
-// minibot, 170 map node, 186 battle sprite, 250 reward, 256 final form). The
-// `emblem` letter is curriculum content, so its plate stays oversized past
-// good taste and is checked pixel-by-pixel at 66 px.
+// minibot, 170 map node, 186 battle sprite, 250 reward, 256 final form).
+// Joints are judged at 132 px and up; at 66 px a knee crease is not expected
+// to survive. The `emblem` letter is curriculum content, so its plate stays
+// oversized past good taste and is checked pixel-by-pixel at 66 px.
 //
 // `visorColor` names the EMBLEM PLATE and the cap's front disc, not a face
 // part — the family has no visor. It must stay bright or the phonics letter
@@ -112,9 +148,9 @@
 //
 // This file must not import ../art.js (circular); it carries its own svgWrap.
 //
-// Function names and destructured parameters are UNCHANGED from v2 — art.js
-// wires all nine styles by name and the palettes pass bodyColor/accent/emblem/
-// visorColor/panelColor exactly as before.
+// Function names and destructured parameters are UNCHANGED from v2/v3 —
+// art.js wires all nine styles by name and the palettes pass bodyColor/
+// accent/emblem/visorColor/panelColor exactly as before.
 
 function svgWrap(inner, viewBox = '0 0 120 140') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="carbot-art">${inner}</svg>`
@@ -250,6 +286,166 @@ const BUTTON = '#ffcf3a'
 const BUTTON_SHADE = '#b8801a'
 
 // ---------------------------------------------------------------------------
+// SKELETON PRIMITIVES (v4). See style rules S1–S4.
+// ---------------------------------------------------------------------------
+
+// Unit normals at each joint of a limb polyline. Interior joints use the
+// BISECTOR of the two adjoining segment directions, which is what lets a bend
+// keep its width — offsetting by each segment's own normal instead leaves a
+// notch on the inside of every elbow and knee.
+function limbNormals(pts) {
+  const n = pts.length
+  const dirs = []
+  for (let i = 0; i < n - 1; i += 1) {
+    const dx = pts[i + 1].x - pts[i].x
+    const dy = pts[i + 1].y - pts[i].y
+    const l = Math.hypot(dx, dy) || 1
+    dirs.push([dx / l, dy / l])
+  }
+  return pts.map((_, i) => {
+    let ux
+    let uy
+    if (i === 0) [ux, uy] = dirs[0]
+    else if (i === n - 1) [ux, uy] = dirs[n - 2]
+    else {
+      ux = dirs[i - 1][0] + dirs[i][0]
+      uy = dirs[i - 1][1] + dirs[i][1]
+      const l = Math.hypot(ux, uy) || 1
+      ux /= l
+      uy /= l
+    }
+    return [-uy, ux]
+  })
+}
+
+// A polygon running between two fractional offsets of the limb's own width.
+// (1,-1) is the full outline; (0.96,0.3) is the lit strip down one side; a
+// two-point slice is a cross-band, which is how the trouser turn-up is built
+// from the taper's own normals instead of an axis-aligned rect.
+function limbBand(pts, a, b) {
+  const nrm = limbNormals(pts)
+  const A = []
+  const B = []
+  pts.forEach((p, i) => {
+    const [nx, ny] = nrm[i]
+    A.push(`${(p.x + nx * p.w * a).toFixed(1)},${(p.y + ny * p.w * a).toFixed(1)}`)
+    B.push(`${(p.x + nx * p.w * b).toFixed(1)},${(p.y + ny * p.w * b).toFixed(1)}`)
+  })
+  return A.concat(B.reverse()).join(' ')
+}
+
+const limbOutline = (pts) => limbBand(pts, 1, -1)
+
+// The crease that says "this is a joint". Surface-detail ink weight, drawn
+// across the limb at the bend, stopping short of both edges so it does not
+// read as a cut.
+function limbCrease(pts, i, w = 1.7, op = 0.5) {
+  const [nx, ny] = limbNormals(pts)[i]
+  const p = pts[i]
+  const k = p.w * 0.78
+  return S(
+    `M ${(p.x + nx * k).toFixed(1)},${(p.y + ny * k).toFixed(1)} L ${(p.x - nx * k).toFixed(1)},${(p.y - ny * k).toFixed(1)}`,
+    LINE,
+    w,
+    { opacity: op, nohalo: true }
+  )
+}
+
+// Where a glove goes: just past the wrist along the limb, so the lobe overlaps
+// the wrist instead of hanging off its tip (style rule S3).
+function wristSeat(pts, reach = 7) {
+  const a = pts[pts.length - 2]
+  const b = pts[pts.length - 1]
+  const l = Math.hypot(b.x - a.x, b.y - a.y) || 1
+  return [b.x + ((b.x - a.x) / l) * reach, b.y + ((b.y - a.y) / l) * reach]
+}
+
+// The angle from a hand back at the shoulder — heroGlove/villainGlove take it
+// to place the cuff on the wrist side rather than the knuckle side.
+function towardBody(pts, hx, hy) {
+  return (Math.atan2(pts[0].y - hy, pts[0].x - hx) * 180) / Math.PI
+}
+
+// A shoulder that exists. Drawn after the torso so it overlaps the torso edge:
+// the outer arc becomes the round shoulder, the inner arc reads as the armhole
+// seam. v3's arms had neither, which is the whole "bar bolted to the flank"
+// problem.
+function deltoid(cx, cy, r, color, dark) {
+  return [
+    C(cx, cy, r, color, ink(3)),
+    D(
+      `M ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} A ${(r * 0.84).toFixed(1)},${(r * 0.84).toFixed(1)} 0 0 1 ${(cx + r * 0.28).toFixed(1)},${(cy - r * 0.8).toFixed(1)} A ${r},${r} 0 0 0 ${(cx - r * 0.74).toFixed(1)},${(cy - r * 0.18).toFixed(1)} Z`,
+      dark ? '#000' : '#fff',
+      { opacity: dark ? 0.16 : 0.24, nohalo: true }
+    ),
+  ]
+}
+
+// A sleeved hero arm: deltoid ball, tapered limb, elbow crease, and the glove
+// seated on the wrist. `dark` shades the strip instead of lighting it, for
+// arms on the figure's shadowed side.
+function heroArm(pts, color, cuffColor, gloveR, dark) {
+  const [hx, hy] = wristSeat(pts)
+  return [
+    deltoid(pts[0].x, pts[0].y - 1, pts[0].w, color, dark),
+    P(limbOutline(pts), color, ink(3)),
+    P(limbBand(pts, 0.96, 0.3), dark ? '#000' : '#fff', { opacity: dark ? 0.16 : 0.2, nohalo: true }),
+    limbCrease(pts, 1),
+    heroGlove(hx, hy, gloveR, cuffColor, towardBody(pts, hx, hy)),
+  ]
+}
+
+// Villain arm: same skeleton, plainer hand, no lit strip on the deltoid crown
+// (villains are shaded rather than lit — the family's hero/villain split).
+function villainArm(pts, color, cuffColor, gloveR) {
+  const [hx, hy] = wristSeat(pts)
+  return [
+    deltoid(pts[0].x, pts[0].y - 1, pts[0].w, color, true),
+    P(limbOutline(pts), color, ink(2.8)),
+    limbCrease(pts, 1),
+    villainGlove(hx, hy, gloveR, cuffColor, towardBody(pts, hx, hy)),
+  ]
+}
+
+// A trouser leg with a knee. `pts` is [hip, knee, cuffTop, ankle]: the crease
+// lands on the knee, the turn-up is the last segment only, and the boot is
+// drawn after so it swallows the ankle.
+function denimLimb(pts) {
+  const tail = pts.slice(pts.length - 2)
+  return [
+    P(limbOutline(pts), DENIM, ink(3)),
+    P(limbBand(pts, 0.95, 0.25), DENIM_LIT, { opacity: 0.5, nohalo: true }),
+    limbCrease(pts, 1, 1.7, 0.45),
+    P(limbBand(tail, 1.05, -1.05), DENIM_DEEP, {
+      opacity: 0.9,
+      stroke: LINE,
+      'stroke-width': 1.6,
+      nohalo: true,
+    }),
+  ]
+}
+
+// A bare villain leg: taper plus knee crease, no dungarees.
+function plainLimb(pts, color, inkW = 2.6) {
+  return [P(limbOutline(pts), color, ink(inkW)), limbCrease(pts, 1, 1.6, 0.4)]
+}
+
+// A short neck, drawn BEFORE the torso so the shirt's collar covers its base
+// and roughly seven units of it show under the jaw. v3 socketed the head
+// straight into the shirt, which is the single strongest "doll, not person"
+// cue in the family (style rule S5).
+function neck(cx, top, bottom, halfTop, halfBot, color = SKIN, shade = SKIN_SHADE) {
+  return [
+    P(
+      `${cx - halfTop},${top} ${cx + halfTop},${top} ${cx + halfBot},${bottom} ${cx - halfBot},${bottom}`,
+      color,
+      ink(2.8)
+    ),
+    E(cx, top + (bottom - top) * 0.34, halfTop * 0.86, 2.6, shade, { opacity: 0.5, nohalo: true }),
+  ]
+}
+
+// ---------------------------------------------------------------------------
 // Shared body parts
 // ---------------------------------------------------------------------------
 
@@ -313,8 +509,9 @@ function villainGlove(cx, cy, r, cuffColor, bodyDeg) {
 
 // Hero boot: one outlined mass, then a sole whose bottom arc coincides with
 // the boot's so the inner outline reads as a welt rather than a stray ellipse,
-// then a lit toe cap. Drawn wider than the leg it hangs off, which is most of
-// why these figures read as game characters.
+// then a lit toe cap. Drawn wider than the shin it hangs off, and placed so
+// the shin's end sits INSIDE the dome — a boot butted against a leg's tip is
+// the same "floating" mistake the gloves used to make.
 function heroBoot(cx, cy, rx, ry) {
   const wy = cy + ry * 0.3
   const bot = cy + ry
@@ -350,15 +547,14 @@ function villainShoe(cx, cy, rx, ry) {
 
 // Cap: dome, panel seams, a brim wider than the shoulders with a dark
 // underside, and a bright front disc. The brim is drawn thin and high on the
-// head (0.86 of halfW rather than v2's 1.02) because the bigger v3 eyes need
-// the room underneath it. `discColor` is skipped on the boss, whose cap
-// already carries a star.
+// head (0.86 of halfW) because the big v3 eyes need the room underneath it.
+// `discColor` is skipped on the boss, whose cap already carries a star.
 function cap(cx, top, halfW, domeColor, brimColor, discColor) {
   const brimY = top + halfW * 0.86
   // The dome is a cubic whose control points sit at `top`, so its actual crown
   // is at top + 0.215*halfW, not at `top`. Seams authored up to `top` poked out
-  // of the cap as two grey arcs floating above the head — visible at 132 px and
-  // present since v2. They now stop below the crown.
+  // of the cap as two grey arcs floating above the head. They now stop below
+  // the crown.
   const crown = top + halfW * 0.3
   const seam = (k) =>
     S(
@@ -421,9 +617,8 @@ function face(cx, cy, s = 1) {
   const my = ny + 6.6 * s
   const mw = 8 * s
   // A big white sclera under a thin outline plus a small pupil reads as
-  // SPECTACLES, which is how the first v3 pass came out. The fix is a dominant
-  // pupil (0.72 of the sclera) under a heavy lid wedge that sits ON the sclera
-  // rather than floating above it as a rim.
+  // SPECTACLES. The fix is a dominant pupil (0.72 of the sclera) under a heavy
+  // lid wedge that sits ON the sclera rather than floating above it as a rim.
   const eye = (px, k) => [
     E(px, cy, ex, ey, '#fff', ink(2 * s)),
     C(px + k * ex * 0.14, cy + ey * 0.2, ex * 0.72, LINE, { nohalo: true }),
@@ -465,9 +660,9 @@ function face(cx, cy, s = 1) {
   ]
 }
 
-// Head assembly in draw order: ears behind, face mass, jaw shade, the brim's
-// cast shadow on the forehead, the cap, then the features. Shared by all four
-// heroes so the cast has one face.
+// Head assembly in draw order: ears behind, face mass, the brim's cast shadow
+// on the forehead, the cap, then the features. Shared by all four heroes so
+// the cast has one face.
 function heroHead(cx, capTop, faceTop, faceW, faceH, capHalf, bodyColor, accent, discColor, s = 1) {
   const fx = cx - faceW / 2
   const earY = faceTop + faceH * 0.52
@@ -529,8 +724,8 @@ function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
 function bibPanel(x, y, w, h, r = 10, flare = 4) {
   return [
     // Flared: a trapezoid widening downward, so the widest point of the whole
-    // figure is the hips (casting rule 1) and the waist step is a real angle
-    // rather than a rectangle edge.
+    // figure is the hips and the waist step is a real angle rather than a
+    // rectangle edge.
     D(`M ${x},${y} L ${x + w},${y} L ${x + w + flare},${y + h - r} Q ${x + w + flare},${y + h} ${x + w + flare - r},${y + h}
        L ${x - flare + r},${y + h} Q ${x - flare},${y + h} ${x - flare},${y + h - r} Z`, DENIM, ink(3.2)),
     R(x + 1, y + 1, w * 0.38, h - 2, r, DENIM_LIT, { opacity: 0.5, nohalo: true }),
@@ -541,23 +736,27 @@ function bibPanel(x, y, w, h, r = 10, flare = 4) {
       opacity: 0.9,
       nohalo: true,
     }),
-    pocket(x + 4.5, y + h * 0.5, h),
-    pocket(x + w - 18.5, y + h * 0.5, h),
+    // Pushed right out to the bib's flared corners: v4's narrower hips left no
+    // room between the emblem plate and the pockets, and the plate is drawn
+    // after, so a centred pocket was simply painted over.
+    pocket(x - 0.5, y + h * 0.5, h),
+    pocket(x + w - 8.5, y + h * 0.5, h),
   ]
 }
 
-// Patch pocket, placed at the bib's two lower corners rather than its middle,
-// where the emblem plate always sits.
+// Patch pocket, at the bib's lower corners rather than its middle, where the
+// emblem plate always sits.
 function pocket(px, py, h) {
   return [
-    R(px, py, 14, h * 0.34, 2.5, DENIM_DEEP, { opacity: 0.55, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
-    S(`M ${px + 1},${py + 3} L ${px + 13},${py + 3}`, STITCH, 1.5, { opacity: 0.75, nohalo: true }),
+    R(px, py, 9, h * 0.34, 2.5, DENIM_DEEP, { opacity: 0.55, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
+    S(`M ${px + 1},${py + 3} L ${px + 8},${py + 3}`, STITCH, 1.5, { opacity: 0.75, nohalo: true }),
   ]
 }
 
 // One shoulder strap, authored for the left side and mirrored for the right.
 // It deliberately runs past the shoulder line: the two strap tops are knobs on
 // the silhouette, which is how the dungarees survive a colour-stripped read.
+// v4 keeps them INBOARD of the deltoid balls so the new arms cannot cover them.
 function strapPiece(outer, stitch) {
   return [
     P(outer, DENIM, ink(2.8)),
@@ -577,95 +776,104 @@ function bigButton(cx, cy, r = 7.5) {
   ]
 }
 
-// A denim trouser leg with a lit plane and a turn-up cuff at the boot, so the
-// legs never read as bare skin (the genre's dungarees run all the way down).
-function denimLeg(x, y, w, h, r = 5) {
+// ---------------------------------------------------------------------------
+// HEROES
+//
+// Standing skeleton shared by all four (the jumper swaps the legs for a tuck):
+//   head    cap 4, face 10..47, width 34, brim half 20
+//   neck    43..56, 7 units of it visible under the jaw
+//   shirt   collar 54, shoulders 52 @ y 64, waist 44 @ y 76
+//   bib     52 wide @ 74, flaring to 58 @ 101
+//   arm     shoulder {34,64,9.5} elbow {26,75,8} wrist {22,86,6.3}
+//   leg     hip {50,96,11} knee {45,110,8.6} cuff {45.6,116,7.4} ankle {46,120,7.2}
+// ---------------------------------------------------------------------------
+
+const HERO_ARM_L = [
+  { x: 34, y: 64, w: 9.5 },
+  { x: 26, y: 75, w: 8 },
+  { x: 22, y: 86, w: 6.3 },
+]
+
+const HERO_LEG_L = [
+  { x: 50, y: 96, w: 11 },
+  { x: 45, y: 110, w: 8.6 },
+  { x: 45.6, y: 116, w: 7.4 },
+  { x: 46, y: 120, w: 7.2 },
+]
+
+// Shirt with sloped shoulders and a dropped collar. The slope is what lets the
+// neck exist and what stops the shoulder from being a corner.
+function heroShirt(bodyColor) {
   return [
-    // Tapered quad, not a rect — a straight-sided tube read as pipe.
-    P(`${x},${y} ${x + w},${y} ${x + w + 2},${y + h} ${x - 2},${y + h}`, DENIM, ink(3)),
-    R(x + 1, y + 1, w * 0.4, h - 2, r, DENIM_LIT, { opacity: 0.5, nohalo: true }),
-    P(`${x - 1.4},${y + h - 5.5} ${x + w + 1.4},${y + h - 5.5} ${x + w + 2},${y + h} ${x - 2},${y + h}`, DENIM_DEEP, {
-      opacity: 0.9,
-      stroke: LINE,
-      'stroke-width': 1.6,
-      nohalo: true,
-    }),
+    D('M 34,64 C 34,56 41,54 49,54 L 71,54 C 79,54 86,56 86,64 L 82,76 L 38,76 Z', bodyColor, ink(3.2)),
+    P('73,55 86,64 82,76 74,76', '#000', { opacity: 0.14, nohalo: true }),
+    P('42,57 70,57 68,62 44,62', '#fff', { opacity: 0.22, nohalo: true }),
   ]
 }
 
-// A denim limb drawn as a sloped quad (tucked/kicking legs).
-function denimQuad(outer, lit) {
-  return [P(outer, DENIM, ink(3)), P(lit, DENIM_LIT, { opacity: 0.5, nohalo: true })]
-}
-
-// A shirt sleeve: an inked bodyColor quad plus a lit plane along its top edge.
-// Short and thick — the sleeves and the chest above the bib are the only
-// places the warm half of the two-tone shows, so they must not be nubs.
-function sleeve(outer, lit, bodyColor) {
-  return [P(outer, bodyColor, ink(3)), P(lit, '#fff', { opacity: 0.2, nohalo: true })]
-}
-
-// ---------------------------------------------------------------------------
-// HEROES
-// ---------------------------------------------------------------------------
-
 // The jumper: the only figure in the family with both feet off the ground. One
-// arm punches above the cap, the legs are tucked and trailing, and the ground
-// shadow is left small and far below so the air gap is unmistakable.
+// arm punches above the cap, the legs are split — one knee tucked up, the other
+// trailing straight — and the ground shadow is left small and far below so the
+// air gap is unmistakable. The split legs are also the clearest knee read in
+// the family, since the two bends go opposite ways.
 export function platJumper({
   bodyColor = '#e03a3a',
   accent = '#1f3f8f',
   emblem = 'R',
   visorColor = '#fff3c4',
 } = {}) {
-  const strapL = strapPiece('41,35 52,39 49,88 40,88', 'M 46,44 L 44,82')
+  const strapL = strapPiece('39,47 49,51 47,84 38,84', 'M 45,55 L 43,80')
+  const legTuck = [
+    { x: 50, y: 96, w: 11 },
+    { x: 40, y: 104, w: 8.6 },
+    { x: 37, y: 111, w: 7.4 },
+    { x: 36, y: 115, w: 7.2 },
+  ]
+  const legTrail = [
+    { x: 70, y: 96, w: 11 },
+    { x: 77, y: 108, w: 8.6 },
+    { x: 81, y: 116, w: 7.4 },
+    { x: 83, y: 120, w: 7.2 },
+  ]
+  const armPunch = [
+    { x: 86, y: 63, w: 9.5 },
+    { x: 95, y: 50, w: 8 },
+    { x: 97, y: 38, w: 6.3 },
+  ]
   const backdrop = [
     E(60, 135, 12, 3, '#000', { opacity: 0.14 }),
     // Trailing speed lines in the air the tucked legs just left. They and the
     // small far-below shadow are the whole "airborne" cue, so they sit in the
-    // gap between boot and ground rather than beside the torso.
-    // Kept strictly in the empty band between boot and ground: run up beside
-    // the hips instead and they read as scratches on the character.
+    // gap between boot and ground rather than beside the torso, where they
+    // read as scratches on the character.
     S(
-      'M 12,130 L 26,122 M 108,130 L 94,122 M 40,136 L 50,128 M 80,136 L 70,128 M 60,138 L 60,130',
+      'M 12,132 L 24,124 M 108,132 L 98,126 M 44,138 L 52,130 M 78,138 L 70,131 M 60,139 L 60,132',
       accent,
       3.8,
       { opacity: 0.7 }
     ),
   ]
   const body = [
-    sleeve('72,50 84,44 95,28 82,22', '73,51 82,47 91,30 86,27', bodyColor),
-    heroGlove(90, 21, 10.5, accent, 125),
-
-    // The sleeve reaches ABOVE the glove's top so a band of the warm shirt
-    // colour stays visible; earlier the glove covered the whole sleeve and
-    // both arms went colourless.
-    sleeve('37,44 37,68 24,72 19,47', '38,45 38,56 25,60 21,48', bodyColor),
-    heroGlove(20, 62, 10, accent, -12),
-
-    denimQuad('42,98 60,98 48,113 33,109', '45,101 51,101 46,106 39,104'),
-    heroBoot(30, 114, 14, 8.5),
-
-    denimQuad('60,98 78,98 87,109 72,113', '64,101 70,101 78,104 72,107'),
-    heroBoot(90, 114, 14, 8.5),
-
-    // Trapezoid torso: shoulders 48, waist 56. A rect gave the family a
-    // straight-sided box; the flare is what carries "hips are the widest part"
-    // down into the bib below it.
-    P('36,44 84,44 88,80 32,80', bodyColor, ink(3.2)),
-    P('72,45 84,44 88,80 76,80', '#000', { opacity: 0.14, nohalo: true }),
-    P('42,45 78,45 74,50 46,50', '#fff', { opacity: 0.22, nohalo: true }),
-
-    bibPanel(29, 78, 62, 30, 11, 4),
-
     strapL,
     mirror(strapL),
-    bigButton(26, 86, 8),
-    mirror(bigButton(26, 86, 8)),
+    neck(60, 43, 56, 7, 8),
 
-    emblemPlate(44, 79, 32, 28, visorColor, accent, emblem, 24),
+    denimLimb(legTuck),
+    heroBoot(33, 117, 13, 8),
+    denimLimb(legTrail),
+    heroBoot(86, 122, 13, 8),
 
-    heroHead(60, 5, 11, 36, 40, 21, bodyColor, accent, visorColor),
+    heroShirt(bodyColor),
+
+    bibPanel(34, 74, 52, 27, 11, 3),
+    bigButton(33.7, 85, 8),
+    mirror(bigButton(33.7, 85, 8)),
+    emblemPlate(44, 76, 32, 25, visorColor, accent, emblem, 24),
+
+    heroArm(HERO_ARM_L, bodyColor, accent, 9),
+    heroArm(armPunch, bodyColor, accent, 10, true),
+
+    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
@@ -673,9 +881,9 @@ export function platJumper({
 // The spring: the shirt is replaced by a stack of coil turns, so this one is
 // the tallest and narrowest of the four. The turns are fat and few — thin
 // coils turn to mush at small sizes — and each carries its own lit crescent so
-// the stack reads as a helix rather than a pile of rings. The straps are drawn
-// BEFORE the coil on purpose: over the top they would flatten the helix's
-// waving outline, so only their shoulder knobs show.
+// the stack reads as a helix rather than a pile of rings. The coil's collar
+// block is where the neck lands, and the shoulders sit on the widest turn, so
+// the arms leave the coil on a curve like everyone else's.
 export function platSpring({
   bodyColor = '#2f9e5c',
   accent = '#16522f',
@@ -683,42 +891,61 @@ export function platSpring({
   visorColor = '#fff3c4',
 } = {}) {
   const turn = (cy, rx, cx) => [
-    E(cx, cy, rx, 9.5, bodyColor, ink(3)),
-    E(cx - rx * 0.3, cy - 3.2, rx * 0.44, 2.8, '#fff', { opacity: 0.26, nohalo: true }),
+    E(cx, cy, rx, 8.5, bodyColor, ink(3)),
+    E(cx - rx * 0.3, cy - 3, rx * 0.44, 2.6, '#fff', { opacity: 0.26, nohalo: true }),
   ]
   const seam = (cy, rx) => E(60, cy, rx, 3.2, accent, ink(2.2))
-  const strapL = strapPiece('41,35 52,39 49,88 40,88', 'M 46,44 L 44,82')
-  const backdrop = [E(60, 134, 24, 3.6, '#000', { opacity: 0.14 })]
+  const strapL = strapPiece('39,47 49,52 47,88 38,88', 'M 45,56 L 43,84')
+  const armL = [
+    { x: 46, y: 66, w: 9 },
+    { x: 34, y: 76, w: 7.6 },
+    { x: 28, y: 87, w: 6 },
+  ]
+  // Deliberately not a mirror: the spring's two arms hang at different heights,
+  // which is the one asymmetry the upright heroes get.
+  const armR = [
+    { x: 74, y: 69, w: 9 },
+    { x: 86, y: 79, w: 7.6 },
+    { x: 92, y: 90, w: 6 },
+  ]
+  const legL = [
+    { x: 50, y: 100, w: 10.5 },
+    { x: 45, y: 113, w: 8.4 },
+    { x: 45.6, y: 119, w: 7.2 },
+    { x: 46, y: 122.5, w: 7 },
+  ]
+  const backdrop = [E(60, 134, 22, 3.6, '#000', { opacity: 0.14 })]
   const body = [
     strapL,
     mirror(strapL),
+    neck(60, 43, 56, 7, 8),
 
-    sleeve('43,44 43,66 29,70 25,47', '44,45 44,56 30,60 27,48', bodyColor),
-    heroGlove(22, 62, 10, accent, -15),
-    sleeve('77,48 77,70 91,74 95,51', '76,49 76,60 90,64 93,52', bodyColor),
-    heroGlove(98, 66, 10, accent, -165),
+    denimLimb(legL),
+    mirror(denimLimb(legL)),
+    heroBoot(44, 124, 13, 7),
+    mirror(heroBoot(44, 124, 13, 7)),
 
-    denimLeg(44, 104, 14, 16, 4),
-    denimLeg(62, 104, 14, 16, 4),
-    heroBoot(43, 123, 14, 8.5),
-    heroBoot(77, 123, 14, 8.5),
+    R(52, 54, 16, 7, 3, accent, ink(2.6)),
+    turn(62, 15, 58),
+    turn(70, 18, 62),
+    turn(78, 15, 58),
+    seam(66, 17),
+    seam(74, 17),
 
-    R(53, 42, 14, 10, 3, accent, ink(2.6)),
-    turn(50, 17, 57),
-    turn(62, 20, 63),
-    turn(74, 17, 57),
-    seam(56, 18),
-    seam(68, 19),
+    bibPanel(35, 78, 50, 28, 10, 3),
+    bigButton(33.8, 88, 8),
+    mirror(bigButton(33.8, 88, 8)),
 
-    bibPanel(33, 76, 54, 32, 10, 5),
-    bigButton(30, 84, 8),
-    mirror(bigButton(30, 84, 8)),
+    // Ollie's emblem is a round plate rather than the others' rectangle, so
+    // the letter O is not fighting a rectangle around it. Checked at 66 px.
+    C(60, 91, 16.5, visorColor, ink(3.4)),
+    S('M 48,84 A 15,15 0 0 1 68,79', '#fff', 2.4, { opacity: 0.6, nohalo: true }),
+    TEXT(60, 100.5, 26, accent, emblem),
 
-    C(60, 92, 17, visorColor, ink(3.4)),
-    S('M 48,85 A 15,15 0 0 1 68,80', '#fff', 2.4, { opacity: 0.6, nohalo: true }),
-    TEXT(60, 101, 27, accent, emblem),
+    heroArm(armL, bodyColor, accent, 9),
+    heroArm(armR, bodyColor, accent, 9, true),
 
-    heroHead(60, 5, 11, 36, 40, 21, bodyColor, accent, visorColor),
+    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
@@ -727,8 +954,8 @@ export function platSpring({
 // a crate — a framed box with plank courses down each side of the emblem — and
 // the dungarees hang below it, so the boxy chest and the denim hips read as two
 // stacked masses. Limbs stay stubby and boots wide: a boxy body on long legs
-// read as a chimney. Straps go behind the crate for the same reason the
-// spring's do: over the top they would break up the box.
+// read as a chimney. The crate has no collar to drop, so the neck is short
+// here and the deltoid balls do more of the head-to-torso separation.
 export function platBlock({
   bodyColor = '#e08a1e',
   accent = '#7a3d0c',
@@ -736,47 +963,54 @@ export function platBlock({
   visorColor = '#fff3c4',
 } = {}) {
   const course = (y) => [
-    R(37, y, 46, 3.4, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
+    R(40, y, 40, 3.2, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
   ]
-  const bracket = (x, y) => R(x, y, 9, 9, 2, '#000', { opacity: 0.22, stroke: LINE, 'stroke-width': 1.5, nohalo: true })
-  const strapL = strapPiece('41,35 52,39 49,88 40,88', 'M 46,44 L 44,82')
-  const backdrop = [E(60, 134, 40, 4, '#000', { opacity: 0.14 })]
-  const sleeveL = sleeve('34,44 34,68 22,72 17,48', '35,45 35,57 23,61 19,49', bodyColor)
-  const gloveL = heroGlove(20, 62, 10.5, accent, -12)
+  const bracket = (x, y) => R(x, y, 8, 8, 2, '#000', { opacity: 0.22, stroke: LINE, 'stroke-width': 1.5, nohalo: true })
+  const strapL = strapPiece('39,46 49,50 47,86 38,86', 'M 45,54 L 43,82')
+  const armL = [
+    { x: 34, y: 56, w: 9.5 },
+    { x: 25, y: 68, w: 8 },
+    { x: 21, y: 79, w: 6.3 },
+  ]
+  const legL = [
+    { x: 50, y: 99, w: 11 },
+    { x: 45, y: 112, w: 8.6 },
+    { x: 45.6, y: 118, w: 7.4 },
+    { x: 46, y: 122, w: 7.2 },
+  ]
+  const backdrop = [E(60, 134, 38, 4, '#000', { opacity: 0.14 })]
   const body = [
     strapL,
     mirror(strapL),
+    neck(60, 42, 55, 7, 8),
 
-    sleeveL,
-    gloveL,
-    mirror(sleeveL),
-    mirror(gloveL),
+    denimLimb(legL),
+    mirror(denimLimb(legL)),
+    heroBoot(43, 124, 14, 8),
+    mirror(heroBoot(43, 124, 14, 8)),
 
-    denimLeg(35, 104, 19, 16, 5),
-    denimLeg(66, 104, 19, 16, 5),
-    heroBoot(39, 124, 16, 9),
-    heroBoot(81, 124, 16, 9),
+    R(34, 52, 52, 28, 7, accent, ink(3.2)),
+    R(40, 58, 40, 17, 4, bodyColor, ink(2.2)),
+    R(41, 59, 38, 5, 3, '#fff', { opacity: 0.2, nohalo: true }),
+    course(66),
+    course(71),
+    R(58, 58, 3.2, 8, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    R(48, 69, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    R(70, 69, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    bracket(35, 53),
+    bracket(78, 53),
+    bracket(35, 71),
+    bracket(78, 71),
 
-    R(31, 44, 58, 38, 8, accent, ink(3.2)),
-    R(37, 50, 46, 26, 5, bodyColor, ink(2.2)),
-    R(38, 51, 44, 7, 4, '#fff', { opacity: 0.2, nohalo: true }),
-    course(59),
-    course(68),
-    R(58, 50, 3.4, 9, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(46, 62, 3.4, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(71, 62, 3.4, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    bracket(32, 45),
-    bracket(79, 45),
-    bracket(32, 72),
-    bracket(79, 72),
+    bibPanel(34, 78, 52, 26, 10, 3),
+    bigButton(32.8, 88, 8),
+    mirror(bigButton(32.8, 88, 8)),
+    emblemPlate(44, 79, 32, 25, visorColor, accent, emblem, 24),
 
-    bibPanel(28, 78, 64, 32, 10, 5),
-    bigButton(25, 86, 8),
-    mirror(bigButton(25, 86, 8)),
+    heroArm(armL, bodyColor, accent, 9.5),
+    mirror(heroArm(armL, bodyColor, accent, 9.5)),
 
-    emblemPlate(44, 79, 32, 28, visorColor, accent, emblem, 24),
-
-    heroHead(60, 5, 11, 36, 40, 21, bodyColor, accent, visorColor),
+    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
@@ -784,13 +1018,11 @@ export function platBlock({
 // The power-up form, chapter boss: deliberately the heaviest figure in the
 // family, and the only one whose cap is winged. It carries one visible trace of
 // each earlier hero — the jumper's gloves grown to their largest, the spring's
-// coil turns as rings above the boots, the block's plank slabs as the bib's
+// coil turns as rings around the shins, the block's plank slabs as the bib's
 // side panels — the same "trace, never louder than the combined form" rule the
-// other families' bosses follow. The glow is a flat ray burst: the first v3
-// pass used two big translucent discs behind the figure the way v2 did, and the
-// white sticker halo painted straight over them, so the glow simply vanished.
-// Rays reaching past the silhouette are the only kind of glow that survives the
-// halo pass. Gradients and filters are banned family-wide.
+// other families' bosses follow. The glow is a flat ray burst: translucent
+// discs behind the figure are painted straight over by the white sticker halo,
+// so rays reaching past the silhouette are the only kind of glow that survives.
 export function platPowerup({
   bodyColor = '#c8342f',
   panelColor = '#fff6df',
@@ -813,22 +1045,34 @@ export function platPowerup({
   // One broad wing with a serrated trailing edge. Smooth rounded lobes read as
   // rabbit ears, a single sharp wedge as a devil horn, and thin separate
   // feathers as insect antennae; a wide mass plus notches is the only version
-  // that stayed a wing down to 66 px. Pulled inside x>=11 / y>=9 for the halo
-  // margin — v2's wing started at 2,0 and was clipped.
+  // that stayed a wing down to 66 px.
   const wing = [
-    P('40,25 12,9 17,19 11,18 19,25 12,27 21,31 40,31', accent, ink(2.8)),
-    P('40,26 19,13 21,20 29,25 40,29', panelColor, { nohalo: true }),
+    P('40,22 12,6 17,16 11,15 19,22 12,24 21,28 40,28', accent, ink(2.8)),
+    P('40,23 19,10 21,17 29,22 40,26', panelColor, { nohalo: true }),
   ]
-  // Narrow: at v3's first width (15) the two panels plus the emblem plate
-  // covered the bib edge to edge and the denim — half of the family's two-tone
-  // — disappeared on the one figure that most needs to look like the others.
+  // Narrow: wider, the two panels plus the emblem plate covered the bib edge
+  // to edge and the denim — half of the family's two-tone — disappeared on the
+  // one figure that most needs to look like the others.
   const plankPanel = (x) => [
-    R(x, 76, 11, 26, 2.5, accent, ink(2.4)),
-    S(`M ${x + 1},${84} L ${x + 10},${84}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
-    S(`M ${x + 1},${93} L ${x + 10},${93}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    R(x, 79, 10, 22, 2.5, accent, ink(2.4)),
+    S(`M ${x + 1},${86} L ${x + 9},${86}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    S(`M ${x + 1},${94} L ${x + 9},${94}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
   ]
-  const coilRing = (cx, cy) => E(cx, cy, 12, 3.2, accent, ink(2.2))
-  const strapL = strapPiece('39,33 51,38 48,86 38,86', 'M 45,43 L 43,80')
+  // The spring's trace, moved from the ankles to the shins so it sits ON the
+  // new tapered leg instead of floating between leg and boot.
+  const coilRing = (cx, cy) => E(cx, cy, 10.5, 3, accent, ink(2.2))
+  const strapL = strapPiece('37,49 48,54 46,86 36,86', 'M 43,58 L 41,82')
+  const armL = [
+    { x: 34, y: 66, w: 10.5 },
+    { x: 25, y: 79, w: 9 },
+    { x: 21, y: 91, w: 7 },
+  ]
+  const legL = [
+    { x: 50, y: 98, w: 12 },
+    { x: 45, y: 110, w: 9.4 },
+    { x: 45.6, y: 116, w: 8 },
+    { x: 46, y: 120, w: 7.8 },
+  ]
   // Rays reach as far as the frame allows in their own direction rather than
   // sharing one radius: at a fixed radius the diagonals stopped well short of
   // the corners, which is the only place a ray has room to be seen past the
@@ -842,7 +1086,7 @@ export function platPowerup({
     return P(`${at(r0, -half)} ${at(reach, 0)} ${at(r0, half)}`, fill, { opacity: op })
   }
   const backdrop = [
-    E(60, 135, 46, 4.4, '#000', { opacity: 0.16 }),
+    E(60, 135, 44, 4.4, '#000', { opacity: 0.16 }),
     ...Array.from({ length: 16 }, (_, i) => ray(i * 22.5 + 11, 36, 78, 8, visorColor, 0.85)),
     ...Array.from({ length: 8 }, (_, i) => ray(i * 45 + 22.5, 36, 82, 4.5, panelColor, 0.9)),
     sparkle(14, 116, 6),
@@ -850,57 +1094,54 @@ export function platPowerup({
     sparkle(11, 70, 4.4),
     sparkle(108, 76, 4.4),
   ]
-  const sleeveL = sleeve('35,44 35,66 22,70 17,47', '36,45 36,57 23,61 19,48', bodyColor)
-  const gloveL = heroGlove(20, 58, 11.5, bodyColor, -12)
   const body = [
     strapL,
     mirror(strapL),
+    neck(60, 44, 58, 9, 10),
 
-    denimLeg(38, 98, 20, 20, 5),
-    denimLeg(64, 98, 20, 20, 5),
-    coilRing(48, 108),
-    coilRing(72, 108),
-    coilRing(48, 114),
-    coilRing(72, 114),
-    heroBoot(37, 123, 18, 9.5),
-    heroBoot(83, 123, 18, 9.5),
+    denimLimb(legL),
+    mirror(denimLimb(legL)),
+    coilRing(45.4, 113),
+    coilRing(45.8, 118),
+    mirror([coilRing(45.4, 113), coilRing(45.8, 118)]),
+    heroBoot(43, 122, 17, 8.5),
+    mirror(heroBoot(43, 122, 17, 8.5)),
 
-    P('34,46 86,46 90,80 30,80', bodyColor, ink(3.4)),
-    P('74,47 86,46 90,80 78,80', '#000', { opacity: 0.15, nohalo: true }),
-    P('42,47 78,47 74,53 46,53', '#fff', { opacity: 0.22, nohalo: true }),
+    D('M 32,66 C 32,58 40,56 48,56 L 72,56 C 80,56 88,58 88,66 L 84,78 L 36,78 Z', bodyColor, ink(3.4)),
+    P('74,57 88,66 84,78 75,78', '#000', { opacity: 0.15, nohalo: true }),
+    P('42,59 70,59 68,64 44,64', '#fff', { opacity: 0.22, nohalo: true }),
 
-    bibPanel(24, 72, 72, 34, 12, 5),
-    plankPanel(22),
-    plankPanel(87),
-    bigButton(20, 84, 8.5),
-    mirror(bigButton(20, 84, 8.5)),
+    bibPanel(32, 76, 56, 26, 12, 4),
+    plankPanel(32.5),
+    plankPanel(77.5),
+    bigButton(29.8, 90, 8.5),
+    mirror(bigButton(29.8, 90, 8.5)),
+    emblemPlate(43, 77, 34, 25, panelColor, bodyColor, '★', 26),
 
-    sleeveL,
-    gloveL,
-    mirror(sleeveL),
-    mirror(gloveL),
-
-    emblemPlate(43, 74, 34, 30, panelColor, bodyColor, '★', 27),
+    heroArm(armL, bodyColor, bodyColor, 11),
+    mirror(heroArm(armL, bodyColor, bodyColor, 11)),
 
     wing,
     mirror(wing),
-    heroHead(60, 7, 14, 40, 42, 23, bodyColor, bodyColor, null, 1.08),
+    heroHead(60, 5, 11, 38, 38, 22, bodyColor, bodyColor, null, 1.06),
     // Sits in the same slot as the other three heroes' cap disc. Higher and
     // larger, its top point pushed through the dome's crown and left a stray
     // nub of ink and halo above the cap.
-    star(60, 19, 6.6, accent, ink(2.2)),
-    star(60, 19, 3, panelColor, { nohalo: true }),
+    star(60, 17, 6.6, accent, ink(2.2)),
+    star(60, 17, 3, panelColor, { nohalo: true }),
   ]
   return sticker(backdrop, body)
 }
 
 // ---------------------------------------------------------------------------
-// VILLAINS. Same inked-sticker rendering as the heroes, but tilted, lopsided
-// and asymmetric where the heroes are upright and balanced — the family's
-// hero/villain split. No cap, no emblem plate (the letters belong to the
-// heroes), and because there is no brim they get real angled brows rather than
-// the heroes' eyelid strokes. Each one's silhouette is its gameplay gimmick
-// made literal, the way the chapter-2/3 villains worked. Villains take only
+// VILLAINS. Same inked-sticker rendering AND the same v4 skeleton as the
+// heroes — deltoid balls, tapered limbs with elbow and knee creases, a neck —
+// but tilted, lopsided and asymmetric where the heroes are upright and
+// balanced. Applying the skeleton to only half the cast was never an option:
+// side by side in a battle screen, the untouched half looks broken. No cap, no
+// emblem plate (the letters belong to the heroes), and because there is no
+// brim they get real angled brows rather than the heroes' eyelid strokes. Each
+// one's silhouette is its gameplay gimmick made literal. Villains take only
 // { bodyColor, accent }.
 // ---------------------------------------------------------------------------
 
@@ -962,41 +1203,72 @@ function villainFaceParts(cx, cy, opts = {}) {
 // head while still looking straight at the child is the readable version.
 // The chest chevron is authored pointing at the head (up, pre-flip); after the
 // flip it points at the ground, reading as "down" regardless of body facing.
+// v4 note: the flip is exactly why this figure needed the skeleton most —
+// upside down, the eye lands on the knees and the hands, so a leg with no knee
+// is the first thing a child sees.
 export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
   const FLIP = 138 // y' = FLIP - y
+  const armL = [
+    { x: 38, y: 58, w: 8.5 },
+    { x: 28, y: 68, w: 7.2 },
+    { x: 24, y: 79, w: 6 },
+  ]
+  const armR = [
+    { x: 82, y: 57, w: 8.5 },
+    { x: 92, y: 65, w: 7.2 },
+    { x: 96, y: 75, w: 6 },
+  ]
+  // Mismatched on purpose: one leg longer and kicked further out than the
+  // other is the family's villain tell, and upside down it reads immediately.
+  const legL = [
+    { x: 50, y: 86, w: 9.5 },
+    { x: 46, y: 98, w: 7.6 },
+    { x: 47, y: 108, w: 6.6 },
+  ]
+  const legR = [
+    { x: 70, y: 86, w: 9.5 },
+    { x: 76, y: 99, w: 7.6 },
+    { x: 74, y: 111, w: 6.6 },
+  ]
+  const sock = (pts, y0) => [
+    P(limbBand(pts.slice(1), 1.02, -1.02), accent, { opacity: 0.9, stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+    S(`M ${pts[2].x - 6},${y0} L ${pts[2].x + 6},${y0}`, bodyColor, 3, { nohalo: true }),
+  ]
   const upright = [
-    D('M 42,48 C 32,44 22,46 17,52 C 25,54 33,56 39,60 Z', accent, ink(2.6)),
-    P('82,52 93,46 103,54 94,60', bodyColor, ink(2.8)),
-    villainGlove(101, 62, 9.5, accent, 200),
-    P('38,60 27,58 20,69 31,73', bodyColor, ink(2.8)),
-    villainGlove(22, 77, 9, accent, -20),
+    neck(60, 42, 56, 7.5, 8.5, bodyColor, '#000'),
 
-    R(38, 48, 44, 42, 13, bodyColor, ink(3.2)),
-    // Density pass: a hard shade plane cut on the torso's own right edge, a
-    // belt, and banded socks. Upside down the bands land at the top of the
-    // figure, where there is nothing else to look at.
-    P('70,49 81,49 81,89 70,89', '#000', { opacity: 0.16, nohalo: true }),
-    P('60,60 50,72 70,72', accent, ink(2.4)),
-    R(39, 78, 42, 7, 2, accent, ink(2)),
-    C(60, 81.5, 3.4, bodyColor, ink(1.8)),
+    // Hourglass torso: shoulders 44, waist 36, hips 42. v3 had a single
+    // rounded rect, which is the shape that made the flip read as a box on a
+    // box rather than a person doing a handstand.
+    D(
+      `M 38,60 C 38,52 44,48 50,48 L 70,48 C 76,48 82,52 82,60 L 78,76
+       L 81,88 Q 81,92 77,92 L 43,92 Q 39,92 39,88 L 42,76 Z`,
+      bodyColor,
+      ink(3.2)
+    ),
+    P('70,50 82,60 78,76 81,90 71,90 71,50', '#000', { opacity: 0.16, nohalo: true }),
+    P('60,58 50,70 70,70', accent, ink(2.4)),
+    R(41, 74, 38, 6.5, 2, accent, ink(2)),
+    C(60, 77.2, 3.2, bodyColor, ink(1.8)),
 
-    R(43, 86, 14, 18, 3, accent, ink(2.6)),
-    R(63, 86, 14, 18, 3, accent, ink(2.6)),
-    R(43, 90, 14, 3.4, 0, bodyColor, { nohalo: true }),
-    R(43, 97, 14, 3.4, 0, bodyColor, { nohalo: true }),
-    R(63, 90, 14, 3.4, 0, bodyColor, { nohalo: true }),
-    R(63, 97, 14, 3.4, 0, bodyColor, { nohalo: true }),
-    villainShoe(47, 110, 14, 8.5),
-    villainShoe(74, 113, 15, 9),
+    plainLimb(legL, accent),
+    sock(legL, 104),
+    plainLimb(legR, accent),
+    sock(legR, 106),
+    villainShoe(46, 112, 13, 8),
+    villainShoe(76, 116, 14, 8.5),
 
-    R(38, 8, 44, 44, 17, bodyColor, ink(3.2)),
-    P('70,12 79,14 79,48 70,48', '#000', { opacity: 0.14, nohalo: true }),
+    villainArm(armL, bodyColor, accent, 9),
+    villainArm(armR, bodyColor, accent, 9),
+
+    D('M 39,8 C 39,-2 81,-2 81,8 L 81,38 C 81,50 72,54 60,54 C 48,54 39,50 39,38 Z', bodyColor, ink(3.2)),
+    P('70,4 79,8 79,42 72,50 70,50', '#000', { opacity: 0.14, nohalo: true }),
   ]
   const backdrop = [E(63, 133, 24, 4, '#000', { opacity: 0.13 })]
   const body = [
     G('rotate(6 60 70)', [
       G(`translate(0,${FLIP}) scale(1,-1)`, upright),
-      villainFaceParts(60, FLIP - 30, { tilt: 1.1, mouthW: 9 }),
+      villainFaceParts(60, FLIP - 28, { tilt: 1.1, mouthW: 9 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1009,6 +1281,11 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
 // painted at the head of the body list rather than as a backdrop: haloed, the
 // spill gets ringed in white and stops reading as liquid, but behind the halo
 // it was half-erased by the blob's own white rim.
+// v4 note: a blob has no bones, so the skeleton shows up here as the two
+// things a blob CAN have — a pinched neck between head-bulge and belly, and
+// arms that taper from a shoulder to a wrist with a hand on the end. v3's arms
+// were constant-width noodles with no hand at all, which is why this one
+// looked least like a character in the family.
 export function platSlime({ bodyColor = '#4fb5c9', accent = '#1d6b78' } = {}) {
   const puddle = D(
     `M 12,120 C 27,114 35,124 50,118 C 66,112 76,122 91,116 C 104,111 110,118 110,122
@@ -1016,46 +1293,60 @@ export function platSlime({ bodyColor = '#4fb5c9', accent = '#1d6b78' } = {}) {
     accent,
     { opacity: 0.65, stroke: LINE, 'stroke-width': 2.2, 'stroke-linejoin': 'round', nohalo: true }
   )
-  // Inked noodle arm: the ink is a second, fatter stroke of the same path
-  // underneath. v3's first pass left these two as bare strokes and they were
-  // the only unoutlined masses on any figure in the file — they read as
-  // detached green blobs behind the body.
-  const arm = (d) => [
-    S(d, LINE, 18.5, { 'stroke-linejoin': 'round' }),
-    S(d, bodyColor, 13, { 'stroke-linejoin': 'round', nohalo: true }),
+  const armL = [
+    { x: 38, y: 72, w: 7.6 },
+    { x: 27, y: 82, w: 6.4 },
+    { x: 23, y: 94, w: 5.2 },
   ]
+  const armR = [
+    { x: 82, y: 74, w: 7.6 },
+    { x: 92, y: 82, w: 6.4 },
+    { x: 95, y: 92, w: 5.2 },
+  ]
+  const noodle = (pts) => {
+    const [hx, hy] = wristSeat(pts, 6.5)
+    return [
+      P(limbOutline(pts), bodyColor, ink(3)),
+      limbCrease(pts, 1, 1.6, 0.35),
+      villainGlove(hx, hy, 8, accent, towardBody(pts, hx, hy)),
+    ]
+  }
   const body = [
     puddle,
     G('rotate(-5 60 100)', [
-      // Both arms start LOW on the flank and droop outward. Started high, they
-      // curled beside the head and read as ears.
-      arm('M 36,78 C 24,82 18,92 22,100 C 15,106 16,114 22,117'),
-      arm('M 86,80 C 96,84 101,90 98,96 L 101,104'),
+      noodle(armL),
+      noodle(armR),
 
+      // A pinched neck. The blob is one mass, so the pinch is the only neck it
+      // can have — and it is what turns "a bag with a face" into a head on a
+      // body at 132 px.
       D(
-        `M 34,52 C 28,74 30,96 44,110 C 52,118 70,118 78,109
-         C 90,96 90,72 82,52 C 68,42 48,42 34,52 Z`,
+        `M 42,52 C 34,60 30,64 34,70 C 26,80 26,98 42,110
+         C 50,118 70,118 78,109 C 92,98 92,80 85,70 C 89,64 85,60 78,52
+         C 68,44 52,44 42,52 Z`,
         bodyColor,
         ink(3.2)
       ),
-      // Density pass. Against the toy family this figure was the sparsest
-      // thing in either file — a plain blob with a face — so it gets a hard
-      // shade plane cut on its own right edge, surface bubbles, and a run of
-      // sag lines. Flat planes only; no gradients.
-      D('M 74,54 C 84,74 84,96 74,108 C 86,98 90,74 82,52 Z', '#000', { opacity: 0.16, nohalo: true }),
+      // Density pass: a hard shade plane cut on the figure's own right edge,
+      // surface bubbles, and a run of sag lines. Flat planes only.
+      D('M 74,54 C 80,62 78,66 82,71 C 88,80 86,98 74,108 C 90,98 92,80 85,70 C 89,64 85,60 78,52 Z', '#000', {
+        opacity: 0.16,
+        nohalo: true,
+      }),
+      S('M 36,70 Q 44,76 60,76 Q 76,76 84,70', LINE, 1.7, { opacity: 0.4, nohalo: true }),
       D('M 40,100 C 50,110 70,110 80,100 C 82,110 68,120 58,120 C 46,120 38,109 40,100 Z', '#fff', {
         opacity: 0.24,
         nohalo: true,
       }),
-      C(43, 56, 4.6, '#fff', { opacity: 0.4, stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
-      C(72, 100, 3.6, '#fff', { opacity: 0.34, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
-      C(48, 96, 2.8, '#fff', { opacity: 0.3, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
-      S('M 36,60 C 33,72 34,84 39,94', LINE, 1.7, { opacity: 0.45, nohalo: true }),
-      S('M 80,62 C 82,72 81,82 78,90', LINE, 1.7, { opacity: 0.45, nohalo: true }),
+      C(46, 56, 4.4, '#fff', { opacity: 0.4, stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      C(72, 98, 3.6, '#fff', { opacity: 0.34, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
+      C(48, 94, 2.8, '#fff', { opacity: 0.3, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
+      S('M 33,80 C 31,88 33,96 38,102', LINE, 1.7, { opacity: 0.45, nohalo: true }),
+      S('M 86,82 C 87,90 85,96 82,101', LINE, 1.7, { opacity: 0.45, nohalo: true }),
       D('M 44,104 C 40,114 41,124 47,127 C 53,124 53,111 49,103 Z', bodyColor, ink(2.6)),
       D('M 67,106 C 64,114 66,122 71,124 C 76,121 75,112 72,105 Z', bodyColor, ink(2.6)),
 
-      villainFaceParts(58, 68, { dx: 13, ex: 7.2, tilt: 1.2, mouthY: 86, mouthW: 12.5, fangs: 2 }),
+      villainFaceParts(60, 60, { dx: 12, ex: 6.6, tilt: 1.2, mouthY: 88, mouthW: 12.5, fangs: 2 }),
     ]),
   ]
   return sticker([], body)
@@ -1064,8 +1355,30 @@ export function platSlime({ bodyColor = '#4fb5c9', accent = '#1d6b78' } = {}) {
 // Snatchy (plat-magnetjack): stole the spring hero's horseshoe magnet and
 // wears it slung on its back with the poles swapped — S sits in the
 // traditionally-red slot and N in the traditionally-blue one. The magnet's
-// weight is what tips the whole figure off balance.
+// weight is what tips the whole figure off balance, and v4 leans into that: the
+// arm on the magnet side reaches back and UP to hold the strap, the other hangs
+// slack, so the tilt now has a cause a five-year-old can see.
 export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {}) {
+  const armL = [
+    { x: 39, y: 66, w: 8.5 },
+    { x: 29, y: 76, w: 7.2 },
+    { x: 25, y: 87, w: 6 },
+  ]
+  const armR = [
+    { x: 81, y: 64, w: 8.5 },
+    { x: 90, y: 72, w: 7.2 },
+    { x: 93, y: 82, w: 6 },
+  ]
+  const legL = [
+    { x: 51, y: 92, w: 8.5 },
+    { x: 46, y: 104, w: 7 },
+    { x: 47, y: 113, w: 6.2 },
+  ]
+  const legR = [
+    { x: 69, y: 92, w: 8.5 },
+    { x: 75, y: 105, w: 7 },
+    { x: 74, y: 115, w: 6.2 },
+  ]
   const backdrop = [E(58, 132, 22, 4, '#000', { opacity: 0.13 })]
   const body = [
     G('rotate(-9 60 80)', [
@@ -1080,32 +1393,39 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
       TEXT(82.5, 54, 10, '#fff', 'S'),
       TEXT(108.5, 54, 10, '#fff', 'N'),
 
-      P('72,62 84,58 95,70 84,76', accent, ink(2.8)),
-      villainGlove(92, 82, 9.5, accent, -125),
-      P('40,60 29,58 20,72 31,78', accent, ink(2.8)),
-      villainGlove(23, 84, 9.5, accent, -25),
+      neck(60, 47, 61, 7, 8, bodyColor, '#000'),
 
-      R(40, 52, 40, 42, 13, bodyColor, ink(3.2)),
-      P('68,53 78,53 78,93 68,93', '#000', { opacity: 0.16, nohalo: true }),
-      R(41, 66, 38, 6, 1.5, accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      // Shoulders 42, waist 34, hips 40 — the same hourglass as the heroes at
+      // villain scale, so the two silhouettes belong to one world.
+      D(
+        `M 39,66 C 39,59 45,55 51,55 L 69,55 C 75,55 81,59 81,66 L 77,82
+         L 80,94 Q 80,98 76,98 L 44,98 Q 40,98 40,94 L 43,82 Z`,
+        bodyColor,
+        ink(3.2)
+      ),
+      P('69,57 81,66 77,82 80,96 70,96 70,57', '#000', { opacity: 0.16, nohalo: true }),
       // Density pass: a plate riveted over the chest and a strap for the
       // magnet, so the flank is not one bare colour field.
-      R(46, 74, 28, 16, 2.5, accent, ink(2.2)),
-      C(50, 78, 1.7, bodyColor, { nohalo: true }),
-      C(70, 78, 1.7, bodyColor, { nohalo: true }),
-      C(50, 86, 1.7, bodyColor, { nohalo: true }),
-      C(70, 86, 1.7, bodyColor, { nohalo: true }),
-      S('M 44,58 L 76,52', accent, 4.4, { nohalo: true }),
+      R(47, 70, 26, 15, 2.5, accent, ink(2.2)),
+      C(51, 74, 1.7, bodyColor, { nohalo: true }),
+      C(69, 74, 1.7, bodyColor, { nohalo: true }),
+      C(51, 81, 1.7, bodyColor, { nohalo: true }),
+      C(69, 81, 1.7, bodyColor, { nohalo: true }),
+      R(42, 87, 36, 6, 1.5, accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      S('M 46,62 L 80,54', accent, 4.4, { nohalo: true }),
 
-      R(45, 92, 13, 18, 3, accent, ink(2.6)),
-      R(63, 92, 13, 18, 3, accent, ink(2.6)),
-      villainShoe(39, 114, 14, 8.5),
-      villainShoe(72, 118, 15, 9),
+      plainLimb(legL, accent),
+      plainLimb(legR, accent),
+      villainShoe(44, 116, 13, 8),
+      villainShoe(77, 119, 14, 8.5),
 
-      R(38, 12, 44, 42, 17, bodyColor, ink(3.2)),
-      R(58, 3, 4, 10, 1.5, accent, ink(2)),
+      villainArm(armL, bodyColor, accent, 9),
+      villainArm(armR, bodyColor, accent, 9),
+
+      D('M 40,13 C 40,4 80,4 80,13 L 80,40 C 80,50 72,53 60,53 C 48,53 40,50 40,40 Z', bodyColor, ink(3.2)),
+      R(58, 3, 4, 11, 1.5, accent, ink(2)),
       C(60, 9, 4.4, accent, ink(2.2)),
-      villainFaceParts(60, 34, { tilt: 1 }),
+      villainFaceParts(60, 31, { tilt: 1, mouthY: 45 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1115,10 +1435,8 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
 // wide at the shoulders, tapering to a narrow foot, so the body silhouette
 // itself reads as a plug — with a plank patch for a hole it has already sealed
 // and a brick in each hand, one arm loaded with a heavier stack than the other
-// for the villain tilt. An early draft put the face on the cork's narrow tip
-// with no separate head and no feet, which floated eyes at ankle height; the
-// head now sits on top of the cork like any other figure in the family, and
-// two shoe stubs anchor the tapered tip to the ground.
+// for the villain tilt. This is the one figure in the family whose hips are
+// deliberately NARROWER than its shoulders: that inversion is the plug.
 export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
   const brick = (x, y, w, h) => [
     R(x, y, w, h, 1.5, '#b34a30', ink(2.4)),
@@ -1127,31 +1445,54 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
     S(`M ${x + w * 0.26},${y + h * 0.56} L ${x + w * 0.26},${y + h - 1}`, LINE, 1.8, { opacity: 0.7, nohalo: true }),
     S(`M ${x + w * 0.74},${y + h * 0.56} L ${x + w * 0.74},${y + h - 1}`, LINE, 1.8, { opacity: 0.7, nohalo: true }),
   ]
+  const armL = [
+    { x: 33, y: 70, w: 8 },
+    { x: 24, y: 77, w: 6.8 },
+    { x: 19, y: 83, w: 5.8 },
+  ]
+  const armR = [
+    { x: 87, y: 70, w: 8 },
+    { x: 96, y: 77, w: 6.8 },
+    { x: 101, y: 83, w: 5.8 },
+  ]
+  const legL = [
+    { x: 51, y: 106, w: 8 },
+    { x: 47, y: 115, w: 6.6 },
+    { x: 48, y: 122, w: 5.8 },
+  ]
+  const legR = [
+    { x: 69, y: 106, w: 8 },
+    { x: 74, y: 116, w: 6.6 },
+    { x: 73, y: 123, w: 5.8 },
+  ]
   const backdrop = [E(58, 134, 24, 4.2, '#000', { opacity: 0.13 })]
   const body = [
     G('rotate(6 60 90)', [
-      P('32,68 21,64 12,78 23,84', bodyColor, ink(2.8)),
-      brick(8, 86, 25, 15),
-      brick(11, 72, 21, 13),
+      villainArm(armL, bodyColor, accent, 8),
+      brick(6, 94, 25, 15),
+      brick(11, 110, 20, 13),
 
-      P('88,70 99,66 106,78 95,84', bodyColor, ink(2.8)),
-      brick(88, 86, 23, 14),
+      villainArm(armR, bodyColor, accent, 8),
+      brick(89, 94, 23, 14),
 
-      P('32,58 88,58 78,108 42,108', bodyColor, ink(3.2)),
-      P('35,66 85,66 79,72 39,72', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
-      P('38,86 82,86 78,92 42,92', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      neck(60, 52, 66, 8, 9, bodyColor, '#000'),
 
-      R(46, 66, 16, 16, 2, accent, ink(2.4)),
-      S('M 48,72 L 60,68 M 48,79 L 60,75', bodyColor, 2.6, { nohalo: true }),
+      D('M 32,68 C 32,62 40,60 48,60 L 72,60 C 80,60 88,62 88,68 L 77,110 L 43,110 Z', bodyColor, ink(3.2)),
+      P('72,61 88,68 77,110 71,110 71,61', '#000', { opacity: 0.15, nohalo: true }),
+      P('35,72 85,72 83,78 37,78', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      P('40,92 80,92 78,98 42,98', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
 
-      R(45, 104, 11, 14, 2.5, accent, ink(2.4)),
-      R(64, 104, 11, 14, 2.5, accent, ink(2.4)),
-      villainShoe(45, 121, 13, 8.5),
-      villainShoe(76, 121, 13, 8.5),
+      R(47, 80, 16, 15, 2, accent, ink(2.4)),
+      S('M 49,86 L 61,82 M 49,92 L 61,88', bodyColor, 2.6, { nohalo: true }),
 
-      R(34, 14, 52, 46, 19, bodyColor, ink(3.2)),
+      plainLimb(legL, accent, 2.4),
+      plainLimb(legR, accent, 2.4),
+      villainShoe(46, 125, 12, 7.5),
+      villainShoe(75, 126, 12, 7.5),
+
+      D('M 36,14 C 36,5 84,5 84,14 L 84,42 C 84,53 74,57 60,57 C 46,57 36,53 36,42 Z', bodyColor, ink(3.2)),
       C(60, 10, 5, accent, ink(2.2)),
-      villainFaceParts(60, 37, { dx: 11.5, ex: 6.6, tilt: 0.9, mouthY: 54, mouthW: 11 }),
+      villainFaceParts(60, 33, { dx: 11.5, ex: 6.6, tilt: 0.9, mouthY: 48, mouthW: 11 }),
     ]),
   ]
   return sticker(backdrop, body)
@@ -1167,6 +1508,26 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
 export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   const bit = (x, y, s, fill, op) => R(x, y, s, s, 0, fill, { opacity: op })
   const horn = (points) => P(points, accent, ink(2.6))
+  const armL = [
+    { x: 31, y: 76, w: 11 },
+    { x: 23, y: 88, w: 9.2 },
+    { x: 20, y: 99, w: 7.6 },
+  ]
+  const armR = [
+    { x: 89, y: 74, w: 11 },
+    { x: 97, y: 86, w: 9.2 },
+    { x: 100, y: 97, w: 7.6 },
+  ]
+  const legL = [
+    { x: 52, y: 102, w: 11 },
+    { x: 48, y: 112, w: 9 },
+    { x: 49, y: 121, w: 8 },
+  ]
+  const legR = [
+    { x: 68, y: 102, w: 11 },
+    { x: 73, y: 113, w: 9 },
+    { x: 72, y: 122, w: 8 },
+  ]
   const backdrop = [
     E(60, 135, 44, 5, '#000', { opacity: 0.17 }),
     bit(7, 74, 6, accent, 0.5),
@@ -1180,37 +1541,42 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   ]
   const body = [
     G('rotate(-4 60 78)', [
-      P('30,80 15,68 9,84 23,92', bodyColor, ink(3)),
-      villainGlove(13, 97, 13, accent, -35),
-      P('92,70 106,56 111,73 96,84', bodyColor, ink(3)),
-      villainGlove(102, 89, 13, accent, -140),
+      neck(60, 54, 68, 10, 11, bodyColor, '#000'),
 
-      R(48, 96, 15, 22, 3, accent, ink(2.8)),
-      R(69, 96, 15, 22, 3, accent, ink(2.8)),
-      villainShoe(47, 125, 17, 9),
-      villainShoe(81, 125, 17, 9),
+      plainLimb(legL, accent, 2.8),
+      plainLimb(legR, accent, 2.8),
+      villainShoe(46, 124, 16, 8.5),
+      villainShoe(75, 125, 16, 8.5),
 
-      R(28, 52, 62, 50, 16, bodyColor, ink(3.4)),
+      D(
+        `M 29,74 C 29,66 38,63 48,63 L 72,63 C 82,63 91,66 91,74
+         L 89,100 Q 89,106 83,106 L 37,106 Q 31,106 31,100 Z`,
+        bodyColor,
+        ink(3.4)
+      ),
 
       // The void in the belly IS this one's mouth — so the head carries eyes
-      // and brows only. Giving the head its own mouth as well (v3's first pass)
-      // produced a figure with two mouths and neither read.
-      E(58, 86, 25, 16, SOLE, ink(3)),
-      R(41, 78, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(53, 78, 12, 12, 0, accent, { nohalo: true }),
-      R(41, 90, 12, 12, 0, accent, { nohalo: true }),
-      R(53, 90, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(41, 78, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
+      // and brows only. Giving the head its own mouth as well produced a
+      // figure with two mouths and neither read.
+      E(58, 86, 24, 15, SOLE, ink(3)),
+      R(46, 76, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(58, 76, 12, 12, 0, accent, { nohalo: true }),
+      R(46, 88, 12, 12, 0, accent, { nohalo: true }),
+      R(58, 88, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(46, 76, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
       // Fangs at the maw's rim, as triangles rather than the chevron strokes a
       // first pass used — a '<' next to a '>' is exactly the accidental glyph
       // this app has been bitten by before.
-      P('35,78 41,78 38,86', '#fff', { nohalo: true }),
-      P('75,78 81,78 78,86', '#fff', { nohalo: true }),
+      P('36,77 42,77 39,85', '#fff', { nohalo: true }),
+      P('74,77 80,77 77,85', '#fff', { nohalo: true }),
 
-      horn('31,22 23,8 41,17'),
-      horn('86,20 96,6 100,22'),
-      R(26, 16, 58, 46, 20, bodyColor, ink(3.4)),
-      villainFaceParts(58, 38, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
+      villainArm(armL, bodyColor, accent, 11),
+      villainArm(armR, bodyColor, accent, 11),
+
+      horn('31,20 23,7 41,15'),
+      horn('86,18 96,6 100,20'),
+      D('M 28,16 C 28,6 84,6 84,16 L 84,46 C 84,58 73,63 56,63 C 39,63 28,58 28,46 Z', bodyColor, ink(3.4)),
+      villainFaceParts(56, 36, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
     ]),
   ]
   return sticker(backdrop, body)

@@ -25,10 +25,22 @@
 //     what make it look drawn.
 //     A limb drawn as a thick stroke gets its outline the only way a stroke
 //     can: the same path painted twice, wider in LINE underneath (`tube`).
-//  2. PASTEL, LOW-SATURATION FILLS. Bodies sit in the pale coral / pale sky /
-//     warm sand / soft lavender band -- high value, low chroma. Villains use
-//     the same band one step duller and darker, never a saturated "evil"
-//     colour. The outline and the eyes are the only dark values on the page.
+//  2. PRIMARY, FULL-CHROMA FILLS (v9 -- replaces the pastel band outright).
+//     The pale coral / pale sky / warm sand pass this file shipped with was
+//     rejected: children do not read pastel as exciting. Every body moved to a
+//     saturated primary and NOTHING else about the drawing changed -- vivid
+//     yellow (Rocket), deep teal (Magno), saturated brown with real steel on
+//     the drill (Drillo), hot orange with teal wing membranes (Captain Red).
+//     Villains take the same primaries one step DARKER and DULLER, which is
+//     what keeps the two sides apart now that neither is pale.
+//     Two knock-on values had to move with them, because on a pastel body the
+//     old ones were the darkest and lightest things on the page and on a vivid
+//     body they were not: INK went to #2e2018 (dot eyes have to hold against a
+//     mid-value body) and the badge plate to pure white.
+//     The OUTLINE STAYS SEPIA. Swapping #7a5c48 for black is the one change
+//     that would cost this family its identity -- black line + primary fill is
+//     the toys.js / platformer.js inking, and chapter 4 would stop looking
+//     like its own world. Saturated fill under a warm sepia line is the point.
 //  3. LIMBS BEHIND THE BODY, ONE CLEAN SILHOUETTE. Stub paws and feet are
 //     outlined and emitted BEFORE the body ellipse, so the body's opaque fill
 //     eats their inner strokes and the figure reads as one continuous outline
@@ -82,11 +94,16 @@ function mirrored(inner) {
 
 const LINE = '#7a5c48' // warm sepia outline -- the whole style rests on this
 const LINE_SOFT = '#a98b72' // interior seams, one step lighter than LINE
-const INK = '#3f2d22' // eyes and mouth, the darkest value in the figure
-const BADGE = '#fffaf0' // emblem plate: lightest value, for letter contrast
+// Eyes and mouth. Darker than the pastel pass needed: a dot eye has to hold
+// against a full-chroma body, and #3f2d22 on saturated brown or plum was only
+// ~1.6:1. Still a warm brown-black, never pure black -- the sepia line and the
+// ink belong to the same family.
+const INK = '#2e2018'
+const BADGE = '#ffffff' // emblem plate: pure white now, see grammar rule 2
 const BELLY = '#fdf1e0' // shared warm cream underside
-const FLAME = '#f7b96b' // soft ember, the one place any chroma is allowed
-const FLAME_CORE = '#fdeec4'
+const FLAME = '#ff6a1a' // outer flame: hot orange, layered inward to yellow
+const FLAME_MID = '#ffa826'
+const FLAME_CORE = '#ffe86b'
 const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
 
 // Outline weight tiers (grammar rule 1). Anything structural takes SW; a
@@ -111,7 +128,9 @@ function fig(inner) {
 // by one curve back through the body's interior. Emitted after the belly patch
 // and before the badge, so the shadow crosses the belly the way a real one
 // would but never dims the letter plate.
-function shadeCrescent(cx, cy, rx, ry, op = 0.13) {
+// op raised from 0.13 with the move to full chroma: a 13% sepia wash was
+// legible over pastel and vanished over saturated yellow and teal.
+function shadeCrescent(cx, cy, rx, ry, op = 0.17) {
   const rad = (d) => (d * Math.PI) / 180
   const p = (deg) => [cx + rx * Math.cos(rad(deg)), cy + ry * Math.sin(rad(deg))]
   const [x1, y1] = p(-50)
@@ -187,9 +206,12 @@ function smirk(cx, cy, w) {
 }
 
 // Chest badge: lightest plate + sepia ring + darkest ink letter (rule 7).
-function emblemBadge(cx, cy, r, plateColor, label, size) {
+// `ring` exists for one figure: Rocket's body went vivid YELLOW, whose value
+// sits close enough to a white plate on a cream belly that the plate's only
+// separation is the ring itself, so Rocket asks for a heavier one.
+function emblemBadge(cx, cy, r, plateColor, label, size, ring = SW_BADGE) {
   return `
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}" ${ol(SW_BADGE)}/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}" ${ol(ring)}/>
     <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
       font-size="${size}" font-weight="800" fill="${INK}">${label}</text>`
 }
@@ -205,12 +227,17 @@ function emblemBadge(cx, cy, r, plateColor, label, size) {
 // name tag instead, and leaves the body colour dominant. The badge still has
 // to sit inside the patch: there is no room to put it above one, because the
 // face already owns the top half of a 72-unit-tall body.
-function blob(fill, cx, cy, rx, ry, withBelly = true) {
+//
+// `bellyFill` is here for Rocket alone: a neutral cream belly on a vivid yellow
+// body left the white badge plate with nothing to sit against, so Rocket tints
+// its belly a pale amber -- a lighter shade of its own body, which is how the
+// electric-rodent reference does the underside anyway.
+function blob(fill, cx, cy, rx, ry, withBelly = true, bellyFill = BELLY) {
   return `
     <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" ${ol(SW)}/>
     ${withBelly
       ? `<ellipse cx="${cx}" cy="${cy + ry * 0.4}" rx="${rx * 0.8}" ry="${ry * 0.44}"
-           fill="${BELLY}" ${ol(SW_IN)}/>`
+           fill="${bellyFill}" ${ol(SW_IN)}/>`
       : ''}`
 }
 
@@ -280,23 +307,33 @@ function archShape(fill, poleA, poleB) {
 // technically present and practically invisible. Nothing here got sharper; the
 // soft shapes just got bigger.
 export function creatureRocket({
-  bodyColor = '#f6a893',
-  accent = '#e2846c',
+  bodyColor = '#ffc61a',
+  accent = '#ef9506',
   emblem = 'R',
   visorColor = BADGE,
 } = {}) {
-  // The one place in this family where saturation is allowed to spike (see
-  // the palette rule in the header): the cheek disc is Rocket's signature and
-  // has to win the face at 66 px. It also carries the limb-weight outline
-  // (2.0) instead of a seam weight, so it reads as a feature rather than a
-  // shading patch.
-  const CHEEK = '#f4664c'
+  // The cheek disc is Rocket's signature and has to win the face at 66 px.
+  // v9 pushed it from a coral-red to a true red: on the old pale-coral body a
+  // #f4664c disc was already the loudest thing in the figure, on vivid yellow
+  // it was a near-neighbour hue and went quiet. Red on yellow is the widest
+  // hue gap the palette can spend here. It also carries the limb-weight
+  // outline (2.0) instead of a seam weight, so it reads as a feature rather
+  // than a shading patch.
+  const CHEEK = '#e8281a'
+  // Belly one step lighter than the body instead of neutral cream -- see blob().
+  const BELLY_LT = '#ffeeb4'
+  // Ear tips went from `accent` to a dark burnt amber. The tip marking exists
+  // so the ear END is findable at map-node size (softEar's own note); amber on
+  // yellow is a two-step value gap and stopped doing that job once the body
+  // went vivid. It also gives an otherwise very high-key figure a dark accent
+  // that is not the outline.
+  const EAR_TIP = '#8a5410'
   return svgWrap(
     fig(`
       ${shadow(60, 132, 30)}
 
-      ${softEar(42, 52, 12, 40, -14, bodyColor, BELLY, accent)}
-      ${softEar(78, 52, 12, 40, 14, bodyColor, BELLY, accent)}
+      ${softEar(42, 52, 12, 40, -14, bodyColor, BELLY_LT, EAR_TIP)}
+      ${softEar(78, 52, 12, 40, 14, bodyColor, BELLY_LT, EAR_TIP)}
 
       <!-- paws dropped to cy=104 for the tail's sake: at cy=100 they spanned
            y 89..111 and swallowed the lower half of the bolt. -->
@@ -312,7 +349,7 @@ export function creatureRocket({
            corner of the zigzag curved. -->
       ${tube('M 84,94 L 108,84 L 96,72 L 110,56', 10, accent)}
 
-      ${blob(bodyColor, 60, 88, 36, 36)}
+      ${blob(bodyColor, 60, 88, 36, 36, true, BELLY_LT)}
       ${shadeCrescent(60, 88, 36, 36)}
 
       <!-- cheek radius 10.5, from v7's 6.5 -- 2.6x the area. This is the
@@ -325,7 +362,11 @@ export function creatureRocket({
       ${dotEyes(47, 73, 76, 5)}
       ${mouth(60, 86, 5)}
 
-      ${emblemBadge(60, 107, 14, visorColor, emblem, 20)}
+      <!-- ring 3.6 rather than the file's 3.0: white plate on a pale amber
+           belly on a yellow body is three high-value shapes stacked, so the
+           ring is the only thing separating the plate. The LETTER's contrast
+           is unaffected either way -- near-black ink on white. -->
+      ${emblemBadge(60, 107, 14, visorColor, emblem, 20, 3.6)}
     `)
   )
 }
@@ -352,9 +393,10 @@ export function creatureRocket({
 // The magnet survives only as the ARCH SHAPE of the ears, body-coloured with
 // no pole caps, now swept back at 42 deg instead of 12: laid-back ears are
 // half of what makes a head read as tipped back.
+// v9 also recoloured it: pale sky -> deep teal. The pose is untouched.
 export function creatureMagno({
-  bodyColor = '#a9c9ea',
-  accent = '#82a9d2',
+  bodyColor = '#17a8ab',
+  accent = '#0c7f85',
   emblem = 'M',
   visorColor = BADGE,
 } = {}) {
@@ -374,17 +416,25 @@ export function creatureMagno({
   // badge (x 44.5..75.5) at every height, so the letter plate is never dimmed.
   const bodyShade = `
     <path d="M 60,127 ${RIGHT_FLANK} C 78,62 84,80 84,92 C 84,108 76,119 60,127 Z"
-      fill="${LINE}" opacity="0.13"/>`
+      fill="${LINE}" opacity="0.17"/>`
 
   // Arm: flopped out from beside the head and down the flank, ending in a paw
   // resting on the belly with its palm showing. Written once on the left and
   // mirrored. The tube's outer half-width is 9.5, so the path's own min x of
   // 18.4 inks to 8.9, inside the body edge: the arm reads as a heavy limb
   // lying ON the mass, not as a stub poking out of it.
+  // The palm faces the viewer for the same reason the soles do, and carries a
+  // scaled-down version of the same pad cluster, so hands and feet read as
+  // parts of one animal rather than two unrelated blobs.
   const arm = `
     ${tube('M 36,60 C 24,66 17,76 20,88', 15, accent)}
     <ellipse cx="18" cy="92" rx="11" ry="9.5" fill="${accent}" ${ol(SW_MID)}/>
-    <ellipse cx="18" cy="94" rx="6.5" ry="5" fill="${BELLY}" ${ol(SW_IN)}/>`
+    <g fill="${BELLY}" ${ol(SW_IN)}>
+      <ellipse cx="12.5" cy="87" rx="2.6" ry="2.2"/>
+      <ellipse cx="18" cy="85.5" rx="2.6" ry="2.2"/>
+      <ellipse cx="23.5" cy="87" rx="2.6" ry="2.2"/>
+      <ellipse cx="18" cy="95" rx="6.5" ry="4.8"/>
+    </g>`
 
   // Sole turned to face the viewer: three claws poking above the foot's top
   // edge, three toe pads and one big heel pad on the sole itself. The claws go
@@ -423,9 +473,6 @@ export function creatureMagno({
            so they are not concentric either. -->
       <ellipse cx="60" cy="102" rx="46" ry="23" fill="${BELLY}" ${ol(SW_IN)}/>
       ${bodyShade}
-      <!-- chin/neck fold: the head is sunk into the shoulders, and this is the
-           crease that says so. -->
-      <path d="M 41,71 Q 60,80 79,71" fill="none" stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>
 
       ${arm}
       ${mirrored(arm)}

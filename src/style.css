@@ -669,7 +669,7 @@ button {
 .options-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  grid-auto-rows: minmax(140px, clamp(140px, 31vh, 372px));
+  grid-auto-rows: minmax(140px, clamp(140px, 30vh, 360px));
   gap: 18px;
   width: 100%;
   max-width: 700px;
