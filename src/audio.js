@@ -45,17 +45,42 @@ const MIN_GAP_MS = 500
 // sequences, tap feedback. Lowered from 0.85 after a real-iPad report that the
 // repeated sounds were far too fast for a 5-year-old to imitate.
 //
-// Measured, because the obvious objection is that rate does nothing here:
-// `say` quantizes rate into buckets, and the whole 20x span from -r 200 down
-// to -r 10 moves "tuh" only 385ms -> 685ms. So rate is genuinely a weak
-// lever -- but not a zero one, and 0.85 -> 0.5 lands one full bucket lower
-// (Samantha "tuh" 488 -> 534ms, "sss" 854 -> 922, "kuh, kuh, kuh"
-// 1892 -> 2067). It is also the only lever that lives in this file: making
-// the *sound itself* longer needs different text, which is chapter data.
+// Measured, because the obvious objection is that rate does nothing here.
+// Apple's engine quantizes rate into coarse buckets; mapping Web Speech's
+// multiplier onto `say -r` through the voices' own default of 175 wpm
+// (measured: an unflagged `say` matches -r 160..180 exactly for both voices)
+// gives this ladder, Samantha "tuh" / "elephant":
 //
-// Not lower than this: 0.5 is the last value whose bucket is measured here,
-// and on engines that honour rate linearly (desktop Chrome, Android) it is
-// already a 1.7x stretch of every word.
+//   1.00  -r 175   432 /  587
+//   0.85  -r 149   487 /  656   <- previous value
+//   0.75  -r 131   487 /  656   } same bucket as 0.85
+//   0.70  -r 123   487 /  656   }
+//   0.60  -r 105   534 /  712   } same bucket as 0.50 -- 0.6 and 0.5 are
+//   0.50  -r  88   534 /  712   } indistinguishable on an Apple voice
+//   0.40  -r  70   580 /  768   <- the next bucket down, if 0.5 is still fast
+//   0.10  -r  18   684 /  881
+//
+// So 0.85 -> 0.5 buys exactly one bucket: +10% on a sound, +9% on a word, and
+// +0.9s of speech per stage across all 35 stages (measured over the real
+// auto-played content, both voices). Cheap enough to keep, and the direction
+// the user asked for -- but nowhere near a fix on its own, and the ladder
+// shows why nothing in this file can be: even rate 0.10 leaves "tuh" at 684ms,
+// under the 780-855ms this project measured as the threshold where a
+// 5-year-old actually registers a sound. Rate is a weak lever by construction
+// because a plosive's duration is articulation-bound, not rate-bound.
+//
+// It is also the only lever that lives in this file. Making a *sound* long
+// enough to imitate needs repetition, and repetition lives in chapter data
+// (the "tuh, tuh, tuh" comma-bundle form). Do not add a repeat-it-N-times
+// helper here to work around that: an echo built out of queue slots is
+// strictly worse than the comma bundle (3 x 534ms + 2 x 900ms gap = 3.4s
+// versus 2.16s for "tuh, tuh, tuh", for the same three exposures), it is
+// invisible to validateChapters(), and its inter-pass silence sits outside
+// queueTail so whenAudioIdle() can resolve in the middle of it.
+//
+// On engines that honour rate linearly (desktop Chrome, Android) 0.5 is a
+// 1.7x stretch of every word instead of 10%. That is a dev-machine artifact,
+// not the target device.
 const EN_RATE = 0.5
 
 // Floor on how long an utterance's audio really lasts, used to defend against
@@ -86,11 +111,11 @@ const EN_RATE = 0.5
 // rate 1.0:
 //   plain English  78 ms/char, floor 290   ("duck" 211ms/4ch is the slope,
 //                                           "zzz" 181ms/3ch the floor)
-//   comma English  105 ms/char, or 370 per comma-separated token, whichever is
+//   comma English  115 ms/char, or 370 per comma-separated token, whichever is
 //                  larger -- the token term is what catches short bundles like
 //                  "a, a" whose length badly understates them
-//                  ("guh, guh, guh" 1256ms sets the slope, "oh, oh" 764ms the
-//                   token cost)
+//                  ("lll, lll, lll" sets the slope, "oh, oh" 764ms the token
+//                   cost)
 //   Korean         115 ms/char            (per Hangul syllable block -- NOT
 //                                          per UTF-8 byte)
 //
@@ -98,6 +123,43 @@ const EN_RATE = 0.5
 // pause inside one utterance (the tutorials say a sound three times as
 // "lll, lll, lll"), which roughly doubles the per-character cost versus a
 // plain word of the same length.
+//
+// The comma slope is 115, not the 105 this was first committed with, because
+// re-measuring at the *new* EN_RATE showed 105 no longer held. Two things have
+// to line up to see it. First, a string's real budget is not floor + 500: the
+// queue's MIN_GAP_MS and speakSequence's 1100ms sleep start at the same moment
+// and therefore do not stack, so a sequence item gets max(1100, 500) and a
+// standalone one gets 500. Second, lowering the rate stretched the real audio
+// more than the tier factor allows for. "lll, lll, lll" -- the /l/ tutorial
+// drill, and the longest comma bundle in the app -- became 2988ms against a
+// 1624ms floor plus its 1100ms gap, i.e. 264ms of the next sound landing on its
+// tail. 115 is the smallest slope that closes it (109ms residual), and it is
+// the only coefficient that moved.
+//
+// Verified at EN_RATE = 0.5 against every string this app actually speaks
+// (157 English + 31 Korean), scored two ways: dead air = floor - real, and
+// collision = real - floor - (that string's real gap). Fitted to Samantha,
+// because Samantha is the iOS en-US default and iPadOS Safari is the only
+// engine whose onend lies -- a floor calibrated to a voice the target device
+// does not use protects nothing:
+//   dead air    worst +124ms, and only on "zzz" (see below); next worst +12ms
+//   collision   worst +126ms, on "cta" -- a scramble tile that is only ever
+//               spoken by tapping it; worst on any auto-played string is
+//               +109ms ("lll, lll, lll")
+//   Korean      dead air <= +77ms, collision negative on all 31 lines; the
+//               tightest is -26ms, so the reward screen's Korean-then-English
+//               handoff has no overlap left in it
+// Alex is the loose end, by up to +719ms ("zzz") -- it is a macOS voice, not an
+// iOS default, and no single length model can serve both when the two disagree
+// 7x on the same string ("zzz": Samantha 212ms, Alex 1555ms). Raising the comma
+// slope costs Alex 279ms of dead air on "kuh, kuh, kuh"/"guh, guh, guh", which
+// is the trade this file already declared: unnoticed silence on a voice the
+// child will not hear, against an audible collision on the voice they will.
+//
+// Measure the LOWERCASED string when re-checking any of this: speakNow()
+// lowercases before speaking, and `say "S"` is "Capital S" (1013ms) against
+// 447ms for `say "s"`. Measuring the data as written doubles every uppercase
+// letter and invents collisions that cannot happen.
 //
 // The stretch tiers exist because lowering EN_RATE invalidates a floor
 // calibrated at a higher rate. They are the measured *minimum* duration ratio
@@ -117,7 +179,7 @@ function minSpeechMs(text, lang, rate) {
   if (lang.startsWith('ko')) return 115 * len
   const commas = text.includes(',')
   const base = commas
-    ? Math.max(105 * len, 370 * text.split(',').length)
+    ? Math.max(115 * len, 370 * text.split(',').length)
     : Math.max(290, 78 * len)
   return base * stretch(rate, commas)
 }
@@ -164,10 +226,10 @@ function speakNow(text, lang, rate) {
       // resolve until at least a conservative *lower bound* on the real audio
       // duration has passed.
       //
-      // Deliberately a lower bound, not an estimate: it is below the measured
-      // duration of every string this app speaks, so on a browser whose onend
-      // is honest this branch never waits at all and no transition gets one
-      // millisecond slower. It cannot outlive the safety timeout either --
+      // Fitted, not a strict lower bound -- see minSpeechMs. On a browser
+      // whose onend is honest this branch can still wait, but by at most
+      // ~120ms on any string this app speaks, which buys a real guard against
+      // the engine that lies. It cannot outlive the safety timeout either --
       // that estimate is ~3x larger for every input.
       const remaining = minSpeechMs(raw, lang, rate) - (Date.now() - startedAt)
       if (remaining > 0) {
@@ -259,35 +321,6 @@ export function clearAudioQueue() {
 
 export function speakEN(text, rate = EN_RATE) {
   return enqueueSpeak(text, 'en-US', rate)
-}
-
-// ---- paced repetition for sounds too short to imitate ----
-//
-// The other half of the same iPad report ("TTT 발음이 없어" -- the /t/ in the
-// chapter 1 boss was simply not heard). Measured: the plosive approximations
-// render at 297-488ms (Samantha 405-488, Alex 297-333), against the 780-855ms
-// that this project already established as the threshold for a sound a child
-// actually registers. Rate cannot close that -- see EN_RATE -- because the
-// duration is articulation-bound, not rate-bound. Only repetition can: three
-// exposures with real silence between them give the child a beat to copy into,
-// which one 300ms burst never does.
-//
-// This is the same prescription as the comma-triple spelling used in chapter
-// data ("kuh, kuh, kuh"), but the pause here is real queue silence we control
-// rather than whatever the engine decides a comma is worth, and it works
-// without rewriting content. A text that already carries a comma, or is a
-// phrase rather than a single token, is left alone -- echoing those would
-// stack a triple on a triple and turn one sound into nine seconds.
-const ECHO_GAP_MS = 900
-
-export async function speakEcho(text, times = 3, gapMs = ECHO_GAP_MS) {
-  const raw = text == null ? '' : String(text)
-  const bundled = raw.includes(',') || /\s/.test(raw.trim())
-  const passes = bundled ? 1 : Math.max(1, times)
-  for (let i = 0; i < passes; i++) {
-    await enqueueSpeak(raw, 'en-US', EN_RATE)
-    if (i < passes - 1) await sleep(gapMs)
-  }
 }
 
 // ---- tap feedback ----
