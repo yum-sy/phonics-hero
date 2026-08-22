@@ -15,6 +15,21 @@
 // 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'S', say: 'sss' },
 // readAloud는 { targetText: 'S', say: 'sss' }. 화면에 안 나오는
 // repeatAudio/promptAudio는 소리 표기('sss','tuh')를 그대로 쓴다.
+//
+// teach/break 의 repeatAudio 는 "한 소리 드릴" 이다 -- 그 소리의 반복과,
+// 화면에 letter 로 떠 있는 글자꼴 이름만 들어간다. **단어와 캐릭터 이름을
+// 넣지 마라.** 예전 표준은 [소리, 단어앵커, 소리] 였는데 사용자가 실기기에서
+// 듣고 반려했다: "1-1 음성이 ss sun ss 라고 하네... 이 때 굳이 sun 을
+// 언급하는 이유를 모르겠어. 빼버리자". 캐릭터 이름도 같이 뺐다 -- speakEN 이
+// 소문자로 낮추므로 'Sammy'/'Ray'/'Cloak' 은 아이 귀에 그냥 영어 단어이고
+// (이름이라는 단서가 소리에 없다), 게다가 몇 개는 소리가 어긋났다(단모음 A
+// 자리의 'Ace' 는 /eɪ/, 단모음 U 자리의 'Umo' 는 /juː/, /t/ 챈트의 'go!' 는
+// /g/). 소리를 단어에 붙여 들려줄 자리는 listen-repeat/finale 의 words[] 다.
+//
+// 예외는 보스 스테이지의 teach/break 하나뿐이다: 거기서는 낱소리를 순서대로
+// 들려준 뒤 합친 단어를 말하는 **블렌딩 시연**이고(sss-aaa-tuh-sat), 그
+// 단어는 화면의 글자 등식에 그대로 떠 있다. validateChapters() 가 이 계약을
+// 강제한다(비보스 teach/break 의 소리 토큰은 전부 같아야 하고 2개 이상).
 
 export const chapter1 = {
   id: 'chapter-1',
@@ -34,7 +49,7 @@ export const chapter1 = {
           kind: 'teach',
           instructionKo: '새미가 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['sssss', 'sun', 'sssss'],
+          repeatAudio: ['sssss', 'sssss', 'sssss'],
         },
         {
           id: 's1-r1',
@@ -54,7 +69,7 @@ export const chapter1 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['sss', 'sss', 'Sammy', 'sss', 'sss', 'snake'],
+          repeatAudio: ['sss', 'sss', 'sss', 'sss'],
         },
         {
           id: 's1-r2',
@@ -176,7 +191,7 @@ export const chapter1 = {
           instructionKo: '손가락으로 S를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'S',
-          repeatAudio: ['S', 'Sammy', 'sss'],
+          repeatAudio: ['S', 'sss', 'sss', 'sss'],
         },
         {
           id: 's2-r4-multiselect',
@@ -251,7 +266,7 @@ export const chapter1 = {
       villain: { name: 'Shadowbot', art: 'shadowbot' },
       hero: { name: 'Ace', art: 'ace' },
       chapterBoss: false,
-      reviewTargets: ['S'],
+      reviewTargets: ['S', 'A'],
       beats: [
         {
           id: 's3-teach',
@@ -300,7 +315,7 @@ export const chapter1 = {
           instructionKo: '손가락으로 A를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'A',
-          repeatAudio: ['A', 'Ace', 'aaa'],
+          repeatAudio: ['A', 'aaa', 'aaa', 'aaa'],
         },
         {
           id: 's3-r4-multiselect',
@@ -375,7 +390,7 @@ export const chapter1 = {
       villain: { name: 'Tickbot', art: 'tickbot' },
       hero: { name: 'Turbo', art: 'turbo' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A'],
+      reviewTargets: ['S', 'A', 'T'],
       beats: [
         {
           id: 's4-teach',
@@ -424,7 +439,7 @@ export const chapter1 = {
           instructionKo: '손가락으로 T를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'T',
-          repeatAudio: ['tuh', 'Turbo', 'go!'],
+          repeatAudio: ['tuh', 'tuh', 'tuh'],
         },
         {
           id: 's4-r4-multiselect',
@@ -538,7 +553,6 @@ export const chapter1 = {
           id: 's5-teach',
           kind: 'teach',
           instructionKo: '새미 + 에이스 + 터보가 합체해요! 천천히 들어보세요.',
-          emoji: '🐍🐜🚙➡️🤖',
           repeatAudio: ['sss', 'aaa', 'tuh', 'sat', 'sat'],
         },
         {

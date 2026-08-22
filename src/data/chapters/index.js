@@ -157,6 +157,103 @@ const SELF_PAYING_KINDS = new Set(['choose-sequence', 'listen-repeat', 'finale']
 const NEEDS_READ_ALOUD = new Set(['choose', 'multiselect', 'drag-build', 'match-shape'])
 const CHARACTER_KEYS = new Set(['name', 'art', 'style'])
 
+// ---------- 읽는 사람이 없는 필드 (dead data) ----------
+// 이 프로젝트에서 같은 함정이 세 번 나왔다: 데이터에 필드가 있고, 렌더러가
+// 그걸 읽지 않고, 아무 에러도 없이 조용히 무시된다 (multiselect 의
+// promptAudio, 보스 인트로의 emoji, reviewTargets). 실행 시점에 증상이
+// **없기 때문에** 리뷰로는 절대 잡히지 않는다 -- 화면은 정상으로 보인다.
+//
+// 근본 원인은 "데이터 객체가 임의의 키를 받아준다" 는 것이므로, 캐릭터
+// 객체에 이미 쓰고 있던 방식(CHARACTER_KEYS)을 전체로 확장한다: **렌더러가
+// 실제로 읽는 키만 허용**하고, 그 외에는 오타든 새 아이디어든 즉시 이름을
+// 대고 거부한다. beat 는 kind 마다 읽는 키가 다르므로 kind 별 표다 --
+// 그래서 'multiselect 에 promptAudio' 같은 *배치* 오류까지 같이 잡힌다.
+//
+// 새 필드를 배선했으면 여기 한 줄을 추가해라. 그 한 줄이 "이 필드는 읽힌다"
+// 는 유일한 증거다.
+const CHAPTER_KEYS = new Set(['id', 'order', 'title', 'stages'])
+const STAGE_KEYS = new Set([
+  'id',
+  'order',
+  'title',
+  'villain',
+  'hero',
+  'chapterBoss',
+  'beats',
+  'recapKo',
+  'recapAudio',
+  // screens.js 가 아직 읽지 않는다 -- 누적 복습 배선 대기 중(HANDOFF.md).
+  // 아래 reviewTargets 계약이 "배선되는 순간 맞는 값" 을 보장한다.
+  'reviewTargets',
+])
+const BEAT_COMMON_KEYS = ['id', 'kind', 'instructionKo', 'scored', 'hits']
+const BEAT_KIND_KEYS = {
+  teach: ['art', 'emoji', 'letter', 'repeatAudio'],
+  break: ['art', 'emoji', 'letter', 'repeatAudio'],
+  choose: ['promptLetter', 'promptEmoji', 'promptAudio', 'options', 'readAloud'],
+  'match-shape': ['promptLetter', 'promptEmoji', 'options', 'readAloud'],
+  multiselect: ['options', 'readAloud'],
+  'choose-sequence': ['steps'],
+  'drag-build': ['letters', 'target', 'readAloud'],
+  'listen-repeat': ['words'],
+  finale: ['words'],
+}
+const STEP_KEYS = new Set(['promptAudio', 'options'])
+const OPTION_KEYS = new Set(['id', 'icon', 'label', 'correct', 'say'])
+const READ_ALOUD_KEYS = new Set(['targetText', 'say'])
+const RECAP_AUDIO_KEYS = new Set(['ko', 'en'])
+const SPOKEN_PAIR_KEYS = new Set(['text', 'say'])
+
+// kind 별 허용 키 표에 걸리는 배치 오류 중 **왜 틀렸는지가 안 자명한** 것들.
+// 단순 오타는 키 이름만 보여주면 충분하지만, 이것들은 "렌더러에 그 필드를
+// 읽는 코드가 아예 없다" 는 사실을 말해줘야 저자가 대안을 찾을 수 있다.
+const MISPLACED_KEY_HINTS = {
+  'multiselect.promptAudio':
+    'renderMultiselectBeat 은 promptAudio 를 문제로 제시하지 않는다 ' +
+    '(자동 재생도, 다시 듣기 버튼도 없다). multiselect 는 소리를 ' +
+    'instructionKo 문장으로 지목하는 구조다. 소리를 들려주고 하나만 고르게 ' +
+    '할 생각이면 kind 를 choose 로 바꿔라',
+  'match-shape.promptAudio':
+    'match-shape 는 b/d 반전을 *귀*가 아니라 *모양*으로 변별시키는 beat 라 ' +
+    '의도적으로 아무 소리도 먼저 내지 않는다. 소리로 물으려면 choose 다',
+  'drag-build.promptAudio':
+    'renderBuildBeat 은 promptAudio 를 읽지 않는다. 슬롯별 소리는 ' +
+    'letters[].say 에서 나온다',
+  'listen-repeat.repeatAudio':
+    'repeatAudio 는 teach/break 전용이다(wireTeachButtons). ' +
+    'listen-repeat 가 발화하는 것은 words[] 다',
+  'finale.repeatAudio':
+    'repeatAudio 는 teach/break 전용이다(wireTeachButtons). ' +
+    'finale 이 발화하는 것은 words[] 다',
+}
+
+// 비보스 teach/break 의 repeatAudio 는 "한 소리 드릴" 이다 -- 사용자가
+// 실기기에서 듣고 반려한 지점이 여기다. 원문: "1-1 음성이 ss sun ss 라고
+// 하네... 이 때 굳이 sun 을 언급하는 이유를 모르겠어. 빼버리자". 그래서
+// 소리 블록의 반복과 (선택적으로) 화면에 떠 있는 글자꼴 이름만 허용하고,
+// 단어와 캐릭터 이름은 금지한다.
+//
+// 글자꼴은 대문자 1~2자다(다이그래프 'AI'/'OA' 가 한 글자소다). 이건
+// TTS 가 글자 **이름**("에스")으로 읽는 것이 의도인 유일한 자리다 --
+// 글자꼴 스테이지의 teach/break 는 화면에 그 글자를 띄우고 있다.
+const LETTERFORM = /^[A-Z]{1,2}$/
+// 소리 토큰 하한. 1개면 모델이 한 번뿐이라 아이가 비교할 대상이 없다
+// (실제로 ['tuh','Turbo','go!'] 에서 단어를 빼면 0.27초 블립 하나만 남았다).
+// 2개가 "듣고 따라하고 다시 듣기" 가 성립하는 최소치다.
+const MIN_DRILL_SOUND_TOKENS = 2
+
+function checkKeys(problems, where, obj, allowed, label, hints = null) {
+  for (const key of Object.keys(obj)) {
+    if (allowed.has(key)) continue
+    const hint = hints && hints[`${label}.${key}`]
+    problems.push(
+      `${where}: ${label} 에 알 수 없는 키 '${key}' -- ` +
+        (hint || '렌더러가 읽지 않는 필드다. 조용히 무시되므로 화면은 정상으로 보인다') +
+        `. 실제로 배선했다면 chapters/index.js 의 허용 키 표에 추가해라`
+    )
+  }
+}
+
 // recapAudio 는 표시(recapKo)와 발화를 분리한다. 영어 텍스트를 speakKO() 로
 // 보내면 한국어 음성이 로마자를 읽어버리므로, 발화는 언어별로 나눠 담는다.
 const HANGUL = /[\u3131-\u318E\uAC00-\uD7A3]/
@@ -167,7 +264,12 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
   const stageIds = new Map()
   const beatIds = new Map()
 
+  // 커리큘럼이 이 시점까지 실제로 가르친 글자소. reviewTargets 계약의
+  // 유일한 진실 공급원이다 -- 손으로 관리하는 두 번째 목록을 만들지 않는다.
+  const taughtSoFar = []
+
   for (const chapter of chapterList) {
+    checkKeys(problems, chapter.id, chapter, CHAPTER_KEYS, 'chapter')
     const bosses = chapter.stages.filter((s) => s.chapterBoss)
     if (bosses.length !== 1) {
       problems.push(`${chapter.id}: chapterBoss 스테이지가 ${bosses.length}개 (정확히 1개)`)
@@ -175,6 +277,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
 
     for (const stage of chapter.stages) {
       const where = `${chapter.id}/${stage.id}`
+      checkKeys(problems, where, stage, STAGE_KEYS, 'stage')
       if (stageIds.has(stage.id)) {
         problems.push(`stage id 중복: '${stage.id}' (${stageIds.get(stage.id)}, ${chapter.id})`)
       }
@@ -212,6 +315,22 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           problems.push(`beat id 중복: '${beat.id}' (${beatIds.get(beat.id)}, ${stage.id})`)
         }
         beatIds.set(beat.id, stage.id)
+
+        const kindKeys = BEAT_KIND_KEYS[beat.kind]
+        if (!kindKeys) {
+          problems.push(`${at}: 알 수 없는 beat.kind '${beat.kind}' -- 렌더러가 없다`)
+        } else {
+          checkKeys(
+            problems,
+            at,
+            beat,
+            new Set([...BEAT_COMMON_KEYS, ...kindKeys]),
+            beat.kind,
+            MISPLACED_KEY_HINTS
+          )
+        }
+        // 한 스테이지의 teach 와 break 가 같은 letter 를 띄우므로 중복을 뺀다.
+        if (beat.letter && !taughtSoFar.includes(beat.letter)) taughtSoFar.push(beat.letter)
 
         if (beat.scored) {
           if (typeof beat.hits !== 'number' || beat.hits < 1) {
@@ -259,6 +378,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             }
           }
           for (const option of options) {
+            checkKeys(problems, `${at}/${option.id}`, option, OPTION_KEYS, 'option')
             if (iconKeys && !iconKeys.includes(option.icon)) {
               problems.push(`${at}/${option.id}: icons.js 에 없는 아이콘 '${option.icon}'`)
             }
@@ -275,6 +395,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               if (typeof word === 'string') {
                 displayed.push([`${at} words[${i}]`, word])
               } else if (word && typeof word.text === 'string' && word.text) {
+                checkKeys(problems, `${at} words[${i}]`, word, SPOKEN_PAIR_KEYS, 'word')
                 displayed.push([`${at} words[${i}].text`, word.text])
                 if (word.say !== undefined) spoken.push([`${at} words[${i}].say`, word.say])
               } else {
@@ -307,12 +428,16 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           }
           tiles.forEach((t, i) => displayed.push([`${at} letters[${i}]`, t]))
           for (const [i, l] of (beat.letters || []).entries()) {
+            if (l && typeof l === 'object') {
+              checkKeys(problems, `${at} letters[${i}]`, l, SPOKEN_PAIR_KEYS, 'letter')
+            }
             if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say])
           }
           slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
         }
 
         if (beat.readAloud) {
+          checkKeys(problems, at, beat.readAloud, READ_ALOUD_KEYS, 'readAloud')
           displayed.push([`${at} readAloud.targetText`, beat.readAloud.targetText])
           if (beat.readAloud.say !== undefined)
             spoken.push([`${at} readAloud.say`, beat.readAloud.say])
@@ -321,9 +446,56 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         if (beat.promptLetter) displayed.push([`${at} promptLetter`, beat.promptLetter])
         if (beat.promptAudio !== undefined) spoken.push([`${at} promptAudio`, beat.promptAudio])
         for (const [i, step] of (beat.steps || []).entries()) {
+          checkKeys(problems, `${at} steps[${i}]`, step, STEP_KEYS, 'step')
           if (step.promptAudio !== undefined)
             spoken.push([`${at} steps[${i}].promptAudio`, step.promptAudio])
         }
+
+        // 보스 인트로(= 보스 스테이지의 첫 teach beat)는 renderNonScoredBeat 이
+        // beat.emoji 대신 글자 등식을 그린다. 그 자리에 emoji 를 적으면 화면에
+        // 절대 나오지 않는다 -- 실제로 7개 챕터 전부가 여기에 리버스 이모지를
+        // 달아두고 있었고(🐍🐜🚙➡️🤖) 한 번도 렌더된 적이 없다.
+        if (stage.chapterBoss && beat.kind === 'teach' && stage.beats[0] === beat) {
+          if (beat.emoji !== undefined) {
+            problems.push(
+              `${at}: 보스 인트로 teach beat 의 emoji 는 렌더되지 않는다 -- ` +
+                `이 자리에는 buildEquationsHtml() 의 글자 등식이 그려진다`
+            )
+          }
+        }
+
+        if (beat.kind === 'teach' || beat.kind === 'break') {
+          if (!(beat.repeatAudio || []).length) {
+            problems.push(`${at}: ${beat.kind} 에 repeatAudio 없음 -- 무음 beat 이 된다`)
+          }
+        }
+
+        // 보스 teach/break 은 예외다: 거기서는 낱소리를 순서대로 들려준 뒤
+        // 합친 단어를 말하는 **블렌딩 시연**이고(sss-aaa-tuh-sat), 그 단어는
+        // 화면의 글자 등식에 그대로 떠 있다. 없애면 beat 의 목적이 사라진다.
+        if ((beat.kind === 'teach' || beat.kind === 'break') && !stage.chapterBoss) {
+          const tokens = (beat.repeatAudio || [])
+            .flatMap((line) => String(line).trim().split(SPEECH_TOKEN_SPLIT))
+            .filter(Boolean)
+          const sounds = tokens.filter((t) => !LETTERFORM.test(t))
+          const distinct = [...new Set(sounds.map((s) => s.toLowerCase()))]
+          if (distinct.length > 1) {
+            problems.push(
+              `${at}: 소리 드릴 repeatAudio 에 서로 다른 토큰 [${distinct.join(' / ')}] -- ` +
+                `비보스 teach/break 은 한 소리만 반복한다. 단어·캐릭터 이름을 섞지 마라 ` +
+                `(사용자가 실기기에서 'ss sun ss' 를 듣고 반려한 지점이다). ` +
+                `소리를 단어에 붙여 들려줄 자리는 listen-repeat/finale 의 words[] 다`
+            )
+          }
+          if (sounds.length < MIN_DRILL_SOUND_TOKENS) {
+            problems.push(
+              `${at}: 소리 드릴 repeatAudio 의 소리 토큰이 ${sounds.length}개 ` +
+                `(최소 ${MIN_DRILL_SOUND_TOKENS}개) -- 모델이 한 번뿐이면 아이가 ` +
+                `따라할 대상을 비교할 수 없다`
+            )
+          }
+        }
+
         for (const [i, line] of (beat.repeatAudio || []).entries()) {
           spoken.push([`${at} repeatAudio[${i}]`, line])
           if (typeof line === 'string') {
@@ -369,6 +541,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
       if (!ra) {
         problems.push(`${where}: recapKo 는 있는데 recapAudio 가 없음 -- 보상 화면이 무음이다`)
       } else {
+        checkKeys(problems, where, ra, RECAP_AUDIO_KEYS, 'recapAudio')
         if (typeof ra.ko !== 'string' || ra.ko.trim() === '') {
           problems.push(`${where}: recapAudio.ko 가 비어있음`)
         } else if (ROMAJI.test(ra.ko)) {
@@ -408,6 +581,45 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         if (typeof text !== 'string') continue
         if (SOUND_NOTATION.test(text) || CHOPPED_NOTATION.test(text)) {
           problems.push(`${field}: 화면에 소리 표기 '${text}' 노출 -- 표시는 실제 글자·단어여야 함`)
+        }
+      }
+
+      // ---------- reviewTargets 계약 ----------
+      // 이 필드는 지금 소비자가 0개다. 그런데 "아무도 읽지 않는다" 를 데이터
+      // 검증기가 단정하는 것은 틀린 설계다: 검증기는 screens.js 를 볼 수도
+      // 없고, 그 사실은 배선되는 순간 뒤집힌다 -- 옳아지는 순간 빨개지는
+      // 검사가 된다. 소비자 유무는 위의 허용 키 표가 담당한다(배선하면 표에
+      // 한 줄이 늘어난다).
+      //
+      // 대신 검증기가 소유할 수 있는 것은 **필드의 의미 계약**이고, 실제
+      // 결함도 거기 있었다: 값이 챕터 로컬이었다(챕터 4 스테이지 4 가
+      // ['R','M']). 누적 복습 의미로 배선되면 그 스테이지는 R·M 만 복습하는
+      // -- 즉 누적 복습이 조용히 없는 -- 상태가 된다. 죽은 데이터보다 잡기
+      // 어려운 실패다. 게다가 자기 스테이지의 글자를 빼고 있었는데, 같은
+      // 스테이지의 퀵파이어 beat 은 그 글자를 실제로 물어본다(챕터 1
+      // 스테이지 4 의 퀵파이어는 S·A·T 3문항인데 reviewTargets 는 ['S','A']).
+      //
+      // 그래서 계약은 "선언했다면, 이 스테이지까지 커리큘럼이 가르친 글자소
+      // 전체와 정확히 같아야 한다" 다. 커리큘럼(beat.letter)에서 유도되므로
+      // 드리프트가 불가능하고, screens.js 가 무엇을 하든 참이다. 선언하지
+      // 않은 스테이지는 침묵한다 -- 복습 beat 이 없는 스테이지를 강제로
+      // 선언하게 만들 이유는 없다.
+      if (stage.reviewTargets !== undefined) {
+        const rt = stage.reviewTargets
+        if (!Array.isArray(rt) || !rt.length) {
+          problems.push(`${where}: reviewTargets 가 비어있는 배열이 아님 (${JSON.stringify(rt)})`)
+        } else if (rt.some((t) => typeof t !== 'string' || t.trim() === '')) {
+          problems.push(`${where}: reviewTargets 항목이 비어있지 않은 문자열이어야 함`)
+        } else if (rt.join('|') !== taughtSoFar.join('|')) {
+          const missing = taughtSoFar.filter((t) => !rt.includes(t))
+          const extra = rt.filter((t) => !taughtSoFar.includes(t))
+          problems.push(
+            `${where}: reviewTargets [${rt.join(', ')}] != 이 스테이지까지 가르친 글자소 ` +
+              `[${taughtSoFar.join(', ')}]` +
+              (missing.length ? ` -- 빠짐: [${missing.join(', ')}]` : '') +
+              (extra.length ? ` -- 아직 안 가르친 글자소: [${extra.join(', ')}]` : '') +
+              (!missing.length && !extra.length ? ' -- 커리큘럼 순서와 다름' : '')
+          )
         }
       }
 

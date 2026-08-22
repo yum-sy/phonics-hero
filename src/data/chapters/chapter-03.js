@@ -45,7 +45,7 @@ export const chapter3 = {
           kind: 'teach',
           instructionKo: '케이라가 골짜기에서 나는 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['kuh, kuh, kuh', 'cat', 'kuh, kuh, kuh'],
+          repeatAudio: ['kuh, kuh, kuh', 'kuh, kuh, kuh'],
         },
         {
           id: 'c3s1-r1',
@@ -65,7 +65,7 @@ export const chapter3 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['kuh, kuh', 'Coco', 'kuh, kuh', 'cup'],
+          repeatAudio: ['kuh, kuh', 'kuh, kuh'],
         },
         {
           id: 'c3s1-r2',
@@ -267,7 +267,7 @@ export const chapter3 = {
       villain: { name: 'Upsy', art: 'upsy', style: 'dino' },
       hero: { name: 'Eddy', art: 'eddy', style: 'dino' },
       chapterBoss: false,
-      reviewTargets: ['C'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E'],
       beats: [
         {
           id: 'c3s3-teach',
@@ -316,7 +316,7 @@ export const chapter3 = {
           instructionKo: '손가락으로 E를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'E',
-          repeatAudio: ['E', 'Eddy', 'eh'],
+          repeatAudio: ['E', 'eh', 'eh', 'eh'],
         },
         {
           id: 'c3s3-r4-multiselect',
@@ -393,7 +393,7 @@ export const chapter3 = {
       villain: { name: 'Muddy', art: 'muddy', style: 'dino' },
       hero: { name: 'Huey', art: 'huey', style: 'dino' },
       chapterBoss: false,
-      reviewTargets: ['C', 'E'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H'],
       beats: [
         {
           id: 'c3s4-teach',
@@ -442,7 +442,7 @@ export const chapter3 = {
           instructionKo: '손가락으로 H를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'H',
-          repeatAudio: ['H', 'Huey', 'huh'],
+          repeatAudio: ['H', 'huh', 'huh', 'huh'],
         },
         {
           id: 'c3s4-r4-multiselect',
@@ -553,13 +553,12 @@ export const chapter3 = {
       villain: { name: 'Shadow Rex', art: 'shadow-rex', style: 'dino' },
       hero: { name: 'Trike', art: 'trike', style: 'dino' },
       chapterBoss: true,
-      reviewTargets: ['C', 'E', 'H'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H'],
       beats: [
         {
           id: 'c3s5-teach',
           kind: 'teach',
           instructionKo: '케이라 + 에디 + 허비가 합체해요! 먼저 cat을 만들어요.',
-          emoji: '🐱🐔➡️🦕',
           repeatAudio: ['kuh', 'aaa', 'tuh', 'cat', 'cat'],
         },
         {

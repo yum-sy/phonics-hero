@@ -71,7 +71,7 @@ export const chapter6 = {
           kind: 'teach',
           instructionKo: 'Leo가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['lll, lll, lll', 'lap', 'lll, lll, lll'],
+          repeatAudio: ['lll, lll, lll', 'lll, lll, lll'],
         },
         {
           id: 'c6s1-r1',
@@ -87,7 +87,7 @@ export const chapter6 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['lll, lll', 'Leo', 'lll, lll', 'lap'],
+          repeatAudio: ['lll, lll', 'lll, lll'],
         },
         {
           id: 'c6s1-r2',
@@ -213,7 +213,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 L을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'L',
-          repeatAudio: ['L', 'Leo', 'lll'],
+          repeatAudio: ['L', 'lll', 'lll', 'lll'],
         },
         {
           id: 'c6s2-r4-multiselect',
@@ -289,7 +289,10 @@ export const chapter6 = {
       villain: { name: 'Boxxy', art: 'boxxy', style: 'toy' },
       hero: { name: 'Fifi', art: 'fifi', style: 'toy' },
       chapterBoss: false,
-      reviewTargets: ['L'],
+      reviewTargets: [
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
+        'G', 'O', 'U', 'L', 'F',
+      ],
       beats: [
         {
           id: 'c6s3-teach',
@@ -341,7 +344,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 F를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'F',
-          repeatAudio: ['F', 'Fifi', 'fff'],
+          repeatAudio: ['F', 'fff', 'fff', 'fff'],
         },
         {
           id: 'c6s3-r4-multiselect',
@@ -417,7 +420,10 @@ export const chapter6 = {
       villain: { name: 'Tumbles', art: 'tumbles', style: 'toy' },
       hero: { name: 'Bobo', art: 'bobo', style: 'toy' },
       chapterBoss: false,
-      reviewTargets: ['L', 'F'],
+      reviewTargets: [
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
+        'G', 'O', 'U', 'L', 'F', 'B',
+      ],
       beats: [
         {
           id: 'c6s4-teach',
@@ -473,7 +479,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 B를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'B',
-          repeatAudio: ['B', 'Bobo', 'buh'],
+          repeatAudio: ['B', 'buh', 'buh', 'buh'],
         },
         {
           id: 'c6s4-r4-multiselect',
@@ -615,13 +621,15 @@ export const chapter6 = {
       villain: { name: 'Wind-Down', art: 'wind-down', style: 'toy' },
       hero: { name: 'Captain Big', art: 'captain-big', style: 'toy' },
       chapterBoss: true,
-      reviewTargets: ['L', 'F', 'B'],
+      reviewTargets: [
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
+        'G', 'O', 'U', 'L', 'F', 'B',
+      ],
       beats: [
         {
           id: 'c6s5-teach',
           kind: 'teach',
           instructionKo: 'Leo + Fifi + Bobo가 합체해요! 먼저 fit을 만들어요.',
-          emoji: '🪖🧸➡️🦸',
           repeatAudio: ['fff', 'iii', 'tuh', 'fit', 'fit'],
         },
         {

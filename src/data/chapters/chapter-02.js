@@ -36,7 +36,7 @@ export const chapter2 = {
           kind: 'teach',
           instructionKo: '잉키가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['iii, iii, iii', 'ink', 'iii, iii, iii'],
+          repeatAudio: ['iii, iii, iii', 'iii, iii, iii'],
         },
         {
           id: 'c2s1-r1',
@@ -56,7 +56,7 @@ export const chapter2 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['iii, iii', 'Inky', 'iii, iii', 'ink'],
+          repeatAudio: ['iii, iii', 'iii, iii'],
         },
         {
           id: 'c2s1-r2',
@@ -178,7 +178,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 I를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'I',
-          repeatAudio: ['I', 'Inky', 'iii'],
+          repeatAudio: ['I', 'iii', 'iii', 'iii'],
         },
         {
           id: 'c2s2-r4-multiselect',
@@ -253,7 +253,7 @@ export const chapter2 = {
       villain: { name: 'Stop Man', art: 'stop-man', style: 'superhero' },
       hero: { name: 'Pip', art: 'pip', style: 'superhero' },
       chapterBoss: false,
-      reviewTargets: ['I'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P'],
       beats: [
         {
           id: 'c2s3-teach',
@@ -302,7 +302,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 P를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'P',
-          repeatAudio: ['puh', 'Pip', 'pow!'],
+          repeatAudio: ['puh', 'puh', 'puh'],
         },
         {
           id: 'c2s3-r4-multiselect',
@@ -377,7 +377,7 @@ export const chapter2 = {
       villain: { name: 'Jumble', art: 'jumble', style: 'superhero' },
       hero: { name: 'Nord', art: 'nord', style: 'superhero' },
       chapterBoss: false,
-      reviewTargets: ['I', 'P'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N'],
       beats: [
         {
           id: 'c2s4-teach',
@@ -426,7 +426,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 N을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'N',
-          repeatAudio: ['N', 'nnn', 'net'],
+          repeatAudio: ['N', 'nnn', 'nnn', 'nnn'],
         },
         {
           id: 'c2s4-r4-multiselect',
@@ -534,13 +534,12 @@ export const chapter2 = {
       villain: { name: 'Shadow King', art: 'shadow-king', style: 'superhero' },
       hero: { name: 'Captain Pin', art: 'captain-pin', style: 'superhero' },
       chapterBoss: true,
-      reviewTargets: ['I', 'P', 'N'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N'],
       beats: [
         {
           id: 'c2s5-teach',
           kind: 'teach',
           instructionKo: '파워피 + 잉키 + 나이토가 합체해요! 천천히 들어보세요.',
-          emoji: '🐷🖊️🥜➡️🦸',
           repeatAudio: ['puh', 'iii', 'nnn', 'pin', 'pin'],
         },
         {

@@ -54,7 +54,7 @@ export const chapter4 = {
           kind: 'teach',
           instructionKo: '로켓런이 달릴 때 나는 소리예요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['rrr', 'rat', 'rrr'],
+          repeatAudio: ['rrr', 'rrr', 'rrr'],
         },
         {
           id: 'c4s1-r1',
@@ -70,7 +70,7 @@ export const chapter4 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['rrr', 'rrr', 'Rocket', 'rrr', 'rrr', 'rat'],
+          repeatAudio: ['rrr', 'rrr', 'rrr', 'rrr'],
         },
         {
           id: 'c4s1-r2',
@@ -192,7 +192,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 R을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'R',
-          repeatAudio: ['R', 'Rocket', 'rrr'],
+          repeatAudio: ['R', 'rrr', 'rrr', 'rrr'],
         },
         {
           id: 'c4s2-r4-multiselect',
@@ -270,7 +270,7 @@ export const chapter4 = {
       villain: { name: 'Grabby', art: 'grabby', style: 'creature' },
       hero: { name: 'Magno', art: 'magno', style: 'creature' },
       chapterBoss: false,
-      reviewTargets: ['R'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M'],
       beats: [
         {
           id: 'c4s3-teach',
@@ -321,7 +321,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 M을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'M',
-          repeatAudio: ['M', 'Magno', 'mmm'],
+          repeatAudio: ['M', 'mmm', 'mmm', 'mmm'],
         },
         {
           id: 'c4s3-r4-multiselect',
@@ -404,7 +404,7 @@ export const chapter4 = {
       villain: { name: 'Corky', art: 'corky', style: 'creature' },
       hero: { name: 'Drillo', art: 'drillo', style: 'creature' },
       chapterBoss: false,
-      reviewTargets: ['R', 'M'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D'],
       beats: [
         {
           id: 'c4s4-teach',
@@ -456,7 +456,7 @@ export const chapter4 = {
           instructionKo: '손가락으로 D를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'D',
-          repeatAudio: ['D', 'Drillo', 'duh'],
+          repeatAudio: ['D', 'duh', 'duh', 'duh'],
         },
         {
           id: 'c4s4-r4-multiselect',
@@ -590,13 +590,12 @@ export const chapter4 = {
       villain: { name: 'Pixel Muncher', art: 'pixel-muncher', style: 'creature' },
       hero: { name: 'Captain Red', art: 'captain-red', style: 'creature' },
       chapterBoss: true,
-      reviewTargets: ['R', 'M', 'D'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D'],
       beats: [
         {
           id: 'c4s5-teach',
           kind: 'teach',
           instructionKo: '로켓런 + 마그넷몬 + 드릴돌이가 합체해요! 먼저 mat을 만들어요.',
-          emoji: '🟥🧲➡️🦸',
           repeatAudio: ['mmm', 'aaa', 'tuh', 'mat', 'mat'],
         },
         {

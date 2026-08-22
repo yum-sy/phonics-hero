@@ -88,7 +88,7 @@ export const chapter5 = {
           kind: 'teach',
           instructionKo: 'Gogo가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['guh, guh, guh', 'gap', 'guh, guh, guh'],
+          repeatAudio: ['guh, guh, guh', 'guh, guh, guh'],
         },
         {
           id: 'c5s1-r1',
@@ -104,7 +104,7 @@ export const chapter5 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['guh, guh', 'Gogo', 'guh, guh', 'gap'],
+          repeatAudio: ['guh, guh', 'guh, guh'],
         },
         {
           id: 'c5s1-r2',
@@ -227,7 +227,7 @@ export const chapter5 = {
           instructionKo: '손가락으로 G를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'G',
-          repeatAudio: ['G', 'Gogo', 'guh'],
+          repeatAudio: ['G', 'guh', 'guh', 'guh'],
         },
         {
           id: 'c5s2-r4-multiselect',
@@ -305,7 +305,7 @@ export const chapter5 = {
       villain: { name: 'Snatchy', art: 'snatchy', style: 'plat-magnetjack' },
       hero: { name: 'Ollie', art: 'ollie', style: 'plat-spring' },
       chapterBoss: false,
-      reviewTargets: ['G'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D', 'G', 'O'],
       beats: [
         {
           id: 'c5s3-teach',
@@ -355,7 +355,7 @@ export const chapter5 = {
           instructionKo: '손가락으로 O를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'O',
-          repeatAudio: ['O', 'Ollie', 'ough'],
+          repeatAudio: ['O', 'ough', 'ough', 'ough'],
         },
         {
           id: 'c5s3-r4-multiselect',
@@ -431,7 +431,10 @@ export const chapter5 = {
       villain: { name: 'Blocko', art: 'blocko', style: 'plat-brick' },
       hero: { name: 'Umo', art: 'umo', style: 'plat-block' },
       chapterBoss: false,
-      reviewTargets: ['G', 'O'],
+      reviewTargets: [
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
+        'G', 'O', 'U',
+      ],
       beats: [
         {
           id: 'c5s4-teach',
@@ -484,7 +487,7 @@ export const chapter5 = {
           instructionKo: '손가락으로 U를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'U',
-          repeatAudio: ['U', 'Umo', 'uh'],
+          repeatAudio: ['U', 'uh', 'uh', 'uh'],
         },
         {
           id: 'c5s4-r4-multiselect',
@@ -611,13 +614,15 @@ export const chapter5 = {
       villain: { name: 'Bug King', art: 'bug-king', style: 'plat-glitch' },
       hero: { name: 'Captain Gum', art: 'captain-gum', style: 'plat-powerup' },
       chapterBoss: true,
-      reviewTargets: ['G', 'O', 'U'],
+      reviewTargets: [
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
+        'G', 'O', 'U',
+      ],
       beats: [
         {
           id: 'c5s5-teach',
           kind: 'teach',
           instructionKo: 'Gogo + Ollie + Umo가 합체해요! 먼저 dog을 만들어요.',
-          emoji: '🐶🍬➡️🦸',
           repeatAudio: ['duh', 'ough', 'guh', 'dog', 'dog'],
         },
         {
