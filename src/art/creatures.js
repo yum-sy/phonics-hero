@@ -63,11 +63,14 @@
 //     no brows on heroes. Expression lives in the lid alone -- heroes plain
 //     dots, Magno a half-lid, villains a lid drooping toward the OUTSIDE
 //     corner (sulky/sly, never angry; an inward-up brow is the angry read).
-//     Captain Red is the deliberate exception on two counts, both earned by
-//     being the evolved form: it has a brow RIDGE (a flat accent crescent, not
-//     a stroke) and an open maw with two fangs instead of a mouth stroke. A
-//     round head with two dots and a small smile could not be made to read as
-//     a dragon -- see its own note. The dot eyes themselves are unchanged.
+//     Captain Red is the deliberate exception, earned by being the evolved
+//     form: two brow RIDGES (flat accent crescents, one per eye, not strokes),
+//     an OVERBITE of two pale fangs hanging past the jaw, and -- since v11 --
+//     an ASYMMETRIC eye pair, the near one larger, because its head is turned
+//     three-quarter rather than front-on. A round head with two dots and a
+//     small smile could not be made to read as a dragon; a front-facing head
+//     could not either, for a reason that is geometric rather than aesthetic.
+//     See its own note.
 //  5. ONE OR TWO SPECIES CUES, RADICALLY SIMPLIFIED. Each figure keeps only
 //     the marks that name its animal -- long rounded ears + round cheek dots
 //     + a zigzag tail, a horseshoe-arch ear, a spiral snout, wings + a flame
@@ -89,6 +92,18 @@
 //     floating soft blob of tint, which is what this file used before, reads
 //     as a smudge; a shadow that follows the form reads as cel shading even
 //     in pastel.
+//     Two shapes in the file are not ellipses and so cannot use the helper --
+//     Captain Red's head path and Drillo's drill cone. Both keep the rule by
+//     the same trick: their shade REUSES the shape's own edge segments verbatim
+//     (Drillo's steel faces are x-scalings of the cone's edge cubic, which on
+//     an x-symmetric convex shape can only move inward). A shade generated from
+//     the silhouette cannot leave it, which is also why neither has ever needed
+//     a clipping fix.
+//  9. NOT VALID STANDALONE XML, on purpose. The prose comments in this file
+//     contain `--`, which an XML comment may not; that is harmless because the
+//     app always inlines these strings into HTML, but a tool that loads one as
+//     an `<img src="data:image/svg+xml,...">` or writes it to a .svg file will
+//     get a parse error. Strip `<!--...-->` first if you need that.
 //
 // `visorColor` names the EMBLEM BADGE fill here (the family has no visor) --
 // report this at integration time the way dinosaurs.js and platformer.js
@@ -565,7 +580,7 @@ export function creatureDrillo({
   const STEEL_LT = '#ccd6e0'
   const STEEL_HI = '#f2f6fa'
   const FLUTE = '#3c4553'
-  const wedge = (f, fill) => `<path d="M 0,-6.9 Q ${(-6.8 * f).toFixed(2)},-6.9 ${(-9.5 * f).toFixed(2)},-2
+  const wedge = (f, fill) => `<path d="M 0,-6.9 Q ${(-7.9 * f).toFixed(2)},-6.9 ${(-11 * f).toFixed(2)},-2
     C ${(-9.5 * f).toFixed(2)},16 ${(-5.5 * f).toFixed(2)},38 0,52 Z" fill="${fill}"/>`
   // Local space: the cone's mouth is the +-9.5 wide arc at y~0, the tip is at
   // y=52. Four curved bands cross it, each bowing the same way, which is what
@@ -575,96 +590,139 @@ export function creatureDrillo({
   // pokes through the cone's edge. They are drawn LAST, over all five faces, so
   // the banding ties the faces into one object instead of striping each.
   const drill = `
-    <path d="M -9.5,-2 C -9.5,-8.5 9.5,-8.5 9.5,-2 C 9.5,16 5.5,38 0,52
-             C -5.5,38 -9.5,16 -9.5,-2 Z"
+    <path d="M -11,-2 C -11,-9.8 11,-9.8 11,-2 C 11,18 6.4,39 0,52
+             C -6.4,39 -11,18 -11,-2 Z"
       fill="${STEEL}" ${ol(SW_MID)}/>
     ${wedge(-1, STEEL_DK)}${wedge(-0.55, STEEL)}
     ${wedge(0.62, STEEL_LT)}${wedge(0.45, STEEL_HI)}${wedge(0.18, STEEL_LT)}
-    <path d="M -8.6,9 C -3,13.5 3,13.5 8.6,9" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
-    <path d="M -7.2,22 C -2.6,26.5 2.6,26.5 7.2,22" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
-    <path d="M -4.4,35 C -1.6,38.5 1.6,38.5 4.4,35" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
-    <path d="M -2.6,44 C -1,46.5 1,46.5 2.6,44" fill="none" stroke="${FLUTE}" stroke-width="1.8"/>`
+    <path d="M -10,10 C -3.5,15 3.5,15 10,10" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -8.4,24 C -3,29 3,29 8.4,24" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -5.2,37 C -1.9,41 1.9,41 5.2,37" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -3,45 C -1.1,47.5 1.1,47.5 3,45" fill="none" stroke="${FLUTE}" stroke-width="1.8"/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 32)}
+      ${shadow(64, 136, 31)}
 
-      ${roundEar(33, 62, 10.5, bodyColor, BELLY)}
-      ${roundEar(87, 62, 10.5, bodyColor, BELLY)}
+      ${roundEar(51, 56, 9.5, bodyColor, BELLY)}
+      ${roundEar(77, 56, 9.5, bodyColor, BELLY)}
 
-      <!-- front paws raised to shoulder height (cy=78) so the snout's whole
-           travel has clear air: at cy=102 they occupied y 91..113 and at 88
-           they still crossed the cone. High front paws suit a digging animal
-           anyway. -->
-      ${paws(accent, 78)}
-      ${feet(accent, 128, 12, 7)}
-      ${blob(bodyColor, 60, 92, 37, 38)}
-      ${shadeCrescent(60, 92, 37, 38)}
+      <!-- front paws raised to shoulder height (cy=74) and pulled in to cx
+           30/96. Both numbers are the drill's, not the paw's: the exposed cone
+           now runs x 6..32 across y 89..100, and a paw at the old cx 22 / cy 78
+           sat in exactly that box, so in a hard cutout the paw filled the air
+           the cone needs to be seen against and the drill went back to being a
+           nose bump. At cy 74 the paw occupies y 63..85, four units clear of
+           the cone's topmost exposed point. cx had to come in from 22 to 30 as
+           well, because the narrowed body (rx 31) no longer reached a paw at
+           22 and it floated free of the figure. -->
+      ${stub(33, 74, 9.5, 11, accent)}
+      ${stub(95, 74, 9.5, 11, accent)}
+      ${stub(48, 128, 12, 7, accent)}
+      ${stub(80, 128, 12, 7, accent)}
+      ${blob(bodyColor, 64, 94, 32, 40)}
+      ${shadeCrescent(64, 94, 32, 40)}
 
-      ${dotEyes(42, 78, 64, 4.8)}
+      ${dotEyes(52, 76, 63, 4.8)}
 
-      <!-- snout: a small round muzzle collar for the cone to grow out of, then
-           the cone at 62 deg. Composed numerically, not eyeballed: the tip
-           (0,52) lands at (54 - 52*sin62, 80 + 52*cos62) = (8.1, 104.4),
-           while the rx=37 body's left edge at that height is x=24.9 -- so
-           ~17 units of cone sit OUTSIDE the silhouette, which is what finally
-           made Drillo nameable in a hard cutout (the first v8 attempt cleared
-           the outline by 1.6 units and still read as a plain round bear).
-           The angle matters as much as the length: at 40-52 deg the cone
-           crossed the middle of the face and buried the muzzle; at 62 it
-           leaves the head low and left, clearing the left eye's box
-           (37..47 x 59..69) and passing left of the badge (x 46..74) at every
-           height, so neither the face nor the letter is ever crossed. -->
+      <!-- THE DRILL IS THE ONLY THING THAT NAMES THIS ANIMAL, and how far it
+           leaves the body is the whole game. The metric that matters is the
+           EXPOSED cone length: the distance along the cone's axis from where
+           that axis exits the body ellipse to the tip. Everything inside the
+           ellipse is invisible in a hard cutout, so it is not drill, it is
+           bear. v8 cleared the outline by 1.6 units and read as a plain round
+           bear; v10 cleared it by 12.0 and read as a bear with a small nose
+           bump. This is 27.2, measured with the same closed-form intersection
+           (scratch/cone.mjs), i.e. 2.3x v10.
+           The lever is NOT the cone's length -- lengthening it while the tip
+           stays inside the frame just moves the root, and the exposed length
+           comes out ~25 for every root position. The exposed length is fixed
+           by where the TIP sits relative to the body outline, so the fix is a
+           NARROWER BODY, pushed right, plus the last unit of frame margin:
+           rx 37 -> 32, cx 60 -> 64, cy 92 -> 94. ry went the other way, 38 ->
+           40, because it is FREE: the exposed length depends on the body's
+           edge at the tip's own height (y~100), and there dropping the flank
+           in by 1 while moving the centre out by 1 cancels exactly, so the
+           height buys back mass at no cost to the drill. It matters -- the
+           first pass at this narrowed the body and Drillo's painted coverage
+           fell 36.0% -> 32.6%, which for a chunky digging animal is a real
+           loss and not a rounding error.
+           The angle went 62 -> 68 deg for the same reason: further from
+           vertical puts the tip further from the body's flank, and 68 still
+           leaves the cone low enough to pass under the left eye (bottom 68.8,
+           collar top 69.5) and left of the badge (x 49..77) at every height.
+           Tip (7.0, 100.4); the body's left edge at that height is x=32.4. -->
       <!-- muzzle collar in warm cream, not the badge's pure white: on the old
            sand body the two whites were indistinguishable anyway, but against
            brown a second pure-white disc 30 units above the emblem plate reads
            as a second badge and the eye has to pick which one carries the
            letter. -->
-      <circle cx="58" cy="78" r="9.5" fill="${BELLY}" ${ol(SW_MID)}/>
-      <!-- scale 0.9 on top of the rotate: at full length the measured inked
-           extent reached x=2.3, i.e. 2.3 units from the frame. Not clipping,
-           but this file has a history of clipping accidents and a margin that
-           thin is not worth the two units of cone. Tip now lands at (12.6,
-           101.9), still ~12 units outside the body edge (x=24.4 there). -->
-      <g transform="translate(54,80) rotate(62) scale(0.9)">${drill}</g>
-      ${mouth(60, 88, 4)}
+      <circle cx="60" cy="79" r="9.5" fill="${BELLY}" ${ol(SW_MID)}/>
+      <g transform="translate(60,79) rotate(68) scale(1.1)">${drill}</g>
+      ${mouth(63, 86, 4)}
 
-      ${emblemBadge(60, 108, 14, visorColor, emblem, 20)}
+      ${emblemBadge(64, 110, 14, visorColor, emblem, 20)}
     `)
   )
 }
 
 // Captain Red, the evolved boss form -- a flame dragon, and the one figure in
-// the file that has to look like it outranks the others. v10 rebuilt it from
-// the ground up, because v9 had left it as a round pastel body with two blunt
-// nubs on top: the head was fused straight onto the mass, the wings were one
-// flat cream shape, and its bounding box was no bigger than Rocket's, so
-// "evolved form" was carried by nothing at all.
+// the file that has to look like it outranks the others.
 //
-// Four structural changes, in order of how much they buy:
+// v11 IS A HEAD REBUILD, and the reason is structural rather than a matter of
+// taste. v10's head was a round orange ellipse, front-facing, carrying a wide
+// pale muzzle pad in the middle of it, and three separate attempts to fix that
+// pad (30 wide with low nostrils = a COW; 22 wide = a BIB; 28 wide with an open
+// maw, nostrils moved to the bridge and a domed top edge = better but still
+// wrong) all read as an APE: small dots high on a round face with a broad pale
+// area below them is the primate arrangement, and no width solves it.
 //
-//  1. A NECK AND A REAL DRAGON HEAD, drawn as separate masses. The head is its
-//     own ellipse 57 units above the body's centre, bridged by a tube that both
-//     ends swallow, and it carries a projecting cream MUZZLE whose bottom edge
-//     breaks the head's outline by 5 units. A snout that stays inside the head
-//     outline is just a face marking; it has to cross the silhouette to read as
-//     a snout. Every other figure here is a head-less blob, so the neck alone
-//     separates this one at a glance.
-//  2. TWO-TONE WINGS, which is the strongest species cue and was being spent on
-//     a single flat fill. The membrane is teal and the leading-edge ARM plus
-//     three finger struts are deep orange, i.e. the colour break follows the
-//     wing's actual anatomy rather than being a decorative stripe.
-//  3. BACKSWEPT HORNS, rooted inside the head so only the swept length shows.
-//     Blunt forward nubs read as ears; a horn has to go BACK.
-//  4. A THREE-LAYER FLAME at 32x28 (v9: 28x24), orange -> amber -> yellow core.
+// The measurement that ended the width experiments: in a hard cutout, v10's
+// head DID NOT EXIST. The neck was 36 wide, the head 50, and the muzzle bottom
+// covered the gap, so skull + neck + body were one continuous mass with two
+// horns on top -- and a muzzle that points at the viewer contributes NOTHING to
+// a front-facing silhouette by definition. A snout is a projection; in front
+// view it projects along the view axis, which is exactly the direction a
+// silhouette cannot see. That is why every front-view fix failed.
+//
+// So the head is now TURNED, and everything else follows from making room:
+//
+//  1. THE HEAD IS ONE PATH: skull, snout and jaw are a single outlined shape,
+//     three-quarter view with the snout swinging out to the LEFT. Between the
+//     brow (x=44) and the snout the outline comes back RIGHT to x=46 -- the
+//     dragon "stop" -- and then out to the snout front at x=30. That notch plus
+//     spur is the snout in the silhouette, 16 units of projection where v10 had
+//     zero. The cream muzzle is painted ON that same outline (its outer edge
+//     reuses the head path's own segments verbatim) so it can never again be a
+//     pad floating inside a face.
+//  2. THE WINGS CAME DOWN off the skull, apex (11,40) instead of (10,19).
+//     They used to peak ABOVE the skull and frame it, which is the other half
+//     of why the head vanished in cutout. Above y=40 the whole head band is
+//     clear background, and the wing tip sits 8 units clear of the snout's
+//     inked edge. The apex height is a MEASURED compromise, not a taste call:
+//     the first v11 draft put it at y=48 and the figure's painted coverage fell
+//     from v10's 65.6% to 56.9%, i.e. the boss stopped being the largest thing
+//     in the file (Magno is 60.4%) -- which was v10's own answer to "the fused
+//     form has to be special". Almost all of that loss was wing: v10's wing
+//     spanned y 19..98 and the draft's spanned 48..98. Raising the apex back to
+//     40 and restoring the flame to its v10 mass recovers it.
+//  3. THE NECK IS THE WAIST. 25 wide against a head ~55 wide and a body 70
+//     wide, exposed from y=59 to y=72. v10's 36-wide neck was the same width as
+//     the body's crown and so joined the two masses instead of separating them.
+//  4. BOTH HORNS SWEEP RIGHT, staggered, because in a head turned left "back"
+//     is to the right. Symmetric horns are what a front-facing head wants and
+//     they were part of the cub read. Freeing the space above y=48 is what let
+//     them go there at all.
+//  5. AN OVERBITE. Two pale fangs hang BELOW the jaw outline, which is a
+//     silhouette feature no ape has and the cheapest reptile cue available.
 //
 // On the copyright boundary (CLAUDE.md): the brief asked for orange with teal
 // wing membranes, which is close to the trademark character's colour placement,
 // so the separation is carried by everything else -- a chibi 3-lobed wing with
 // visible orange struts instead of a plain membrane, a round stub-limbed body
-// with a cream belly patch and a chest star badge, dot eyes, a closed smile,
-// and the family's sepia outline. The silhouette is not the original's and no
-// logo or marking is borrowed.
+// with a cream belly patch and a chest star badge, dot eyes, and the family's
+// sepia outline. The silhouette is not the original's and no logo or marking is
+// borrowed.
 export function creatureCaptainRed({
   bodyColor = '#f4600f',
   panelColor = '#ffdca6',
@@ -679,62 +737,56 @@ export function creatureCaptainRed({
   // Teal ties them to the wings as the figure's second colour while putting the
   // widest possible value gap against the orange head they sit on.
   const HORN = '#0e7a84'
+  const TOOTH = '#fff6e2'
 
-  // Every wing coordinate is an absolute viewBox value in [6,54]; mirrored()
-  // maps x -> 120-x, so the mirror lands in [66,114]. The failure an earlier
+  // Every wing coordinate is an absolute viewBox value in [8,48]; mirrored()
+  // maps x -> 120-x, so the mirror lands in [72,112]. The failure an earlier
   // pass hit (a polygon scaled to x=-54, then mirrored to x=174) cannot recur
   // from a shape written this way.
   //
-  // THE WING GEOMETRY IS A SILHOUETTE FIX, and the hard cutout is what forced
-  // it. The first v10 wing was a shallow fan beside a 84-wide body: it cleared
-  // the body's edge by only 13 units, so in cutout the wing lobes were ripples
-  // on one continuous blob and the two tips read as ears. Three changes, all
-  // measured against the cutout rather than the colour render:
-  //   * the body narrowed from rx 42 to rx 35, so each wing now protrudes 19
-  //     units past it instead of 13,
-  //   * the leading edge climbs to y=18, level with the head's top, and the tip
-  //     sits at x=8 while the head starts at x=35 -- a 27-unit notch of clear
-  //     background between wing tip and skull, which is the single feature that
-  //     makes the silhouette read "winged" rather than "lumpy",
-  //   * the trailing lobes cut deeper (to x=6/8/14 from 8/10/14) and the lowest
-  //     one now hangs to y=98, below the body's shoulder, so the wing breaks the
-  //     outline at the bottom as well as the top.
+  // Margins are budgeted per shape because the widths differ: the arm tube is 7
+  // wide plus a 2.0 outline on each side, so its round cap at (11,48) inks to
+  // x=5.5; the membrane's deepest notch at x=8 inks to 6.7. Both clear the 4.5
+  // this file settled on after losing a session to a 13%-opacity shadow that
+  // clipped at y=142.
+  //
+  // THE LEADING EDGE IS CURVED, and that is a colour-render fix the cutout
+  // could not see: as a near-straight bar from (48,92) to the apex it read as
+  // an ARM, and the figure looked like it was holding two fans. The struts stay
+  // CROSSING the membrane rather than fanning out of the wrist -- fanning them
+  // from one point was tried and it bunched all three against the trailing edge
+  // (they end within 10 units of each other), which turned each wing into a
+  // broom and left the membrane's middle empty.
   //
   // The trailing edge's three lobes are listed once here and REUSED verbatim by
   // the shade path below, which is the only way to guarantee the shade stays
-  // flush with the wing's own edge rather than drifting a unit off it.
-  // The arm tube's round cap is the westernmost ink in the figure, and it is
-  // 5.5 units wide on each side of its own path, so the tip sits at x=10 rather
-  // than the 8 it wants: at 8 the cap inked to x=2.5, and this file has already
-  // lost a session to a 13%-opacity shadow clipping at y=142. 4.5 units of
-  // margin, matching the deepest lobe notch's 4.7, is the budget.
-  const LOBES = `C 16,30 13,38 6,42 C 17,50 17,62 8,70 C 21,78 23,90 14,98`
-  const ARM = 'M 50,86 C 40,58 22,26 10,19'
+  // flush with the wing's own edge rather than drifting a unit off it. The
+  // bottom lobe stops at y=98 rather than running on down: below that it
+  // reaches the same ground as the tail flame, and two black shapes touching in
+  // a cutout cost the flame its own outline.
+  const LOBES = `C 22,50 20,60 6,64 C 21,70 21,80 7,86 C 25,90 27,96 14,98`
+  const ARM = 'M 48,92 C 46,68 36,48 14,41'
   const wing = `
-    <path d="M 50,86 C 40,58 22,26 10,19 ${LOBES} C 34,98 48,92 50,86 Z"
+    <path d="M 48,92 C 46,68 36,48 14,41 ${LOBES} C 30,98 44,97 48,92 Z"
       fill="${WING_MEM}" ${ol(SW)}/>
-    <path d="M 14,98 C 23,90 21,78 8,70 C 17,62 17,50 6,42 C 13,38 16,30 10,19
-             C 28,58 26,60 14,98 Z"
+    <path d="M 14,98 C 27,96 25,90 7,86 C 21,80 21,70 6,64
+             C 20,60 22,50 14,41 C 32,70 30,72 14,98 Z"
       fill="${LINE}" opacity="0.15"/>
-    ${tube(ARM, 7, WING_ARM)}
-    ${tube('M 20.4,29.8 C 16,34 12,38 10.5,41', 3.4, WING_ARM)}
-    ${tube('M 30.5,44.5 C 24,52 16,60 12.5,67.5', 3.4, WING_ARM)}
-    ${tube('M 39.2,60.5 C 34,72 26,84 18.5,94', 3.4, WING_ARM)}`
+    ${tube(ARM, 5.4, WING_ARM)}
+    ${tube('M 22,47 C 18,51 13,55 10,57', 2.6, WING_ARM)}
+    ${tube('M 33,64 C 27,70 20,76 14,79', 2.6, WING_ARM)}
+    ${tube('M 43,82 C 37,88 29,93 21,96', 2.6, WING_ARM)}`
 
-  // Horn. Swept at 34 deg, not the 42 of the first try: at 42 the tips landed at
-  // x=31, close enough to the wing arm that in a cutout the horns joined the
-  // struts into one undifferentiated thicket of spines.
-  //
-  // The length and the TAPER are what stop it reading as an ear, and this took
-  // a second pass to get. At 32 units long the horn's visible portion -- the
-  // part clear of the head -- was 15 long and 10 wide where it left the skull,
-  // and a 0.67 width-to-length wedge on top of a round head is a cat ear, which
-  // is exactly what the cutout showed. Now the horn runs to local y=-28 with the
-  // width collapsing early (half-width ~5.5 by y=-5 instead of ~7), so 23 units
-  // show above the skull at 11 wide: ratio 0.48, which is a horn.
-  // Root at (48,32)/(72,32) is inside the head ellipse (half-width 24.0 there,
-  // i.e. x 36..84) so the base is swallowed and only the swept length shows, and
-  // the tip lands at (32.4, 8.8) -- inked 7.8 from the top edge.
+  // Horn. The local shape is unchanged from v10 -- it points along -y, runs to
+  // y=-28, and collapses its half-width early (~5.5 by y=-5) so the exposed
+  // portion is 23 long at 11 wide, ratio 0.48. That ratio is the whole reason
+  // it is a horn: v9's 0.67 wedge on a round head was a CAT EAR in cutout.
+  // What changed is where they go. Both sweep RIGHT now (76 and 70 degrees off
+  // vertical), staggered so the near one is lower and longer and the far one is
+  // shorter -- which is what two backswept horns do on a head turned to the
+  // left. Roots (82,30) and (68,20) sit inside the head path so only the swept
+  // length shows; tips land at (109.2,23.3) and (89.6,12.2), inked 110.2 and
+  // 11.2 from their nearest edges.
   // The dark face REUSES the horn's own right edge verbatim, so it cannot poke
   // through the outline, and closes with an inner curve. Two flat faces is all
   // the roundness a banned-gradient horn can have, and without it the horn read
@@ -744,6 +796,27 @@ export function creatureCaptainRed({
       fill="${HORN}" ${ol(SW_MID)}/>
     <path d="M 1.6,9.5 C 2.6,-1 2.2,-14 0,-28 C 3.5,-14 6,0 7,10 Z"
       fill="#0a5d66"/>`
+
+  // THE HEAD, as one path, clockwise from the back of the skull. Read it as
+  // five features rather than nine curves:
+  //   (87,33) -> (65,9)   the crown, high and to the right (the back of a
+  //                       turned head)
+  //   (65,9)  -> (44,19)  the brow, coming forward and down
+  //   (44,19) -> (46,32)  THE STOP: the outline reverses direction, moving
+  //                       back to the RIGHT. Without this the head is an egg
+  //                       and the snout is just its narrow end.
+  //   (46,32) -> (30,45)  the bridge, out to the snout front
+  //   (30,45) -> (38,55)  the nose, rounding under
+  //   (38,55) -> (87,33)  the lower jaw and cheek, back to the start
+  // Extents x 29..87, y 9..59; inked 27.7..88.3 x 7.7..60.3.
+  const HEAD = `M 87,33
+    C 86,17 78,9 65,9
+    C 55,9 47,12 44,19
+    C 46,25 48,29 46,32
+    C 39,34 31,39 30,45
+    C 29,50 32,54 38,55
+    C 46,58 57,59 68,58
+    C 80,57 87,47 87,33 Z`
 
   return svgWrap(
     fig(`
@@ -756,98 +829,98 @@ export function creatureCaptainRed({
            space curve carried through one is what pushed an earlier version
            32 units off the bottom edge). Both go in BEFORE the body so the
            body's fill eats the overlap and the flame reads as rising from
-           behind the hip. Tail: half-width 6 plus outline 2 budgeted into every
-           point, max x 103+8=111, max y 124+8=132. Flame 32x37 (v9: 28x24),
-           extents x 85..117 y 100..137, inked 83.7..118.3 x 98.7..138.3.
-           Three layers, orange to amber to yellow core -- the layering is what
-           the brief meant by a flame that reads as hot rather than as an
-           orange leaf. -->
-      ${tube('M 86,112 C 98,113 103,118 101,124', 12, accent)}
-      <path d="M 101,100 C 117,112 115,130 101,137 C 87,130 85,112 101,100 Z"
+           behind the hip. Flame extents x 89..115 y 101..136, inked 87.7..116.3
+           x 99.7..137.3; its tip is now POINTED at (102,101) instead of the
+           rounded leaf v10 had, so the cutout shows a spike. -->
+      ${tube('M 88,114 C 99,116 104,120 102,126', 12, accent)}
+      <path d="M 102,101 C 110,112 117,121 114,131 C 111,137 93,137 90,131
+               C 87,121 94,112 102,101 Z"
         fill="${FLAME}" ${ol(SW_MID)}/>
-      <path d="M 101,108 C 112,117 111,130 101,134 C 91,130 90,117 101,108 Z"
+      <path d="M 102,110 C 108,118 113,124 111,130 C 108,134 96,134 93,130
+               C 91,124 96,118 102,110 Z"
         fill="${FLAME_MID}"/>
-      <path d="M 101,116 C 108,122 107,130 101,132 C 95,130 94,122 101,116 Z"
+      <path d="M 102,119 C 106,124 109,127 108,130 C 106,133 98,133 96,130
+               C 95,127 98,124 102,119 Z"
         fill="${FLAME_CORE}"/>
 
-      <!-- feet at cy=129, not 131: at 131 the ry=7.5 stub plus its 2.0 outline
-           inked to y=139.5, half a unit from the frame. -->
-      ${paws(accent, 98, 11.5, 12.5)}
+      <!-- paws pulled in from cx 22 to 32. The wings dropped into the space the
+           old paws occupied, and a paw at 22 sat on the wing's middle notch
+           (x=10, y=86) and filled it, which is the one thing that makes three
+           lobes read as one hem. Feet at cy=129, not 131: at 131 the ry=7.5
+           stub plus its 2.0 outline inked to y=139.5, half a unit from the
+           frame. -->
+      ${stub(32, 100, 11.5, 12.5, accent)}
+      ${stub(88, 100, 11.5, 12.5, accent)}
       ${feet(accent, 129, 15, 7.5)}
 
-      <!-- neck, and it is DRAWN AS A MASS rather than as a tube because it has
-           to be seen. The tube version was invisible: a stroke from head-centre
-           to body-centre is covered at both ends by the very shapes it joins,
-           leaving nothing in the gap. Even as a mass it only became visible once
-           the head moved UP to cy=38 -- at cy=42 the muzzle's own bottom edge
-           reached y=70 and covered the whole gap by itself, so the head still
-           sat straight on the body.
-           The second thing it needed was to be WIDER THAN THE MUZZLE. At x
-           48..72 the neck was exactly as wide as the snout above it, so the
-           snout's flare covered both flanks and the neck was again invisible in
-           the render even though the geometry said it was there. At 42..78
-           against a 28-wide muzzle, 20 units of neck show on each side, between
-           the head's underside at y=53.4 and the body's crown at y=74.1. The
-           bottom edge at y=79 is inside the body's own crown (35.7..84.3 there)
-           so the join is swallowed. -->
-      <path d="M 42,48 C 40,58 40,69 42,79 L 78,79 C 80,69 80,58 78,48 Z"
+      <!-- neck as a MASS, 25 wide (x 47..72), slanting slightly. Its top at
+           y=52 is under the jaw and its bottom at y=78 is inside the body's
+           crown, so both joins are swallowed and 13 units show. The width is
+           the load-bearing number: at v10's 36 the neck matched the body's
+           crown width (24.4 at y=72) and the two masses fused. -->
+      <path d="M 47,52 C 45,60 46,70 48,78 L 72,78 C 74,70 74,60 72,52 Z"
         fill="${accent}" ${ol(SW)}/>
 
       ${blob(bodyColor, 60, 102, 35, 32, true, panelColor)}
       ${shadeCrescent(60, 102, 35, 32)}
 
-      <g transform="translate(48,32) rotate(-34)">${horn}</g>
-      <g transform="translate(72,32) rotate(34)">${horn}</g>
+      <g transform="translate(80,32) rotate(80) scale(1.15)">${horn}</g>
+      <g transform="translate(68,24) rotate(60)">${horn}</g>
+      <g transform="translate(72,52) rotate(122) scale(0.52)">${horn}</g>
 
-      <ellipse cx="60" cy="38" rx="25" ry="21" fill="${bodyColor}" ${ol(SW)}/>
-      ${shadeCrescent(60, 38, 25, 21)}
+      <path d="${HEAD}" fill="${bodyColor}" ${ol(SW)}/>
+      <!-- head shade: outer boundary is the head path's own crown and jaw
+           segments, verbatim, closed by one interior curve. Same trick as the
+           body's shadeCrescent and Drillo's steel faces -- a shade generated
+           from the silhouette cannot leave it. -->
+      <path d="M 87,33 C 87,47 80,57 68,58 C 76,44 78,34 87,33 Z"
+        fill="${LINE}" opacity="0.15"/>
 
-      <!-- brow ridge: a shallow crescent in the accent, the one thing that
-           stops a round head with two dots on it reading as a cub. Kept to a
-           value step rather than a new hue, because a loud brow on a hero this
-           young an audience has to like would tip it into angry. -->
-      <path d="M 38,29 C 43,21 51,19 60,19 C 69,19 77,21 82,29
-               C 75,25 67,24 60,24 C 53,24 45,25 38,29 Z"
+      <!-- brow ridge in the accent, angled down toward the snout. On a turned
+           head this is not decoration: the brow is what puts the eyes at the
+           snout's root instead of high on a dome, which was the primate
+           arrangement v10 could not shake. -->
+      <path d="M 60,25 C 66,18 79,18 84,25 C 79,22 66,22 60,25 Z"
+        fill="${accent}"/>
+      <path d="M 45,26 C 49,20 57,20 60,25 C 56,23 49,23 45,26 Z"
         fill="${accent}"/>
 
-      <!-- SNOUT. Two failed attempts are worth recording, because the fix was
-           not the one that looks obvious. First it was a 30-wide rounded cream
-           pad with two round nostrils low in the middle, which read as a COW.
-           Narrowing it to 22 made that worse, not better -- a small cream tab
-           hanging off a round head reads as a bib. What actually carries "snout"
-           is the JAW, so the muzzle went back to 28 wide and the smile was
-           replaced by an open grinning maw with two fangs, and the nostrils
-           moved up to the bridge and in to 7 units apart. Nostrils sitting low
-           and 12 apart are a second pair of eyes on any face; up on the bridge
-           and close together they can only be nostrils.
-           A third pass fixed the TOP EDGE, which was the last thing keeping it
-           from working. A straight horizontal cut across the muzzle's top made
-           it a pale patch stuck on the face and, with the taper below, that
-           patch read as a hanging chin. The top now DOMES to y=40.5, so it
-           reads as the bridge of a snout continuing out of the forehead. It
-           stops 3.9 units short of the eyes' undersides at 37.6.
-           The muzzle's bottom (65) clears the head's own outline (59) by 6, so
-           the snout is part of the silhouette rather than a mark inside it. -->
-      <path d="M 46,47 C 47,40 73,40 74,47 C 75,56 70,65 60,65 C 50,65 45,56 46,47 Z"
+      <!-- CHIN, not a muzzle pad. The cream covers only the snout's
+           UNDERSIDE: its outer edge is the head path's nose and jaw segments
+           copied verbatim, so it is flush with the silhouette, and its top edge
+           is an interior curve. The first v11 draft filled the whole snout
+           cream and the head read as a DOG -- a pale muzzle on a coloured head
+           is the canine marking, and the ape read had only been traded for it.
+           Leaving the snout body-coloured is affordable now precisely because
+           the OUTLINE carries the snout: the fill no longer has to say
+           "projection", so it is free to say "reptile underside" instead. -->
+      <path d="M 30,45 C 29,50 32,54 38,55 C 45,57 51,54 52,47
+               C 45,49 36,48 30,45 Z"
         fill="${panelColor}" ${ol(SW_MID)}/>
-      <ellipse cx="56.5" cy="45" rx="1.8" ry="1.4" fill="${INK}"/>
-      <ellipse cx="63.5" cy="45" rx="1.8" ry="1.4" fill="${INK}"/>
-      <!-- the maw's upper edge bows UP, which is the whole difference between a
-           grin and a snarl on a figure that has to stay likeable. Fangs are
-           taller than wide and sit at the CORNERS: Muncher's note in this file
-           records that two round teeth centred in a dark mouth read as eyes,
-           and this is the same shape, so both of that failure's conditions
-           (round, centred) are avoided. -->
-      <path d="M 52,53 Q 60,49.5 68,53 Q 60,62 52,53 Z" fill="${INK}" ${ol(SW_MID)}/>
-      <ellipse cx="55.5" cy="56.5" rx="1.6" ry="2.7" fill="#fff6e2"/>
-      <ellipse cx="64.5" cy="56.5" rx="1.6" ry="2.7" fill="#fff6e2"/>
+      <!-- one nostril, at the snout FRONT rather than on the bridge. In a
+           turned head only one shows, and that is the point: a pair of dark
+           spots on a pale muzzle is a second pair of eyes on any face, which is
+           the failure v10 recorded when its nostrils sat low and 12 apart. -->
+      <ellipse cx="34" cy="41" rx="2" ry="1.6" fill="${INK}"/>
+      <path d="M 32,48 C 37,51 43,53 49,54" fill="none" stroke="${INK}" stroke-width="2.2"/>
 
-      <!-- eyes at r=4.6 and 20 apart, down from r=5.2 and 22. On a head this
-           size the bigger pair were two black voids taking a third of the face
-           each and, with the maw below them, the whole head read as a mask.
-           This is still the largest eye in the file (the small heroes use 4.8
-           to 5.0) which is what an evolved form should have. -->
-      ${dotEyes(50, 70, 33, 4.6)}
+      <!-- overbite: two pale fangs hanging past the jaw outline (which runs
+           y 55..58 here), so they are silhouette, not marking. Kept pale with
+           a sepia outline rather than ink -- two dark spikes under a jaw read
+           as a gap in the outline instead of as teeth. -->
+      <path d="M 37,53 C 41,53 42,54 41.5,55 C 41,60 40,63 39,65
+               C 38,62 37,58 36.5,55 C 36,54 36,53 37,53 Z"
+        fill="${TOOTH}" ${ol(SW_IN)}/>
+      <path d="M 45.5,56 C 49.5,56 50.5,57 50,58 C 49.5,62 48.5,64 47.5,66
+               C 46.5,63 45.5,60 45,58 C 44.5,57 44.5,56 45.5,56 Z"
+        fill="${TOOTH}" ${ol(SW_IN)}/>
+
+      <!-- eyes: the near one (right) larger, the far one smaller and closer to
+           the bridge, which is what a turned head does to a pair. Still the
+           largest eyes in the file (the small heroes use 4.8 to 5.0) which is
+           what an evolved form should have. -->
+      ${dot(70, 30, 4.8)}
+      ${dot(53, 29, 4.0)}
 
       ${emblemBadge(60, 114.5, 14, visorColor, '★', 21)}
     `)
@@ -941,44 +1014,94 @@ export function creatureFlippy({ bodyColor = '#8a5fd6', accent = '#6a3fae' } = {
   )
 }
 
-// Slippy: melts the floor. No feet -- the lower body dissolves into a puddle
-// with round drips, the same "no legs" language platSlime and dinoSwamp use
-// for their own gripless villains.
+// Slippy: melts the floor. No feet -- the lower body dissolves into a puddle,
+// the same "no legs" language platSlime and dinoSwamp use for their own
+// gripless villains.
+//
+// v11 REBUILT THE SILHOUETTE, because in a hard cutout Slippy was a plain
+// dome -- the only figure in the file with no identifying shape at all -- and
+// everything that was supposed to say "slime" was invisible there:
+//   * the two drips were tucked INSIDE the body outline, so they were interior
+//     seams, not silhouette,
+//   * the two arms hugged the flank and were swallowed by the body's own fill,
+//   * and the puddle carried opacity="0.9", which in a cutout renders as a
+//     mid-GREY slab under a black figure -- a second, lighter shape that broke
+//     the character's outline into two pieces. Opacity is now 1 and the wet
+//     look comes from a lighter sheen path inside the pool instead. (Whatever
+//     translucency is worth on a colour render, it costs more than it earns:
+//     a semi-transparent shape is the one thing a monochrome silhouette test
+//     cannot read, and this file's other translucent shape -- the 13% ground
+//     shadow -- has already cost a session once.)
+// The body is now a single path whose lower edge is FOUR HANGING TONGUES with
+// notches of background between them, so the melt is in the outline rather
+// than drawn on top of it, plus one detached falling droplet between the
+// lowest tongue and the pool. That is the whole identity: a blob coming apart.
+//
+// The arms are GONE, and not for want of room. With tongues in the outline, a
+// pair of limbs at the flanks reads as two more tongues that happen to point
+// sideways, and the count of dangling things is exactly what says "melting"
+// rather than "creature with limbs". A slime with arms was also the one thing
+// separating this figure from the other two gripless villains in the project.
 export function creatureSlippy({ bodyColor = '#3f8f2a', accent = '#2c6b1c' } = {}) {
   // Dulled tint of the body, per the villain note -- and dulled twice. The
   // first value (#c9dfb4) measured out as the brightest shape on the whole
   // villain side of the cast, and on a figure whose belly patch sits directly
   // under the eyes it read as a pale muzzle rather than an underside.
   const BELLY_GN = '#a9c98e'
+  const SHEEN = '#4fa634' // pool sheen: one step lighter than the body, not white
   return svgWrap(
     fig(`
-      <path d="M 16,120 C 26,113 34,122 46,116 C 60,109 70,120 84,114
-               C 98,109 106,115 105,121 C 100,130 84,134 60,134
-               C 36,134 18,129 16,120 Z"
-        fill="${accent}" ${ol(SW)} opacity="0.9"/>
+      <!-- the pool, opaque. Lobed top edge so it reads as a spreading spill
+           rather than as a shadow ellipse; bottom held at y=134 so the 2.6
+           outline inks to 135.3 and stays inside the frame. -->
+      <path d="M 13,122 C 23,114 31,124 43,118 C 57,111 67,122 81,116
+               C 96,110 107,116 106,123 C 101,132 84,134 60,134
+               C 35,134 15,130 13,122 Z"
+        fill="${accent}" ${ol(SW)}/>
+      <!-- sheen as two irregular patches, not one long lens: a single lens
+           down the pool's middle read as a LEAF MIDRIB and turned the whole
+           pool into a lily pad the figure was standing on. -->
+      <path d="M 28,124 C 36,120 46,126 52,123 C 48,129 38,130 28,124 Z"
+        fill="${SHEEN}"/>
+      <path d="M 66,123 C 76,119 88,123 94,121 C 88,128 74,129 66,123 Z"
+        fill="${SHEEN}"/>
 
-      <!-- arms hang from the flank, not from beside the head: at their first
-           y=76 start they flanked the skull and read as two drooping EARS,
-           which is the one thing a slime is not supposed to have. Ending
-           inside the puddle also sells the melt. -->
-      ${tube('M 31,88 C 22,94 22,102 29,106 C 23,110 25,116 31,118', 10, bodyColor)}
-      ${tube('M 89,90 C 98,96 98,103 92,107', 10, bodyColor)}
-
-      <path d="M 60,54 C 84,54 94,72 92,94 C 90,112 78,122 60,122
-               C 42,122 30,112 28,94 C 26,72 36,54 60,54 Z"
+      <!-- ONE PATH: dome on top, four tongues hanging off the bottom with real
+           notches between them. Each tongue swings out and down, then the
+           outline climbs back UP inside itself before the next one starts --
+           that climb is the notch, and it is what makes four tongues instead of
+           one scalloped hem. Lengths are staggered (the middle pair hang
+           lowest) because four equal tongues read as a decorative fringe.
+           Extents x 20..100, y 46..116; inked 18.7..101.3 x 44.7..117.3. -->
+      <path d="M 58,46
+               C 80,46 92,60 92,74
+               C 99,77 100,88 95,92 C 90,95 87,90 87,82
+               C 88,95 81,103 74,100 C 69,97 71,90 71,84
+               C 72,99 69,112 58,112 C 50,112 53,95 53,88
+               C 54,101 46,107 40,103 C 35,99 38,90 38,84
+               C 37,96 28,98 24,90 C 20,82 20,76 22,72
+               C 22,58 36,46 58,46 Z"
         fill="${bodyColor}" ${ol(SW)}/>
-      <ellipse cx="60" cy="100" rx="21" ry="17" fill="${BELLY_GN}" ${ol(SW_IN)}/>
-      ${shadeCrescent(60, 88, 31, 33)}
+      <ellipse cx="57" cy="70" rx="24" ry="15" fill="${BELLY_GN}" ${ol(SW_IN)}/>
+      ${shadeCrescent(57, 70, 34, 24)}
 
-      <!-- drips: rounded teardrops hanging off the belly edge, never a
-           pointed spike -- the melt reads as ongoing without going sharp. -->
-      <path d="M 45,110 C 42,118 43,124 47,124 C 51,123 50,116 48,109 Z"
-        fill="${bodyColor}" ${ol(SW_IN)}/>
-      <path d="M 72,112 C 70,118 71,122 74,122 C 77,121 76,116 74,111 Z"
+      <!-- the detached drop. A falling droplet is the one cue that reads as
+           LIQUID rather than as a lumpy animal, and it only works detached:
+           attached to the tongue above it, it is just more tongue. Sits in the
+           17-unit gap of background at x=34, between the fourth tongue's tip
+           (y=103) and the pool's crown under it (y=120). The centre tongue,
+           by contrast, was lengthened to y=112 and left BROAD (x 53..71) so it
+           sits down into the pool's crown (y=111). At 109 every tongue stopped
+           short of the water and the whole figure read as hovering over a lily
+           pad; at 116 that same tongue narrowed to a point on the way down and
+           turned the figure into a MUSHROOM ON A STALK. Broad contact anchors
+           it without making a stem, and the other three tongues still hang in
+           clear air. -->
+      <path d="M 34,110 C 38,114 37,118 34,118 C 31,118 30,114 34,110 Z"
         fill="${bodyColor}" ${ol(SW_IN)}/>
 
-      ${droopyEyes(47, 73, 80, 5)}
-      ${smirk(60, 94, 6)}
+      ${droopyEyes(46, 70, 68, 5)}
+      ${smirk(57, 80, 6)}
     `)
   )
 }
@@ -1013,15 +1136,35 @@ export function creatureGrabby({ bodyColor = '#cc4340', accent = '#9c2a2c' } = {
            a leg. From here only the arch's inner leg tucks behind the
            shoulder, and the rotated extents (x 120.3-6 = clear at 116.3
            inked, y from 29.9) still sit inside the box. -->
-      <!-- the warm pole cap went from a dusty pink to brass. A magnet's poles
-           are conventionally red and blue, but Grabby's body is now red, and a
-           red cap on a red animal loses exactly the "this belongs to someone
-           else" read the pale steel was chosen for. Brass keeps two metal tones
-           on the prop and nothing on it borrows the body's hue. -->
-      <g transform="translate(98,50) rotate(20) scale(1.4)">${archShape('#c2c7cf', '#8fa8c4', '#e2c15c')}</g>
-
+      <!-- POLE CAPS: blue + white, which is the fix for a real regression. v10
+           read the convention as "red and blue", saw that Grabby's body had
+           just become red, and made both caps metal instead (blue-steel and
+           brass) -- so the prop lost the two-pole convention entirely and read
+           as decorative trim. But the premise was wrong: the caps sit at
+           roughly x 92..110, y 60..72, and the body's own right edge at y=65 is
+           x=83, so the caps are on BACKGROUND, not on the red body, and a red
+           cap was never going to blend into it. What it would do is put a third
+           red in the frame next to a red animal and a darker red trim, which is
+           the muddle v10 was actually reacting to.
+           Blue + white keeps polarity (two caps, maximum value gap between
+           them, one of them the convention's own blue) with no hue shared with
+           the body at all -- and blue/white is itself a common magnet livery,
+           so nothing about the read depends on the missing red. The horseshoe
+           shape carries "magnet" regardless; the caps only have to say the two
+           ends are different. The arch itself dropped from #c2c7cf to #a8b0ba so the
+           white cap has a value to sit against (1.35:1 -> 1.75:1).
+           MEASURED, AND IT CHANGED THE FIX: the inner cap lands at (85.6,59.6)
+           and the right ear is a r=9 disc at (84,62), so with the prop drawn
+           before the ears the inner cap was 100% covered and only ONE pole cap
+           had ever been visible -- which is why no choice of two colours could
+           have read as polarity. The prop now draws AFTER the ears (still
+           before the body, so the shoulder still swallows the arch's inner
+           leg): the arch reads as hanging in FRONT of the ear, which is what
+           a thing slung over a shoulder does, and both caps show. -->
       ${roundEar(36, 62, 9, bodyColor, BELLY_RD)}
       ${roundEar(84, 62, 9, bodyColor, BELLY_RD)}
+      <g transform="translate(98,50) rotate(20) scale(1.4)">${archShape('#a8b0ba', '#2f6fd0', '#f7fafd')}</g>
+
       ${paws(accent, 100)}
       ${feet(accent, 128)}
       ${blob(bodyColor, 60, 92, 35, 36, true, BELLY_RD)}
