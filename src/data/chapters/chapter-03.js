@@ -87,9 +87,9 @@ export const chapter3 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c3s1-ink', icon: 'ink', label: 'ink', correct: true },
             { id: 'c3s1-cake', icon: 'cake', label: 'cake', correct: false },
             { id: 'c3s1-car', icon: 'car', label: 'car', correct: false },
-            { id: 'c3s1-ink', icon: 'ink', label: 'ink', correct: true },
           ],
           readAloud: { targetText: 'cake' },
         },
@@ -101,9 +101,9 @@ export const chapter3 = {
           instructionKo: '"cat"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'cat',
           options: [
-            { id: 'c3s1-king', icon: 'king', label: 'king', correct: true },
             { id: 'c3s1-moon', icon: 'moon', label: 'moon', correct: false },
             { id: 'c3s1-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c3s1-king', icon: 'king', label: 'king', correct: true },
           ],
           readAloud: { targetText: 'king' },
         },
@@ -169,8 +169,8 @@ export const chapter3 = {
           promptAudio: 'kuh, kuh, kuh',
           // K 는 여기 절대 넣지 않는다 -- C 와 K 는 같은 소리라 정답이 둘이 된다.
           options: [
-            { id: 'c3s2-C1', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c3s2-C1', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
           ],
         },
@@ -181,9 +181,9 @@ export const chapter3 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c3s2-pin', icon: 'pin', label: 'pin', correct: true },
             { id: 'c3s2-cat', icon: 'cat', label: 'cat', correct: false },
             { id: 'c3s2-cake', icon: 'cake', label: 'cake', correct: false },
-            { id: 'c3s2-pin', icon: 'pin', label: 'pin', correct: true },
           ],
           readAloud: { targetText: 'cat' },
         },
@@ -239,8 +239,8 @@ export const chapter3 = {
           promptAudio: 'kuh, kuh, kuh',
           // 혼동 보기는 S 하나 -- c 가 /s/ 로도 읽히는 실제 함정이다.
           options: [
-            { id: 'c3s2-C3', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+            { id: 'c3s2-C3', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
           ],
           readAloud: { targetText: 'C', say: 'kuh, kuh, kuh' },
@@ -253,9 +253,9 @@ export const chapter3 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'C',
           options: [
-            { id: 'c3s2-cake2', icon: 'cake', label: 'cake', correct: true },
             { id: 'c3s2-sun', icon: 'sun', label: 'sun', correct: false },
             { id: 'c3s2-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c3s2-cake2', icon: 'cake', label: 'cake', correct: true },
           ],
           readAloud: { targetText: 'cake' },
         },
@@ -308,8 +308,8 @@ export const chapter3 = {
           instructionKo: 'eh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'eh, eh, eh',
           options: [
-            { id: 'c3s3-E1', icon: 'letterTile', label: 'E', say: 'eh', correct: true },
             { id: 'c3s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+            { id: 'c3s3-E1', icon: 'letterTile', label: 'E', say: 'eh', correct: true },
             { id: 'c3s3-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
         },
@@ -320,9 +320,9 @@ export const chapter3 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c3s3-cat', icon: 'cat', label: 'cat', correct: true },
             { id: 'c3s3-egg', icon: 'egg', label: 'egg', correct: false },
             { id: 'c3s3-elephant', icon: 'elephant', label: 'elephant', correct: false },
-            { id: 'c3s3-cat', icon: 'cat', label: 'cat', correct: true },
           ],
           readAloud: { targetText: 'egg' },
         },
@@ -379,9 +379,9 @@ export const chapter3 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'K',
           options: [
-            { id: 'c3s3-key2', icon: 'key', label: 'key', correct: true },
             { id: 'c3s3-egg3', icon: 'egg', label: 'egg', correct: false },
             { id: 'c3s3-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c3s3-key2', icon: 'key', label: 'key', correct: true },
           ],
           readAloud: { targetText: 'key' },
         },
@@ -408,9 +408,9 @@ export const chapter3 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'E',
           options: [
-            { id: 'c3s3-egg2', icon: 'egg', label: 'egg', correct: true },
             { id: 'c3s3-cake', icon: 'cake', label: 'cake', correct: false },
             { id: 'c3s3-pot', icon: 'pot', label: 'pot', correct: false },
+            { id: 'c3s3-egg2', icon: 'egg', label: 'egg', correct: true },
           ],
           readAloud: { targetText: 'egg' },
         },
@@ -462,8 +462,8 @@ export const chapter3 = {
           instructionKo: 'huh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'huh, huh, huh',
           options: [
-            { id: 'c3s4-H1', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
             { id: 'c3s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+            { id: 'c3s4-H1', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
             { id: 'c3s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -474,9 +474,9 @@ export const chapter3 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c3s4-egg', icon: 'egg', label: 'egg', correct: true },
             { id: 'c3s4-hat', icon: 'hat', label: 'hat', correct: false },
             { id: 'c3s4-hen', icon: 'hen', label: 'hen', correct: false },
-            { id: 'c3s4-egg', icon: 'egg', label: 'egg', correct: true },
           ],
           readAloud: { targetText: 'hat' },
         },
@@ -520,8 +520,8 @@ export const chapter3 = {
           // 혼동 보기는 S 하나 -- /h/ 와 /s/ 는 둘 다 무성 마찰음이라 진짜 근접쌍이고,
           // S 는 챕터 1 에서 이미 배운 글자다 (N 은 warmup 에서 이미 썼다).
           options: [
-            { id: 'c3s4-H3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
             { id: 'c3s4-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+            { id: 'c3s4-H3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
             { id: 'c3s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
           ],
           readAloud: { targetText: 'H', say: 'huh, huh, huh' },
@@ -534,9 +534,9 @@ export const chapter3 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'H',
           options: [
-            { id: 'c3s4-hand', icon: 'hand', label: 'hand', correct: true },
             { id: 'c3s4-net', icon: 'net', label: 'net', correct: false },
             { id: 'c3s4-apple', icon: 'apple', label: 'apple', correct: false },
+            { id: 'c3s4-hand', icon: 'hand', label: 'hand', correct: true },
           ],
           readAloud: { targetText: 'hand' },
         },
@@ -554,13 +554,13 @@ export const chapter3 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'C, E, H를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'kuh, kuh, kuh',
               options: [
-                { id: 'c3s4-qC', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
                 { id: 'c3s4-qE', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+                { id: 'c3s4-qC', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
                 { id: 'c3s4-qH', icon: 'letterTile', label: 'H', say: 'huh', correct: false },
               ],
             },
@@ -575,9 +575,9 @@ export const chapter3 = {
             {
               promptAudio: 'huh, huh, huh',
               options: [
-                { id: 'c3s4-qH3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
                 { id: 'c3s4-qC3', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
                 { id: 'c3s4-qE3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+                { id: 'c3s4-qH3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
               ],
             },
           ],
@@ -644,14 +644,14 @@ export const chapter3 = {
           // 두 번째 단어 hen 의 소리를 여기서 모델링한다.
           instructionKo: '이번엔 hen이에요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['huh, huh, huh', 'eh, eh, eh', 'nnn', 'hen'],
+          repeatAudio: ['huh, huh, huh', 'eh, eh, eh', 'nnn', 'hen', 'hen'],
         },
         {
           id: 'c3s5-r3-quickfire',
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'C, E, H를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'kuh, kuh, kuh',
@@ -664,16 +664,16 @@ export const chapter3 = {
             {
               promptAudio: 'eh, eh, eh',
               options: [
-                { id: 'c3s5-qE2', icon: 'letterTile', label: 'E', say: 'eh', correct: true },
                 { id: 'c3s5-qC2', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
                 { id: 'c3s5-qH2', icon: 'letterTile', label: 'H', say: 'huh', correct: false },
+                { id: 'c3s5-qE2', icon: 'letterTile', label: 'E', say: 'eh', correct: true },
               ],
             },
             {
               promptAudio: 'huh, huh, huh',
               options: [
-                { id: 'c3s5-qH3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
                 { id: 'c3s5-qE3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+                { id: 'c3s5-qH3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
                 { id: 'c3s5-qC3', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
               ],
             },
@@ -725,8 +725,13 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '트라이케라가 외쳐요! 같이 말해볼까요?',
-          words: ['hen'],
+          instructionKo: 'hen도 천천히 따라 말해보세요.',
+          words: [
+            { text: 'H', say: 'huh, huh, huh' },
+            { text: 'E', say: 'eh, eh, eh' },
+            { text: 'N', say: 'nnn' },
+            'hen',
+          ],
         },
         {
           id: 'c3s5-finale',

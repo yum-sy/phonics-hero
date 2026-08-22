@@ -195,9 +195,9 @@ export const chapter5 = {
           promptAudio: 'guh, guh, guh',
           // 혼동 보기는 K 하나 -- G/C·K 는 유무성 대비로 유용하다.
           options: [
-            { id: 'c5s2-G1', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
             { id: 'c5s2-K1', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
             { id: 'c5s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c5s2-G1', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
           ],
         },
         {
@@ -208,8 +208,8 @@ export const chapter5 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c5s2-gum', icon: 'gum', label: 'gum', correct: false },
-            { id: 'c5s2-gift', icon: 'gift', label: 'gift', correct: false },
             { id: 'c5s2-hen', icon: 'hen', label: 'hen', correct: true },
+            { id: 'c5s2-gift', icon: 'gift', label: 'gift', correct: false },
           ],
           readAloud: { targetText: 'gum' },
         },
@@ -267,8 +267,8 @@ export const chapter5 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'G',
           options: [
-            { id: 'c5s2-gum2', icon: 'gum', label: 'gum', correct: true },
             { id: 'c5s2-egg', icon: 'egg', label: 'egg', correct: false },
+            { id: 'c5s2-gum2', icon: 'gum', label: 'gum', correct: true },
             { id: 'c5s2-pot', icon: 'pot', label: 'pot', correct: false },
           ],
           readAloud: { targetText: 'gum' },
@@ -323,9 +323,9 @@ export const chapter5 = {
           promptAudio: 'ough, ough, ough',
           // 혼동 보기는 A 하나 -- O/A 는 의도된 대비쌍이다.
           options: [
-            { id: 'c5s3-O1', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
             { id: 'c5s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c5s3-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+            { id: 'c5s3-O1', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
           ],
         },
         {
@@ -336,8 +336,8 @@ export const chapter5 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c5s3-octopus', icon: 'octopus', label: 'octopus', correct: false },
-            { id: 'c5s3-orange', icon: 'orange', label: 'orange', correct: false },
             { id: 'c5s3-net', icon: 'net', label: 'net', correct: true },
+            { id: 'c5s3-orange', icon: 'orange', label: 'orange', correct: false },
           ],
           readAloud: { targetText: 'octopus' },
         },
@@ -393,9 +393,9 @@ export const chapter5 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'O',
           options: [
-            { id: 'c5s3-orange2', icon: 'orange', label: 'orange', correct: true },
             { id: 'c5s3-hen', icon: 'hen', label: 'hen', correct: false },
             { id: 'c5s3-cake', icon: 'cake', label: 'cake', correct: false },
+            { id: 'c5s3-orange2', icon: 'orange', label: 'orange', correct: true },
           ],
           readAloud: { targetText: 'orange' },
         },
@@ -516,8 +516,8 @@ export const chapter5 = {
           // 혼동 보기는 O 하나 -- 방금 배운 글자와 대비시킨다(U/O 도 의도된
           // 대비쌍). warmup 에서 이미 U/A 를 다뤄서 여기선 겹치지 않는다.
           options: [
-            { id: 'c5s4-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
             { id: 'c5s4-O3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+            { id: 'c5s4-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
             { id: 'c5s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
           ],
           readAloud: { targetText: 'U', say: 'uh, uh, uh' },
@@ -549,29 +549,29 @@ export const chapter5 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'G, O, U와 지난 소리까지 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'guh, guh, guh',
               options: [
-                { id: 'c5s4-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
                 { id: 'c5s4-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s4-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
                 { id: 'c5s4-qU', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
             {
               promptAudio: 'ough, ough, ough',
               options: [
-                { id: 'c5s4-qO2', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
                 { id: 'c5s4-qU2', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
                 { id: 'c5s4-qG2', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s4-qO2', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
               ],
             },
             {
               promptAudio: 'uh, uh, uh',
               options: [
-                { id: 'c5s4-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
                 { id: 'c5s4-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s4-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
                 { id: 'c5s4-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
               ],
             },
@@ -655,21 +655,21 @@ export const chapter5 = {
           kind: 'break',
           instructionKo: '이번엔 gum이에요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['guh, guh, guh', 'uh, uh, uh', 'mmm', 'gum'],
+          repeatAudio: ['guh, guh, guh', 'uh, uh, uh', 'mmm', 'gum', 'gum'],
         },
         {
           id: 'c5s5-r3-quickfire',
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'G, O, U와 지난 소리까지 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'guh, guh, guh',
               options: [
-                { id: 'c5s5-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
                 { id: 'c5s5-qU', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
                 { id: 'c5s5-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s5-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
               ],
             },
             {
@@ -683,9 +683,9 @@ export const chapter5 = {
             {
               promptAudio: 'uh, uh, uh',
               options: [
-                { id: 'c5s5-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
                 { id: 'c5s5-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
                 { id: 'c5s5-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s5-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
               ],
             },
             // 누적 복습(챕터 1 의 A). 이 챕터가 모음 두 개(O/U)를 새로 넣으므로
@@ -694,8 +694,8 @@ export const chapter5 = {
             {
               promptAudio: 'aaa',
               options: [
-                { id: 'c5s5-qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'c5s5-qO4', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s5-qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'c5s5-qU4', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
@@ -747,8 +747,13 @@ export const chapter5 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: 'Captain Gum이 외쳐요! 같이 말해볼까요?',
-          words: ['gum'],
+          instructionKo: 'gum도 천천히 따라 말해보세요.',
+          words: [
+            { text: 'G', say: 'guh, guh, guh' },
+            { text: 'U', say: 'uh, uh, uh' },
+            { text: 'M', say: 'mmm' },
+            'gum',
+          ],
         },
         {
           id: 'c5s5-finale',

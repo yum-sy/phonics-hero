@@ -237,6 +237,30 @@ const SINGLE_ONLY_SOUNDS = new Set(['sss', 'sssss', 'aaa', 'iii', 'nnn', 'mmm', 
 const MODEL_ROLE = 'model'
 const TAP_ROLE = 'tap'
 
+// ---------- 정답 위치 편향 ----------
+// 사용자가 실기기에서 신고했다: "해당 문제들의 정답이 모두 첫번째네.. 이건
+// 난이도의 문제가 있어." 전수 측정으로 훨씬 심각한 것이 드러났다 -- 단일 정답
+// 문항 158개 중 정답이 1번인 것이 127개(80%)였고, `choose-sequence` 는
+// 48/48 = **100%** 였다. 즉 **아무 소리도 듣지 않고 항상 첫 칸만 눌러도 80%를
+// 맞는다.** 오답 패널티가 없는 앱이므로 크래시도 로그도 없이 평가만 무의미해진다.
+// 게다가 보기 3개 문항에서 2번이 정답인 사례가 `choose` 108개 중 0개였다 --
+// 아이가 가운데 칸을 한 번도 정답으로 만난 적이 없었다.
+//
+// 이건 문항 하나하나를 보면 절대 안 보이는 결함이다(각 문항은 완벽히 정상이다).
+// **집계로만 보이므로 집계로 검사한다.** 챕터 8~33 은 각각 다른 세션이 쓸
+// 것이고, 저자는 자연스럽게 정답을 먼저 적는다(그게 이 편향의 원인이다).
+//
+// 판정은 두 축이다. 하나만으로는 새는 구멍이 있다:
+//   1) 최다 슬롯 점유율 -- "항상 k번만 누르는 아이" 의 정답률이다. 우연
+//      기대치는 문항별 1/n 의 평균이고(보기 개수가 섞여도 옳다), 여기에
+//      +20%p 여유를 준다. 22문항 챕터에서 8/7/7 은 36%로 통과하고,
+//      수정 전의 17/0/5 는 77%로 걸린다.
+//   2) 한 번도 쓰이지 않은 슬롯 -- 위 점유율이 45/55/0 같은 분포를 통과시킨다.
+//      그 슬롯이 존재하는 문항이 6개 이상인데 정답이 0번이면 걸린다.
+// 챕터가 작으면(6문항 미만) 우연으로도 쏠리므로 침묵한다.
+const SLOT_BIAS_HEADROOM = 0.2
+const SLOT_BIAS_MIN_ITEMS = 6
+
 // Kinds whose renderer deals its hit unconditionally; every other scored kind
 // needs a readAloud to have any damage path at all.
 const SELF_PAYING_KINDS = new Set(['choose-sequence', 'listen-repeat', 'finale'])
@@ -360,6 +384,9 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
     if (bosses.length !== 1) {
       problems.push(`${chapter.id}: chapterBoss 스테이지가 ${bosses.length}개 (정확히 1개)`)
     }
+    // 이 챕터의 단일 정답 문항들이 정답을 어느 칸에 두었는지. 챕터 단위로
+    // 집계해야 의미가 있으므로 스테이지 루프 밖에서 모은다.
+    const answerSlots = []
 
     for (const stage of chapter.stages) {
       const where = `${chapter.id}/${stage.id}`
@@ -394,6 +421,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
       // 발화 전용 필드 -- 표시되지 않지만 소리 표기 규칙을 지켜야 한다.
       const spoken = []
       let reachableHits = 0
+      // 보스 스테이지의 "조립할 단어" 와 "낱소리 -> 단어 블렌드 시연" 을 짝지어
+      // 본다 (아래 블렌드 계약).
+      const buildTargets = []
+      const blends = []
 
       for (const beat of stage.beats) {
         const at = `${where}/${beat.id}`
@@ -452,6 +483,8 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             if (correct < 2) problems.push(`${at}: multiselect 정답이 ${correct}개 (2개 이상)`)
           } else if (correct !== 1) {
             problems.push(`${at}: ${beat.kind} 정답이 ${correct}개 (정확히 1개)`)
+          } else {
+            answerSlots.push({ at, slot: options.findIndex((o) => o.correct), n: options.length })
           }
           if (checkSpeechCollisions) {
             const tileSounds = options
@@ -531,6 +564,16 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           if (!Array.isArray(beat.words) || !beat.words.length) {
             problems.push(`${at}: ${beat.kind} 에 words 없음`)
           } else {
+            // 블렌드 시연의 형태: 앞은 글자꼴 { text, say }, 마지막은 합친 단어.
+            const last = beat.words[beat.words.length - 1]
+            const head = beat.words.slice(0, -1)
+            if (
+              head.length &&
+              typeof last === 'string' &&
+              head.every((w) => w && typeof w.text === 'string' && w.text)
+            ) {
+              blends.push({ at, word: last, slots: head.map((w) => w.text) })
+            }
             beat.words.forEach((word, i) => {
               if (typeof word === 'string') {
                 displayed.push([`${at} words[${i}]`, word])
@@ -575,6 +618,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say, TAP_ROLE])
           }
           slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
+          buildTargets.push({ at, word: slots.join(''), slots })
         }
 
         if (beat.readAloud) {
@@ -790,6 +834,53 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         }
       }
 
+      // ---------- 보스 블렌드 계약: 조립할 단어마다 낱소리 시연 ----------
+      // 사용자 원문: "dog 는 좋은데 gum 발음이 명확하지 않네, `d o g dog`
+      // `g u m gum` 이런 구조로 가는게 맞는 것 같아."
+      //
+      // 진단해보니 구조는 이미 그랬는데 **첫 단어만** 그랬다. 두 단어 보스
+      // 5개(cat/hen · mat/red · dog/gum · fit/big · rain/boat) 전부에서 첫
+      // 단어는 낱소리 -> 단어 블렌드를 listen-repeat 으로 받고(글자가 화면에
+      // 뜬 채 아이가 따라 말한다), 두 번째 단어는 `words: ['gum']` 한 줄뿐이라
+      // **구성 소리가 한 번도 모델링되지 않았다.** 아이는 gum 을 통째로 듣고
+      // 통째로 조립하라는 요구를 받는다 -- 파닉스 앱에서 정확히 반대다.
+      // (break 의 repeatAudio 에는 낱소리가 있지만 그건 자동재생/다시듣기
+      // beat 이고, 따라 말하는 자리도 글자와 소리가 짝지어 뜨는 자리도 아니다.)
+      //
+      // 결함이 5개 챕터에 똑같이 있었다는 것 자체가 산문 규칙의 한계다.
+      // 그래서 계약으로 만든다: **보스가 조립하라고 요구하는 단어는 모두, 그
+      // 단어의 슬롯 순서대로 낱소리를 들려준 뒤 합쳐 말하는 블렌드 beat 을
+      // 가져야 한다.** 슬롯에서 유도하므로 다이그래프도 그대로 통과한다
+      // (rain 은 R + AI + N 세 슬롯이고 R+A+I+N 네 개가 아니다).
+      if (stage.chapterBoss) {
+        const seen = new Set()
+        for (const t of buildTargets) {
+          if (seen.has(t.word.toUpperCase())) continue
+          seen.add(t.word.toUpperCase())
+          const key = t.slots.join('|').toUpperCase()
+          const ok = blends.some(
+            (b) =>
+              b.word.toUpperCase() === t.word.toUpperCase() &&
+              b.slots.join('|').toUpperCase() === key
+          )
+          if (!ok) {
+            const near = blends.find((b) => b.word.toUpperCase() === t.word.toUpperCase())
+            problems.push(
+              `${where}: 보스가 '${t.word}' 를 조립하게 하는데(${t.at}) ` +
+                `'${t.slots.join(' ')} ${t.word.toLowerCase()}' 블렌드 시연이 없다` +
+                (near
+                  ? ` -- ${near.at} 의 슬롯이 [${near.slots.join(' ')}] 로 어긋난다`
+                  : ` -- listen-repeat 의 words 를 ` +
+                    `[${t.slots.map((s) => `{ text: '${s}', say: ... }`).join(', ')}, ` +
+                    `'${t.word.toLowerCase()}'] 로 써라`) +
+                `. 단어를 통째로만 들려주면 아이가 구성 소리를 한 번도 모델로 ` +
+                `받지 못한 채 조립을 요구받는다 (사용자가 실기기에서 'gum 발음이 ` +
+                `명확하지 않네' 로 신고한 결함이다)`
+            )
+          }
+        }
+      }
+
       // ---------- reviewTargets 계약 ----------
       // 이 필드는 지금 소비자가 0개다. 그런데 "아무도 읽지 않는다" 를 데이터
       // 검증기가 단정하는 것은 틀린 설계다: 검증기는 screens.js 를 볼 수도
@@ -835,6 +926,40 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           `${where}: 실제로 들어갈 수 있는 데미지 ${reachableHits} != healthMax ${healthMax} ` +
             `-- 체력바가 0에 도달하지 못함`
         )
+      }
+    }
+
+    // ---------- 정답 위치 편향 (챕터 단위 집계) ----------
+    if (answerSlots.length >= SLOT_BIAS_MIN_ITEMS) {
+      const total = answerSlots.length
+      const widest = Math.max(...answerSlots.map((a) => a.n))
+      const chance = answerSlots.reduce((sum, a) => sum + 1 / a.n, 0) / total
+      const limit = Math.max(0.5, chance + SLOT_BIAS_HEADROOM)
+      const hits = []
+      const avail = []
+      for (let k = 0; k < widest; k++) {
+        hits[k] = answerSlots.filter((a) => a.slot === k).length
+        avail[k] = answerSlots.filter((a) => a.n > k).length
+      }
+      const spread = hits.map((h, k) => `${k + 1}번 ${h}`).join(' · ')
+      const worst = hits.indexOf(Math.max(...hits))
+      if (hits[worst] / total > limit) {
+        problems.push(
+          `${chapter.id}: 단일 정답 문항 ${total}개 중 정답이 ${worst + 1}번 칸인 것이 ` +
+            `${hits[worst]}개 (${Math.round((hits[worst] / total) * 100)}%, 상한 ` +
+            `${Math.round(limit * 100)}%) [${spread}] -- 아이가 소리를 듣지 않고 ` +
+            `항상 ${worst + 1}번만 눌러도 그만큼을 맞는다. 평가가 무의미해지므로 ` +
+            `보기 순서를 흩어라 (정답만 옮기고 오답끼리의 순서는 유지하면 된다)`
+        )
+      }
+      for (let k = 0; k < widest; k++) {
+        if (hits[k] === 0 && avail[k] >= SLOT_BIAS_MIN_ITEMS) {
+          problems.push(
+            `${chapter.id}: ${k + 1}번 칸이 정답인 문항이 0개다 (그 칸이 있는 문항 ` +
+              `${avail[k]}개) [${spread}] -- 아이가 이 챕터에서 그 칸을 한 번도 ` +
+              `정답으로 만나지 않는다. 저자가 정답을 먼저 적는 습관이 만드는 편향이다`
+          )
+        }
       }
     }
   }

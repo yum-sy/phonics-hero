@@ -97,8 +97,8 @@ export const chapter6 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c6s1-lion', icon: 'lion', label: 'lion', correct: false },
-            { id: 'c6s1-leg', icon: 'leg', label: 'leg', correct: false },
             { id: 'c6s1-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c6s1-leg', icon: 'leg', label: 'leg', correct: false },
           ],
           readAloud: { targetText: 'lion' },
         },
@@ -110,9 +110,9 @@ export const chapter6 = {
           instructionKo: '"hen"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'hen',
           options: [
-            { id: 'c6s1-hat', icon: 'hat', label: 'hat', correct: true },
             { id: 'c6s1-dog2', icon: 'dog', label: 'dog', correct: false },
             { id: 'c6s1-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c6s1-hat', icon: 'hat', label: 'hat', correct: true },
           ],
           readAloud: { targetText: 'hat' },
         },
@@ -179,8 +179,8 @@ export const chapter6 = {
           // 혼동 보기는 R 하나 -- L/R 은 한국어 화자에게 최대 난점이라
           // 의도적으로 반복 노출한다(합성기 결함이 아니라 학습 목표).
           options: [
-            { id: 'c6s2-L1', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
             { id: 'c6s2-R1', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
+            { id: 'c6s2-L1', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
             { id: 'c6s2-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
           ],
         },
@@ -193,9 +193,9 @@ export const chapter6 = {
           // R 은 챕터 4 에서 이미 배웠으므로 여기가 이 대비를 넣을 첫 지점이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c6s2-rat', icon: 'rat', label: 'rat', correct: true },
             { id: 'c6s2-lion', icon: 'lion', label: 'lion', correct: false },
             { id: 'c6s2-leg', icon: 'leg', label: 'leg', correct: false },
-            { id: 'c6s2-rat', icon: 'rat', label: 'rat', correct: true },
           ],
           readAloud: { targetText: 'lion' },
         },
@@ -237,9 +237,9 @@ export const chapter6 = {
           instructionKo: 'lll 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'lll',
           options: [
-            { id: 'c6s2-L3', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
             { id: 'c6s2-R3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
             { id: 'c6s2-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+            { id: 'c6s2-L3', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
           ],
           readAloud: { targetText: 'L', say: 'lll' },
         },
@@ -310,9 +310,9 @@ export const chapter6 = {
           promptAudio: 'fff',
           // 혼동 보기는 S 하나 -- 둘 다 무성마찰음이라 살짝 대비된다.
           options: [
-            { id: 'c6s3-F1', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
             { id: 'c6s3-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
             { id: 'c6s3-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+            { id: 'c6s3-F1', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
           ],
         },
         {
@@ -325,8 +325,8 @@ export const chapter6 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c6s3-fish', icon: 'fish', label: 'fish', correct: false },
-            { id: 'c6s3-fan', icon: 'fan', label: 'fan', correct: false },
             { id: 'c6s3-pig', icon: 'pig', label: 'pig', correct: true },
+            { id: 'c6s3-fan', icon: 'fan', label: 'fan', correct: false },
           ],
           readAloud: { targetText: 'fish' },
         },
@@ -382,8 +382,8 @@ export const chapter6 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'F',
           options: [
-            { id: 'c6s3-fan2', icon: 'fan', label: 'fan', correct: true },
             { id: 'c6s3-hat2', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c6s3-fan2', icon: 'fan', label: 'fan', correct: true },
             { id: 'c6s3-net', icon: 'net', label: 'net', correct: false },
           ],
           readAloud: { targetText: 'fan' },
@@ -444,9 +444,9 @@ export const chapter6 = {
           // 상대로 P 를 쓴 것과 같은 논리). D 는 여기 절대 넣지 않는다
           // (SPEECH_COLLISION_PAIRS).
           options: [
-            { id: 'c6s4-B1', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
             { id: 'c6s4-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
             { id: 'c6s4-M1', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+            { id: 'c6s4-B1', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
           ],
         },
         {
@@ -460,8 +460,8 @@ export const chapter6 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c6s4-ball', icon: 'ball', label: 'ball', correct: false },
-            { id: 'c6s4-bed2', icon: 'bed', label: 'bed', correct: false },
             { id: 'c6s4-pot', icon: 'pot', label: 'pot', correct: true },
+            { id: 'c6s4-bed2', icon: 'bed', label: 'bed', correct: false },
           ],
           readAloud: { targetText: 'ball' },
         },
@@ -523,8 +523,8 @@ export const chapter6 = {
           promptLetter: 'b',
           options: [
             { id: 'c6s4-shape-d', icon: 'letterTile', label: 'd', correct: false },
-            { id: 'c6s4-shape-b', icon: 'letterTile', label: 'b', correct: true },
             { id: 'c6s4-shape-p', icon: 'letterTile', label: 'p', correct: false },
+            { id: 'c6s4-shape-b', icon: 'letterTile', label: 'b', correct: true },
           ],
           readAloud: { targetText: 'b' },
         },
@@ -556,21 +556,21 @@ export const chapter6 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'L, F, B와 지난 소리까지 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'lll',
               options: [
-                { id: 'c6s4-qL', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
                 { id: 'c6s4-qF', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s4-qB', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s4-qL', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
               ],
             },
             {
               promptAudio: 'fff',
               options: [
-                { id: 'c6s4-qF2', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
                 { id: 'c6s4-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s4-qF2', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
                 { id: 'c6s4-qL2', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
               ],
             },
@@ -590,8 +590,8 @@ export const chapter6 = {
             {
               promptAudio: 'rrr',
               options: [
-                { id: 'c6s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
                 { id: 'c6s4-qL4', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+                { id: 'c6s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
                 { id: 'c6s4-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
               ],
             },
@@ -662,28 +662,28 @@ export const chapter6 = {
           kind: 'break',
           instructionKo: '이번엔 big이에요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['buh, buh, buh', 'iii', 'guh, guh, guh', 'big'],
+          repeatAudio: ['buh, buh, buh', 'iii', 'guh, guh, guh', 'big', 'big'],
         },
         {
           id: 'c6s5-r3-quickfire',
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'L, F, B와 지난 소리까지 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'fff',
               options: [
-                { id: 'c6s5-qF', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
                 { id: 'c6s5-qB', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
                 { id: 'c6s5-qL', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+                { id: 'c6s5-qF', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
               ],
             },
             {
               promptAudio: 'buh, buh, buh',
               options: [
-                { id: 'c6s5-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s5-qL2', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+                { id: 'c6s5-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s5-qF2', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
               ],
             },
@@ -703,9 +703,9 @@ export const chapter6 = {
             {
               promptAudio: 'puh, puh, puh',
               options: [
-                { id: 'c6s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c6s5-qF4', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s5-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
               ],
             },
           ],
@@ -756,8 +756,13 @@ export const chapter6 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: 'Captain Big이 외쳐요! 같이 말해볼까요?',
-          words: ['big'],
+          instructionKo: 'big도 천천히 따라 말해보세요.',
+          words: [
+            { text: 'B', say: 'buh, buh, buh' },
+            { text: 'I', say: 'iii' },
+            { text: 'G', say: 'guh, guh, guh' },
+            'big',
+          ],
         },
         {
           id: 'c6s5-finale',

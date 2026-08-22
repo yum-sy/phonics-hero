@@ -1499,7 +1499,462 @@
     check('bosseqshot-rendered', !!document.querySelector('.beat-equation'))
   }
 
+  // --- wrong-ORDER drag-build --------------------------------------------
+  // The renderer used to refuse any tile that wasn't the next needed slot, so
+  // the word could never come out wrong and the Undo button had nothing to
+  // undo. Now placement is unconditional and the word is judged when the last
+  // slot fills. That opens a failure mode nothing else here would catch: a
+  // wrong word that quietly *counts* as a completion (beat advances, or worse,
+  // dealHit runs) -- or a round that can no longer be finished at all, which
+  // shows up as a health bar that never reaches 0. These cases pin both ends.
+
+  // Health has no exported accessor; the bar's own width is the observable.
+  const healthPct = () => {
+    const el = document.getElementById('health-fill')
+    return el ? parseInt(el.style.width, 10) : null
+  }
+
+  const buildSlotTexts = () =>
+    [...document.querySelectorAll('.build-slot')].map((s) => s.textContent)
+
+  // A correct completion goes through whenAudioIdle(), and by then the round
+  // has a queue of tap sounds behind it (every placement speaks, including the
+  // wrong-order ones) -- each held for audio.js's measured minimum. A fixed
+  // sleep here reads as "the round never completed"; poll instead.
+  async function buildCompleted(tries = 80) {
+    for (let i = 0; i < tries; i++) {
+      if (document.querySelector('.readaloud-beat')) return true
+      if (!document.querySelector('.build-slots')) return true
+      await wait(100)
+    }
+    return false
+  }
+
+  async function tapSlots(seq, gap = 180) {
+    for (const letter of seq) {
+      const tile = [...document.querySelectorAll('.letter-tile:not(:disabled)')].find(
+        (t) => t.dataset.letter === letter
+      )
+      if (!tile) throw new Error(`no enabled tile for "${letter}"`)
+      tile.click()
+      await wait(gap)
+    }
+  }
+
+  // A permutation of the same slots that is NOT the target order. Returns null
+  // when the target can't be misordered (one slot, or every slot identical) --
+  // those beats are reported rather than silently "passing" a check that never
+  // ran.
+  const misorder = (slots) => {
+    const cands = []
+    if (slots.length >= 2) {
+      cands.push([slots[1], slots[0], ...slots.slice(2)])
+      cands.push([...slots].reverse())
+      cands.push([slots[slots.length - 1], ...slots.slice(0, -1)])
+    }
+    return cands.find((c) => c.some((s, i) => s !== slots[i])) || null
+  }
+
+  // Walks to a stage's first drag-build beat and hands it back, rendered.
+  async function toFirstBuild(chapterId, stageIndex, stage) {
+    const bi = stage.beats.findIndex((b) => b.kind === 'drag-build')
+    state.clearCheckpoint()
+    await enterStage(chapterId, stageIndex)
+    await walkBeats(stage, 0, bi)
+    await until('.build-slots')
+    return stage.beats[bi]
+  }
+
+  // Chapter 1 boss, target 'SAT': wrong order lands, is visible, costs
+  // nothing, and Undo pops exactly ONE slot (not the whole word).
+  async function buildWrongOrder() {
+    const stage = chapters[0].stages[4]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBuild('chapter-1', 4, stage)
+      const slots = slotsOf(beat.target)
+      const wrong = misorder(slots)
+      obs.target = slots.join('')
+      obs.wrong = wrong ? wrong.join('') : null
+      obs.hpBefore = healthPct()
+      await tapSlots(wrong)
+      await wait(400)
+      // 1. the wrong word is actually STANDING in the slots (no guard-rail)
+      obs.slotsAfterWrong = buildSlotTexts()
+      obs.allSlotsFilled = obs.slotsAfterWrong.every((t) => t.length > 0)
+      obs.builtWrongWord = obs.slotsAfterWrong.join('') === obs.wrong
+      // 2. it did NOT count: round still on screen, no read-aloud, no damage
+      obs.stillOnRound = !!document.querySelector('.build-slots')
+      obs.leakedToReadAloud = !!document.querySelector('.readaloud-beat')
+      obs.hpAfterWrong = healthPct()
+      // 3. Undo is one step
+      const undo = document.getElementById('clear-btn')
+      obs.undoPresent = !!undo
+      undo.click()
+      await wait(150)
+      obs.slotsAfterOneUndo = buildSlotTexts()
+      obs.filledAfterOneUndo = obs.slotsAfterOneUndo.filter((t) => t.length > 0).length
+      obs.tileReenabled =
+        document.querySelectorAll('.letter-tile:not(:disabled)').length > 0
+      // 4. repeated Undo empties it, and never underflows
+      for (let i = 0; i < slots.length + 3; i++) {
+        document.getElementById('clear-btn').click()
+        await wait(60)
+      }
+      obs.slotsAfterManyUndo = buildSlotTexts()
+      obs.emptyAfterManyUndo = obs.slotsAfterManyUndo.every((t) => t === '')
+      // 5. and the round is still winnable afterwards
+      await tapSlots(slots)
+      obs.completed = await buildCompleted()
+      if (document.querySelector('.readaloud-beat')) {
+        await clickWhenEnabled('#mic-btn')
+        await wait(400)
+        obs.hpAfterCorrect = healthPct()
+      }
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'build-wrong-order-is-placeable-and-costs-nothing',
+      !threw &&
+        errors === 0 &&
+        obs.wrong !== null &&
+        obs.allSlotsFilled === true &&
+        obs.builtWrongWord === true &&
+        obs.stillOnRound === true &&
+        obs.leakedToReadAloud === false &&
+        obs.hpAfterWrong === obs.hpBefore &&
+        obs.filledAfterOneUndo === slotsOf(stage.beats.find((b) => b.kind === 'drag-build').target).length - 1 &&
+        obs.emptyAfterManyUndo === true &&
+        obs.completed === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // Two wrong words in a row must trigger the same rescue every other beat
+  // has: the board clears itself and the first sound is re-demonstrated.
+  // Also the negative: ONE wrong word must NOT clear it (that would be the
+  // app doing the child's Undo for them).
+  async function buildWrongRescue() {
+    const stage = chapters[0].stages[4]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBuild('chapter-1', 4, stage)
+      const slots = slotsOf(beat.target)
+      const wrong = misorder(slots)
+      await tapSlots(wrong)
+      await wait(400)
+      obs.keptAfterFirstWrong = buildSlotTexts().filter((t) => t).length
+      // clear it by hand (that is the point of Undo) and get it wrong again
+      for (let i = 0; i < slots.length; i++) {
+        document.getElementById('clear-btn').click()
+        await wait(60)
+      }
+      spoken = []
+      await tapSlots(wrong)
+      await wait(500)
+      obs.slotsAfterSecondWrong = buildSlotTexts()
+      obs.autoCleared = obs.slotsAfterSecondWrong.every((t) => t === '')
+      obs.allTilesBack =
+        document.querySelectorAll('.letter-tile:not(:disabled)').length ===
+        document.querySelectorAll('.letter-tile').length
+      // re-demonstration fires on a 1.2s timer: the first slot's own sound
+      const firstSay = (() => {
+        const l = beat.letters
+          .map((x) => (typeof x === 'string' ? { text: x, say: x } : { text: x.text, say: x.say || x.text }))
+          .find((x) => x.text === slots[0])
+        return l ? l.say : slots[0]
+      })()
+      obs.redemonstrated = await waitForSpeech((sp) => sp.includes(firstSay), 4000)
+      obs.pulsed = !!document.querySelector('.letter-tile.hint-pulse')
+      // still winnable after the rescue
+      await tapSlots(slots)
+      obs.completed = await buildCompleted()
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'build-two-wrong-words-rescue',
+      !threw &&
+        errors === 0 &&
+        obs.keptAfterFirstWrong > 0 &&
+        obs.autoCleared === true &&
+        obs.allTilesBack === true &&
+        obs.redemonstrated === true &&
+        obs.completed === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // The digraph invariant, on the wrong-order path this time: 'AI' must land
+  // in ONE slot even when it lands in the WRONG slot. If anything ever split
+  // it into 'A' + 'I' the slot texts would be single characters and the
+  // target could never be matched again.
+  async function buildWrongOrderDigraph() {
+    const stage = chapters[6].stages[4]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBuild('chapter-7', 4, stage)
+      const slots = slotsOf(beat.target)
+      const wrong = misorder(slots)
+      obs.target = JSON.stringify(slots)
+      obs.wrong = JSON.stringify(wrong)
+      await tapSlots(wrong)
+      await wait(400)
+      const texts = buildSlotTexts()
+      obs.slots = texts
+      obs.twoCharSlots = texts.filter((t) => t.length === 2)
+      obs.digraphIntact =
+        slots.filter((s) => s.length === 2).length === obs.twoCharSlots.length
+      obs.matchesWrongOrder = texts.join('|') === wrong.join('|')
+      obs.stillOnRound = !!document.querySelector('.build-slots')
+      // fix it the way the child would, then finish
+      for (let i = 0; i < slots.length; i++) {
+        document.getElementById('clear-btn').click()
+        await wait(60)
+      }
+      await tapSlots(slots)
+      obs.completed = await buildCompleted()
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'build-wrong-order-keeps-digraph-in-one-slot',
+      !threw &&
+        errors === 0 &&
+        obs.digraphIntact === true &&
+        obs.matchesWrongOrder === true &&
+        obs.stillOnRound === true &&
+        obs.completed === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // The silent-failure check this change is actually risky for: play whole
+  // boss stages where EVERY build beat is first built in the wrong order,
+  // then undone, then built right -- and assert the health bar still reaches
+  // 0 and the reward screen still lands. A wrong order that ate a hit, or a
+  // round that couldn't recover, both surface here as hp > 0.
+  async function buildWrongOrderStages() {
+    const rows = []
+    for (const ci of [0, 2, 6]) {
+      const chapter = chapters[ci]
+      const stage = chapter.stages[chapter.stages.length - 1]
+      const si = chapter.stages.length - 1
+      errors = 0
+      state.clearCheckpoint()
+      let threw = null
+      let minHp = null
+      let wrongAttempts = 0
+      let unmisorderable = 0
+      const sampler = setInterval(() => {
+        const p = healthPct()
+        if (p !== null && (minHp === null || p < minHp)) minHp = p
+      }, 40)
+      try {
+        await enterStage(chapter.id, si)
+        for (let bi = 0; bi < stage.beats.length; bi++) {
+          const beat = stage.beats[bi]
+          if (beat.kind !== 'drag-build') {
+            await walkBeats(stage, bi, bi + 1)
+            continue
+          }
+          await until('.build-slots')
+          const slots = slotsOf(beat.target)
+          const wrong = misorder(slots)
+          if (wrong) {
+            wrongAttempts += 1
+            await tapSlots(wrong, 120)
+            await wait(300)
+            if (!document.querySelector('.build-slots')) {
+              throw new Error(`beat[${bi}] ${beat.id}: wrong order ENDED the round`)
+            }
+            // one extra tap with every slot full -- must not throw or advance
+            const spare = document.querySelector('.letter-tile:not(:disabled)')
+            if (spare) {
+              spare.click()
+              await wait(120)
+            }
+            for (let i = 0; i < slots.length; i++) {
+              document.getElementById('clear-btn').click()
+              await wait(60)
+            }
+          } else {
+            unmisorderable += 1
+          }
+          await tapSlots(slots, 120)
+          await wait(250)
+          if (beat.scored && beat.readAloud) await clickWhenEnabled('#mic-btn')
+          await wait(200)
+        }
+        await until('.reward-screen', 80)
+      } catch (e) {
+        threw = e.message || String(e)
+      }
+      clearInterval(sampler)
+      const reached = !!document.querySelector('.reward-screen')
+      rows.push({
+        stage: stage.id,
+        wrongAttempts,
+        unmisorderable,
+        minHealthPct: minHp,
+        reachedReward: reached,
+        errors,
+        threw,
+        ok: !threw && errors === 0 && reached && minHp === 0 && wrongAttempts > 0,
+      })
+      state.clearCheckpoint()
+    }
+    const bad = rows.filter((r) => !r.ok)
+    check(
+      'build-wrong-order-health-still-reaches-zero',
+      bad.length === 0,
+      JSON.stringify(rows)
+    )
+  }
+
+  // The wrong-complete state adds a line of feedback text that no previous
+  // build state had, on a screen that is already tight in portrait. Measure
+  // it: the harness's own <pre> is hidden first, otherwise every reading here
+  // is the harness's height, not the app's.
+  async function buildWrongFit() {
+    const out = document.getElementById('out')
+    const prev = out.style.display
+    out.style.display = 'none'
+    let threw = null
+    const obs = {}
+    try {
+      const stage = chapters[0].stages[4]
+      const beat = await toFirstBuild('chapter-1', 4, stage)
+      await tapSlots(misorder(slotsOf(beat.target)))
+      await wait(500)
+      const de = document.documentElement
+      const fb = document.getElementById('beat-feedback')
+      const cs = getComputedStyle(fb)
+      const lineH = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2
+      obs.vp = `${window.innerWidth}x${window.innerHeight}`
+      obs.feedback = fb.textContent
+      obs.feedbackLines = Math.round(fb.getBoundingClientRect().height / lineH)
+      // Candidate wordings measured in place (the wrapped run's own width is
+      // not the unwrapped one, so each candidate is measured with nowrap):
+      const prevWS = fb.style.whiteSpace
+      fb.style.whiteSpace = 'nowrap'
+      const keep = fb.textContent
+      obs.candidates = [
+        keep,
+        '순서가 달라요. ↺ Undo 로 빼고 다시 해볼까요?',
+        '↺ Undo 로 한 글자 빼요',
+      ].map((t) => {
+        fb.textContent = t
+        const r = document.createRange()
+        r.selectNodeContents(fb)
+        return `${t}=${Math.round(r.getBoundingClientRect().width)}/${Math.round(fb.parentElement.clientWidth)}`
+      })
+      fb.textContent = keep
+      fb.style.whiteSpace = prevWS
+      obs.ovfY = Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight
+      obs.ovfX = Math.max(de.scrollWidth, document.body.scrollWidth) - window.innerWidth
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    out.style.display = prev
+    check(
+      'build-wrong-state-does-not-scroll',
+      !threw && obs.ovfY <= 0 && obs.ovfX <= 0,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // Screenshot: stops with a COMPLETE but WRONG word standing in the slots --
+  // the state that could not exist before, and the one the Undo button is
+  // now for.
+  async function buildWrongShot() {
+    const stage = chapters[0].stages[4]
+    const beat = await toFirstBuild('chapter-1', 4, stage)
+    const slots = slotsOf(beat.target)
+    await tapSlots(misorder(slots))
+    await wait(400)
+    check(
+      'buildwrongshot-rendered',
+      buildSlotTexts().every((t) => t.length > 0),
+      JSON.stringify(buildSlotTexts())
+    )
+  }
+
+  // --- top-level title width ---------------------------------------------
+  // The world-select header is the app's title line and .map-header has no
+  // nowrap: a longer title silently becomes two lines (this project already
+  // had "Chapters 22-28" wrap at an ASCII hyphen). Measure the rendered
+  // glyph run against the element's content box, with the old title as the
+  // control -- a Range over the text node, because a wrapped line never
+  // grows scrollWidth.
+  async function worldHeaderFit() {
+    screens.renderWorldSelect()
+    await until('.map-header')
+    const header = document.querySelector('.map-header')
+    // The title string carries its own width bound in an inline font-size on
+    // an inner span (see renderWorldSelect). Measure THAT element: replacing
+    // .map-header's textContent would delete the span and silently measure at
+    // the unshrunk header size -- reporting a wrap that the app doesn't have.
+    const el = header.querySelector('span') || header
+    const cs = getComputedStyle(el)
+    const lineH = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.14
+    const measureText = (text) => {
+      const prev = el.textContent
+      el.textContent = text
+      const r = document.createRange()
+      r.selectNodeContents(el)
+      const rects = [...r.getClientRects()]
+      const h = el.getBoundingClientRect().height
+      const out = {
+        text,
+        lines: Math.max(rects.length, Math.round(h / lineH)),
+        widest: Math.round(Math.max(...rects.map((x) => x.width))),
+        // The available width is the HEADER's content box: the measured
+        // element may be an inline span, whose clientWidth is always 0.
+        boxW: Math.round(header.clientWidth),
+      }
+      el.textContent = prev
+      return out
+    }
+    const now = measureText(el.textContent)
+    const old = measureText('Carbot Phonics · Pick a World')
+    // Unwrapped run width per candidate: how much has to give, and which
+    // shorter phrasings would fit, without guessing at glyph widths.
+    const prevWS = el.style.whiteSpace
+    el.style.whiteSpace = 'nowrap'
+    const nowrap = [
+      el.textContent,
+      'Carbot Phonics · Pick a World',
+      "Yum JiHoon's Phonics",
+      "JiHoon's Phonics · Pick a World",
+    ].map(measureText)
+    el.style.whiteSpace = prevWS
+    check(
+      'world-header-title-fits-one-line',
+      now.lines === 1 && now.widest <= now.boxW + 0.5,
+      JSON.stringify({
+        vw: window.innerWidth, vh: window.innerHeight,
+        headerFontSize: getComputedStyle(header).fontSize,
+        titleFontSize: cs.fontSize,
+        current: now, controlOldTitle: old,
+        unwrappedRuns: nowrap.map((m) => `${m.text}=${m.widest}/${m.boxW}`),
+      })
+    )
+  }
+
   const CASES = {
+    worldheader: worldHeaderFit,
     tap: tapBacklog,
     poison: queuePoison,
     dbl: doubleTap,
@@ -1528,6 +1983,12 @@
     ch7buildshot: ch7BuildShot,
     allbuilds: allBuildBeats,
     buildmismatch: buildMismatchGuard,
+    buildwrong: buildWrongOrder,
+    buildrescue: buildWrongRescue,
+    buildwrongdigraph: buildWrongOrderDigraph,
+    buildwrongstages: buildWrongOrderStages,
+    buildwrongfit: buildWrongFit,
+    buildwrongshot: buildWrongShot,
     artscan: artCrashScan,
     onendearly: onendEarlyHypothesis,
     eqfit: equationFit,

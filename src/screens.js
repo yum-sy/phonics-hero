@@ -221,9 +221,17 @@ function worldSelectScreen() {
     })
     .join('')
 
+  // The app title is 5 characters longer than the old one and .map-header
+  // does not nowrap, so at the header's own clamped size it wrapped mid-phrase
+  // in portrait (measured: 874px of glyphs in a 760px box; the old title was
+  // 709px and fit). The width bound belongs to the title string, not to the
+  // header rule -- so the shrink rides on the string here rather than
+  // re-stating layout's clamp: `1em` inside this span IS whatever .map-header
+  // computed to, and the vw term only wins when the line would not fit.
+  // Landscape has 1032px to work with and keeps the full 48px.
   app.innerHTML = `
     <div class="screen chapter-select-screen">
-      <div class="map-header">Carbot Phonics · Pick a World</div>
+      <div class="map-header"><span style="font-size:min(1em,5.5vw)">Yum JiHoon's Phonics · Pick a World</span></div>
       <div class="chapter-grid">${cards}</div>
     </div>
   `
@@ -1170,7 +1178,10 @@ function renderBuildBeat(runtime, beat) {
   let placed = []
   const slots = area.querySelectorAll('.build-slot')
   const tiles = area.querySelectorAll('.letter-tile')
+  const slotRow = area.querySelector('.build-slots')
+  const undoBtn = document.getElementById('clear-btn')
   const wrongStreak = makeWrongStreakTracker()
+  const feedback = () => document.getElementById('beat-feedback')
 
   function redraw() {
     slots.forEach((slot, i) => {
@@ -1178,58 +1189,96 @@ function renderBuildBeat(runtime, beat) {
     })
   }
 
-  // Set once the word is complete: the tiles are all disabled by then, but
-  // 지우기 stays tappable during the await and would otherwise re-arm the
-  // round while the transition to the next beat was already under way.
+  // Set once the word is complete AND correct: the tiles are all disabled by
+  // then, but Undo stays tappable during the await and would otherwise
+  // re-arm the round while the transition to the next beat was already under
+  // way. A complete-but-wrong word deliberately does NOT settle -- Undo is
+  // the only way out of it.
   let settled = false
+
+  // Undo is one step, not a clear-all: the child taps tiles left to right, so
+  // popping the last one lets a single misplacement be fixed without throwing
+  // away the letters that were already right. Clearing everything is still
+  // reachable by repeating it, and the 2-wrong-rounds rescue below does it
+  // automatically.
+  function undoOne() {
+    const last = placed.pop()
+    if (!last) return false
+    const tile = area.querySelector(`.letter-tile[data-tile="${last.tileIndex}"]`)
+    if (tile) {
+      tile.disabled = false
+      tile.classList.remove('used')
+    }
+    redraw()
+    feedback().textContent = ''
+    return true
+  }
+
+  // A wrong ORDER is not a wrong answer: it costs no health (dealHit only
+  // ever runs off the correct completion, via runReadAloud) and the round
+  // never ends, so this is the "no fail state" rule intact -- the child just
+  // hasn't finished yet. Judging happens on completion rather than per tap,
+  // because a per-tap rejection is exactly the guard-rail that made Undo
+  // dead weight: the point is that the word can actually come out wrong and
+  // the child sees it standing there, spelled, before fixing it.
+  function rejectWord() {
+    shakeEl(slotRow)
+    shakeEl(undoBtn)
+    feedback().textContent = '순서가 달라요! ↺ Undo 로 빼요'
+    if (wrongStreak.registerWrong()) {
+      // Two wrong words in a row: clear it for them rather than leaving a
+      // 5-year-old to un-tap three tiles, then re-demonstrate the first
+      // sound (same scaffolding the other beats use -- it points, it never
+      // places the tile itself).
+      while (undoOne()) {}
+      feedback().textContent = '처음부터 같이 해볼까요?'
+      setTimeout(() => redemonstrateLetterTile(area, letters, target[0]), 1200)
+    }
+  }
 
   tiles.forEach((tile) => {
     tile.addEventListener('click', withRecovery(runtime, async () => {
       if (settled || tile.disabled) return
       const { text: letter, say } = letters[Number(tile.dataset.tile)]
-      const nextIndex = placed.length
-      if (nextIndex >= target.length) return
+      if (placed.length >= target.length) {
+        // Every slot is full and the word is wrong, so a spare tile has
+        // nowhere to go. Silently swallowing the tap reads as a broken
+        // screen; point at the one control that still does something.
+        shakeEl(undoBtn)
+        feedback().textContent = '↺ Undo 로 한 글자 빼요'
+        return
+      }
+      // Every placement speaks its own sound, so a wrong word is also heard
+      // as one ("tuh-aaa-sss"): the child gets the mismatch through the ear
+      // as well as the eye, without the app inventing an utterance for it.
       speakTap(say)
-      if (letter === target[nextIndex]) {
-        placed.push({ letter, tileIndex: tile.dataset.tile })
-        tile.disabled = true
-        tile.classList.add('used')
-        redraw()
-        if (placed.length === target.length) {
-          settled = true
-          flashCorrect(area)
-          if (beat.scored && beat.readAloud) {
-            await whenAudioIdle()
-            runReadAloud(runtime, beat, beat.readAloud)
-          } else {
-            await waitForTransition(600)
-            advanceBeat(runtime)
-          }
-        }
+      placed.push({ letter, tileIndex: tile.dataset.tile })
+      tile.disabled = true
+      tile.classList.add('used')
+      redraw()
+      feedback().textContent = ''
+      if (placed.length < target.length) return
+      // Slot-wise comparison, so a digraph slot ('AI') is matched whole --
+      // never against a single character.
+      if (!placed.every((p, i) => p.letter === target[i])) {
+        rejectWord()
+        return
+      }
+      settled = true
+      flashCorrect(area)
+      if (beat.scored && beat.readAloud) {
+        await whenAudioIdle()
+        runReadAloud(runtime, beat, beat.readAloud)
       } else {
-        shakeEl(tile)
-        document.getElementById('beat-feedback').textContent =
-          '순서를 다시 생각해볼까요?'
-        if (wrongStreak.registerWrong()) {
-          const neededLetter = target[placed.length]
-          setTimeout(
-            () => redemonstrateLetterTile(area, letters, neededLetter),
-            1200
-          )
-        }
+        await waitForTransition(600)
+        advanceBeat(runtime)
       }
     }))
   })
 
-  document.getElementById('clear-btn').addEventListener('click', () => {
+  undoBtn.addEventListener('click', () => {
     if (settled) return
-    placed = []
-    tiles.forEach((t) => {
-      t.disabled = false
-      t.classList.remove('used')
-    })
-    redraw()
-    document.getElementById('beat-feedback').textContent = ''
+    undoOne()
   })
 }
 

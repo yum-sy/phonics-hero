@@ -80,8 +80,8 @@ export const chapter4 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c4s1-rat', icon: 'rat', label: 'rat', correct: false },
-            { id: 'c4s1-ring', icon: 'ring', label: 'ring', correct: false },
             { id: 'c4s1-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c4s1-ring', icon: 'ring', label: 'ring', correct: false },
           ],
           readAloud: { targetText: 'rat' },
         },
@@ -93,9 +93,9 @@ export const chapter4 = {
           instructionKo: '"cat"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'cat',
           options: [
-            { id: 'c4s1-cake', icon: 'cake', label: 'cake', correct: true },
             { id: 'c4s1-egg', icon: 'egg', label: 'egg', correct: false },
             { id: 'c4s1-pin', icon: 'pin', label: 'pin', correct: false },
+            { id: 'c4s1-cake', icon: 'cake', label: 'cake', correct: true },
           ],
           readAloud: { targetText: 'cake' },
         },
@@ -160,8 +160,8 @@ export const chapter4 = {
           instructionKo: 'rrr 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'rrr',
           options: [
-            { id: 'c4s2-R1', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
             { id: 'c4s2-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+            { id: 'c4s2-R1', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
             { id: 'c4s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
         },
@@ -172,9 +172,9 @@ export const chapter4 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c4s2-net', icon: 'net', label: 'net', correct: true },
             { id: 'c4s2-ring', icon: 'ring', label: 'ring', correct: false },
             { id: 'c4s2-rat', icon: 'rat', label: 'rat', correct: false },
-            { id: 'c4s2-net', icon: 'net', label: 'net', correct: true },
           ],
           readAloud: { targetText: 'ring' },
         },
@@ -219,9 +219,9 @@ export const chapter4 = {
           promptAudio: 'rrr',
           // 혼동 보기는 L 하나 -- /r/ 와 /l/ 은 한국어 화자에게 최대 난점이다.
           options: [
-            { id: 'c4s2-R3', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
             { id: 'c4s2-L3', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
             { id: 'c4s2-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c4s2-R3', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
           ],
           readAloud: { targetText: 'R', say: 'rrr' },
         },
@@ -288,9 +288,9 @@ export const chapter4 = {
           promptAudio: 'mmm',
           // 혼동 보기는 N 하나 -- M/N 은 획 수 차이로 최대 혼동쌍이다.
           options: [
-            { id: 'c4s3-M1', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
             { id: 'c4s3-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
             { id: 'c4s3-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c4s3-M1', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
           ],
         },
         {
@@ -302,8 +302,8 @@ export const chapter4 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c4s3-pig', icon: 'pig', label: 'pig', correct: false },
-            { id: 'c4s3-pen', icon: 'pen', label: 'pen', correct: false },
             { id: 'c4s3-moon', icon: 'moon', label: 'moon', correct: true },
+            { id: 'c4s3-pen', icon: 'pen', label: 'pen', correct: false },
           ],
           readAloud: { targetText: 'pig' },
         },
@@ -366,8 +366,8 @@ export const chapter4 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'M',
           options: [
-            { id: 'c4s3-moon2', icon: 'moon', label: 'moon', correct: true },
             { id: 'c4s3-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c4s3-moon2', icon: 'moon', label: 'moon', correct: true },
             { id: 'c4s3-nose', icon: 'nose', label: 'nose', correct: false },
           ],
           readAloud: { targetText: 'moon' },
@@ -423,9 +423,9 @@ export const chapter4 = {
           // 혼동 보기는 T 하나 -- /t/ 와 /d/ 는 무성/유성 대비로 유용하다.
           // B 는 절대 넣지 않는다 (SPEECH_COLLISION_PAIRS 참조).
           options: [
-            { id: 'c4s4-D1', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
             { id: 'c4s4-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'c4s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+            { id: 'c4s4-D1', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
           ],
         },
         {
@@ -437,8 +437,8 @@ export const chapter4 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c4s4-egg', icon: 'egg', label: 'egg', correct: false },
-            { id: 'c4s4-elephant', icon: 'elephant', label: 'elephant', correct: false },
             { id: 'c4s4-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c4s4-elephant', icon: 'elephant', label: 'elephant', correct: false },
           ],
           readAloud: { targetText: 'egg' },
         },
@@ -506,8 +506,8 @@ export const chapter4 = {
           promptLetter: 'd',
           options: [
             { id: 'c4s4-shape-b', icon: 'letterTile', label: 'b', correct: false },
-            { id: 'c4s4-shape-d', icon: 'letterTile', label: 'd', correct: true },
             { id: 'c4s4-shape-p', icon: 'letterTile', label: 'p', correct: false },
+            { id: 'c4s4-shape-d', icon: 'letterTile', label: 'd', correct: true },
           ],
           readAloud: { targetText: 'd' },
         },
@@ -538,21 +538,21 @@ export const chapter4 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'R, M, D를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'rrr',
               options: [
-                { id: 'c4s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
                 { id: 'c4s4-qM', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
                 { id: 'c4s4-qD', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
+                { id: 'c4s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
               ],
             },
             {
               promptAudio: 'mmm',
               options: [
-                { id: 'c4s4-qM2', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
                 { id: 'c4s4-qD2', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
+                { id: 'c4s4-qM2', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
                 { id: 'c4s4-qR2', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
               ],
             },
@@ -628,36 +628,36 @@ export const chapter4 = {
           kind: 'break',
           instructionKo: '이번엔 red예요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['rrr', 'eh, eh, eh', 'duh, duh, duh', 'red'],
+          repeatAudio: ['rrr', 'eh, eh, eh', 'duh, duh, duh', 'red', 'red'],
         },
         {
           id: 'c4s5-r3-quickfire',
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'R, M, D를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'mmm',
               options: [
-                { id: 'c4s5-qM', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
                 { id: 'c4s5-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
+                { id: 'c4s5-qM', icon: 'letterTile', label: 'M', say: 'mmm', correct: true },
                 { id: 'c4s5-qD', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
               ],
             },
             {
               promptAudio: 'rrr',
               options: [
-                { id: 'c4s5-qR2', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
                 { id: 'c4s5-qD2', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
                 { id: 'c4s5-qM2', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+                { id: 'c4s5-qR2', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
               ],
             },
             {
               promptAudio: 'duh, duh, duh',
               options: [
-                { id: 'c4s5-qD3', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
                 { id: 'c4s5-qM3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+                { id: 'c4s5-qD3', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
                 { id: 'c4s5-qR3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
               ],
             },
@@ -709,8 +709,13 @@ export const chapter4 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '캡틴레드가 외쳐요! 같이 말해볼까요?',
-          words: ['red'],
+          instructionKo: 'red도 천천히 따라 말해보세요.',
+          words: [
+            { text: 'R', say: 'rrr' },
+            { text: 'E', say: 'eh, eh, eh' },
+            { text: 'D', say: 'duh, duh, duh' },
+            'red',
+          ],
         },
         {
           id: 'c4s5-finale',

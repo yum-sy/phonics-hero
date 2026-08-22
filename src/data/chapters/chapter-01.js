@@ -58,9 +58,9 @@ export const chapter1 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'dog', icon: 'dog', label: 'dog', correct: true },
             { id: 'sun', icon: 'sun', label: 'sun', correct: false },
             { id: 'snake', icon: 'snake', label: 'snake', correct: false },
-            { id: 'dog', icon: 'dog', label: 'dog', correct: true },
           ],
           readAloud: { targetText: 'sun' },
         },
@@ -92,8 +92,8 @@ export const chapter1 = {
           instructionKo: '"sun"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'sun',
           options: [
-            { id: 'sock2', icon: 'sock', label: 'sock', correct: true },
             { id: 'moon', icon: 'moon', label: 'moon', correct: false },
+            { id: 'sock2', icon: 'sock', label: 'sock', correct: true },
             { id: 'cup', icon: 'cup', label: 'cup', correct: false },
           ],
           readAloud: { targetText: 'sock' },
@@ -172,8 +172,8 @@ export const chapter1 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'snake', icon: 'snake', label: 'snake', correct: false },
-            { id: 'star', icon: 'star', label: 'star', correct: false },
             { id: 'bus', icon: 'bus', label: 'bus', correct: true },
+            { id: 'star', icon: 'star', label: 'star', correct: false },
           ],
           readAloud: { targetText: 'star' },
         },
@@ -215,9 +215,9 @@ export const chapter1 = {
           instructionKo: 'sss 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'sss',
           options: [
-            { id: 'S3', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
             { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zz', correct: false },
             { id: 'C3', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
+            { id: 'S3', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
           ],
           readAloud: { targetText: 'S', say: 'sss' },
         },
@@ -229,8 +229,8 @@ export const chapter1 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'S',
           options: [
-            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
             { id: 'dog', icon: 'dog', label: 'dog', correct: false },
+            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
             { id: 'cup2', icon: 'cup', label: 'cup', correct: false },
           ],
           readAloud: { targetText: 'sun' },
@@ -353,9 +353,9 @@ export const chapter1 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'A',
           options: [
-            { id: 'apple3', icon: 'apple', label: 'apple', correct: true },
             { id: 'dog', icon: 'dog', label: 'dog', correct: false },
             { id: 'sock', icon: 'sock', label: 'sock', correct: false },
+            { id: 'apple3', icon: 'apple', label: 'apple', correct: true },
           ],
           readAloud: { targetText: 'apple' },
         },
@@ -407,8 +407,8 @@ export const chapter1 = {
           instructionKo: 'tuh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'tuh, tuh, tuh',
           options: [
-            { id: 'T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
             { id: 'L1', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+            { id: 'T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
             { id: 'D1', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
           ],
         },
@@ -419,9 +419,9 @@ export const chapter1 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
             { id: 'top', icon: 'top', label: 'top', correct: false },
             { id: 'tap', icon: 'tap', label: 'tap', correct: false },
-            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
           ],
           readAloud: { targetText: 'top' },
         },
@@ -463,8 +463,8 @@ export const chapter1 = {
           instructionKo: 'tuh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'tuh, tuh, tuh',
           options: [
-            { id: 'T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
             { id: 'D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
+            { id: 'T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
             { id: 'P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
           ],
           readAloud: { targetText: 'T', say: 'tuh, tuh, tuh' },
@@ -477,9 +477,9 @@ export const chapter1 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'T',
           options: [
-            { id: 'top3', icon: 'top', label: 'top', correct: true },
             { id: 'apple', icon: 'apple', label: 'apple', correct: false },
             { id: 'bus', icon: 'bus', label: 'bus', correct: false },
+            { id: 'top3', icon: 'top', label: 'top', correct: true },
           ],
           readAloud: { targetText: 'top' },
         },
@@ -496,13 +496,13 @@ export const chapter1 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'S, A, T를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'sss',
               options: [
-                { id: 'cS', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
                 { id: 'cA', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+                { id: 'cS', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
                 { id: 'cT', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
@@ -517,9 +517,9 @@ export const chapter1 = {
             {
               promptAudio: 'tuh, tuh, tuh',
               options: [
-                { id: 'cT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
                 { id: 'cS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
                 { id: 'cA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+                { id: 'cT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
               ],
             },
           ],
@@ -592,7 +592,7 @@ export const chapter1 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'S, A, T를 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'sss',
@@ -605,16 +605,16 @@ export const chapter1 = {
             {
               promptAudio: 'aaa',
               options: [
-                { id: 'qA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'qS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
                 { id: 'qT2', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+                { id: 'qA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
               ],
             },
             {
               promptAudio: 'tuh, tuh, tuh',
               options: [
-                { id: 'qT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
                 { id: 'qS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+                { id: 'qT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
                 { id: 'qA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
               ],
             },

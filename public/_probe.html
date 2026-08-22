@@ -20,6 +20,29 @@
   // `NOSCROLL gap=100%`, so always read `on=[...]`; and there is no `timeout`
   // (or `gtimeout`) command on this Mac, so `timeout 200 "$CH" ...` exits 127
   // without launching Chrome and looks identical to a hung run.
+  //
+  // TOOLBAR SIMULATION -- the run that matters, added after two on-device
+  // scroll reports (reward screen, chapter select) that the suite above
+  // passed cleanly. On the iPad the browser's tab strip + address bar eat
+  // 100-130px of the 1194, and they collapse on scroll, so the layout has to
+  // fit the SMALL viewport. Headless Chrome has no dynamic toolbar, so
+  // `svh == dvh == vh == 100%` here and the defect is structurally
+  // unreproducible at the normal window size. It IS reproducible by taking
+  // the toolbar off the window instead, because once the CSS is written in
+  // `svh` a headless run at innerHeight = H is an exact model of a device
+  // whose small viewport is H:
+  //   portrait  834,1151   (innerHeight 1064 = 1194 - 130)
+  //   landscape 1194,791   (innerHeight  704 =  834 - 130)
+  // The verdict line reports `svh=` (100svh resolved) and `tb=` (how much of
+  // the nominal device height is missing), so a toolbar run labels itself and
+  // cannot be mistaken for a full-height one.
+  //
+  // RIGID=[...] is the static half of the same defect. The reward screen was
+  // the only screen sized entirely in flat px, so its natural height was the
+  // same 1129px at every viewport and it overflowed anything shorter -- and
+  // no single-viewport metric could see that. RIGID lints the stylesheet
+  // instead: a large flat-px font-size or box on a rendered element, with no
+  // viewport/container/percentage term anywhere in the value, cannot shrink.
   const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   const params = new URLSearchParams(location.search)
   const shot = params.get('shot') || 'world'
@@ -218,6 +241,54 @@
     )
   }
 
+  // 100svh in px. Equal to innerHeight in headless (no dynamic toolbar), so
+  // this is not a check of svh support -- it is what makes a reduced-window
+  // run self-labelling: `tb` is the slice of the nominal device height that
+  // the run is pretending the browser UI took.
+  function svhPx() {
+    const d = document.createElement('div')
+    d.setAttribute('style', 'position:absolute;top:0;left:0;width:1px;height:100svh;visibility:hidden')
+    document.body.appendChild(d)
+    const h = Math.round(d.getBoundingClientRect().height)
+    d.remove()
+    return h
+  }
+
+  // Flat-px sizes that cannot shrink when the viewport does. Reads the
+  // stylesheet rather than computed style, because a computed 100px says
+  // nothing about whether it came from a clamp with a viewport term. Only
+  // rules that match something rendered are reported, so a shot is judged on
+  // the screen it actually drew.
+  const RIGID_PROPS = { 'font-size': 48, width: 120, height: 120, 'max-height': 200, gap: 40 }
+  function rigid() {
+    const out = []
+    for (const sheet of document.styleSheets) {
+      let rules
+      try { rules = sheet.cssRules } catch { continue }
+      if (!rules) continue
+      const walk = (list) => {
+        for (const r of list) {
+          if (r.cssRules) { walk(r.cssRules); continue }
+          if (!r.selectorText || !r.style) continue
+          let matches = false
+          try { matches = !!document.querySelector(r.selectorText.replace(/:(active|hover|focus|disabled|empty)\b/g, '')) } catch { continue }
+          if (!matches) continue
+          for (const [prop, floor] of Object.entries(RIGID_PROPS)) {
+            const v = r.style.getPropertyValue(prop)
+            if (!v) continue
+            // Anything elastic disqualifies the declaration from being rigid.
+            if (/svh|dvh|lvh|vh|vw|vmin|vmax|cq[whbi]|%|auto|min-content|max-content|fr/.test(v)) continue
+            const px = parseFloat(v)
+            if (!(px >= floor)) continue
+            out.push(`${r.selectorText.split(',')[0].trim()}{${prop}:${v.trim()}}`)
+          }
+        }
+      }
+      walk(rules)
+    }
+    return out
+  }
+
   function measure() {
     const de = document.documentElement
     const vh = window.innerHeight
@@ -406,10 +477,16 @@
       document.querySelectorAll('.primary-btn, .replay-btn').forEach((b) => (b.disabled = true))
     }
     const m = measure()
+    m.svh = svhPx()
     if (params.get('nat')) {
-      // #app's own height, not body's: `html, body { height: 100% }` pins
-      // body to the viewport, so body.scrollHeight reported the viewport
-      // height back and every screen looked like it had exactly 1.000x room.
+      // #app's own height, not body's. When html/body carried
+      // `height: 100%` this was load-bearing -- body.scrollHeight reported
+      // the viewport height straight back and every screen looked like it had
+      // exactly 1.000x room. They are `min-height: 100svh` now (a percentage
+      // height resolves against the LARGE viewport, which is what put the
+      // whole document 84px past the visible area on the iPad), so body would
+      // grow honestly -- but #app stays the right box to measure, since it is
+      // the one the screens live in.
       const app = document.querySelector('#app')
       const nat = Math.max(app.scrollHeight, Math.round(app.getBoundingClientRect().height))
       m.nat = `${nat} room=${(m.vh / nat).toFixed(3)}x`
@@ -476,11 +553,12 @@
       })
       .map((el) => `${el.className || el.tagName}(${Math.round(el.getBoundingClientRect().width)}>${Math.round(contentW(el.parentElement, getComputedStyle(el.parentElement)))})`)
     const bv = beatVoid()
+    const rg = params.get('rigid') ? rigid() : []
     const line = `${verdict}${kindOk ? '' : ' *** WRONG-BEAT'} shot=${params.get('iso') || shot} on=[${screenCls}|${beatCls}] ${census} ${
       clipped.length ? `CLIP=[${clipped.slice(0, 3).join(' ')}] ` : ''
-    }${spill.length ? `SPILL=[${spill.slice(0, 3).join(' ')}] ` : ''}vp=${m.vw}x${m.vh} ovfY=${m.overflowY} ovfX=${m.overflowX} gap=${m.gap}px(${m.pct}%)@y${m.gapAt}${
+    }${spill.length ? `SPILL=[${spill.slice(0, 3).join(' ')}] ` : ''}vp=${m.vw}x${m.vh} svh=${m.svh} tb=${(m.vw < m.vh ? 1194 : 834) - m.svh} ovfY=${m.overflowY} ovfX=${m.overflowX} gap=${m.gap}px(${m.pct}%)@y${m.gapAt}${
       bv ? ` bgap=${bv.gap}px(${bv.pct}%)@y${bv.at}/col${bv.h}` : ''
-    }${m.nat ? ` nat=${m.nat}` : ''}`
+    }${m.nat ? ` nat=${m.nat}` : ''}${rg.length ? ` RIGID=${rg.length}[${rg.slice(0, 4).join(' ')}]` : ''}`
     document.title = line
     if (params.get('hud') !== '0') {
       const hud = document.createElement('div')

@@ -46,8 +46,8 @@ export const chapter2 = {
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c2s1-ink', icon: 'ink', label: 'ink', correct: false },
-            { id: 'c2s1-insect', icon: 'insect', label: 'insect', correct: false },
             { id: 'c2s1-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c2s1-insect', icon: 'insect', label: 'insect', correct: false },
           ],
           readAloud: { targetText: 'ink' },
         },
@@ -79,8 +79,8 @@ export const chapter2 = {
           instructionKo: '"ink"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'ink',
           options: [
-            { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
             { id: 'c2s1-moon', icon: 'moon', label: 'moon', correct: false },
+            { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
             { id: 'c2s1-cup', icon: 'cup', label: 'cup', correct: false },
           ],
           readAloud: { targetText: 'igloo' },
@@ -216,9 +216,9 @@ export const chapter2 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'I',
           options: [
-            { id: 'c2s2-igloo2', icon: 'igloo', label: 'igloo', correct: true },
             { id: 'c2s2-dog', icon: 'dog', label: 'dog', correct: false },
             { id: 'c2s2-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c2s2-igloo2', icon: 'igloo', label: 'igloo', correct: true },
           ],
           readAloud: { targetText: 'igloo' },
         },
@@ -270,8 +270,8 @@ export const chapter2 = {
           instructionKo: 'puh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'puh, puh, puh',
           options: [
-            { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
             { id: 'c2s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+            { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
             { id: 'c2s3-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -282,9 +282,9 @@ export const chapter2 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c2s3-ink', icon: 'ink', label: 'ink', correct: true },
             { id: 'c2s3-pig', icon: 'pig', label: 'pig', correct: false },
             { id: 'c2s3-pen', icon: 'pen', label: 'pen', correct: false },
-            { id: 'c2s3-ink', icon: 'ink', label: 'ink', correct: true },
           ],
           readAloud: { targetText: 'pig' },
         },
@@ -326,8 +326,8 @@ export const chapter2 = {
           instructionKo: 'puh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'puh, puh, puh',
           options: [
-            { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
             { id: 'c2s3-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
             { id: 'c2s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
           ],
           readAloud: { targetText: 'P', say: 'puh, puh, puh' },
@@ -340,9 +340,9 @@ export const chapter2 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'P',
           options: [
-            { id: 'c2s3-pig2', icon: 'pig', label: 'pig', correct: true },
             { id: 'c2s3-insect', icon: 'insect', label: 'insect', correct: false },
             { id: 'c2s3-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c2s3-pig2', icon: 'pig', label: 'pig', correct: true },
           ],
           readAloud: { targetText: 'pig' },
         },
@@ -394,8 +394,8 @@ export const chapter2 = {
           instructionKo: 'nnn 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'nnn',
           options: [
-            { id: 'c2s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
             { id: 'c2s4-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+            { id: 'c2s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
             { id: 'c2s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -406,9 +406,9 @@ export const chapter2 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
+            { id: 'c2s4-pig', icon: 'pig', label: 'pig', correct: true },
             { id: 'c2s4-net', icon: 'net', label: 'net', correct: false },
             { id: 'c2s4-nut', icon: 'nut', label: 'nut', correct: false },
-            { id: 'c2s4-pig', icon: 'pig', label: 'pig', correct: true },
           ],
           readAloud: { targetText: 'net' },
         },
@@ -450,9 +450,9 @@ export const chapter2 = {
           instructionKo: 'nnn 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'nnn',
           options: [
-            { id: 'c2s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
             { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+            { id: 'c2s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
           ],
           readAloud: { targetText: 'N', say: 'nnn' },
         },
@@ -483,21 +483,21 @@ export const chapter2 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'I, P, N을 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'iii',
               options: [
-                { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
                 { id: 'c2s4-cP', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
                 { id: 'c2s4-cN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+                { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
               ],
             },
             {
               promptAudio: 'puh, puh, puh',
               options: [
-                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s4-cN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s4-cI2', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
               ],
             },
@@ -579,29 +579,29 @@ export const chapter2 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'I, P, N을 빠르게 찾아볼까요?',
+          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
               promptAudio: 'puh, puh, puh',
               options: [
-                { id: 'c2s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s5-qI', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+                { id: 'c2s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s5-qN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
               ],
             },
             {
               promptAudio: 'iii',
               options: [
-                { id: 'c2s5-qI2', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
                 { id: 'c2s5-qN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
                 { id: 'c2s5-qP2', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
+                { id: 'c2s5-qI2', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
               ],
             },
             {
               promptAudio: 'nnn',
               options: [
-                { id: 'c2s5-qN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
                 { id: 'c2s5-qP3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
+                { id: 'c2s5-qN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
                 { id: 'c2s5-qI3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
               ],
             },
