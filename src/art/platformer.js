@@ -1,6 +1,45 @@
 // Platformer-family character art — chapter 5, the jump-platformer genre slot
 // in the world order.
 //
+// REVISION NOTE (v6): PROPORTION. v5 gave the family joints; the user's
+// objection survived them, and it was never about joints — "몸과 팔다리가 너무
+// 부자연스러워. 저런 비율이 세상에는 존재하지 않아서." Measured, v5's heroes had
+// 8 to 13 units of leg visible between the dungarees' hem and the top of the
+// boot, on figures ~123 units tall. The gloves hung level with the boot tops.
+// A child was not looking at short legs, it was looking at a torso resting on
+// a pair of shoes.
+//
+//  * LEGS. Hip-to-sole went from 31..35 units to 38..42, i.e. 25..33% of the
+//    figure's height instead of 23..27%. Every unit came out of the TORSO
+//    (shirt 22 -> 18, bib 27 -> 22) and out of two units of extra sole depth;
+//    NOT out of the head. v5's note recorded that shrinking the villains'
+//    heads for neck clearance had already cost them their "big-headed villain"
+//    read, and the heroes' 37-unit head is the whole chibi cast. The emblem
+//    plate lost 3 units of PADDING and no type size at all — h 25/size 24
+//    became h 21/size 24 — so the phonics letter is untouched (checked at
+//    66 px, where a unit is under half a pixel).
+//  * NEGATIVE SPACE, and the hard limit on it. A hard cutout showed v5's
+//    upright heroes as one mass: arms welded to the flank, no hole anywhere.
+//    The reason is the sticker halo. It is 4.5 units per side, so two masses
+//    need MORE THAN 9 UNITS of background between them to survive
+//    brightness(0) at all — and beside a 52-to-58-unit bib inside a 120-unit
+//    frame, a hanging arm plus its r=9 glove plus two halos does not fit. So
+//    the torso was narrowed (shoulders 52 -> 46, waist 44 -> 38, hips 58 ->
+//    50) to buy the arms 8..9 units of slot, the stance was widened, and where
+//    a real cutout hole was needed the arm went UP (Ollie's right arm, both of
+//    Captain Gum's). Scanned at 4 px/unit, the vertical extent over which the
+//    silhouette is more than one mass: Ollie 5.5 -> 28 units, Umo 6.5 -> 30,
+//    Blocko 3.3 -> 14, Bug King 18.3 -> 23.5, Captain Gum 24 -> 41.3.
+//    Hanging arms are still fused at the armpit. That is geometry, not
+//    laziness — see the halo arithmetic above.
+//  * THE BOSS READS AS THE COMBINED FORM BY MASS, not by bounding box: every
+//    figure already fills the 140-unit frame, so "bigger" had to be width and
+//    weight. Head 38 -> 41 tall and 38 -> 42 wide, shoulders 56 -> 64, hips 60
+//    -> 72, limb widths +20%, and both arms raised into the frame's top
+//    corners, which the minibots leave empty. Its aura also stopped fusing
+//    with it: the rays start at r=44 instead of r=36, outboard of the halo, so
+//    they are detached spikes rather than a spiked outline.
+//
 // REVISION NOTE (v5): FINISHING v4. v4 built the skeleton primitives and wired
 // them into all nine figures, but it was never rendered or measured — and it
 // had shipped four kinds of fault that only measurement and a hard cutout find:
@@ -66,11 +105,12 @@
 //      line is dropped below the chin, so ~7 units of skin show. Nothing else
 //      separated a big head from a wide torso; without it the whole family
 //      read as dolls with the head pushed onto a peg.
-//  S6. PROPORTIONS head 34 / shoulders 52 / waist 44 / hips 58, against v3's
-//      36 / 50 / 71. The hips are still the widest point — the dungarees need
-//      that — but by 12%, not 42%. The torso now pinches at the waist and
-//      flares below it, which is what makes the outline read as a body rather
-//      than a bell.
+//  S6. PROPORTIONS (v6) head 34 wide / shoulders 46 / waist 38 / hips 50,
+//      against v4's 52 / 44 / 58 and v3's 50 / — / 71. The hips are still the
+//      widest point — the dungarees need that — but the whole torso came in 6
+//      units so the arms have somewhere to hang that is not the flank, and so
+//      the legs read as legs rather than as the bottom of a bell. The torso is
+//      also SHORTER: shirt 18 units and bib 22, against v4's 22 and 27.
 //  S7. THE VILLAINS GET THE SAME SKELETON. Applied to the heroes only, the
 //      villains look broken standing beside them. Their tilt, their
 //      deliberately mismatched limb lengths and every gimmick (inverted
@@ -100,7 +140,13 @@
 //     shadows, speed lines, sparkles, glitch debris, the boss's glow) are
 //     marked `nohalo:true`, and text is skipped, since a haloed letter would
 //     lose its counters. Consequence for geometry: the halo costs 4.5 units
-//     of margin on every side, so nothing may go past x 6..114 / y 5..135.
+//     of margin on every side. The hard limit is the viewBox: a mass with ink
+//     w must keep its edge inside w/2 + 4.5 of 0..120 / 0..140, which for the
+//     usual 3-unit ink is x 6..114 / y 6..134. Measured (getBBox -> getCTM ->
+//     stroke/2, normalised by render width — NOT getBoundingClientRect, which
+//     omits stroke in this Chrome build) the nine run x 1.5..118.5 /
+//     y 0.9..138.6; the extremes are nohalo backdrop parts (ground shadows,
+//     speed lines, aura rays), which have no rim to fit.
 //
 //  C. BIG EXPRESSIVE EYES. An outlined white sclera with a DOMINANT pupil
 //     (0.72 of the sclera) and a highlight. The pupil has to dominate: a
@@ -130,8 +176,10 @@
 //
 // CASTING GRAMMAR — v2's colour placement, kept; v4 restates the numbers.
 //
-//  1. SQUAT GROWN-UP PROPORTIONS, ~2.9 heads. Head 34 / shoulders 52 /
-//     waist 44 / hips 58 (see S6).
+//  1. SQUAT GROWN-UP PROPORTIONS, ~3.2 heads. Head 34 wide / shoulders 46 /
+//     waist 38 / hips 50 (see S6). Legs are 31..33% of the figure's height;
+//     below ~28% the figure stops reading as a body on legs, which is what v5
+//     measured at 23..27%.
 //  2. DUNGAREE TWO-TONE, split top from bottom. Shirt, sleeves, deltoids and
 //     cap dome take `bodyColor`; bib, straps and legs take the fixed DENIM
 //     constant. DENIM is deliberately not palette-driven — the genre read
@@ -808,41 +856,52 @@ function bigButton(cx, cy, r = 7.5) {
 // HEROES
 //
 // Standing skeleton shared by all four (the jumper swaps the legs for a tuck):
-//   head    cap 4, face 10..47, width 34, brim half 20
+//   head    cap 4, face 10..47, width 34, brim half 20   (UNCHANGED in v6)
 //   neck    43..56, 7 units of it visible under the jaw
-//   shirt   collar 54, shoulders 52 @ y 64, waist 44 @ y 76
-//   bib     52 wide @ 74, flaring to 58 @ 101
-//   arm     shoulder {34,64,9.5} elbow {25.5,76,8} wrist {21,90,6.3}
-//   leg     hip {50,96,11} knee {45,110,8.6} cuff {45.6,116,7.4} ankle {46,120,7.2}
+//   shirt   collar 54, shoulders 46 @ y 62, waist 38 @ y 72
+//   bib     46 wide @ 70, flaring to 50 @ 92
+//   arm     shoulder {37,62,9} elbow {22,74,7.6} wrist {19,89,6}
+//   leg     hip {51,90,10} knee {45,108,8.2} cuff {42.5,116,7} ankle {41,120,6.8}
+//   boot    centred 3 units outboard of the ankle, sole at y 131..132
 //
-// v5 lengthened the arm by 4 units at the wrist. At v4's wrist y 86 the glove
-// centre landed at y 92.6 — level with the WAIST — so the hands sat in the
-// armpit region and the fingertips stopped above the hip. A real arm's
-// fingertips reach mid-thigh; seating the glove at y ~96.6 puts it beside the
-// hip, which is also what finally clears the dungaree buttons (casting rule 3)
-// instead of grazing them.
+// The v6 numbers are one budget, not four independent choices. Chin 47 and
+// sole ~131 are both fixed (the head is not shrinking, and the sole cannot
+// pass ~132 without the halo leaving the frame), so the 84 units between them
+// are split torso-against-leg and nothing else. 18 + 22 for shirt and bib is
+// the floor: the shirt has to be at least as tall as the 18-unit deltoid ball
+// sitting in it, and the bib has to hold a 21-unit emblem plate. What is left
+// — 40 units — is the leg, and that is the whole of v6's leg gain.
+//
+// The KNEE-OUT, ANKLE-OUT splay (hip 51 -> knee 45 -> ankle 41) is not a
+// stance idea, it is the only cutout hole this family can have: at the ankle
+// the two legs leave 22 units of background and the two boots 20, which clears
+// the 9 units two halos eat. Straight-down legs measured 13 and merged.
+//
+// v5's note on arm length still holds — the glove sits beside the hip, not in
+// the armpit — but in v6 it also has to CLEAR the bib rather than overlap it,
+// which is what the narrower torso buys.
 // ---------------------------------------------------------------------------
 
 const HERO_ARM_L = [
-  { x: 34, y: 64, w: 9.5 },
-  { x: 25.5, y: 76, w: 8 },
-  { x: 21, y: 90, w: 6.3 },
+  { x: 37, y: 62, w: 9 },
+  { x: 22, y: 74, w: 7.6 },
+  { x: 19, y: 89, w: 6 },
 ]
 
 const HERO_LEG_L = [
-  { x: 50, y: 96, w: 11 },
-  { x: 45, y: 110, w: 8.6 },
-  { x: 45.6, y: 116, w: 7.4 },
-  { x: 46, y: 120, w: 7.2 },
+  { x: 51, y: 90, w: 10 },
+  { x: 45, y: 108, w: 8.2 },
+  { x: 42.5, y: 116, w: 7 },
+  { x: 41, y: 120, w: 6.8 },
 ]
 
 // Shirt with sloped shoulders and a dropped collar. The slope is what lets the
 // neck exist and what stops the shoulder from being a corner.
 function heroShirt(bodyColor) {
   return [
-    D('M 34,64 C 34,56 41,54 49,54 L 71,54 C 79,54 86,56 86,64 L 82,76 L 38,76 Z', bodyColor, ink(3.2)),
-    P('73,55 86,64 82,76 74,76', '#000', { opacity: 0.14, nohalo: true }),
-    P('42,57 70,57 68,62 44,62', '#fff', { opacity: 0.22, nohalo: true }),
+    D('M 37,62 C 37,56 43,54 50,54 L 70,54 C 77,54 83,56 83,62 L 79,72 L 41,72 Z', bodyColor, ink(3.2)),
+    P('70,55 83,62 79,72 71,72', '#000', { opacity: 0.14, nohalo: true }),
+    P('44,57 68,57 66,62 46,62', '#fff', { opacity: 0.22, nohalo: true }),
   ]
 }
 
@@ -857,26 +916,26 @@ export function platJumper({
   emblem = 'R',
   visorColor = '#fff3c4',
 } = {}) {
-  const strapL = strapPiece('39,47 49,51 47,84 38,84', 'M 45,55 L 43,80')
+  const strapL = strapPiece('40,47 49,51 47,78 39,78', 'M 45,55 L 43,74')
   const legTuck = [
-    { x: 50, y: 96, w: 11 },
-    { x: 40, y: 104, w: 8.6 },
-    { x: 37, y: 111, w: 7.4 },
-    { x: 36, y: 115, w: 7.2 },
+    { x: 51, y: 90, w: 10 },
+    { x: 39, y: 101, w: 8.2 },
+    { x: 36, y: 109, w: 7 },
+    { x: 35, y: 113, w: 6.8 },
   ]
   const legTrail = [
-    { x: 70, y: 96, w: 11 },
-    { x: 77, y: 108, w: 8.6 },
-    { x: 81, y: 116, w: 7.4 },
-    { x: 83, y: 120, w: 7.2 },
+    { x: 69, y: 90, w: 10 },
+    { x: 79, y: 105, w: 8.2 },
+    { x: 83, y: 114, w: 7 },
+    { x: 85, y: 118, w: 6.8 },
   ]
   const armPunch = [
-    { x: 86, y: 63, w: 9.5 },
-    { x: 94, y: 49, w: 8 },
-    { x: 95, y: 35, w: 6.3 },
+    { x: 83, y: 61, w: 9 },
+    { x: 94, y: 47, w: 7.6 },
+    { x: 97, y: 33, w: 6 },
   ]
   const backdrop = [
-    E(60, 135, 12, 3, '#000', { opacity: 0.14 }),
+    E(60, 136, 12, 2.6, '#000', { opacity: 0.14 }),
     // Trailing speed lines in the air the tucked legs just left. They and the
     // small far-below shadow are the whole "airborne" cue, so they sit in the
     // gap between boot and ground rather than beside the torso, where they
@@ -896,16 +955,16 @@ export function platJumper({
     neck(60, 43, 56, 7, 8),
 
     denimLimb(legTuck),
-    heroBoot(33, 117, 13, 8),
+    heroBoot(32, 115, 12, 7),
     denimLimb(legTrail),
-    heroBoot(86, 122, 13, 8),
+    heroBoot(88, 121, 12, 7),
 
     heroShirt(bodyColor),
 
-    bibPanel(34, 74, 52, 27, 11, 3),
-    bigButton(33.7, 85, 8),
-    mirror(bigButton(33.7, 85, 8)),
-    emblemPlate(44, 76, 32, 25, visorColor, accent, emblem, 24),
+    bibPanel(37, 70, 46, 22, 10, 2),
+    bigButton(36, 81, 6.5),
+    mirror(bigButton(36, 81, 6.5)),
+    emblemPlate(45, 70.5, 30, 21, visorColor, accent, emblem, 24),
 
     heroArm(HERO_ARM_L, bodyColor, accent, 9),
     heroArm(armPunch, bodyColor, accent, 10, true),
@@ -932,26 +991,31 @@ export function platSpring({
     E(cx - rx * 0.3, cy - 3, rx * 0.44, 2.6, '#fff', { opacity: 0.26, nohalo: true }),
   ]
   const seam = (cy, rx) => E(60, cy, rx, 3.2, accent, ink(2.2))
-  const strapL = strapPiece('39,47 49,52 47,88 38,88', 'M 45,56 L 43,84')
+  const strapL = strapPiece('40,47 49,52 47,80 39,80', 'M 45,56 L 43,76')
   const armL = [
-    { x: 46, y: 66, w: 9 },
-    { x: 33, y: 77, w: 7.6 },
-    { x: 27, y: 91, w: 6 },
+    { x: 45, y: 65, w: 9 },
+    { x: 23, y: 75, w: 7.6 },
+    { x: 20, y: 89, w: 6 },
   ]
-  // Deliberately not a mirror: the spring's two arms hang at different heights,
-  // which is the one asymmetry the upright heroes get.
+  // Deliberately not a mirror, and v6's biggest silhouette change in the
+  // family: the right arm is RAISED. A hanging arm cannot separate from a
+  // 46-unit bib inside a 120-unit frame once both masses carry a 4.5-unit
+  // halo — measured, the best a hanging pair gets is an 8-unit slot, which
+  // reads on screen and vanishes in a hard cutout. Raised, the background
+  // between forearm and neck measures 18 units, so the armpit is a real hole
+  // in the cutout. One arm up also gives the spring its bounce.
   const armR = [
-    { x: 74, y: 69, w: 9 },
-    { x: 87, y: 80, w: 7.6 },
-    { x: 93, y: 94, w: 6 },
+    { x: 74, y: 66, w: 9 },
+    { x: 90, y: 58, w: 7.6 },
+    { x: 96, y: 45, w: 6 },
   ]
   const legL = [
-    { x: 50, y: 100, w: 10.5 },
-    { x: 45, y: 113, w: 8.4 },
-    { x: 45.6, y: 119, w: 7.2 },
-    { x: 46, y: 122.5, w: 7 },
+    { x: 51, y: 94, w: 10 },
+    { x: 45, y: 111, w: 8.2 },
+    { x: 42.5, y: 119, w: 7 },
+    { x: 41, y: 123, w: 6.8 },
   ]
-  const backdrop = [E(60, 134, 22, 3.6, '#000', { opacity: 0.14 })]
+  const backdrop = [E(60, 135, 22, 3.2, '#000', { opacity: 0.14 })]
   const body = [
     strapL,
     mirror(strapL),
@@ -959,25 +1023,27 @@ export function platSpring({
 
     denimLimb(legL),
     mirror(denimLimb(legL)),
-    heroBoot(44, 124, 13, 7),
-    mirror(heroBoot(44, 124, 13, 7)),
+    heroBoot(38, 125, 12, 7),
+    mirror(heroBoot(38, 125, 12, 7)),
 
-    R(52, 54, 16, 7, 3, accent, ink(2.6)),
-    turn(62, 15, 58),
-    turn(70, 18, 62),
-    turn(78, 15, 58),
-    seam(66, 17),
-    seam(74, 17),
+    R(52, 53, 16, 7, 3, accent, ink(2.6)),
+    turn(60, 15, 58),
+    turn(66, 18, 62),
+    turn(72, 15, 58),
+    seam(63, 17),
+    seam(69, 17),
 
-    bibPanel(35, 78, 50, 28, 10, 3),
-    bigButton(33.8, 88, 8),
-    mirror(bigButton(33.8, 88, 8)),
+    bibPanel(37, 74, 46, 22, 10, 2),
+    bigButton(36, 85, 6.5),
+    mirror(bigButton(36, 85, 6.5)),
 
     // Ollie's emblem is a round plate rather than the others' rectangle, so
     // the letter O is not fighting a rectangle around it. Checked at 66 px.
-    C(60, 91, 16.5, visorColor, ink(3.4)),
-    S('M 48,84 A 15,15 0 0 1 68,79', '#fff', 2.4, { opacity: 0.6, nohalo: true }),
-    TEXT(60, 100.5, 26, accent, emblem),
+    // v6 shortened the bib by 4 units but the plate keeps its 26-unit letter:
+    // the disc lost radius, not type size, so the phonics read is unchanged.
+    C(60, 85, 14.5, visorColor, ink(3.4)),
+    S('M 48,78 A 14,14 0 0 1 68,73', '#fff', 2.4, { opacity: 0.6, nohalo: true }),
+    TEXT(60, 94.4, 26, accent, emblem),
 
     heroArm(armL, bodyColor, accent, 9),
     heroArm(armR, bodyColor, accent, 9, true),
@@ -1000,22 +1066,22 @@ export function platBlock({
   visorColor = '#fff3c4',
 } = {}) {
   const course = (y) => [
-    R(40, y, 40, 3.2, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
+    R(42, y, 36, 3.2, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
   ]
   const bracket = (x, y) => R(x, y, 8, 8, 2, '#000', { opacity: 0.22, stroke: LINE, 'stroke-width': 1.5, nohalo: true })
-  const strapL = strapPiece('39,46 49,50 47,86 38,86', 'M 45,54 L 43,82')
+  const strapL = strapPiece('41,46 50,50 48,80 40,80', 'M 46,54 L 44,76')
   const armL = [
-    { x: 34, y: 56, w: 9.5 },
-    { x: 24.5, y: 69, w: 8 },
-    { x: 20, y: 83, w: 6.3 },
+    { x: 37, y: 58, w: 9.5 },
+    { x: 22, y: 70, w: 8 },
+    { x: 19, y: 85, w: 6.3 },
   ]
   const legL = [
-    { x: 50, y: 99, w: 11 },
-    { x: 45, y: 112, w: 8.6 },
-    { x: 45.6, y: 118, w: 7.4 },
-    { x: 46, y: 122, w: 7.2 },
+    { x: 51, y: 92, w: 10 },
+    { x: 45, y: 109, w: 8.2 },
+    { x: 42.5, y: 117, w: 7 },
+    { x: 41, y: 121, w: 6.8 },
   ]
-  const backdrop = [E(60, 134, 38, 4, '#000', { opacity: 0.14 })]
+  const backdrop = [E(60, 135, 34, 3.6, '#000', { opacity: 0.14 })]
   const body = [
     strapL,
     mirror(strapL),
@@ -1023,26 +1089,26 @@ export function platBlock({
 
     denimLimb(legL),
     mirror(denimLimb(legL)),
-    heroBoot(43, 124, 14, 8),
-    mirror(heroBoot(43, 124, 14, 8)),
+    heroBoot(38, 124, 13, 7),
+    mirror(heroBoot(38, 124, 13, 7)),
 
-    R(34, 52, 52, 28, 7, accent, ink(3.2)),
-    R(40, 58, 40, 17, 4, bodyColor, ink(2.2)),
-    R(41, 59, 38, 5, 3, '#fff', { opacity: 0.2, nohalo: true }),
-    course(66),
-    course(71),
-    R(58, 58, 3.2, 8, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(48, 69, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(70, 69, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    bracket(35, 53),
-    bracket(78, 53),
-    bracket(35, 71),
-    bracket(78, 71),
+    R(37, 52, 46, 26, 7, accent, ink(3.2)),
+    R(42, 57, 36, 17, 4, bodyColor, ink(2.2)),
+    R(43, 58, 34, 5, 3, '#fff', { opacity: 0.2, nohalo: true }),
+    course(65),
+    course(70),
+    R(58.4, 57, 3.2, 8, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    R(49, 68, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    R(67, 68, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
+    bracket(38, 53),
+    bracket(75, 53),
+    bracket(38, 69),
+    bracket(75, 69),
 
-    bibPanel(34, 78, 52, 26, 10, 3),
-    bigButton(32.8, 88, 8),
-    mirror(bigButton(32.8, 88, 8)),
-    emblemPlate(44, 79, 32, 25, visorColor, accent, emblem, 24),
+    bibPanel(37, 74, 46, 22, 10, 2),
+    bigButton(36, 85, 6.5),
+    mirror(bigButton(36, 85, 6.5)),
+    emblemPlate(45, 74.5, 30, 21, visorColor, accent, emblem, 24),
 
     heroArm(armL, bodyColor, accent, 9.5),
     mirror(heroArm(armL, bodyColor, accent, 9.5)),
@@ -1084,34 +1150,45 @@ export function platPowerup({
   // feathers as insect antennae; a wide mass plus notches is the only version
   // that stayed a wing down to 66 px.
   const wing = [
-    P('40,22 12,6 17,16 11,15 19,22 12,24 21,28 40,28', accent, ink(2.8)),
-    P('40,23 19,10 21,17 29,22 40,26', panelColor, { nohalo: true }),
+    P('42,18 10,7 15,15 9,14 16,20 9,23 19,28 42,29', accent, ink(2.8)),
+    P('42,19 16,11 18,16 26,21 42,25', panelColor, { nohalo: true }),
   ]
   // Narrow: wider, the two panels plus the emblem plate covered the bib edge
   // to edge and the denim — half of the family's two-tone — disappeared on the
   // one figure that most needs to look like the others.
   const plankPanel = (x) => [
-    R(x, 79, 10, 22, 2.5, accent, ink(2.4)),
-    S(`M ${x + 1},${86} L ${x + 9},${86}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
-    S(`M ${x + 1},${94} L ${x + 9},${94}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    R(x, 75, 11, 19, 2.5, accent, ink(2.4)),
+    S(`M ${x + 1},${81} L ${x + 10},${81}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    S(`M ${x + 1},${87} L ${x + 10},${87}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
   ]
   // The spring's trace, moved from the ankles to the shins so it sits ON the
   // new tapered leg instead of floating between leg and boot.
-  const coilRing = (cx, cy) => E(cx, cy, 10.5, 3, accent, ink(2.2))
-  const strapL = strapPiece('37,49 48,54 46,86 36,86', 'M 43,58 L 41,82')
-  // Pulled INBOARD as it was lengthened: at v4's wrist x 21 the r=11 glove's
-  // halo reached x 1.8, and adding reach on the same line would have pushed it
-  // off the frame. Steeper arm, longer reach, more margin.
+  const coilRing = (cx, cy) => E(cx, cy, 11, 3, accent, ink(2.2))
+  const strapL = strapPiece('35,47 47,52 45,80 34,80', 'M 41,56 L 39,76')
+  // v6: BOTH ARMS RAISED, and thicker than any other figure's. Two problems at
+  // once. (a) Silhouette: this figure is 64 units across the hips, so a hanging
+  // arm has nowhere to be except against the flank — measured, the glove
+  // overlapped the bib's flared corner by 5 units and the boss was the most
+  // fused shape of the nine. Raised, the background between forearm and jaw is
+  // an open notch instead. (b) Size: arms up push the figure's mass to the top
+  // corners of a frame the minibots leave empty, which is most of what makes
+  // this one read as the bigger, combined form.
+  // Hand height is set by the HEAD's jaw taper, not by the arm: at y 42+ the
+  // 42-unit head narrows to 43.2..76.8, so a fist parked there clears the face
+  // by 12 units of background instead of 8. And the binding clip is not the
+  // glove lobe but its THUMB, which sits r*0.88 out from the centre and adds
+  // r*0.46 of its own — 14 units before ink and halo. Measured, wrist x 18.5
+  // put the thumb's halo at x -1.0.
   const armL = [
-    { x: 34, y: 66, w: 10.5 },
-    { x: 25.5, y: 80, w: 9 },
-    { x: 22, y: 97, w: 7 },
+    { x: 30, y: 70, w: 12 },
+    { x: 22.5, y: 62, w: 10.2 },
+    { x: 21.5, y: 52, w: 8.5 },
   ]
   const legL = [
-    { x: 50, y: 98, w: 12 },
-    { x: 45, y: 110, w: 9.4 },
-    { x: 45.6, y: 116, w: 8 },
-    { x: 46, y: 120, w: 7.8 },
+    { x: 52, y: 93, w: 12.5 },
+    { x: 46, y: 109, w: 10 },
+    { x: 42, y: 117, w: 8.6 },
+    { x: 40, y: 121, w: 8.4 },
   ]
   // Rays reach as far as the frame allows in their own direction rather than
   // sharing one radius: at a fixed radius the diagonals stopped well short of
@@ -1126,9 +1203,14 @@ export function platPowerup({
     return P(`${at(r0, -half)} ${at(reach, 0)} ${at(r0, half)}`, fill, { opacity: op })
   }
   const backdrop = [
-    E(60, 135, 44, 4.4, '#000', { opacity: 0.16 }),
-    ...Array.from({ length: 16 }, (_, i) => ray(i * 22.5 + 11, 36, 78, 8, visorColor, 0.85)),
-    ...Array.from({ length: 8 }, (_, i) => ray(i * 45 + 22.5, 36, 82, 4.5, panelColor, 0.9)),
+    E(60, 134, 46, 4, '#000', { opacity: 0.16 }),
+    // v6: inner radius 36 -> 44, width 8 -> 6.5. At 36 every ray started INSIDE the figure, so
+    // the white halo ate its root and the burst fused into the torso mass — in
+    // a hard cutout the boss was a spiked blob. Starting outboard of the
+    // silhouette's halo, the rays are detached spikes with real background
+    // between them and the body, which is what an aura has to be here.
+    ...Array.from({ length: 16 }, (_, i) => ray(i * 22.5 + 11, 44, 78, 6.5, visorColor, 0.85)),
+    ...Array.from({ length: 8 }, (_, i) => ray(i * 45 + 22.5, 44, 82, 4, panelColor, 0.9)),
     sparkle(14, 116, 6),
     sparkle(104, 116, 6),
     sparkle(11, 70, 4.4),
@@ -1137,38 +1219,38 @@ export function platPowerup({
   const body = [
     strapL,
     mirror(strapL),
-    neck(60, 44, 58, 9, 10),
+    neck(60, 44, 59, 10, 11),
 
     denimLimb(legL),
     mirror(denimLimb(legL)),
-    coilRing(45.4, 113),
-    coilRing(45.8, 118),
-    mirror([coilRing(45.4, 113), coilRing(45.8, 118)]),
-    heroBoot(43, 122, 17, 8.5),
-    mirror(heroBoot(43, 122, 17, 8.5)),
+    coilRing(44, 110),
+    coilRing(42.5, 117),
+    mirror([coilRing(44, 110), coilRing(42.5, 117)]),
+    heroBoot(36, 124, 16, 8),
+    mirror(heroBoot(36, 124, 16, 8)),
 
-    D('M 32,66 C 32,58 40,56 48,56 L 72,56 C 80,56 88,58 88,66 L 84,78 L 36,78 Z', bodyColor, ink(3.4)),
-    P('74,57 88,66 84,78 75,78', '#000', { opacity: 0.15, nohalo: true }),
-    P('42,59 70,59 68,64 44,64', '#fff', { opacity: 0.22, nohalo: true }),
+    D('M 28,67 C 28,58 38,56 46,56 L 74,56 C 82,56 92,58 92,67 L 87,77 L 33,77 Z', bodyColor, ink(3.4)),
+    P('74,57 92,67 87,77 75,77', '#000', { opacity: 0.15, nohalo: true }),
+    P('40,59 72,59 70,64 42,64', '#fff', { opacity: 0.22, nohalo: true }),
 
-    bibPanel(32, 76, 56, 26, 12, 4),
-    plankPanel(32.5),
-    plankPanel(77.5),
-    bigButton(29.8, 90, 8.5),
-    mirror(bigButton(29.8, 90, 8.5)),
-    emblemPlate(43, 77, 34, 25, panelColor, bodyColor, '★', 26),
+    bibPanel(28, 74, 64, 21, 12, 4),
+    plankPanel(27),
+    plankPanel(82),
+    bigButton(26, 84.5, 8),
+    mirror(bigButton(26, 84.5, 8)),
+    emblemPlate(43, 74.5, 34, 20, panelColor, bodyColor, '★', 24),
 
-    heroArm(armL, bodyColor, bodyColor, 11),
-    mirror(heroArm(armL, bodyColor, bodyColor, 11)),
+    heroArm(armL, bodyColor, bodyColor, 10.5),
+    mirror(heroArm(armL, bodyColor, bodyColor, 10.5)),
 
     wing,
     mirror(wing),
-    heroHead(60, 5, 11, 38, 38, 22, bodyColor, bodyColor, null, 1.06),
+    heroHead(60, 3, 10, 42, 41, 24, bodyColor, bodyColor, null, 1.108),
     // Sits in the same slot as the other three heroes' cap disc. Higher and
     // larger, its top point pushed through the dome's crown and left a stray
     // nub of ink and halo above the cap.
-    star(60, 17, 6.6, accent, ink(2.2)),
-    star(60, 17, 3, panelColor, { nohalo: true }),
+    star(60, 14, 7.5, accent, ink(2.2)),
+    star(60, 14, 3.4, panelColor, { nohalo: true }),
   ]
   return sticker(backdrop, body)
 }
@@ -1261,14 +1343,14 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
   // Mismatched on purpose: one leg longer and kicked further out than the
   // other is the family's villain tell, and upside down it reads immediately.
   const legL = [
-    { x: 50, y: 86, w: 9.5 },
-    { x: 46, y: 96, w: 7.6 },
-    { x: 47, y: 104, w: 6.6 },
+    { x: 50, y: 82, w: 9.5 },
+    { x: 45, y: 96, w: 7.6 },
+    { x: 44, y: 107, w: 6.6 },
   ]
   const legR = [
-    { x: 70, y: 86, w: 9.5 },
-    { x: 76, y: 97, w: 7.6 },
-    { x: 74, y: 106, w: 6.6 },
+    { x: 70, y: 82, w: 9.5 },
+    { x: 76, y: 98, w: 7.6 },
+    { x: 77, y: 109, w: 6.6 },
   ]
   const sock = (pts, y0) => [
     P(limbBand(pts.slice(1), 1.02, -1.02), accent, { opacity: 0.9, stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
@@ -1285,22 +1367,22 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
     // rounded rect, which is the shape that made the flip read as a box on a
     // box rather than a person doing a handstand.
     D(
-      `M 38,60 C 38,52 44,48 50,48 L 70,48 C 76,48 82,52 82,60 L 78,76
-       L 81,88 Q 81,92 77,92 L 43,92 Q 39,92 39,88 L 42,76 Z`,
+      `M 38,60 C 38,52 44,48 50,48 L 70,48 C 76,48 82,52 82,60 L 78,72
+       L 81,80 Q 81,84 77,84 L 43,84 Q 39,84 39,80 L 42,72 Z`,
       bodyColor,
       ink(3.2)
     ),
-    P('70,50 82,60 78,76 81,90 71,90 71,50', '#000', { opacity: 0.16, nohalo: true }),
-    P('60,58 50,70 70,70', accent, ink(2.4)),
-    R(41, 74, 38, 6.5, 2, accent, ink(2)),
-    C(60, 77.2, 3.2, bodyColor, ink(1.8)),
+    P('70,50 82,60 78,72 81,82 71,82 71,50', '#000', { opacity: 0.16, nohalo: true }),
+    P('60,56 50,68 70,68', accent, ink(2.4)),
+    R(41, 70, 38, 6, 2, accent, ink(2)),
+    C(60, 73, 3.2, bodyColor, ink(1.8)),
 
     plainLimb(legL, accent),
-    sock(legL, 100),
+    sock(legL, 102),
     plainLimb(legR, accent),
-    sock(legR, 102),
-    villainShoe(46, 108, 13, 8),
-    villainShoe(76, 111, 14, 8.5),
+    sock(legR, 104),
+    villainShoe(43, 112, 13, 8),
+    villainShoe(78, 114, 14, 8.5),
 
     villainArm(armL, bodyColor, accent, 9),
     villainArm(armR, bodyColor, accent, 9),
@@ -1310,7 +1392,7 @@ export function platFlip({ bodyColor = '#7a3fc9', accent = '#3f1f70' } = {}) {
     D('M 36,10 C 36,2 84,2 84,10 L 84,32 C 84,39 74,42 60,42 C 46,42 36,39 36,32 Z', bodyColor, ink(3.2)),
     P('72,5 82,10 82,33 74,39 72,39', '#000', { opacity: 0.14, nohalo: true }),
   ]
-  const backdrop = [E(63, 128, 24, 4, '#000', { opacity: 0.13 })]
+  const backdrop = [E(63, 130, 24, 3.6, '#000', { opacity: 0.13 })]
   // Height is the whole problem with this figure and it is a HARD constraint,
   // not a style choice: upright, v4 ran y -2..124.5, and a 6-unit halo on both
   // ends makes 138.6 units of content for a 140-unit box — so the flipped head
@@ -1453,14 +1535,14 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
     { x: 93, y: 82, w: 6 },
   ]
   const legL = [
-    { x: 51, y: 92, w: 8.5 },
-    { x: 46, y: 104, w: 7 },
-    { x: 47, y: 113, w: 6.2 },
+    { x: 51, y: 86, w: 8.5 },
+    { x: 46, y: 100, w: 7 },
+    { x: 45, y: 113, w: 6.2 },
   ]
   const legR = [
-    { x: 69, y: 92, w: 8.5 },
-    { x: 75, y: 105, w: 7 },
-    { x: 74, y: 115, w: 6.2 },
+    { x: 69, y: 86, w: 8.5 },
+    { x: 75, y: 102, w: 7 },
+    { x: 76, y: 115, w: 6.2 },
   ]
   const backdrop = [E(58, 132, 22, 4, '#000', { opacity: 0.13 })]
   const body = [
@@ -1481,26 +1563,26 @@ export function platMagnetjack({ bodyColor = '#c9622f', accent = '#6b3013' } = {
       // Shoulders 42, waist 34, hips 40 — the same hourglass as the heroes at
       // villain scale, so the two silhouettes belong to one world.
       D(
-        `M 39,66 C 39,59 45,55 51,55 L 69,55 C 75,55 81,59 81,66 L 77,82
-         L 80,94 Q 80,98 76,98 L 44,98 Q 40,98 40,94 L 43,82 Z`,
+        `M 39,66 C 39,59 45,55 51,55 L 69,55 C 75,55 81,59 81,66 L 77,78
+         L 80,84 Q 80,88 76,88 L 44,88 Q 40,88 40,84 L 43,78 Z`,
         bodyColor,
         ink(3.2)
       ),
-      P('69,57 81,66 77,82 80,96 70,96 70,57', '#000', { opacity: 0.16, nohalo: true }),
+      P('69,57 81,66 77,78 80,86 70,86 70,57', '#000', { opacity: 0.16, nohalo: true }),
       // Density pass: a plate riveted over the chest and a strap for the
       // magnet, so the flank is not one bare colour field.
-      R(47, 70, 26, 15, 2.5, accent, ink(2.2)),
-      C(51, 74, 1.7, bodyColor, { nohalo: true }),
-      C(69, 74, 1.7, bodyColor, { nohalo: true }),
-      C(51, 81, 1.7, bodyColor, { nohalo: true }),
-      C(69, 81, 1.7, bodyColor, { nohalo: true }),
-      R(42, 87, 36, 6, 1.5, accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      R(47, 68, 26, 13, 2.5, accent, ink(2.2)),
+      C(51, 72, 1.7, bodyColor, { nohalo: true }),
+      C(69, 72, 1.7, bodyColor, { nohalo: true }),
+      C(51, 77, 1.7, bodyColor, { nohalo: true }),
+      C(69, 77, 1.7, bodyColor, { nohalo: true }),
+      R(42, 81, 36, 5.5, 1.5, accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
       S('M 46,62 L 80,54', accent, 4.4, { nohalo: true }),
 
       plainLimb(legL, accent),
       plainLimb(legR, accent),
-      villainShoe(44, 116, 13, 8),
-      villainShoe(77, 119, 14, 8.5),
+      villainShoe(43, 118, 13, 8),
+      villainShoe(78, 120, 14, 8.5),
 
       villainArm(armL, bodyColor, accent, 9),
       villainArm(armR, bodyColor, accent, 9),
@@ -1545,14 +1627,14 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
     { x: 97, y: 83, w: 5.8 },
   ]
   const legL = [
-    { x: 51, y: 102, w: 8 },
-    { x: 47, y: 111, w: 6.6 },
-    { x: 48, y: 117, w: 5.8 },
+    { x: 51, y: 90, w: 8 },
+    { x: 47, y: 104, w: 6.6 },
+    { x: 46, y: 115, w: 5.8 },
   ]
   const legR = [
-    { x: 69, y: 102, w: 8 },
-    { x: 74, y: 112, w: 6.6 },
-    { x: 73, y: 118, w: 5.8 },
+    { x: 69, y: 90, w: 8 },
+    { x: 74, y: 106, w: 6.6 },
+    { x: 75, y: 117, w: 5.8 },
   ]
   const backdrop = [E(58, 134, 24, 4.2, '#000', { opacity: 0.13 })]
   // v5 pulled the whole stack up 4 units and the brick piles 7 units inboard.
@@ -1563,18 +1645,18 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
     G('rotate(6 60 90)', [
       neck(60, 44, 58, 8, 9, bodyColor, '#000'),
 
-      D('M 32,64 C 32,58 40,56 48,56 L 72,56 C 80,56 88,58 88,64 L 77,106 L 43,106 Z', bodyColor, ink(3.2)),
-      P('72,57 88,64 77,106 71,106 71,57', '#000', { opacity: 0.15, nohalo: true }),
+      D('M 32,64 C 32,58 40,56 48,56 L 72,56 C 80,56 88,58 88,64 L 78,94 L 42,94 Z', bodyColor, ink(3.2)),
+      P('72,57 88,64 78,94 72,94 71,57', '#000', { opacity: 0.15, nohalo: true }),
       P('35,68 85,68 83,74 37,74', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
-      P('40,88 80,88 78,94 42,94', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
+      P('41,82 79,82 77,88 43,88', accent, { stroke: LINE, 'stroke-width': 1.6, nohalo: true }),
 
-      R(47, 76, 16, 15, 2, accent, ink(2.4)),
-      S('M 49,82 L 61,78 M 49,88 L 61,84', bodyColor, 2.6, { nohalo: true }),
+      R(47, 74, 16, 14, 2, accent, ink(2.4)),
+      S('M 49,80 L 61,76 M 49,85 L 61,81', bodyColor, 2.6, { nohalo: true }),
 
       plainLimb(legL, accent, 2.4),
       plainLimb(legR, accent, 2.4),
-      villainShoe(46, 120, 12, 7.5),
-      villainShoe(75, 121, 12, 7.5),
+      villainShoe(44, 120, 12, 7),
+      villainShoe(77, 122, 12, 7),
 
       // Arms AFTER the torso, like the other eight. v4 painted them first and
       // the torso then covered every deltoid, so this figure alone still had
@@ -1609,29 +1691,29 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   const bit = (x, y, s, fill, op) => R(x, y, s, s, 0, fill, { opacity: op })
   const horn = (points) => P(points, accent, ink(2.6))
   const armL = [
-    { x: 31, y: 76, w: 11 },
-    { x: 23, y: 88, w: 9.2 },
-    { x: 21, y: 99, w: 7.6 },
+    { x: 31, y: 74, w: 11 },
+    { x: 23, y: 85, w: 9.2 },
+    { x: 21, y: 95, w: 7.6 },
   ]
   // Wrist pulled in 3 units: at x 100 the r=11 glove's halo reached x 121.3,
   // i.e. off the right edge of the viewBox entirely.
   const armR = [
-    { x: 89, y: 74, w: 11 },
-    { x: 96, y: 86, w: 9.2 },
-    { x: 97, y: 97, w: 7.6 },
+    { x: 89, y: 72, w: 11 },
+    { x: 96, y: 83, w: 9.2 },
+    { x: 97, y: 93, w: 7.6 },
   ]
   // Hips lifted 102 -> 96 against a torso that now ends at 100. v4's torso ran
   // to y 106 over legs starting at 102, so four units of thigh showed above the
   // shoe and the boss read as a head-and-belly with no legs at all.
   const legL = [
-    { x: 52, y: 96, w: 11 },
-    { x: 48, y: 109, w: 9 },
-    { x: 49, y: 119, w: 8 },
+    { x: 52, y: 90, w: 11 },
+    { x: 47, y: 105, w: 9 },
+    { x: 44, y: 117, w: 8 },
   ]
   const legR = [
-    { x: 68, y: 96, w: 11 },
-    { x: 73, y: 110, w: 9 },
-    { x: 72, y: 120, w: 8 },
+    { x: 68, y: 90, w: 11 },
+    { x: 74, y: 107, w: 9 },
+    { x: 77, y: 119, w: 8 },
   ]
   const backdrop = [
     E(60, 133, 44, 4.6, '#000', { opacity: 0.17 }),
@@ -1650,12 +1732,12 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
 
       plainLimb(legL, accent, 2.8),
       plainLimb(legR, accent, 2.8),
-      villainShoe(46, 121, 16, 8.5),
-      villainShoe(75, 122, 16, 8.5),
+      villainShoe(41, 121, 14, 8.5),
+      villainShoe(80, 123, 14, 8.5),
 
       D(
         `M 29,74 C 29,66 38,63 48,63 L 72,63 C 82,63 91,66 91,74
-         L 89,95 Q 89,100 83,100 L 37,100 Q 31,100 31,95 Z`,
+         L 89,87 Q 89,92 83,92 L 37,92 Q 31,92 31,87 Z`,
         bodyColor,
         ink(3.4)
       ),
@@ -1666,17 +1748,17 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // Lifted with the shortened torso: the maw's own ink is haloed, so at
       // v4's y 101 against a torso ending at 100 it left a white rim hanging
       // below the belly outline.
-      E(58, 84, 23, 14, SOLE, ink(3)),
-      R(46, 72, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(58, 72, 12, 12, 0, accent, { nohalo: true }),
-      R(46, 84, 12, 12, 0, accent, { nohalo: true }),
-      R(58, 84, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(46, 72, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
+      E(58, 77, 23, 13, SOLE, ink(3)),
+      R(46, 65, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(58, 65, 12, 12, 0, accent, { nohalo: true }),
+      R(46, 77, 12, 12, 0, accent, { nohalo: true }),
+      R(58, 77, 12, 12, 0, bodyColor, { nohalo: true }),
+      R(46, 65, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
       // Fangs at the maw's rim, as triangles rather than the chevron strokes a
       // first pass used — a '<' next to a '>' is exactly the accidental glyph
       // this app has been bitten by before.
-      P('37,74 43,74 40,82', '#fff', { nohalo: true }),
-      P('73,74 79,74 76,82', '#fff', { nohalo: true }),
+      P('39,70 45,70 42,78', '#fff', { nohalo: true }),
+      P('71,70 77,70 74,78', '#fff', { nohalo: true }),
 
       villainArm(armL, bodyColor, accent, 11),
       villainArm(armR, bodyColor, accent, 11),
