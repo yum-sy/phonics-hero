@@ -531,25 +531,17 @@ const ICONS = {
       <polygon points="28,55 35,52 35,60" fill="#5dd6e0"/>
     `),
 
-  // Two rows of five: a child can subitize the fives instead of counting ten
-  // scattered dots, and no numeral is drawn -- a "10" glyph next to letter
-  // tiles is exactly the kind of fake character a phonics app must avoid.
+  // The numeral itself, on a red round badge. An earlier version drew ten
+  // dots to avoid putting a digit glyph next to letter tiles, but this app
+  // never teaches numbers, so there is nothing for "10" to be confused with,
+  // and the numeral is far more immediate for a 5-year-old. The round red
+  // badge is what keeps it visually apart from `letterTile`'s blue square.
   ten: () =>
     wrap(`
-      <g fill="#e24b4a">
-        <circle cx="8" cy="22" r="5.6"/>
-        <circle cx="20" cy="22" r="5.6"/>
-        <circle cx="32" cy="22" r="5.6"/>
-        <circle cx="44" cy="22" r="5.6"/>
-        <circle cx="56" cy="22" r="5.6"/>
-      </g>
-      <g fill="#ef9f27">
-        <circle cx="8" cy="42" r="5.6"/>
-        <circle cx="20" cy="42" r="5.6"/>
-        <circle cx="32" cy="42" r="5.6"/>
-        <circle cx="44" cy="42" r="5.6"/>
-        <circle cx="56" cy="42" r="5.6"/>
-      </g>
+      <circle cx="32" cy="32" r="26" fill="#e24b4a"/>
+      <circle cx="32" cy="32" r="26" fill="none" stroke="#d1332f" stroke-width="3"/>
+      <circle cx="32" cy="32" r="20" fill="none" stroke="#f5f2ea" stroke-width="2" opacity="0.5"/>
+      <text x="32" y="45" text-anchor="middle" font-size="33" font-weight="800" fill="#fff">10</text>
     `),
 
   // Side view: the tall headboard on the left and the low footboard on the
@@ -623,44 +615,55 @@ const ICONS = {
       <circle cx="32" cy="21" r="4" fill="#ef9f27"/>
     `),
 
-  // A long flat stick (pale) with a striped foil wrapper peeled back at one
-  // corner -- horizontal and low where `gift` is a tall knotted box, so the
-  // two /g/ words never trade places even at 60px. An earlier draft used two
-  // opposing triangles for the peeled foil and read as a flashlight/arrow;
-  // a single lifted parallelogram flap avoids that directional look.
+  // A stick of gum sliding out of a torn wrapper. Two earlier drafts failed:
+  // a blue wrapped stick was an unreadable object, and bare pink slabs read
+  // as an eraser. The wrapper is what names the object and the pink is what
+  // names it as gum, so both have to be visible at once -- hence the zigzag
+  // torn edge with the gum emerging past it. Slabs, never spheres: gumballs
+  // would collide with `ball`. No bow and a diagonal stick shape keep it
+  // clear of `gift`'s upright knotted box.
   gum: () =>
     wrap(`
-      <rect x="9" y="27" width="46" height="13" rx="6" fill="#fdf6ec" stroke="#d8cfb8" stroke-width="1.6"/>
-      <rect x="7" y="25" width="26" height="17" rx="4" fill="#378add"/>
-      <line x1="16" y1="25" x2="16" y2="42" stroke="#eafcff" stroke-width="2"/>
-      <line x1="25" y1="25" x2="25" y2="42" stroke="#eafcff" stroke-width="2"/>
-      <path d="M30 25 L40 19 L41 26 L31 32 Z" fill="#5dd6e0"/>
+      <g transform="rotate(-20 32 32)">
+        <rect x="16" y="23" width="42" height="18" rx="5" fill="#f0a0b4"/>
+        <rect x="24" y="26" width="32" height="5" rx="2.5" fill="#f9d3de"/>
+        <path d="M6 21 H32 L27 26 L32 32 L27 37 L32 43 H6 Q2 43 2 39 V25 Q2 21 6 21 Z"
+          fill="#dfe4e8" stroke="#b8b8b8" stroke-width="1.2"/>
+        <rect x="3" y="28" width="26" height="8" fill="#378add"/>
+      </g>
     `),
 
-  // Big head-and-eyes plus five curling tentacles with suction-cup dots --
-  // legs kept to five (not eight) so they stay separated at 60px, and cool
-  // purple keeps it off every warm-toned animal icon already in the set.
-  octopus: () =>
-    wrap(`
-      <ellipse cx="32" cy="27" rx="23" ry="19" fill="#534ab7"/>
-      <circle cx="23" cy="24" r="7.5" fill="#eafcff"/>
-      <circle cx="41" cy="24" r="7.5" fill="#eafcff"/>
-      <circle cx="23" cy="25" r="3.8" fill="#2c2c2a"/>
-      <circle cx="41" cy="25" r="3.8" fill="#2c2c2a"/>
-      <g stroke="#443a99" stroke-width="6" fill="none" stroke-linecap="round">
-        <path d="M12 38 Q6 48 12 58"/>
-        <path d="M22 42 Q19 52 24 60"/>
-        <path d="M32 43 Q32 53 32 61"/>
-        <path d="M42 42 Q45 52 40 60"/>
-        <path d="M52 38 Q58 48 52 58"/>
-      </g>
-      <g fill="#eafcff">
-        <circle cx="12" cy="53" r="2.4"/>
-        <circle cx="24" cy="55" r="2.4"/>
-        <circle cx="40" cy="55" r="2.4"/>
-        <circle cx="52" cy="53" r="2.4"/>
-      </g>
-    `),
+  // A real octopus has eight arms, so all eight are drawn. Two things make
+  // them survive 60px. Arm tips are spread on an even arc by computation --
+  // hand-placed arms crowded, and the inner ones ended up hidden underneath
+  // their neighbours. And the shade alternates arm by arm, so neighbours stay
+  // separate by color even where their strokes nearly touch. Cool purple
+  // keeps it off every warm-toned animal icon already in the set.
+  octopus: () => {
+    let arms = ''
+    for (let i = 0; i < 8; i++) {
+      const t = (i - 3.5) / 3.5
+      const sx = 32 + t * 18
+      const sy = 40 - 4 * t * t
+      const tx = 32 + t * 27
+      const ty = 58 - 10 * t * t
+      const cx = sx + t * 6
+      const cy = (sy + ty) / 2
+      const color = i % 2 === 0 ? '#3a3280' : '#7a70e0'
+      arms +=
+        `<path d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ` +
+        `${tx.toFixed(1)} ${ty.toFixed(1)}" fill="none" stroke="${color}" ` +
+        `stroke-width="5.6" stroke-linecap="round"/>`
+    }
+    return wrap(`
+      ${arms}
+      <ellipse cx="32" cy="24" rx="22" ry="17" fill="#534ab7"/>
+      <circle cx="23" cy="22" r="7.5" fill="#eafcff"/>
+      <circle cx="41" cy="22" r="7.5" fill="#eafcff"/>
+      <circle cx="23" cy="23" r="3.8" fill="#2c2c2a"/>
+      <circle cx="41" cy="23" r="3.8" fill="#2c2c2a"/>
+    `)
+  },
 
   // Same round-fruit build as `apple` (so the /o/ vs /a/ family reads as
   // fruit either way) but orange, not red, with a dimpled rind and a stubby
@@ -734,17 +737,21 @@ const ICONS = {
     `)
   },
 
-  // A bent knee (thigh, round joint, offset shin) ending in a shoe --
-  // built from solid blocks, not five parallel fingers, so it can never be
-  // mistaken for `hand`. The shorts band anchors it as a leg, not an arm.
+  // One continuous limb: the thigh and shin are two overlapping strokes of
+  // the SAME color, so the knee bend has no seam -- an earlier version built
+  // it from a rect, a circle joint and an offset rect and read as a broken
+  // leg. The thigh stroke is wider than the shin to give a natural taper.
+  // Shorts and a shoe (not five fingers) keep it clear of `hand`.
   leg: () =>
     wrap(`
-      <rect x="21" y="14" width="18" height="26" rx="8" fill="#e0a273"/>
-      <rect x="19" y="4" width="22" height="14" rx="6" fill="#378add"/>
-      <circle cx="30" cy="38" r="10" fill="#e0a273"/>
-      <rect x="28" y="34" width="16" height="24" rx="8" fill="#e0a273"/>
-      <ellipse cx="44" cy="58" rx="15" ry="7" fill="#2c2c2a"/>
-      <rect x="31" y="60" width="26" height="4" rx="2" fill="#b8b8b8"/>
+      <g fill="none" stroke="#e0a273" stroke-linecap="round">
+        <path d="M31 13 L32 31" stroke-width="18"/>
+        <path d="M32 28 Q32 39 35 46" stroke-width="13"/>
+      </g>
+      <rect x="19" y="2" width="24" height="17" rx="5" fill="#378add"/>
+      <path d="M29 43 Q35 45 41 43 L41 48 Q35 50 29 48 Z" fill="#f5f2ea"/>
+      <path d="M29 46 H38 Q42 46 44 51 L53 55 Q56 57 53 59 H32 Q28 59 28 54 Z" fill="#2c2c2a"/>
+      <rect x="27" y="57" width="29" height="3.4" rx="1.7" fill="#b8b8b8"/>
     `),
 
   // Oval body + triangular tail fin + dorsal spike carry the silhouette
@@ -766,42 +773,55 @@ const ICONS = {
   // which risks reading as a peacock tail, and its round-cage-on-a-stand
   // shape can't trade places with `top`'s solid triangle or `kite`'s
   // diamond even at 60px.
-  fan: () =>
-    wrap(`
+  fan: () => {
+    // Blades are one shape rotated by exact thirds, so the spacing is even
+    // by construction (hand-placed paths were what made it look lopsided),
+    // and all three sweep the same way, which reads as rotation.
+    const blade = 'M32 30 C29 16 33 7 42 6 C47 13 43 25 32 30 Z'
+    const blades = [0, 120, 240]
+      .map(a => `<path d="${blade}" fill="#f4c95d" transform="rotate(${a} 32 30)"/>`)
+      .join('')
+    return wrap(`
       <rect x="26" y="46" width="12" height="14" rx="3" fill="#b8b8b8"/>
       <rect x="18" y="58" width="28" height="5" rx="2.5" fill="#b8b8b8"/>
       <circle cx="32" cy="30" r="26" fill="none" stroke="#b8b8b8" stroke-width="4"/>
-      <g fill="#f4c95d">
-        <path d="M32 30 Q32 8 46 10 Q40 24 32 30 Z"/>
-        <path d="M32 30 Q52 34 48 50 Q34 44 32 30 Z"/>
-        <path d="M32 30 Q12 40 16 54 Q28 46 32 30 Z"/>
-      </g>
+      ${blades}
       <circle cx="32" cy="30" r="5" fill="#712b13"/>
-    `),
+    `)
+  },
 
-  // A solid orange sphere with basketball-style seam curves, not the
-  // cream-and-red bowling `pin` -- round silhouette and a warm solid color
-  // that shares nothing with pin's white cylinder + red stripes.
+  // Basketball: heavy black rim plus the canonical seam set -- one straight
+  // vertical, one straight horizontal, and two side arcs bowing toward the
+  // centre. The seams are deliberately thick; thin ones vanished at 60px and
+  // left a plain orange disc that could pass for `orange`, which has no
+  // black anywhere and carries a leaf and rind dots instead.
   ball: () =>
     wrap(`
-      <circle cx="32" cy="32" r="26" fill="#ef9f27"/>
-      <path d="M32 6 Q20 32 32 58" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
-      <path d="M32 6 Q44 32 32 58" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
-      <path d="M6 32 Q32 22 58 32" fill="none" stroke="#2c2c2a" stroke-width="2.4"/>
-      <path d="M18 15 Q23 10 29 11" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+      <circle cx="32" cy="32" r="25" fill="#ef9f27" stroke="#2c2c2a" stroke-width="3.6"/>
+      <g fill="none" stroke="#2c2c2a" stroke-width="3.4" stroke-linecap="round">
+        <path d="M32 8 V56"/>
+        <path d="M8 32 H56"/>
+        <path d="M17 11 Q27 32 17 53"/>
+        <path d="M47 11 Q37 32 47 53"/>
+      </g>
     `),
 
-  // A ribbon-less corrugated shipping box: a folded-flap ridge on top and
-  // a cream tape cross instead of `gift`'s bow, and a flat rectangular body
-  // instead of `pot`'s handled, lidded silhouette.
+  // An OPEN corrugated box in three-quarter view: four flaps folded outward,
+  // a dark interior through the mouth, and two front faces at different
+  // shades for depth. The open mouth is what makes it read as "box" at a
+  // glance, and it also pushes it further from `gift` (closed box with a
+  // bow) and from `pot` (lidded vessel with handles).
   box: () =>
     wrap(`
-      <rect x="8" y="24" width="48" height="34" rx="2" fill="#c9975c"/>
-      <rect x="8" y="24" width="48" height="34" rx="2" fill="none" stroke="#8a5a33" stroke-width="2"/>
-      <polygon points="8,24 32,14 56,24 32,32" fill="#b8874f"/>
-      <polygon points="8,24 32,32 32,14" fill="#8a5a33" opacity="0.35"/>
-      <rect x="27" y="14" width="10" height="44" fill="#d8cfb8" opacity="0.9"/>
-      <rect x="8" y="37" width="48" height="8" fill="#d8cfb8" opacity="0.9"/>
+      <g stroke="#8a5a33" stroke-width="1.3" stroke-linejoin="round">
+        <polygon points="9,31 32,21 27,7 4,17" fill="#d9a96b"/>
+        <polygon points="32,21 55,31 60,17 37,7" fill="#d9a96b"/>
+        <polygon points="9,31 32,41 29,52 3,42" fill="#c9975c"/>
+        <polygon points="32,41 55,31 61,42 35,52" fill="#c9975c"/>
+      </g>
+      <polygon points="9,31 32,21 55,31 32,41" fill="#6b4423"/>
+      <polygon points="9,31 32,41 32,57 9,47" fill="#a87a45"/>
+      <polygon points="32,41 55,31 55,47 32,57" fill="#c9975c"/>
     `),
 
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
