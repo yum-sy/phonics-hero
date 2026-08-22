@@ -824,6 +824,314 @@ const ICONS = {
       <polygon points="32,41 55,31 55,47 32,57" fill="#c9975c"/>
     `),
 
+  // -- Chapter 4 gaps: M (man, mat, map) and D (duck, door) --
+
+  // Full body, because the app's other human icons are heads only (`king`,
+  // `nose`) -- silhouette alone separates them, so no hue or feature has to
+  // do the work. White shirt + red tie + dark trousers reads as an adult man
+  // rather than a child, and the white shirt carries a gray outline so it
+  // does not wash out on the cream button.
+  man: () =>
+    wrap(`
+      <circle cx="32" cy="15" r="9" fill="#f5d6b0"/>
+      <path d="M22.6 13 Q22.6 3.5 32 3.5 Q41.4 3.5 41.4 13 Q36.5 9 32 9 Q27.5 9 22.6 13 Z"
+        fill="#2c2c2a"/>
+      <circle cx="28.5" cy="15" r="1.7" fill="#2c2c2a"/>
+      <circle cx="35.5" cy="15" r="1.7" fill="#2c2c2a"/>
+      <path d="M27 19 Q32 18 37 19 Q35 22 32 21 Q29 22 27 19 Z" fill="#2c2c2a"/>
+      <g fill="#f5f2ea" stroke="#b8b8b8" stroke-width="1.6">
+        <rect x="14.5" y="25" width="6.5" height="19" rx="3.2"/>
+        <rect x="43" y="25" width="6.5" height="19" rx="3.2"/>
+        <rect x="21" y="24" width="22" height="19" rx="3"/>
+      </g>
+      <polygon points="32,24 35,28 32,39 29,28" fill="#e24b4a"/>
+      <circle cx="17.7" cy="46" r="3.4" fill="#f5d6b0"/>
+      <circle cx="46.3" cy="46" r="3.4" fill="#f5d6b0"/>
+      <rect x="20" y="41" width="24" height="3.4" fill="#2c2c2a"/>
+      <g fill="#0c447c">
+        <rect x="21.5" y="43" width="9" height="14"/>
+        <rect x="33.5" y="43" width="9" height="14"/>
+      </g>
+      <g fill="#2c2c2a">
+        <rect x="19.5" y="55" width="12" height="4.6" rx="2.3"/>
+        <rect x="32.5" y="55" width="12" height="4.6" rx="2.3"/>
+      </g>
+    `),
+
+  // A rug seen flat on the floor: the fringe tassels on both long edges are
+  // the cue that says "textile lying down", which is what keeps it away from
+  // `box` (a 3D carton with flaps). Deliberately cool indigo/cyan while `map`
+  // is warm gold parchment -- the two /m/ pictures can appear in the same
+  // multiselect, so they are separated by hue as well as by outline.
+  mat: () =>
+    wrap(`
+      <g stroke="#26215c" stroke-width="2.8" stroke-linecap="round">
+        <line x1="9" y1="49" x2="9" y2="56"/><line x1="17" y1="49" x2="17" y2="56"/>
+        <line x1="25" y1="49" x2="25" y2="56"/><line x1="32" y1="49" x2="32" y2="56"/>
+        <line x1="39" y1="49" x2="39" y2="56"/><line x1="47" y1="49" x2="47" y2="56"/>
+        <line x1="55" y1="49" x2="55" y2="56"/>
+      </g>
+      <polygon points="6,50 58,50 48,26 16,26" fill="#26215c"/>
+      <polygon points="12,46 52,46 44,30 20,30" fill="#534ab7"/>
+      <g stroke="#5dd6e0" stroke-width="2.6" stroke-linecap="round">
+        <line x1="19" y1="34" x2="45" y2="34"/>
+        <line x1="16.5" y1="39" x2="47.5" y2="39"/>
+        <line x1="14" y1="44" x2="50" y2="44"/>
+      </g>
+    `),
+
+  // Treasure map: torn parchment edge, a green island, a dashed route and a
+  // planted flag. The flag replaces the conventional X mark on purpose -- an
+  // X inside a phonics app is a letter, and this app must never invite a
+  // picture to be read as one.
+  map: () =>
+    wrap(`
+      <path d="M5 11 Q11 8 17 11 Q24 8 32 10 Q40 8 47 11 Q54 8 59 11
+               Q57 20 59 29 Q57 39 59 52 Q53 55 47 52 Q40 55 32 53
+               Q24 55 17 52 Q10 55 5 52 Q7 39 5 29 Q7 20 5 11 Z"
+        fill="#f4c95d" stroke="#c98f4e" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M16 27 Q24 19 34 23 Q45 27 43 35 Q39 46 28 44 Q16 42 16 34 Z" fill="#3b9922"/>
+      <g fill="none" stroke="#0c447c" stroke-width="2" stroke-linecap="round">
+        <path d="M11 45 Q17 49 23 45"/>
+        <path d="M45 17 Q50 21 55 17"/>
+      </g>
+      <path d="M13 46 Q20 35 27 34 Q35 33 40 25" fill="none" stroke="#d1332f"
+        stroke-width="2.8" stroke-linecap="round" stroke-dasharray="1.4 4.4"/>
+      <line x1="41" y1="25" x2="41" y2="13" stroke="#2c2c2a" stroke-width="2.2"/>
+      <polygon points="41,13 52,16.5 41,20" fill="#e24b4a"/>
+    `),
+
+  // A bath-toy duck, not a realistic one: `hen` already owns the "standing
+  // bird with legs, comb and tail fan" silhouette, so this is deliberately
+  // the opposite -- one smooth floating oval, an oversized round head, a
+  // flat orange bill, no legs at all, and water lines underneath.
+  duck: () =>
+    wrap(`
+      <polygon points="13,38 2,29 15,30" fill="#f4c95d"/>
+      <ellipse cx="29" cy="41" rx="22" ry="15" fill="#ffd43b"/>
+      <circle cx="44" cy="23" r="13" fill="#ffd43b"/>
+      <path d="M55 23 Q63 24 61 29 Q56 31 52 28 Z" fill="#ef9f27"/>
+      <path d="M21 39 Q29 33 38 39 Q32 48 21 45 Z" fill="#f4c95d"/>
+      <path d="M21 39 Q29 33 38 39" fill="none" stroke="#ef9f27" stroke-width="1.8"/>
+      <circle cx="44" cy="20" r="3.2" fill="#2c2c2a"/>
+      <circle cx="45.2" cy="19" r="1.1" fill="#f5f2ea"/>
+      <g fill="none" stroke="#0c447c" stroke-width="3" stroke-linecap="round">
+        <path d="M4 56 Q13 51 22 56 Q31 61 40 56 Q49 51 60 56"/>
+      </g>
+    `),
+
+  // Standing ajar, hinged on the right. The gap is filled with pale daylight
+  // rather than a dark room on purpose: a dark opening is invisible in
+  // silhouette, so the whole icon flattened into a plain black rectangle.
+  // Light puts a real hole in the outline, and the leaf's near edge is drawn
+  // taller than the frame so it overhangs top and bottom -- between the hole
+  // and the overhang, nothing about the shape can pass for `box` (wide,
+  // isometric, flaps out).
+  door: () =>
+    wrap(`
+      <rect x="12" y="5" width="42" height="56" fill="#8a5a33"/>
+      <rect x="17" y="10" width="32" height="51" fill="#eafcff"/>
+      <g fill="#b8b8b8">
+        <rect x="46" y="18" width="4.5" height="6"/>
+        <rect x="46" y="45" width="4.5" height="6"/>
+      </g>
+      <polygon points="49,12 49,58 27,63 27,4" fill="#a9611f" stroke="#712b13" stroke-width="2"/>
+      <g fill="#8a5a33" stroke="#712b13" stroke-width="1.6">
+        <polygon points="31,12 45,16 45,30 31,28"/>
+        <polygon points="31,37 45,36 45,50 31,53"/>
+      </g>
+      <circle cx="31.5" cy="33" r="3.8" fill="#f4c95d" stroke="#ef9f27" stroke-width="1.4"/>
+      <rect x="9" y="60" width="48" height="4" fill="#712b13"/>
+    `),
+
+  // -- Chapter 7: AI (rain, train, aim), J (jam, jug), OA (boat, coat) --
+
+  // Cloud above, three falling drops below, with a clear band of empty space
+  // between them -- the gap is what reads as "falling" at 150px. Cyan drops
+  // over a navy outline instead of plain blue fill, so they survive both the
+  // cream button and a saturated blue one; `umbrella` keeps the canopy-and-
+  // pole silhouette, so the two weather icons never converge.
+  rain: () =>
+    wrap(`
+      <g fill="#5dd6e0" stroke="#0c447c" stroke-width="2" stroke-linejoin="round">
+        <path d="M14 36 C17 43 20 46 20 50 A6 6 0 0 1 8 50 C8 46 11 43 14 36 Z"/>
+        <path d="M32 40 C35 47 38 50 38 54 A6 6 0 0 1 26 54 C26 50 29 47 32 40 Z"/>
+        <path d="M50 36 C53 43 56 46 56 50 A6 6 0 0 1 44 50 C44 46 47 43 50 36 Z"/>
+      </g>
+      <g fill="#b8b8b8">
+        <circle cx="19" cy="21" r="11"/>
+        <circle cx="33" cy="16" r="13"/>
+        <circle cx="46" cy="22" r="10"/>
+        <rect x="8" y="20" width="47" height="13" rx="6"/>
+      </g>
+      <rect x="12" y="27" width="40" height="6" rx="3" fill="#8e8e96"/>
+    `),
+
+  // A steam locomotive, because `bus` and `car` already own the plain
+  // box-on-two-wheels reading. Three cues do the separating and all three
+  // survive 150px: the funnel with white smoke puffs floating clear above
+  // the body, three wheels of two sizes instead of two matched ones, and the
+  // rail under them. Wheels reuse the dark tyre + gray hub of `bus`/`car` so
+  // the vehicle family still looks drawn by one hand.
+  train: () =>
+    wrap(`
+      <g fill="#f5f2ea" stroke="#b8b8b8" stroke-width="1.6">
+        <circle cx="13" cy="9" r="5.4"/>
+        <circle cx="24" cy="5.4" r="4.4"/>
+        <circle cx="34" cy="4.6" r="3.4"/>
+      </g>
+      <rect x="7" y="14" width="14" height="4" rx="2" fill="#2c2c2a"/>
+      <rect x="9" y="17" width="10" height="10" fill="#2c2c2a"/>
+      <rect x="34" y="10" width="24" height="5" rx="2" fill="#791f1f"/>
+      <rect x="36" y="14" width="20" height="26" rx="3" fill="#d1332f"/>
+      <rect x="40" y="18" width="12" height="11" rx="2" fill="#eafcff"/>
+      <rect x="5" y="26" width="33" height="15" rx="7" fill="#e24b4a"/>
+      <circle cx="9" cy="33.5" r="4.6" fill="#ffd43b" stroke="#ef9f27" stroke-width="1.6"/>
+      <rect x="3" y="40" width="56" height="6" rx="2" fill="#2c2c2a"/>
+      <polygon points="2,46 9,40 9,54" fill="#791f1f"/>
+      <g fill="#2c2c2a">
+        <circle cx="22" cy="50" r="8"/>
+        <circle cx="42" cy="50" r="6"/>
+        <circle cx="53" cy="50" r="6"/>
+      </g>
+      <g fill="#b8b8b8">
+        <circle cx="22" cy="50" r="3.2"/>
+        <circle cx="42" cy="50" r="2.6"/>
+        <circle cx="53" cy="50" r="2.6"/>
+      </g>
+      <rect x="0" y="58" width="64" height="3.4" fill="#8a5a33"/>
+    `),
+
+  // Archery target with an arrow planted in the bullseye. The arrow is not
+  // decoration: a bare ring stack is just a disc and would sit next to `ten`
+  // (red badge) and `ball` (orange disc). The fletching is deliberately
+  // oversized -- with small fins the hard-cutout silhouette was a disc on a
+  // thin diagonal handle, which is exactly `net`'s outline; two long swept
+  // fins turn the tail into a wide wedge instead. In color the two never
+  // meet (red ring stack + green feathers vs. a cyan mesh scoop on gold).
+  // This is the one abstract word in the set -- see the note in the report.
+  aim: () =>
+    wrap(`
+      <circle cx="39" cy="25" r="20" fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6"/>
+      <circle cx="39" cy="25" r="15" fill="#e24b4a"/>
+      <circle cx="39" cy="25" r="10" fill="#f5f2ea"/>
+      <circle cx="39" cy="25" r="5" fill="#e24b4a"/>
+      <line x1="5" y1="59" x2="40" y2="24" stroke="#712b13" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#3b9922" stroke="#256614" stroke-width="1.2" stroke-linejoin="round">
+        <polygon points="5,59 19,45 6.3,46.3"/>
+        <polygon points="5,59 19,45 17.7,57.7"/>
+      </g>
+      <polygon points="43,21 39.5,31.5 32.5,24.5" fill="#2c2c2a"/>
+    `),
+
+  // Jam jar. Two things name it: dark red preserve filling a clear jar (not
+  // a metal pot, not a navy ink bottle) and the checked cloth cap tied with
+  // string, which is the universal "homemade jam" shorthand. The cap is
+  // deliberately wider than the jar so the outline is top-heavy -- `ink` is
+  // a narrow-necked bottle sitting in a puddle, the opposite profile.
+  jam: () => {
+    const clipId = nextId('jam-clip')
+    const capId = nextId('jam-cap')
+    const jar = 'M15 22 H49 V50 Q49 56 43 56 H21 Q15 56 15 50 Z'
+    const cap = 'M13 22 Q13 8 32 8 Q51 8 51 22 Z'
+    return wrap(`
+      <clipPath id="${clipId}"><path d="${jar}"/></clipPath>
+      <path d="${jar}" fill="#eafcff"/>
+      <g clip-path="url(#${clipId})">
+        <rect x="13" y="30" width="38" height="28" fill="#d1332f"/>
+        <rect x="13" y="30" width="38" height="4" fill="#791f1f"/>
+        <rect x="18" y="34" width="4" height="22" fill="#e24b4a"/>
+      </g>
+      <path d="${jar}" fill="none" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      <rect x="20" y="36" width="24" height="14" rx="2" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="1.4"/>
+      <path d="M27.6 40 Q32 38.8 36.4 40 Q35.6 48 32 49 Q28.4 48 27.6 40 Z" fill="#e24b4a"/>
+      <path d="M27 39.6 Q32 37 37 39.6 Q32 41.2 27 39.6 Z" fill="#3b9922"/>
+      <g fill="#791f1f">
+        <circle cx="30.4" cy="42.6" r="0.8"/>
+        <circle cx="33.6" cy="43.6" r="0.8"/>
+        <circle cx="32" cy="46" r="0.8"/>
+      </g>
+      <clipPath id="${capId}"><path d="${cap}"/></clipPath>
+      <path d="${cap}" fill="#f4c95d"/>
+      <g clip-path="url(#${capId})" fill="#ef9f27">
+        <rect x="13" y="8" width="7" height="7"/>
+        <rect x="27" y="8" width="7" height="7"/>
+        <rect x="41" y="8" width="7" height="7"/>
+        <rect x="6" y="15" width="7" height="7"/>
+        <rect x="20" y="15" width="7" height="7"/>
+        <rect x="34" y="15" width="7" height="7"/>
+        <rect x="48" y="15" width="7" height="7"/>
+      </g>
+      <path d="${cap}" fill="none" stroke="#2c2c2a" stroke-width="2.2" stroke-linejoin="round"/>
+      <rect x="11" y="19" width="42" height="5.4" rx="2.7" fill="#3b9922"/>
+    `)
+  },
+
+  // A pouring jug. `cup` is a small red cylinder with a token handle, so
+  // this is built from the two features a cup does not have: a beaked
+  // pouring lip that juts past the body outline, and a handle loop large
+  // enough to show daylight through it. Green ceramic keeps it out of the
+  // red `cup` / black `pot` / red `jam` vessel palette.
+  jug: () => {
+    const clipId = nextId('jug-clip')
+    const body =
+      'M12 13 L24 21 Q14 30 14 44 Q14 57 32 57 Q50 57 50 44 Q50 30 42 21 L42 14 Z'
+    return wrap(`
+      <path d="M45 24 Q58 28 58 37 Q58 46 46 48" fill="none" stroke="#2c2c2a" stroke-width="10.5" stroke-linecap="round"/>
+      <path d="M45 24 Q58 28 58 37 Q58 46 46 48" fill="none" stroke="#3b9922" stroke-width="6" stroke-linecap="round"/>
+      <clipPath id="${clipId}"><path d="${body}"/></clipPath>
+      <path d="${body}" fill="#3b9922"/>
+      <rect x="10" y="36" width="44" height="8" fill="#f5f2ea" clip-path="url(#${clipId})"/>
+      <path d="${body}" fill="none" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      <ellipse cx="27" cy="15" rx="15" ry="4" fill="#eafcff" stroke="#2c2c2a" stroke-width="2"/>
+    `)
+  },
+
+  // Sailboat: two triangular sails over a trapezoid hull, on water. Nothing
+  // about it can reach `bus`/`car` (no wheels, no windows) or `fish` (the
+  // blue oval body) -- the mast plus sail triangles dominate the outline,
+  // and the navy wave line is the second "this floats" cue after the hull.
+  boat: () =>
+    wrap(`
+      <polygon points="33,4 44,7.5 33,11" fill="#ffd43b"/>
+      <rect x="30.5" y="8" width="3.5" height="33" fill="#8a5a33"/>
+      <polygon points="35,10 35,38 55,38" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="1.8"/>
+      <polygon points="29,13 29,38 13,38" fill="#e24b4a"/>
+      <polygon points="6,40 58,40 50,52 14,52" fill="#712b13"/>
+      <rect x="6" y="40" width="52" height="4" fill="#f4c95d"/>
+      <path d="M2 57 Q10 52 18 57 Q26 62 34 57 Q42 52 50 57 Q58 62 62 57"
+        fill="none" stroke="#0c447c" stroke-width="3.4" stroke-linecap="round"/>
+    `),
+
+  // A belted coat, front on. The sleeves stop 11 units short of the hem, so
+  // the outline carries a notch on each side -- that pair of notches is what
+  // reads as "two sleeves plus a body" instead of the shapeless blob a
+  // one-piece garment outline collapses into. The belt with a buckle names it
+  // as outerwear rather than a shirt, and it sits at the waist: an earlier
+  // draft put it at chest height with a big white collar and the whole thing
+  // read as a life vest. Sleeves point down, never out, so the silhouette
+  // never resolves into a T shape.
+  coat: () =>
+    wrap(`
+      <path d="M25 11 L17 16 L8 30 L8 44 L18 44 L18 60 L46 60 L46 44 L56 44 L56 30 L47 16 L39 11 Z"
+        fill="#e24b4a" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+      <g fill="#791f1f">
+        <rect x="8" y="38" width="10" height="6"/>
+        <rect x="46" y="38" width="10" height="6"/>
+        <rect x="30.4" y="24" width="3.2" height="36"/>
+        <rect x="20" y="50" width="9" height="3.6" rx="1.2"/>
+        <rect x="35" y="50" width="9" height="3.6" rx="1.2"/>
+      </g>
+      <rect x="18" y="35" width="28" height="5.6" fill="#712b13"/>
+      <rect x="28.4" y="33.6" width="7.2" height="8.4" rx="1.6" fill="#f4c95d" stroke="#ef9f27" stroke-width="1.4"/>
+      <g fill="#f4c95d" stroke="#ef9f27" stroke-width="1.2">
+        <circle cx="32" cy="28" r="2.8"/>
+        <circle cx="32" cy="46" r="2.8"/>
+        <circle cx="32" cy="56" r="2.8"/>
+      </g>
+      <path d="M25 11 H39 L32 24 Z" fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2" stroke-linejoin="round"/>
+    `),
+
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.
   letterTile: (label = '') =>
