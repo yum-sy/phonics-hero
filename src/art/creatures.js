@@ -330,43 +330,121 @@ export function creatureRocket({
   )
 }
 
-// Magno (M): the big sleepy one, and BULK IS THE SPECIES CUE (v8). At v7's
-// 80x72 body it was within a few units of its castmates and read as "another
-// round creature that happens to be sleepy"; the archetype only works if the
-// size difference is unmissable, so the body is now 92x80 -- the widest in the
-// file, filling the viewBox nearly edge to edge -- while the limbs got SHORTER
-// and stubbier. The contrast between a huge mass and small limbs is what reads
-// as heavy; a big figure with proportionate limbs just reads as a big figure.
+// Magno (M): the big sleepy one, and BULK IS THE SPECIES CUE. v9 changes the
+// POSE, because scale alone had stopped paying. v8 pushed the standing body to
+// 92x80 (77% of the viewBox width) and it still did not feel full: a standing
+// silhouette is tall, so it spends its height on air. Measured, v8 painted
+// 44.7% of the box and left the top 39.5 units (28% of the height) completely
+// empty. v9 sits the figure back on the floor instead: a low reclining mass
+// 110 wide with the head sunk into it, arms flopped out along the flanks, and
+// both SOLES turned to face the viewer at the bottom corners. Reclining is
+// what buys the width, and the forward-facing soles are what say "this thing
+// is not standing up" at a glance.
+//
+// Deliberate departure from grammar rule 3 (limbs behind the body): the arms
+// and the feet are emitted AFTER the mass and keep their own outlines. A sole
+// pointed at the viewer is in front of the belly by definition, and hand-drawn
+// reclining-giant art draws it exactly that way. The single-silhouette read
+// survives because both feet break the mass's outline at the bottom corners
+// (the body's edge is at x=27.3 where the left foot reaches x=7), so the
+// outline still gains lobes rather than losing them.
+//
 // The magnet survives only as the ARCH SHAPE of the ears, body-coloured with
-// no pole caps: legible as a horseshoe if you look, ears if you do not.
+// no pole caps, now swept back at 42 deg instead of 12: laid-back ears are
+// half of what makes a head read as tipped back.
 export function creatureMagno({
   bodyColor = '#a9c9ea',
   accent = '#82a9d2',
   emblem = 'M',
   visorColor = BADGE,
 } = {}) {
+  // The reclining mass. Written as one symmetric path rather than an ellipse
+  // because the bottom has to be FLAT (weight resting on the floor) while the
+  // shoulders taper, which no ellipse does. Inked extents, stroke included:
+  // x 3.7..116.3, y 48.7..128.3.
+  const RIGHT_FLANK = `C 95,127 116,114 115,96 C 113,72 96,50 60,50`
+  const body = `
+    <path d="M 60,50 C 24,50 7,72 5,96 C 4,114 25,127 60,127 ${RIGHT_FLANK} Z"
+      fill="${bodyColor}" ${ol(SW)}/>`
+  // Cel shade for a mass that is not an ellipse, so shadeCrescent() cannot be
+  // used: the crescent's outer edge REUSES the body path's own right-flank
+  // cubics verbatim, which is the only way to guarantee it stays flush with
+  // the silhouette, and closes with a bow through x=84 so it tapers to nothing
+  // at both poles the way shadeCrescent's does. The bow passes right of the
+  // badge (x 44.5..75.5) at every height, so the letter plate is never dimmed.
+  const bodyShade = `
+    <path d="M 60,127 ${RIGHT_FLANK} C 78,62 84,80 84,92 C 84,108 76,119 60,127 Z"
+      fill="${LINE}" opacity="0.13"/>`
+
+  // Arm: flopped out from beside the head and down the flank, ending in a paw
+  // resting on the belly with its palm showing. Written once on the left and
+  // mirrored. The tube's outer half-width is 9.5, so the path's own min x of
+  // 18.4 inks to 8.9, inside the body edge: the arm reads as a heavy limb
+  // lying ON the mass, not as a stub poking out of it.
+  const arm = `
+    ${tube('M 36,60 C 24,66 17,76 20,88', 15, accent)}
+    <ellipse cx="18" cy="92" rx="11" ry="9.5" fill="${accent}" ${ol(SW_MID)}/>
+    <ellipse cx="18" cy="94" rx="6.5" ry="5" fill="${BELLY}" ${ol(SW_IN)}/>`
+
+  // Sole turned to face the viewer: three claws poking above the foot's top
+  // edge, three toe pads and one big heel pad on the sole itself. The claws go
+  // in BEFORE the foot so the foot's fill eats their bases and only the tips
+  // show. Rightmost claw inks to x=42.5, clear of the badge's x=44.5.
+  const claw = `M -3.2,4.5 C -4,-1 -2,-5.5 0,-5.5 C 2,-5.5 4,-1 3.2,4.5 Z`
+  const foot = `
+    <g fill="${BELLY}" ${ol(SW_IN)}>
+      <path d="${claw}" transform="translate(16,112)"/>
+      <path d="${claw}" transform="translate(27,110)"/>
+      <path d="${claw}" transform="translate(38,112)"/>
+    </g>
+    <ellipse cx="27" cy="122" rx="20" ry="13" fill="${accent}" ${ol(SW_MID)}/>
+    <g fill="${BELLY}" ${ol(SW_IN)}>
+      <ellipse cx="16" cy="116" rx="4" ry="3.2"/>
+      <ellipse cx="27" cy="114" rx="4" ry="3.2"/>
+      <ellipse cx="38" cy="116" rx="4" ry="3.2"/>
+      <ellipse cx="27" cy="127" rx="13" ry="6.5"/>
+    </g>`
+
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 40)}
+      <!-- the mass reaches y=127 itself, so the ground shadow only shows in
+           the gap between the two soles, which is where ground contact is
+           actually visible on a figure sitting down. -->
+      ${shadow(60, 136, 44)}
 
-      <g transform="translate(36,48) rotate(-12) scale(1.25)">${archShape(bodyColor)}</g>
-      <g transform="translate(84,48) rotate(12) scale(-1.25,1.25)">${archShape(bodyColor)}</g>
+      <g transform="translate(38,30) rotate(-42) scale(1.2)">${archShape(bodyColor)}</g>
+      <g transform="translate(82,30) rotate(42) scale(-1.2,1.2)">${archShape(bodyColor)}</g>
 
-      <!-- limbs placed by hand, not through paws()/feet(): those helpers put
-           paws at x=22/98, which the rx=46 body swallows whole (its edge is
-           at x=16.1 that low). Stubbier than any other figure's, on purpose. -->
-      ${stub(15, 102, 10.5, 9.5, accent)}
-      ${stub(105, 102, 10.5, 9.5, accent)}
-      ${stub(42, 128, 15, 7, accent)}
-      ${stub(78, 128, 15, 7, accent)}
+      ${body}
+      <!-- belly patch: 92 wide by 46 tall (aspect 2.0) against a round r=14
+           badge. The aspect gap is what stops the two pale shapes reading as
+           one dartboard, which is the failure this file already had once; the
+           badge also sits 5 units above the patch's centre rather than on it,
+           so they are not concentric either. -->
+      <ellipse cx="60" cy="102" rx="46" ry="23" fill="${BELLY}" ${ol(SW_IN)}/>
+      ${bodyShade}
+      <!-- chin/neck fold: the head is sunk into the shoulders, and this is the
+           crease that says so. -->
+      <path d="M 41,71 Q 60,80 79,71" fill="none" stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>
 
-      ${blob(bodyColor, 60, 90, 46, 40)}
-      ${shadeCrescent(60, 90, 46, 40)}
+      ${arm}
+      ${mirrored(arm)}
+      ${foot}
+      ${mirrored(foot)}
 
-      ${sleepyEyes(43, 77, 78, 6.5)}
-      ${mouth(60, 90, 4.5)}
+      <!-- head: wider than tall (64x50) and dropped so 20 units of it are
+           behind the mass. Drawn after the limbs so it swallows the arm roots
+           at x=36/84 the way rule 3 wants. -->
+      <ellipse cx="60" cy="45" rx="32" ry="25" fill="${bodyColor}" ${ol(SW)}/>
+      ${shadeCrescent(60, 45, 32, 25)}
+      <!-- the underside of the jaw, visible because the head is tipped back.
+           Eyes sit ABOVE the head's centre for the same reason. -->
+      <ellipse cx="60" cy="60" rx="21" ry="9.5" fill="${BELLY}" ${ol(SW_IN)}/>
 
-      ${emblemBadge(60, 108, 14, visorColor, emblem, 20)}
+      ${sleepyEyes(43, 77, 40, 7)}
+      ${mouth(60, 58, 5)}
+
+      ${emblemBadge(60, 97, 14, visorColor, emblem, 20)}
     `)
   )
 }
