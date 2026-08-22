@@ -257,9 +257,55 @@ const TAP_ROLE = 'tap'
 //      수정 전의 17/0/5 는 77%로 걸린다.
 //   2) 한 번도 쓰이지 않은 슬롯 -- 위 점유율이 45/55/0 같은 분포를 통과시킨다.
 //      그 슬롯이 존재하는 문항이 6개 이상인데 정답이 0번이면 걸린다.
-// 챕터가 작으면(6문항 미만) 우연으로도 쏠리므로 침묵한다.
+// 표본이 작으면(6문항 미만) 우연으로도 쏠리므로 침묵한다.
+//
+// 집계 단위는 **둘** 이다. 챕터 하나만 보면 구멍이 있다: `choose` 15문항이
+// 5/5/5 로 고르고 `choose-sequence` 6문항이 전부 1번이면 챕터 합계는 11/5/5
+// (52%) 로 통과하는데, 아이 입장에서는 퀵파이어가 나올 때마다 첫 칸이 정답이다.
+// 실제 신고도 정확히 그 모양이었다 -- `choose-sequence` 가 **48/48 = 100%** 였다.
+// 그래서 커리큘럼 전체를 kind 별로도 본다. kind 별 챕터 단위는 표본이 6~8개라
+// 우연으로 4/6 이 나오는 확률이 30% 나 되어 검사가 될 수 없지만(경보가 잦으면
+// 무시된다), 커리큘럼 전체는 kind 하나가 수십 문항이라 판정이 안정적이다.
 const SLOT_BIAS_HEADROOM = 0.2
 const SLOT_BIAS_MIN_ITEMS = 6
+
+// items: [{ at, slot, n }] -- slot 은 0-based, n 은 그 문항의 보기 개수.
+function slotBiasProblems(label, items, subject) {
+  const problems = []
+  if (items.length < SLOT_BIAS_MIN_ITEMS) return problems
+  const total = items.length
+  const widest = Math.max(...items.map((a) => a.n))
+  // 우연 기대치는 문항별 1/n 의 평균 -- 보기 개수가 섞인 집합에서도 옳다.
+  const chance = items.reduce((sum, a) => sum + 1 / a.n, 0) / total
+  const limit = Math.max(0.5, chance + SLOT_BIAS_HEADROOM)
+  const hits = []
+  const avail = []
+  for (let k = 0; k < widest; k++) {
+    hits[k] = items.filter((a) => a.slot === k).length
+    avail[k] = items.filter((a) => a.n > k).length
+  }
+  const spread = hits.map((h, k) => `${k + 1}번 ${h}`).join(' · ')
+  const worst = hits.indexOf(Math.max(...hits))
+  if (hits[worst] / total > limit) {
+    problems.push(
+      `${label}: ${subject} ${total}개 중 정답이 ${worst + 1}번 칸인 것이 ${hits[worst]}개 ` +
+        `(${Math.round((hits[worst] / total) * 100)}%, 상한 ${Math.round(limit * 100)}%) ` +
+        `[${spread}] -- 아이가 소리를 듣지 않고 항상 ${worst + 1}번만 눌러도 그만큼을 ` +
+        `맞는다. 평가가 무의미해지므로 보기 순서를 흩어라 (정답만 옮기고 오답끼리의 ` +
+        `순서는 유지하면 된다)`
+    )
+  }
+  for (let k = 0; k < widest; k++) {
+    if (hits[k] === 0 && avail[k] >= SLOT_BIAS_MIN_ITEMS) {
+      problems.push(
+        `${label}: ${k + 1}번 칸이 정답인 ${subject}이 0개다 (그 칸이 있는 문항 ` +
+          `${avail[k]}개) [${spread}] -- 아이가 그 칸을 한 번도 정답으로 만나지 ` +
+          `않는다. 저자가 정답을 먼저 적는 습관이 만드는 편향이다`
+      )
+    }
+  }
+  return problems
+}
 
 // Kinds whose renderer deals its hit unconditionally; every other scored kind
 // needs a readAloud to have any damage path at all.
@@ -371,6 +417,9 @@ const ROMAJI = /[a-z]/i
 
 export function validateChapters(chapterList = chapters, iconKeys = null) {
   const problems = []
+  // 정답 위치 편향은 문항 하나를 봐서는 안 보이고 집계로만 보인다 -- 챕터
+  // 단위와 커리큘럼 전체 kind 단위, 두 곳에서 본다.
+  const allAnswerSlots = []
   const stageIds = new Map()
   const beatIds = new Map()
 
@@ -484,7 +533,12 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           } else if (correct !== 1) {
             problems.push(`${at}: ${beat.kind} 정답이 ${correct}개 (정확히 1개)`)
           } else {
-            answerSlots.push({ at, slot: options.findIndex((o) => o.correct), n: options.length })
+            answerSlots.push({
+              at,
+              kind: beat.kind,
+              slot: options.findIndex((o) => o.correct),
+              n: options.length,
+            })
           }
           if (checkSpeechCollisions) {
             const tileSounds = options
@@ -929,39 +983,19 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
       }
     }
 
-    // ---------- 정답 위치 편향 (챕터 단위 집계) ----------
-    if (answerSlots.length >= SLOT_BIAS_MIN_ITEMS) {
-      const total = answerSlots.length
-      const widest = Math.max(...answerSlots.map((a) => a.n))
-      const chance = answerSlots.reduce((sum, a) => sum + 1 / a.n, 0) / total
-      const limit = Math.max(0.5, chance + SLOT_BIAS_HEADROOM)
-      const hits = []
-      const avail = []
-      for (let k = 0; k < widest; k++) {
-        hits[k] = answerSlots.filter((a) => a.slot === k).length
-        avail[k] = answerSlots.filter((a) => a.n > k).length
-      }
-      const spread = hits.map((h, k) => `${k + 1}번 ${h}`).join(' · ')
-      const worst = hits.indexOf(Math.max(...hits))
-      if (hits[worst] / total > limit) {
-        problems.push(
-          `${chapter.id}: 단일 정답 문항 ${total}개 중 정답이 ${worst + 1}번 칸인 것이 ` +
-            `${hits[worst]}개 (${Math.round((hits[worst] / total) * 100)}%, 상한 ` +
-            `${Math.round(limit * 100)}%) [${spread}] -- 아이가 소리를 듣지 않고 ` +
-            `항상 ${worst + 1}번만 눌러도 그만큼을 맞는다. 평가가 무의미해지므로 ` +
-            `보기 순서를 흩어라 (정답만 옮기고 오답끼리의 순서는 유지하면 된다)`
-        )
-      }
-      for (let k = 0; k < widest; k++) {
-        if (hits[k] === 0 && avail[k] >= SLOT_BIAS_MIN_ITEMS) {
-          problems.push(
-            `${chapter.id}: ${k + 1}번 칸이 정답인 문항이 0개다 (그 칸이 있는 문항 ` +
-              `${avail[k]}개) [${spread}] -- 아이가 이 챕터에서 그 칸을 한 번도 ` +
-              `정답으로 만나지 않는다. 저자가 정답을 먼저 적는 습관이 만드는 편향이다`
-          )
-        }
-      }
-    }
+    problems.push(...slotBiasProblems(chapter.id, answerSlots, '단일 정답 문항'))
+    allAnswerSlots.push(...answerSlots)
+  }
+
+  // 커리큘럼 전체를 kind 별로. 챕터 단위 집계가 통과시키는 "한 kind 만 쏠린"
+  // 모양을 잡는다 -- 신고된 결함이 정확히 그것이었다(`choose-sequence` 48/48).
+  const byKind = new Map()
+  for (const a of allAnswerSlots) {
+    if (!byKind.has(a.kind)) byKind.set(a.kind, [])
+    byKind.get(a.kind).push(a)
+  }
+  for (const [kind, items] of byKind) {
+    problems.push(...slotBiasProblems('전체 커리큘럼', items, `${kind} 문항`))
   }
 
   return problems
