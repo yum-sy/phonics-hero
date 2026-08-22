@@ -15,6 +15,11 @@ export function unlockAudio() {
   } catch (e) {
     // ignore
   }
+  // iOS populates getVoices() lazily, and on some builds only after the first
+  // speak(). This is the first user gesture in the app, so it's the earliest
+  // moment a real voice list can exist -- grab it here rather than waiting for
+  // a voiceschanged event that may never arrive.
+  refreshVoices()
 }
 
 function sleep(ms) {
@@ -156,6 +161,22 @@ const EN_RATE = 0.5
 // is the trade this file already declared: unnoticed silence on a voice the
 // child will not hear, against an audible collision on the voice they will.
 //
+// UNVERIFIED ON THE REAL DEVICE, and honestly so. Everything above is fitted
+// to macOS `say` Samantha on the assumption that the iPad also spoke as
+// Samantha. It did not -- it was using the system's Korean voice (see "explicit
+// voice selection" below), so these coefficients have never once described the
+// engine the child actually hears. The voice fix is what makes the assumption
+// true rather than false, which is why nothing here is being re-tuned in the
+// same change: after the fix the device should resolve to Samantha, the voice
+// this was already fitted to. Confirm before touching a number:
+//   1. read window.__carbotVoices.en on the iPad (dev build) -- if it is
+//      "Samantha [en-US local]", this fit applies as written;
+//   2. if it resolves to any other voice, re-measure the corpus against THAT
+//      voice before trusting the residuals quoted here.
+// Direction of the risk, if it is a different voice: this is a floor, so it
+// only ever acts when onend lies. Too low = the collisions it exists to stop
+// come back; too high = unnoticed silence. Undershoot is the expensive side.
+//
 // Measure the LOWERCASED string when re-checking any of this: speakNow()
 // lowercases before speaking, and `say "S"` is "Capital S" (1013ms) against
 // 447ms for `say "s"`. Measuring the data as written doubles every uppercase
@@ -182,6 +203,193 @@ function minSpeechMs(text, lang, rate) {
     ? Math.max(115 * len, 370 * text.split(',').length)
     : Math.max(290, 78 * len)
   return base * stretch(rate, commas)
+}
+
+// ---- explicit voice selection ----
+//
+// Until this existed, every utterance set `utter.lang` and nothing else. That
+// is not enough on iOS Safari: `lang` is a *hint*, and when it doesn't force a
+// match the engine falls back to the system default voice. On the target
+// device -- an iPad whose system language is Korean -- that meant the English
+// content was spoken by a Korean voice, which reads English text as Hangul
+// syllables. The real-device QA reports are exactly that artifact:
+//   "sssss"  -> "에스에스 에스에스"   (Korean voice reading the letter name ㅅ)
+//   "tuh"    -> "주아" / "주와"        (Korean voice syllabifying t-u-h)
+// No spelling of a phoneme can survive being read by the wrong language's
+// voice, so this is upstream of every sound-notation decision in the chapter
+// data, and it also means the macOS `say` measurements this file is fitted to
+// were measuring an engine the device never used.
+//
+// The rule this module now follows: name the voice, and make `lang` agree with
+// the voice we named so the two can't fight.
+//
+// Ordered best-first. Region is deliberately encoded in the order rather than
+// scored separately, because voice *quality* outranks accent for a model a
+// 5-year-old imitates: Karen (en-AU, modern) is a better model than Fred
+// (en-US, 1984). Samantha leads because she is the iOS en-US default AND the
+// voice every duration constant in this file was fitted to -- picking her
+// keeps minSpeechMs meaningful.
+const EN_VOICE_RANK = [
+  'samantha',
+  'alex',
+  'aaron',
+  'nicky',
+  'allison',
+  'ava',
+  'susan',
+  'tom',
+  'victoria',
+  'karen',
+  'daniel',
+  'moira',
+  'tessa',
+  'arthur',
+  'martha',
+  'catherine',
+  'fred', // en-US, but a 1980s formant synth -- last resort among named voices
+]
+
+// iOS/macOS ko-KR. Yuna is the default and the voice the 31 recapAudio.ko
+// lines were measured against.
+const KO_VOICE_RANK = ['yuna', 'sora', 'suan', 'minsu', 'jian']
+
+// iOS 16+ and macOS both expose Apple's novelty voices through getVoices(),
+// they are `localService` and many are tagged en-US, so a naive "first local
+// en-US" pick can legitimately land on Zarvox or Bubbles. They are sound
+// effects, not speech models -- never let one become the voice that teaches
+// phonics.
+const NOVELTY_VOICES = new Set([
+  'albert',
+  'bad news',
+  'bahh',
+  'bells',
+  'boing',
+  'bubbles',
+  'cellos',
+  'deranged',
+  'good news',
+  'hysterical',
+  'jester',
+  'organ',
+  'pipe organ',
+  'superstar',
+  'trinoids',
+  'whisper',
+  'wobble',
+  'zarvox',
+])
+
+const EN_REGIONS = ['en-us', 'en-gb', 'en-au', 'en-ie', 'en-ca', 'en-nz', 'en-za', 'en-in']
+
+// Chosen once and reused: getVoices() can return 50+ entries and re-ranking
+// them on every utterance would be pure waste. `resolvedFrom` doubles as the
+// "have we ever seen a real list" flag -- 0 means keep retrying.
+const chosenVoice = { en: null, ko: null }
+let resolvedFrom = 0
+
+function betterThan(a, b) {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] < b[i]) return true
+    if (a[i] > b[i]) return false
+  }
+  return false
+}
+
+function pickVoice(voices, prefix, rank) {
+  let best = null
+  let bestScore = null
+  for (const v of voices) {
+    const tag = String((v && v.lang) || '')
+      .toLowerCase()
+      .replace(/_/g, '-')
+    if (!tag.startsWith(prefix)) continue
+    const name = String((v && v.name) || '').toLowerCase()
+    if (NOVELTY_VOICES.has(name)) continue
+    const named = rank.indexOf(name)
+    const region = EN_REGIONS.indexOf(tag)
+    const score = [
+      // A remote voice adds network latency to every single sound and fails
+      // outright offline, so locality dominates everything else.
+      v.localService === false ? 1 : 0,
+      named < 0 ? rank.length : named,
+      // Constant (and therefore neutral) for the ko pass, which is fine: the
+      // Korean ladder plus `default` already decides that list.
+      region < 0 ? EN_REGIONS.length : region,
+      v.default ? 0 : 1,
+      name, // deterministic tie-break: same device must pick the same voice
+    ]
+    if (bestScore === null || betterThan(score, bestScore)) {
+      best = v
+      bestScore = score
+    }
+  }
+  return best
+}
+
+// Returns whether a real (non-empty) voice list was seen. An empty list is NOT
+// cached as "no voice available" -- on iOS the first getVoices() routinely
+// returns [], and caching that would permanently pin the app to the broken
+// default-voice path.
+function refreshVoices() {
+  if (!('speechSynthesis' in window)) return false
+  let list = []
+  try {
+    list = window.speechSynthesis.getVoices() || []
+  } catch (e) {
+    list = []
+  }
+  if (!list.length) return false
+  // Same list as last time -> same ranking outcome, so don't re-rank 50 voices
+  // (or re-log) just because unlockAudio and module-init both call in. A list
+  // that has *grown* is re-ranked: iOS can report a partial list first and the
+  // full one later, and the better voice may only be in the second one.
+  if (list.length === resolvedFrom) return true
+  chosenVoice.en = pickVoice(list, 'en', EN_VOICE_RANK)
+  chosenVoice.ko = pickVoice(list, 'ko', KO_VOICE_RANK)
+  resolvedFrom = list.length
+  if (typeof import.meta.env !== 'undefined' && import.meta.env.DEV) {
+    // The only way a later session learns which voice the *real iPad* chose;
+    // there is no console on the device, so a probe page reads this global.
+    const describe = (v) =>
+      v ? `${v.name} [${v.lang}${v.localService === false ? ' remote' : ' local'}]` : 'none (engine default)'
+    window.__carbotVoices = {
+      en: describe(chosenVoice.en),
+      ko: describe(chosenVoice.ko),
+      all: list.map((v) => `${v.name} [${v.lang}]`),
+    }
+    console.info('[audio] voice en:', describe(chosenVoice.en), '| ko:', describe(chosenVoice.ko))
+  }
+  return true
+}
+
+// Fires on desktop and on some iOS builds; on the ones where it never fires,
+// the retry inside voiceFor() is what eventually resolves the list. Both paths
+// are needed -- neither alone is reliable.
+if ('speechSynthesis' in window) {
+  const onChange = () => {
+    resolvedFrom = 0
+    refreshVoices()
+  }
+  try {
+    if (window.speechSynthesis.addEventListener) {
+      window.speechSynthesis.addEventListener('voiceschanged', onChange)
+    } else {
+      window.speechSynthesis.onvoiceschanged = onChange
+    }
+  } catch (e) {
+    // ignore
+  }
+  refreshVoices() // often empty this early; harmless, and sometimes it isn't
+}
+
+// Never blocks and never returns a placeholder: a null result means "speak with
+// lang only", which is exactly what this module did before voice selection
+// existed. So a device (or headless browser) that exposes no voice list at all
+// degrades to the previous behaviour instead of going silent -- muting the app
+// would be a far worse failure than the wrong-accent bug this fixes.
+function voiceFor(lang) {
+  if (!resolvedFrom) refreshVoices()
+  return lang.startsWith('ko') ? chosenVoice.ko : chosenVoice.en
 }
 
 let queueTail = Promise.resolve()
@@ -246,7 +454,28 @@ function speakNow(text, lang, rate) {
     // English voice sidesteps both misreadings; it's a no-op for Korean.
     const spoken = lang.startsWith('en') ? raw.toLowerCase() : raw
     const utter = new SpeechSynthesisUtterance(spoken)
-    utter.lang = lang
+    // `lang` first, `voice` last: some engines drop a voice whose language
+    // disagrees with utter.lang, so they are set to agree and the explicit
+    // voice gets the final word. With no voice resolved this is byte-identical
+    // to the pre-voice-selection path.
+    const voice = voiceFor(lang)
+    utter.lang = (voice && voice.lang) || lang
+    if (voice) {
+      // Guarded because this assignment is the one thing in this function that
+      // can throw, and it throws *inside the Promise executor* -- which would
+      // reject this queue link, and a rejected link propagates into
+      // whenAudioIdle(), i.e. every beat transition in the app throws and the
+      // screen freezes. Measured, not hypothetical: Chrome raises
+      // "Failed to convert value to 'SpeechSynthesisVoice'" for anything that
+      // isn't a live entry from that engine's own getVoices(). A real device
+      // hands us real entries, but "wrong voice" must never be able to become
+      // "dead app", so a rejected voice degrades to lang-only speech.
+      try {
+        utter.voice = voice
+      } catch (e) {
+        utter.lang = lang
+      }
+    }
     utter.rate = rate
     utter.onend = finish
     utter.onerror = finish
