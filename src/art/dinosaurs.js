@@ -68,14 +68,70 @@ function angryEye(cx, cy, r) {
     <ellipse cx="${cx}" cy="${cy}" rx="${r * 0.5}" ry="${r * 0.3}" fill="${GLOW}" transform="rotate(-18 ${cx} ${cy})"/>`
 }
 
+
+// ---------------------------------------------------------------------------
+// EMBLEM PLATE SIZING. Same rule as art/robots.js, art/toys.js,
+// art/platformer.js, art.js `superheroPlate` and art/dc.js `emblemPlate`.
+// Five of the seven families could not fit a TWO-GLYPH label and Jolly
+// phonics groups 5-7 are entirely digraphs, so chapter 8 had to put a `★` on
+// four heroes' chests instead of IE/EE/OR.
+//
+// TWO LIMITS, THE TIGHTER ONE WINS, so a narrow chest yields a SMALLER glyph
+// instead of one that leaves its plate. Em factors measured off this
+// project's rendered font at weight 800 (public/_emb4.html): advance 0.85 em
+// for one capital (M worst case), 1.43 for two (OA/OR), 0.91 for the star;
+// inked height 0.75 em for a capital and 0.88 for the star, which is why a
+// non-letter label needs its own size step.
+const PLATE_PAD = 1.6
+
+function plateType(label, clearW, clearH) {
+  const text = String(label)
+  const star = !/^[A-Za-z0-9]+$/.test(text)
+  const advance = star ? 0.91 : text.length > 1 ? 1.43 : 0.85
+  const inkEm = star ? 0.88 : 0.75
+  const size = Math.min(
+    (clearW - PLATE_PAD * 2) / advance,
+    (clearH - PLATE_PAD * 2) / inkEm
+  )
+  return { text, size, base: size * (star ? 0.4 : 0.36) }
+}
+
 // Emblem plate. Oversized on purpose: it is the phonics letter the child ties
 // to the character, and it is the only thing on the figure that must survive
 // a 66 px render intact.
-function emblemPlate(cx, cy, rx, ry, plateColor, textColor, label, size) {
+//
+// WAS AN ELLIPSE, IS NOW A SOFT-CORNERED SCUTE. An ellipse is the wrong
+// container for a two-glyph label and that is measured, not aesthetic: every
+// round variant loses 39-40% of its glyph height going from `S` to `OA`,
+// against 8-23% for a rectangular one, because a round plate's widest row is
+// a single row and a glyph needs its whole cap height at full width. The
+// corner radius is 0.24 of the height, which keeps every edge a curve -- this
+// family's grammar is organic `path` work and a hard-cornered panel fights
+// it -- and a bone-coloured keyline turns the plate into a chest scute, which
+// is a real dinosaur part rather than a badge bolted on.
+function emblemPlate(cx, cy, w, h, plateColor, textColor, label, keyline) {
+  const r = h * 0.24
+  // THE CORNER RADIUS HAS TO BE CHARGED, not assumed away. A glyph needs its
+  // whole cap height at full width, and the top and bottom rows of that band
+  // are inside the corner arcs, so a plate sized on its nominal width leaves
+  // the digraph 0.2-0.4 units of slack instead of the 1.6 the padding asked
+  // for. One refinement pass is enough: size the glyph, measure how far the
+  // arc cuts in at its own cap height, resize.
+  const bite = (inkH) => {
+    const straight = (h - 3.2) / 2 - r
+    const over = inkH / 2 - straight
+    return over <= 0 ? 0 : 2 * (r - Math.sqrt(Math.max(0, r * r - over * over)))
+  }
+  const first = plateType(label, w - 3.2, h - 3.2)
+  const t = plateType(label, w - 3.2 - bite(first.size * 0.75), h - 3.2)
+  const box = (bw, bh, br, fill) =>
+    `<rect x="${(cx - bw / 2).toFixed(1)}" y="${(cy - bh / 2).toFixed(1)}" width="${bw.toFixed(1)}" ` +
+    `height="${bh.toFixed(1)}" rx="${br.toFixed(1)}" fill="${fill}"/>`
   return `
-    <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${plateColor}"/>
-    <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
-      font-size="${size}" font-weight="800" fill="${textColor}">${label}</text>`
+    ${box(w, h, r + 1.6, keyline)}
+    ${box(w - 3.2, h - 3.2, r, plateColor)}
+    <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}">${t.text}</text>`
 }
 
 // 케이라. The sleek one: leans forward over its hips, balanced by a long
@@ -125,7 +181,7 @@ export function dinoRaptor({
       <path d="M 109,48 L 111,52 L 113,47 Z" fill="${BONE}"/>
       ${eye(95, 36, 6.6)}
 
-      ${emblemPlate(64, 84, 15, 12.5, visorColor, accent, emblem, 21)}
+      ${emblemPlate(66, 83, 34, 22, visorColor, accent, emblem, accent)}
     </g>
   `
   )
@@ -181,7 +237,7 @@ export function dinoArmored({
       <path d="M 26,131 C 28,134 28,136 26,136 C 24,135 24,132 26,131 Z" fill="${BONE}"/>
       <path d="M 32,131 C 34,134 34,136 32,136 C 30,135 30,132 32,131 Z" fill="${BONE}"/>
 
-      ${emblemPlate(60, 98, 18, 13.5, visorColor, accent, emblem, 22)}
+      ${emblemPlate(60, 96, 38, 23, visorColor, accent, emblem, accent)}
     </g>
   `
   )
@@ -229,7 +285,7 @@ export function dinoFlyer({
       <path d="M 97,38 C 104,39 108,41 109,42 C 105,44 99,43 96,41 Z" fill="${BONE}"/>
       ${eye(64, 33, 6.6)}
 
-      ${emblemPlate(60, 74, 12.5, 14.5, visorColor, accent, emblem, 20)}
+      ${emblemPlate(60, 69, 28, 21, visorColor, accent, emblem, accent)}
     </g>
   `
   )
@@ -242,6 +298,12 @@ export function dinoFlyer({
 // claws on the front feet — so "the three merged" reads without narration.
 export function dinoHorned({
   bodyColor = '#c8452f',
+  // The `★` used to be inked in `bodyColor` and measured 4.06:1 on the cream
+  // panel -- and a mid-tone cannot be rescued by any plate colour, #c8452f is
+  // 4.86:1 even on pure white. Same red pushed deep instead: 11:1 measured,
+  // never black and never a hue change.
+  inkColor = '#5e1408',
+  emblem = '★',
   panelColor = '#f7ead2',
   accent = '#f0b429',
   visorColor = '#5dd6e0',
@@ -249,7 +311,7 @@ export function dinoHorned({
   return svgWrap(
     `
     <g>
-      <ellipse cx="56" cy="136" rx="50" ry="6" fill="#000" opacity="0.13"/>
+      <ellipse cx="56" cy="133.5" rx="50" ry="6" fill="#000" opacity="0.13"/>
 
       <path d="M 22,94 C 12,92 5,88 1,82 C 4,96 12,104 24,108 Z" fill="${bodyColor}"/>
 
@@ -277,7 +339,7 @@ export function dinoHorned({
       <circle cx="93" cy="11" r="4.4" fill="${accent}"/>
       <circle cx="105" cy="18" r="4.4" fill="${accent}"/>
       <circle cx="114" cy="31" r="4.4" fill="${accent}"/>
-      <circle cx="117" cy="46" r="4.4" fill="${accent}"/>
+      <circle cx="114.6" cy="46" r="4.4" fill="${accent}"/>
       <circle cx="113" cy="61" r="4.4" fill="${accent}"/>
       <path d="M 66,80 C 52,58 58,26 79,15 C 98,5 114,20 116,44
                C 118,66 102,82 86,86 Z" fill="${panelColor}"/>
@@ -298,7 +360,7 @@ export function dinoHorned({
       <path d="M 16,110 C 14,120 14,132 16,137 L 34,137 C 36,132 36,120 34,110 Z" fill="${bodyColor}"/>
       <path d="M 34,133 C 42,134 48,137 50,140 L 32,140 Z" fill="${BONE}"/>
 
-      ${emblemPlate(50, 96, 20, 16, panelColor, bodyColor, '★', 26)}
+      ${emblemPlate(50, 95, 36, 24, panelColor, inkColor, emblem, accent)}
     </g>
   `
   )
@@ -370,9 +432,9 @@ export function dinoEcho({ bodyColor = '#5aa6a0', accent = '#1f5a56' } = {}) {
   return svgWrap(
     `
     <g>
-      <ellipse cx="58" cy="136" rx="34" ry="5" fill="#000" opacity="0.08"/>
-      <g transform="translate(-21,-12)" opacity="0.24">${figure}</g>
-      <g transform="translate(-11,-6)" opacity="0.48">${figure}</g>
+      <ellipse cx="58" cy="134" rx="34" ry="5" fill="#000" opacity="0.08"/>
+      <g transform="translate(-2,-14)" opacity="0.24">${figure}</g>
+      <g transform="translate(-1,-7)" opacity="0.48">${figure}</g>
       ${figure}
     </g>
   `
@@ -468,7 +530,7 @@ export function dinoShadowRex({ bodyColor = '#4a4a52', accent = '#22222a' } = {}
   return svgWrap(
     `
     <g>
-      <ellipse cx="58" cy="136" rx="52" ry="6" fill="#000" opacity="0.14"/>
+      <ellipse cx="58" cy="133.5" rx="52" ry="6" fill="#000" opacity="0.14"/>
 
       <path d="M 34,86 C 22,80 8,70 0,56 C 2,78 16,94 36,102 Z" fill="${bodyColor}"/>
       <path d="M 34,86 C 22,80 8,70 0,56 C 12,70 26,80 36,88 Z" fill="${accent}"/>

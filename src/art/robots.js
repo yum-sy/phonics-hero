@@ -55,6 +55,56 @@ const MECH_DEEP = '#18181a' // grille cavity, tyres, eye housings
 const HOSTILE = '#ff4b3e' // villain eye/core glow, always on a MECH_DEEP housing
 const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
 
+// ---------------------------------------------------------------------------
+// EMBLEM PLATE SIZING. Shared rule, duplicated verbatim in art/dinosaurs.js,
+// art/toys.js and art/platformer.js, and matching art.js `superheroPlate` /
+// art/dc.js `emblemPlate`. Five of the seven families could not fit a
+// TWO-GLYPH label and Jolly phonics groups 5-7 are entirely digraphs, so
+// chapter 8 had to put a `★` on four heroes' chests instead of IE/EE/OR.
+//
+// TWO LIMITS, THE TIGHTER ONE WINS, so a narrow chest yields a SMALLER glyph
+// instead of one that leaves its plate. The em factors are measured off this
+// project's rendered font at weight 800 (see public/_emb4.html), not guessed:
+//   advance   one capital 0.85 em worst case (M), two capitals 1.43 (OA/OR),
+//             the boss star 0.91
+//   inked height  capital 0.75 em, star 0.88 em -- a non-letter label needs
+//             its own step or it crams the plate edge to edge, which is the
+//             `★` defect the DC and platformer families both measured.
+// A glyph that stays inside the FRAME can still have left its PLATE, so this
+// is checked by pixels (ink mask vs the plate's contrast-holding region),
+// never by a viewBox scan.
+const PLATE_PAD = 1.6
+
+function plateType(label, clearW, clearH) {
+  const text = String(label)
+  const star = !/^[A-Za-z0-9]+$/.test(text)
+  const advance = star ? 0.91 : text.length > 1 ? 1.43 : 0.85
+  const inkEm = star ? 0.88 : 0.75
+  const size = Math.min(
+    (clearW - PLATE_PAD * 2) / advance,
+    (clearH - PLATE_PAD * 2) / inkEm
+  )
+  return { text, size, base: size * (star ? 0.4 : 0.36) }
+}
+
+// Bezel + plate + glyph, as a car's framed licence plate. `w`/`h` are the
+// BEZEL's outer box; `bezel` is the frame width, so the glyph is sized off
+// what is actually left inside. Square corners only (grammar rule 8).
+function carPlate(cx, cy, w, h, bezel, bezelColor, plateColor, inkColor, label) {
+  const iw = w - bezel * 2
+  const ih = h - bezel * 2
+  const t = plateType(label, iw, ih)
+  const box = (bw, bh, fill) =>
+    `<polygon points="${(cx - bw / 2).toFixed(1)},${(cy - bh / 2).toFixed(1)} ` +
+    `${(cx + bw / 2).toFixed(1)},${(cy - bh / 2).toFixed(1)} ` +
+    `${(cx + bw / 2).toFixed(1)},${(cy + bh / 2).toFixed(1)} ` +
+    `${(cx - bw / 2).toFixed(1)},${(cy + bh / 2).toFixed(1)}" fill="${fill}"/>`
+  return `${box(w, h, bezelColor)}
+      ${box(iw, ih, plateColor)}
+      <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+        font-size="${t.size.toFixed(1)}" font-weight="800" fill="${inkColor}">${t.text}</text>`
+}
+
 // Standard hero: 새미 / 에이스 / 터보. Car front on the chest, door-wedge
 // shoulders with exposed wheels, one oversized emblem plate.
 export function heroRobot({
@@ -77,7 +127,7 @@ export function heroRobot({
   const knee = '41,113 57,113 56,123 42,123'
   const boot = '36,124 60,124 61,132 35,132'
   const sole = '35,130 61,130 61,133 35,133'
-  const headlight = '42,58 51,58 50,68 43,68'
+  const headlight = '42,56 51,56 50,64 43,64'
   const ear = '38,21 42,19 42,33 38,31'
 
   return svgWrap(
@@ -90,8 +140,10 @@ export function heroRobot({
 
       <polygon points="54,34 66,34 65,44 55,44" fill="${MECH}"/>
 
-      <polygon points="46,92 74,92 72,104 48,104" fill="${accent}"/>
-      <polygon points="55,94 65,94 64,101 56,101" fill="${STEEL}"/>
+      ${/* Down 4 units with the torso's new hem at y=98, so the same amount
+            of hip machinery stays visible between the thighs as before. */ ''}
+      <polygon points="46,96 74,96 72,108 48,108" fill="${accent}"/>
+      <polygon points="55,98 65,98 64,105 56,105" fill="${STEEL}"/>
       <polygon points="${thigh}" fill="${accent}"/>
       <polygon points="${mirror(thigh)}" fill="${accent}"/>
       <polygon points="${thighPlate}" fill="${bodyColor}"/>
@@ -105,17 +157,29 @@ export function heroRobot({
       <polygon points="${sole}" fill="${MECH}"/>
       <polygon points="${mirror(sole)}" fill="${MECH}"/>
 
-      <polygon points="38,42 82,42 78,80 74,94 46,94 42,80" fill="${bodyColor}"/>
-      <polygon points="44,43 76,43 79,54 41,54" fill="${visorColor}"/>
-      <rect x="58.8" y="43" width="2.4" height="11" fill="${bodyColor}"/>
-      <polygon points="40,56 80,56 79,70 41,70" fill="${MECH_DEEP}"/>
+      ${/* THE CAR FRONT IS RE-PROPORTIONED FOR THE PLATE, and the plate is why.
+            The old torso tapered from y=42 (44 units wide) to 28 units at
+            y=94, so the plate's widest usable row was 26.7 and the letter's
+            BASELINE -- the row a glyph needs most -- sat in the narrowest
+            part of the chest. Measured, `OA` inked 29.5 units there and left
+            the plate on both sides. Straightening the chest to y=90 and
+            wedging to the waist over 8 units instead of 52 gives a 25-unit
+            plate band that is 40 wide all the way down, which is what makes
+            a two-glyph label possible at all. The windshield loses 2 units
+            and the grille cavity 2 to pay for the plate's extra height; the
+            waist is still the narrowest point of the figure, it is just a
+            sharp wedge now instead of a long slope, which is the more
+            transforming-car shape of the two anyway. */ ''}
+      <polygon points="38,42 82,42 82,90 74,98 46,98 38,90" fill="${bodyColor}"/>
+      <polygon points="44,43 76,43 78,52 42,52" fill="${visorColor}"/>
+      <rect x="58.8" y="43" width="2.4" height="9" fill="${bodyColor}"/>
+      <polygon points="40,54 80,54 80,66 40,66" fill="${MECH_DEEP}"/>
       <polygon points="${headlight}" fill="#eafcff"/>
       <polygon points="${mirror(headlight)}" fill="#eafcff"/>
-      <rect x="53" y="59" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="58.2" y="59" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="63.4" y="59" width="3.6" height="8" fill="${STEEL}"/>
-      <polygon points="45,72 75,72 73,94 47,94" fill="${CHROME}"/>
-      <text x="60" y="90" text-anchor="middle" font-family="${FONT}" font-size="21" font-weight="800" fill="${accent}">${emblem}</text>
+      <rect x="53" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="58.2" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="63.4" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      ${carPlate(60, 79.5, 36, 25, 2.2, accent, CHROME, accent, emblem)}
 
       <polygon points="${shoulder}" fill="${bodyColor}"/>
       <polygon points="${mirror(shoulder)}" fill="${bodyColor}"/>
@@ -162,6 +226,13 @@ export function heroDeluxeRobot({
   panelColor = '#f5f2ea',
   accent = '#f4c95d',
   visorColor = '#5dd6e0',
+  // The `★` used to be inked in `bodyColor`, which measured 4.97:1 on the
+  // cream plate. A mid-tone cannot be rescued by any plate colour -- #d1332f
+  // is 4.99:1 even on pure white -- so the ink is the SAME RED PUSHED DEEP,
+  // never black and never a hue change. 11:1 measured, and it still reads as
+  // this character's red.
+  inkColor = '#5e1210',
+  emblem = '★',
 } = {}) {
   const fin = '36,42 2,12 0,32 32,56'
   const finTip = '2,12 0,32 11,25'
@@ -223,9 +294,7 @@ export function heroDeluxeRobot({
       <rect x="51" y="58" width="4.4" height="10" fill="${STEEL}"/>
       <rect x="57.8" y="58" width="4.4" height="10" fill="${STEEL}"/>
       <rect x="64.6" y="58" width="4.4" height="10" fill="${STEEL}"/>
-      <polygon points="41,72 79,72 77,97 43,97" fill="${accent}"/>
-      <polygon points="44,74 76,74 74,95 46,95" fill="${panelColor}"/>
-      <text x="60" y="91" text-anchor="middle" font-family="${FONT}" font-size="22" font-weight="800" fill="${bodyColor}">★</text>
+      ${carPlate(60, 83.5, 36, 26, 2.4, accent, panelColor, inkColor, emblem)}
 
       <polygon points="${shoulder}" fill="${bodyColor}"/>
       <polygon points="${mirror(shoulder)}" fill="${bodyColor}"/>

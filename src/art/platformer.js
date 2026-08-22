@@ -831,8 +831,45 @@ function heroHead(cx, capTop, faceTop, faceW, faceH, capHalf, bodyColor, accent,
 // 57x66 and a unit is under half a pixel. Riveted at the corners so it reads
 // as a patch sewn onto the bib rather than a hole in it, and inked so the
 // bright plate keeps its edge on any denim.
-function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
-  const r = Math.min(w, h) * 0.26
+// EMBLEM PLATE SIZING. Same rule as art/robots.js, art/dinosaurs.js,
+// art/toys.js, art.js `superheroPlate` and art/dc.js `emblemPlate`. Five of
+// the seven families could not fit a TWO-GLYPH label and Jolly phonics groups
+// 5-7 are entirely digraphs, so chapter 8 had to put a `★` on four heroes'
+// chests instead of IE/EE/OR.
+//
+// TWO LIMITS, THE TIGHTER ONE WINS, so a narrow chest yields a SMALLER glyph
+// instead of one that leaves its plate. Em factors measured off this
+// project's rendered font at weight 800 (public/_emb4.html): advance 0.85 em
+// for one capital (M worst case), 1.43 for two (OA/OR), 0.91 for the star;
+// inked height 0.75 em for a capital and 0.88 for the star. The star step is
+// the same finding this file already recorded by hand, now shared.
+//
+// THE CALL SITES NO LONGER PASS A SIZE, and that is the whole point: every
+// hero here asked for 24, which on a 21-unit plate inks 17.7 units into a
+// 17.8-unit clear interior -- measured, the letters were crammed edge to edge
+// with 0.05 units of margin and the two-glyph labels simply left the plate.
+// 24 was never an honest number on this bib.
+const PLATE_PAD = 1.6
+
+function plateType(label, clearW, clearH) {
+  const text = String(label)
+  const star = !/^[A-Za-z0-9]+$/.test(text)
+  const advance = star ? 0.91 : text.length > 1 ? 1.43 : 0.85
+  const inkEm = star ? 0.88 : 0.75
+  const size = Math.min(
+    (clearW - PLATE_PAD * 2) / advance,
+    (clearH - PLATE_PAD * 2) / inkEm
+  )
+  return { text, size, base: size * (star ? 0.4 : 0.36) }
+}
+
+// `round` gives the spring its stadium plate: still an all-curves shape, so
+// the letter O is not fighting square corners, but a stadium is full width
+// across the whole middle where a circle is full width for one row. Measured,
+// the circle cost this hero 39% of its glyph height on a digraph; the stadium
+// costs 2.7 units of width against a rectangle.
+function emblemPlate(x, y, w, h, plateColor, textColor, label, round = false) {
+  const r = round ? h / 2 : Math.min(w, h) * 0.19
   // A NON-LETTER LABEL NEEDS ITS OWN SIZE STEP. A capital inks 0.72 of its em
   // box; the boss's ★ inks 0.93. One `size` for both is why Captain Gum's star
   // measured 20.6 units tall inside a plate whose clear interior is 16.8 (21
@@ -849,17 +886,37 @@ function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
   // ink centre is 0.75 units above where the 0.36 baseline factor puts a
   // letter's, so the star needs its own baseline too or it overflows the top
   // while leaving slack at the bottom.
-  const lettery = /^[A-Za-z0-9]+$/.test(String(label))
-  const size2 = lettery ? size : size * 0.75
-  const base = lettery ? 0.36 : 0.4
+  // THE CORNER RADIUS HAS TO BE CHARGED, stadium or not. A glyph needs its
+  // whole cap height at full width and the top and bottom rows of that band
+  // sit inside the corner arcs, so a plate sized on its nominal width leaves
+  // a digraph 0.8 units of slack where the padding asked for 1.6 -- measured,
+  // not derived. One refinement pass: size the glyph, measure how far the arc
+  // cuts in at its own cap height, resize.
+  const bite = (inkH) => {
+    const over = inkH / 2 - ((h - 3.2) / 2 - r)
+    return over <= 0 ? 0 : 2 * (r - Math.sqrt(Math.max(0, r * r - over * over)))
+  }
+  const first = plateType(label, w - 3.2, h - 3.2)
+  const t = plateType(label, w - 3.2 - bite(first.size * 0.75), h - 3.2)
+  const size2 = t.size
+  const base = t.base / t.size
   return [
     R(x, y, w, h, r, plateColor, ink(3.2)),
     R(x + 3, y + 3, w - 6, h * 0.26, r * 0.5, '#fff', { opacity: 0.5, nohalo: true }),
-    C(x + 5.5, y + 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
-    C(x + w - 5.5, y + 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
-    C(x + 5.5, y + h - 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
-    C(x + w - 5.5, y + h - 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
-    TEXT(x + w / 2, y + h / 2 + size2 * base, size2, textColor, label),
+    // THE RIVETS MOVED OUTSIDE THE PLATE, and this is the kind of defect only
+    // a pixel scan finds. At inset 5.5 they sat at x+3.8..x+7.2, i.e. inside
+    // the plate's clear interior and inside the rows a two-glyph label
+    // occupies -- measured, the widest clear run through the glyph's own band
+    // was 19.7 units on a 30.8-unit plate, because the run stopped at a
+    // rivet. They were landing ON the letter. Out on the denim they still
+    // read as what they are (a patch riveted to the dungarees, and the lower
+    // pair lands on the pockets, which is where denim rivets live anyway) and
+    // the plate interior is finally the plate interior.
+    C(x - 1.6, y + 3.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
+    C(x + w + 1.6, y + 3.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
+    C(x - 1.6, y + h - 3.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
+    C(x + w + 1.6, y + h - 3.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
+    TEXT(x + w / 2, y + h / 2 + t.base, size2, textColor, t.text),
   ]
 }
 
@@ -1034,7 +1091,7 @@ export function platJumper({
     bibPanel(37, 70, 46, 22, 10, 2),
     bigButton(36, 81, 6.5),
     mirror(bigButton(36, 81, 6.5)),
-    emblemPlate(45, 70.5, 30, 21, visorColor, accent, emblem, 24),
+    emblemPlate(43, 70.5, 34, 21, visorColor, accent, emblem),
 
     heroArm(HERO_ARM_L, bodyColor, accent, 9),
     heroArm(armPunch, bodyColor, accent, 10, true),
@@ -1107,13 +1164,12 @@ export function platSpring({
     bigButton(36, 85, 6.5),
     mirror(bigButton(36, 85, 6.5)),
 
-    // Ollie's emblem is a round plate rather than the others' rectangle, so
-    // the letter O is not fighting a rectangle around it. Checked at 66 px.
-    // v6 shortened the bib by 4 units but the plate keeps its 26-unit letter:
-    // the disc lost radius, not type size, so the phonics read is unchanged.
-    C(60, 85, 14.5, visorColor, ink(3.4)),
-    S('M 48,78 A 14,14 0 0 1 68,73', '#fff', 2.4, { opacity: 0.6, nohalo: true }),
-    TEXT(60, 94.4, 26, accent, emblem),
+    // Ollie's plate stays THE ROUND ONE in the family -- but a stadium, not a
+    // disc. The disc was 29 units across and could not hold two glyphs at
+    // any size: measured, `OA` inked 36.7 units and left the plate by 9.8 a
+    // side. A stadium keeps every edge a curve, so the letter O still is not
+    // fighting square corners, while being full width down the whole middle.
+    emblemPlate(41, 74.5, 38, 21, visorColor, accent, emblem, true),
 
     heroArm(armL, bodyColor, accent, 9),
     heroArm(armR, bodyColor, accent, 9, true),
@@ -1178,7 +1234,7 @@ export function platBlock({
     bibPanel(37, 74, 46, 22, 10, 2),
     bigButton(36, 85, 6.5),
     mirror(bigButton(36, 85, 6.5)),
-    emblemPlate(45, 74.5, 30, 21, visorColor, accent, emblem, 24),
+    emblemPlate(43, 74.5, 34, 21, visorColor, accent, emblem),
 
     heroArm(armL, bodyColor, accent, 9.5),
     mirror(heroArm(armL, bodyColor, accent, 9.5)),
@@ -1236,6 +1292,7 @@ export function platPowerup({
   // the default below is the same value pulled toward the new red identity
   // (10.74:1), for callers that do not override.
   inkColor = '#6e1210',
+  emblem = '★',
 } = {}) {
   const star = (cx, cy, r, fill, extra) => {
     const pts = []
@@ -1410,7 +1467,7 @@ export function platPowerup({
     plankPanel(82),
     bigButton(26, 84.5, 8),
     mirror(bigButton(26, 84.5, 8)),
-    emblemPlate(43, 74.5, 34, 20, panelColor, inkColor, '★', 24),
+    emblemPlate(43, 74.5, 34, 20, panelColor, inkColor, emblem),
 
     // Red cuffs on white sleeves. Not decoration: the sleeve, the glove and the
     // halo are all near-whites within 1.07:1 of each other, so the wrist is the

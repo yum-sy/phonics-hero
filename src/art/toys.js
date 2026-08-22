@@ -83,7 +83,11 @@ const ol = (w = 3) => `stroke="${INK}" stroke-width="${w}" stroke-linejoin="roun
 const shadeP = (points, op = 0.17) => `<polygon points="${points}" fill="#000" opacity="${op}" stroke="none"/>`
 const litP = (points, op = 0.22) => `<polygon points="${points}" fill="#fff" opacity="${op}" stroke="none"/>`
 
-const shadow = (cx, w) => `<ellipse cx="${cx}" cy="136" rx="${w}" ry="4.6" fill="#000" opacity="0.14" stroke="none"/>`
+// cy 136 -> 134.8: at 136 the 4.6-unit ellipse ran to y=140.6, so EVERY
+// figure in this file carried a 0.6-unit bottom clip from its own ground
+// shadow. Measured by padded-viewBox alpha scan, invisible at any render size
+// and still a clip.
+const shadow = (cx, w) => `<ellipse cx="${cx}" cy="134.8" rx="${w}" ry="4.6" fill="#000" opacity="0.14" stroke="none"/>`
 
 // Cartoon eye: outlined sclera + oversized ink pupil + square catch-light.
 // `look` shifts the pupil (-1 left .. +1 right) so a pair of eyes can aim.
@@ -169,19 +173,49 @@ function lockRing(cx, cy, rx, ry, color) {
     <ellipse cx="${cx}" cy="${cy - ry * 0.25}" rx="${rx * 0.55}" ry="${ry * 0.3}" fill="#fff" opacity="0.35" stroke="none"/>`
 }
 
-// Ink-outlined bright letter plate (grammar rule 6). `shape` picks the
-// plate outline: 'box' for a bolted panel, 'disc' for a badge centre.
-function letterPlate(cx, cy, w, h, plateColor, textColor, label, size, shape = 'box') {
-  const x = cx - w / 2
-  const y = cy - h / 2
-  const plate =
-    shape === 'disc'
-      ? `<circle cx="${cx}" cy="${cy}" r="${w / 2}" fill="${plateColor}" ${ol(2.8)}/>`
-      : `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${plateColor}" ${ol(2.8)}/>`
+// ---------------------------------------------------------------------------
+// EMBLEM PLATE SIZING. Same rule as art/robots.js, art/dinosaurs.js,
+// art/platformer.js, art.js `superheroPlate` and art/dc.js `emblemPlate`.
+// Five of the seven families could not fit a TWO-GLYPH label and Jolly
+// phonics groups 5-7 are entirely digraphs, so chapter 8 had to put a `★` on
+// four heroes' chests instead of IE/EE/OR.
+//
+// TWO LIMITS, THE TIGHTER ONE WINS, so a narrow chest yields a SMALLER glyph
+// instead of one that leaves its plate. Em factors measured off this
+// project's rendered font at weight 800 (public/_emb4.html): advance 0.85 em
+// for one capital (M worst case), 1.43 for two (OA/OR), 0.91 for the star;
+// inked height 0.75 em for a capital and 0.88 for the star, which is why a
+// non-letter label needs its own size step -- the `★` on this family's boss
+// was leaving its plate for exactly that reason.
+const PLATE_PAD = 1.6
+
+function plateType(label, clearW, clearH) {
+  const text = String(label)
+  const star = !/^[A-Za-z0-9]+$/.test(text)
+  const advance = star ? 0.91 : text.length > 1 ? 1.43 : 0.85
+  const inkEm = star ? 0.88 : 0.75
+  const size = Math.min(
+    (clearW - PLATE_PAD * 2) / advance,
+    (clearH - PLATE_PAD * 2) / inkEm
+  )
+  return { text, size, base: size * (star ? 0.4 : 0.36) }
+}
+
+// Ink-outlined bright letter plate (grammar rule 6). Always a bolted panel
+// now: the 'disc' variant is gone because a round plate is the wrong
+// container for a two-glyph label, and that is measured -- a disc loses
+// 39-40% of the glyph height from `S` to `OA` where a panel loses 8-23%,
+// since a round plate is only full width for one row and a glyph needs its
+// whole cap height at full width. Leo's sheriff star and Fifi's collar carry
+// the "badge" read instead, which is where it belonged anyway.
+// The glyph is sized off what is left INSIDE the 2.8-unit ink outline.
+function letterPlate(cx, cy, w, h, plateColor, textColor, label) {
+  const t = plateType(label, w - 2.8, h - 2.8)
   return `
-    ${plate}
-    <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
-      font-size="${size}" font-weight="800" fill="${textColor}" stroke="none">${label}</text>`
+    <rect x="${(cx - w / 2).toFixed(1)}" y="${(cy - h / 2).toFixed(1)}" width="${w.toFixed(1)}"
+      height="${h.toFixed(1)}" rx="3" fill="${plateColor}" ${ol(2.8)}/>
+    <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}" stroke="none">${t.text}</text>`
 }
 
 // ---------------------------------------------------------------------------
@@ -228,8 +262,8 @@ export function toyLeo({
     <g>
       ${shadow(60, 30)}
 
-      ${boot(45, 126, -1)}
-      ${boot(75, 126, 1)}
+      ${boot(45, 125.4, -1)}
+      ${boot(75, 125.4, 1)}
       <polygon points="38,98 53,98 52,122 39,122" fill="${JEAN}" ${ol(3)}/>
       <polygon points="67,98 82,98 81,122 68,122" fill="${JEAN}" ${ol(3)}/>
       ${shadeP('48,98 53,98 52,122 47,122', 0.16)}
@@ -238,11 +272,11 @@ export function toyLeo({
       <polygon points="34,74 24,76 12,98 24,104 37,84" fill="${bodyColor}" ${ol(3)}/>
       ${shadeP('24,101 37,84 34,80 21,99', 0.14)}
       <polygon points="12,96 26,102 23,110 9,104" fill="${CREAM}" ${ol(2.6)}/>
-      ${glove(12, 104, -1)}
+      ${glove(16, 104, -1)}
       <polygon points="86,74 96,76 108,98 96,104 83,84" fill="${bodyColor}" ${ol(3)}/>
       ${shadeP('96,101 83,84 86,80 99,99', 0.14)}
       <polygon points="108,96 94,102 97,110 111,104" fill="${CREAM}" ${ol(2.6)}/>
-      ${glove(108, 104, 1)}
+      ${glove(104, 104, 1)}
 
       <polygon points="34,70 86,70 89,104 31,104" fill="${bodyColor}" ${ol(3.4)}/>
       <g>
@@ -264,14 +298,25 @@ export function toyLeo({
       ${shadeP('66,64 82,64 60,88 62,78', 0.16)}
       <polygon points="50,62 70,62 72,70 48,70" fill="${BANDANA}" ${ol(2.8)}/>
 
-      <polygon points="${starPoints(60, 88, 17, 8)}" fill="${accent}" ${ol(3)}/>
-      ${letterPlate(60, 88, 19, 19, visorColor, HAT_DK, emblem, 18, 'disc')}
+      ${/* THE SHERIFF STAR MOVED TO THE HAT (see the crown, below), and this
+            is the one place in this round where a family prop had to be
+            relocated rather than resized. A nameplate wide enough for a
+            digraph is 34 units across; the star at its old 17 spanned exactly
+            34, so ANY digraph-capable plate hides it. Growing the star to 22
+            was tried and rendered: the badge became a cream panel with four
+            gold wedges beside it, which is not a star at any size. A star on
+            the crown of the hat is the other place a sheriff wears one, it
+            sits on solid brown instead of competing with the letter, and it
+            is more visible than the chest badge ever was at 96 px. Six
+            western props, still six. */ ''}
+      ${letterPlate(60, 88, 34, 21, visorColor, HAT_DK, emblem)}
 
       <polygon points="45,28 75,28 79,48 73,66 60,74 47,66 41,48" fill="${FACE}" ${ol(3.4)}/>
       ${shadeP('70,32 79,48 73,66 66,70 73,48 66,30', 0.12)}
       <polygon points="46,24 74,24 80,30 40,30" fill="${HAT_DK}" ${ol(3)}/>
       <polygon points="44,26 43,8 52,2 60,8 68,2 77,8 76,26" fill="${HAT}" ${ol(3.4)}/>
       ${litP('47,24 46,10 52,6 54,8 50,12 51,24', 0.24)}
+      <polygon points="${starPoints(60, 16, 8, 3.6)}" fill="${accent}" ${ol(2.4)}/>
       ${shadeP('70,24 71,10 77,9 76,26', 0.16)}
       <path d="M 8,28 C 16,18 34,26 44,24 L 76,24 C 86,26 104,18 112,28
                C 98,38 76,40 60,40 C 44,40 22,38 8,28 Z" fill="${HAT}" ${ol(3.4)}/>
@@ -344,8 +389,8 @@ export function toyFifi({
       ${leg(60, 100, 11)}
       ${leg(96, 100, 11)}
 
-      <polygon points="24,58 50,52 54,102 26,104" fill="${bodyColor}" ${ol(3.4)}/>
-      ${litP('26,60 36,58 38,102 28,103', 0.2)}
+      <polygon points="21,58 51,52 55,102 23,104" fill="${bodyColor}" ${ol(3.4)}/>
+      ${litP('23,60 33,58 35,102 25,103', 0.2)}
 
       <polygon points="14,30 42,26 50,46 46,64 26,70 10,54" fill="${bodyColor}" ${ol(3.6)}/>
       ${shadeP('36,28 50,46 46,64 38,67 44,46 32,28', 0.12)}
@@ -359,8 +404,8 @@ export function toyFifi({
       ${shadeP('42,30 47,31 51,50 45,62', 0.18)}
       <path d="M 38,34 Q 44,42 43,54" fill="none" ${ol(2)}/>
 
-      <polygon points="24,58 50,52 52,64 26,70" fill="${accent}" ${ol(3)}/>
-      ${letterPlate(38, 80, 22, 22, visorColor, accent, emblem, 20, 'disc')}
+      <polygon points="21,58 51,52 53,64 23,70" fill="${accent}" ${ol(3)}/>
+      ${letterPlate(37.5, 81, 28, 20, visorColor, accent, emblem)}
 
       ${brow(20, 36, 15, -20, 5.4)}
       ${eye(20, 47, 6.4, -0.5)}
@@ -403,9 +448,11 @@ export function toyBobo({
 
       <polygon points="38,74 82,74 86,112 34,112" fill="${bodyColor}" ${ol(3.4)}/>
       ${shadeP('72,74 82,74 86,112 74,112', 0.15)}
-      ${letterPlate(60, 92, 30, 24, visorColor, accent, emblem, 21, 'box')}
-      <circle cx="48" cy="82" r="2" fill="${accent}" stroke="none"/>
-      <circle cx="72" cy="82" r="2" fill="${accent}" stroke="none"/>
+      ${letterPlate(60, 92, 38, 24, visorColor, accent, emblem)}
+      ${/* Up to y=78, above the wider plate rather than on it -- these are
+            the belly panel's bolts and they were being drawn over the letter. */ ''}
+      <circle cx="48" cy="78" r="2" fill="${accent}" stroke="none"/>
+      <circle cx="72" cy="78" r="2" fill="${accent}" stroke="none"/>
 
       <polygon points="30,26 90,26 96,52 84,70 60,78 36,70 24,52" fill="${bodyColor}" ${ol(3.6)}/>
       ${litP('34,30 52,28 46,44 34,44', 0.24)}
@@ -413,10 +460,10 @@ export function toyBobo({
       <path d="M 32,60 Q 60,68 88,60" fill="none" ${ol(2)}/>
 
       <path d="M 42,26 L 26,8" ${ol(3.4)}/>
-      <circle cx="24" cy="6" r="6" fill="${accent}" ${ol(3)}/>
+      <circle cx="24" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('20,3 24,1 26,4 22,6', 0.4)}
       <path d="M 78,26 L 94,8" ${ol(3.4)}/>
-      <circle cx="96" cy="6" r="6" fill="${accent}" ${ol(3)}/>
+      <circle cx="96" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('92,3 96,1 98,4 94,6', 0.4)}
 
       ${eye(60, 34, 7)}
@@ -449,6 +496,12 @@ export function toyBobo({
 // coil rings at the collar are the callbacks to Leo and Fifi.
 export function toyCaptainBig({
   bodyColor = '#6b4ea8',
+  // The `★` used to be inked in `bodyColor`, which measured 5.72:1 on the
+  // white panel. A mid-tone cannot be rescued by any plate colour, so the ink
+  // is the SAME VIOLET PUSHED DEEP -- 12:1 measured, never black and never a
+  // hue change.
+  inkColor = '#39235f',
+  emblem = '★',
   panelColor = '#fdfaf2',
   accent = '#f0c33e',
   visorColor = '#8fe3ea',
@@ -508,7 +561,7 @@ export function toyCaptainBig({
       ${lockRing(37, 55, 9, 6.4, accent)}
       ${lockRing(83, 55, 9, 6.4, accent)}
 
-      ${letterPlate(60, 70, 26, 22, panelColor, bodyColor, '★', 22, 'box')}
+      ${letterPlate(60, 71.4, 27, 18.4, panelColor, inkColor, emblem)}
       <polygon points="32,62 45,62 45,78 32,78" fill="${DARK}" ${ol(2.6)}/>
       <path d="M 34,66 L 43,66 M 34,70 L 43,70 M 34,74 L 40,74" stroke="${GREEN}" stroke-width="1.8"/>
       <polygon points="76,60 90,60 90,80 76,80" fill="${bodyColor}" ${ol(2.8)}/>
@@ -531,8 +584,16 @@ export function toyCaptainBig({
       ${grin(60, 46, 7.5)}
       <path d="M 60,51 L 60,53" ${ol(2)}/>
 
-      <polygon points="40,52 80,52 78,64 42,64" fill="${panelColor}" ${ol(3.2)}/>
-      <path d="M 47,54 L 47,62 M 60,54 L 60,62 M 73,54 L 73,62" ${ol(2)}/>
+      ${/* Shortened 64 -> 61. This ring is drawn AFTER the emblem plate and
+            its 3.2-unit ink reached y=65.6, i.e. 5 units INSIDE the plate's
+            clear interior, and its middle seam is a vertical ink line at
+            x=60 -- dead centre of the letter. Measured, the widest clear run
+            through the glyph's own rows was zero: the label was sitting on
+            the collar, not on the plate. Only a pixel scan finds this; the
+            plate's own geometry says it is 22 units tall and 14 of those were
+            real. */ ''}
+      <polygon points="40,52 80,52 78,59 42,59" fill="${panelColor}" ${ol(3.2)}/>
+      <path d="M 47,53.5 L 47,57.5 M 60,53.5 L 60,57.5 M 73,53.5 L 73,57.5" ${ol(2)}/>
 
       <circle cx="60" cy="32" r="29" fill="${visorColor}" opacity="0.18" stroke="none"/>
       <circle cx="60" cy="32" r="29" fill="none" ${ol(3.8)}/>
@@ -572,8 +633,8 @@ export function toyWobbly({ bodyColor = '#d1692f', accent = '#7a3413' } = {}) {
 
   return svgWrap(
     `
+    ${shadow(58, 26)}
     <g transform="rotate(10 60 92)">
-      ${shadow(58, 26)}
 
       <path d="M 16,112 Q 22,122 32,118" fill="none" ${ol(2.2)} stroke-dasharray="4,4"/>
       <path d="M 88,110 Q 94,120 104,116" fill="none" ${ol(2.2)} stroke-dasharray="4,4"/>
@@ -642,8 +703,8 @@ export function toyTangly({ bodyColor = '#9a63d1', accent = '#4f2f8a' } = {}) {
 
   return svgWrap(
     `
+    ${shadow(60, 34)}
     <g transform="rotate(-7 60 90)">
-      ${shadow(60, 34)}
 
       ${inkedLine('M 30,104 C 8,110 12,128 26,124', accent, 3.4)}
       ${inkedLine('M 90,102 C 112,106 108,126 94,122', accent, 3.4)}
@@ -655,8 +716,8 @@ export function toyTangly({ bodyColor = '#9a63d1', accent = '#4f2f8a' } = {}) {
       <polygon points="70,108 84,108 86,124 68,124" fill="${accent}" ${ol(3)}/>
       <polygon points="66,122 88,122 89,131 65,131" fill="${DARK}" ${ol(3)}/>
 
-      <polygon points="30,62 14,54 6,62 22,76" fill="${accent}" ${ol(3)}/>
-      <g transform="translate(9,58) rotate(-36)">
+      <polygon points="34,62 18,54 10,62 26,76" fill="${accent}" ${ol(3)}/>
+      <g transform="translate(15,58) rotate(-36)">
         <polygon points="-3,-4 3,-4 2,18 -2,18" fill="#dfe4ea" ${ol(2.4)}/>
         <circle cx="0" cy="-7" r="4.4" fill="${bodyColor}" ${ol(2.4)}/>
       </g>
@@ -703,8 +764,8 @@ export function toyBoxxy({ bodyColor = '#d1a95a', accent = '#7a4a23' } = {}) {
 
   return svgWrap(
     `
+    ${shadow(60, 32)}
     <g transform="rotate(-4 60 92)">
-      ${shadow(60, 32)}
 
       <polygon points="30,112 48,112 50,128 28,128" fill="${accent}" ${ol(3)}/>
       <polygon points="24,126 52,126 53,134 23,134" fill="${DARK}" ${ol(3)}/>
@@ -771,11 +832,11 @@ export function toyTumbles({ bodyColor = '#4f95d1', accent = '#245080' } = {}) {
 
   return svgWrap(
     `
+    ${shadow(58, 30)}
     <g transform="rotate(12 55 92)">
-      ${shadow(58, 30)}
 
       ${diamond(14, 92, 9, 0.9)}
-      ${shard(7, 110, 7, 0.75, 20)}
+      ${shard(10, 110, 7, 0.75, 20)}
       ${diamond(23, 122, 7, 0.7)}
       ${shard(104, 66, 7, 0.75, -15)}
       ${diamond(110, 84, 8, 0.65)}
@@ -832,8 +893,8 @@ export function toyWindDown({ bodyColor = '#3a3150', accent = '#7a63e0' } = {}) 
       <polygon points="14,88 32,86 32,100 12,100" fill="${accent}" ${ol(3)}/>
       <polygon points="16,36 22,36 21,96 15,96" fill="${GOLD}" ${ol(2.8)}/>
       <polygon points="12,32 26,32 24,20 14,20" fill="${GOLD}" ${ol(2.8)}/>
-      <circle cx="19" cy="10" r="8" fill="none" ${ol(6)}/>
-      <circle cx="19" cy="10" r="8" fill="none" stroke="${GOLD}" stroke-width="3.6"/>
+      <circle cx="19" cy="11.4" r="8" fill="none" ${ol(6)}/>
+      <circle cx="19" cy="11.4" r="8" fill="none" stroke="${GOLD}" stroke-width="3.6"/>
 
       <circle cx="60" cy="88" r="16" fill="${GOLD}" ${ol(3.2)}/>
       <circle cx="60" cy="88" r="11.5" fill="${WHITE}" ${ol(2.4)}/>
@@ -845,10 +906,10 @@ export function toyWindDown({ bodyColor = '#3a3150', accent = '#7a63e0' } = {}) 
 
       <polygon points="42,14 78,14 82,32 74,46 60,52 46,46 38,32" fill="${bodyColor}" ${ol(3.6)}/>
       ${shadeP('72,18 82,32 74,46 68,49 74,32 68,16', 0.16)}
-      <polygon points="36,16 44,-2 52,10 60,-4 68,10 76,-2 84,16" fill="${GOLD}" ${ol(3.2)}/>
-      <circle cx="51" cy="8" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
-      <circle cx="60" cy="2" r="2.8" fill="#4ab0d1" ${ol(1.8)}/>
-      <circle cx="69" cy="8" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
+      <polygon points="36,19 44,3.5 52,14 60,2 68,14 76,3.5 84,19" fill="${GOLD}" ${ol(3.2)}/>
+      <circle cx="51" cy="10.5" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
+      <circle cx="60" cy="6" r="2.8" fill="#4ab0d1" ${ol(1.8)}/>
+      <circle cx="69" cy="10.5" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
 
       ${brow(50, 24, 17, 24, 6)}
       ${brow(72, 24, 17, -24, 6)}
