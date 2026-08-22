@@ -25,18 +25,31 @@
 //     what make it look drawn.
 //     A limb drawn as a thick stroke gets its outline the only way a stroke
 //     can: the same path painted twice, wider in LINE underneath (`tube`).
-//  2. PRIMARY, FULL-CHROMA FILLS (v9 -- replaces the pastel band outright).
+//  2. PRIMARY, FULL-CHROMA FILLS (v10 -- replaces the pastel band outright).
 //     The pale coral / pale sky / warm sand pass this file shipped with was
-//     rejected: children do not read pastel as exciting. Every body moved to a
-//     saturated primary and NOTHING else about the drawing changed -- vivid
-//     yellow (Rocket), deep teal (Magno), saturated brown with real steel on
-//     the drill (Drillo), hot orange with teal wing membranes (Captain Red).
-//     Villains take the same primaries one step DARKER and DULLER, which is
-//     what keeps the two sides apart now that neither is pale.
-//     Two knock-on values had to move with them, because on a pastel body the
-//     old ones were the darkest and lightest things on the page and on a vivid
-//     body they were not: INK went to #2e2018 (dot eyes have to hold against a
-//     mid-value body) and the badge plate to pure white.
+//     rejected: children do not read pastel as exciting. Every body is now a
+//     saturated primary -- vivid yellow (Rocket), deep teal (Magno), caramel
+//     brown with real steel on the drill (Drillo), hot orange with teal wing
+//     membranes (Captain Red) -- and the drawing was left alone everywhere the
+//     colour was the only problem. Rocket, Drillo and all five villains changed
+//     hue and nothing else; Magno's reclining pose and Captain Red's rebuild
+//     were separate briefs that landed in the same pass.
+//     The villain side is NOT simply "the same primaries, darker". It differs
+//     from the heroes on three axes at once -- hue family, value band, and belly
+//     tone -- and the reasoning plus the measured floor that decides how dark a
+//     villain body may go are written out at the VILLAINS header below. That
+//     block is the authority; do not re-derive it from this summary.
+//     Two knock-on values had to move with the fills, because on a pastel body
+//     the old ones were the darkest and lightest things on the page and on a
+//     vivid body they were not: INK went to #2e2018 (dot eyes have to hold
+//     against a mid-value body) and the badge plate to pure white.
+//     Measured on the rendered pixels, every emblem letter sits at 15.7:1
+//     against its plate. The risk flagged for Rocket -- yellow body plus a
+//     near-white plate burying the letter -- did not happen: its plate measures
+//     3.09:1 against its surround, the second best in the file, because the
+//     badge ring was widened to 3.6 for it. The weakest are Magno at 1.43 and
+//     Drillo at 1.40, and in this family the RING is what separates a plate
+//     from a light belly, by design, on every figure.
 //     The OUTLINE STAYS SEPIA. Swapping #7a5c48 for black is the one change
 //     that would cost this family its identity -- black line + primary fill is
 //     the toys.js / platformer.js inking, and chapter 4 would stop looking
@@ -50,6 +63,11 @@
 //     no brows on heroes. Expression lives in the lid alone -- heroes plain
 //     dots, Magno a half-lid, villains a lid drooping toward the OUTSIDE
 //     corner (sulky/sly, never angry; an inward-up brow is the angry read).
+//     Captain Red is the deliberate exception on two counts, both earned by
+//     being the evolved form: it has a brow RIDGE (a flat accent crescent, not
+//     a stroke) and an open maw with two fangs instead of a mouth stroke. A
+//     round head with two dots and a small smile could not be made to read as
+//     a dragon -- see its own note. The dot eyes themselves are unchanged.
 //  5. ONE OR TWO SPECIES CUES, RADICALLY SIMPLIFIED. Each figure keeps only
 //     the marks that name its animal -- long rounded ears + round cheek dots
 //     + a zigzag tail, a horseshoe-arch ear, a spiral snout, wings + a flame
@@ -60,10 +78,10 @@
 //     tips, horns, wingtips, zigzag corners, flame, drips -- terminates in a
 //     curve instead of a corner.
 //  7. THE EMBLEM IS A CHEST BADGE, sized past good taste: it is the phonics
-//     letter. Pastel bodies make a tinted badge disappear, so the badge plate
-//     is the lightest value in the figure, ringed in the sepia outline, with
-//     the letter in the darkest ink -- the contrast is structural rather than
-//     a colour choice a palette override could weaken. Badges are positioned
+//     letter. A tinted badge disappears on any body, pastel or vivid, so the
+//     badge plate is the lightest value in the figure, ringed in the sepia
+//     outline, with the letter in the darkest ink -- the contrast is structural
+//     rather than a colour choice a palette override could weaken. Positioned
 //     to land wholly inside the belly patch, checked per figure.
 //  8. NO GRADIENTS, NO FILTERS. Volume is a belly patch plus one HARD-EDGED
 //     shade crescent per figure, cut on the body's own ellipse arc
@@ -400,6 +418,19 @@ export function creatureMagno({
   emblem = 'M',
   visorColor = BADGE,
 } = {}) {
+  // Pale AQUA rather than the file's neutral cream, and this is a legibility
+  // fix, not a taste one. Magno's belly patch is the biggest light shape in the
+  // file (92x46) and the white emblem plate sits inside it: in cream the two
+  // measured 1.12:1 apart, so at 96 px the plate dissolved into the patch and
+  // the letter looked like it was floating on the belly. A tint of the body's
+  // own hue drops that to a still-low but visibly different value while keeping
+  // the underside reading as an underside. The letter itself is unaffected --
+  // it is near-black ink on a white plate either way, which is the contrast
+  // that actually has to hold.
+  // The paw and sole pads stay cream: they sit on the DARK accent, where cream
+  // is already the high-contrast choice, and tinting them too would have put
+  // four more aqua shapes on an aqua-bellied figure.
+  const BELLY_AQ = '#a5e3e4'
   // The reclining mass. Written as one symmetric path rather than an ellipse
   // because the bottom has to be FLAT (weight resting on the floor) while the
   // shoulders taper, which no ellipse does. Inked extents, stroke included:
@@ -471,7 +502,7 @@ export function creatureMagno({
            one dartboard, which is the failure this file already had once; the
            badge also sits 5 units above the patch's centre rather than on it,
            so they are not concentric either. -->
-      <ellipse cx="60" cy="102" rx="46" ry="23" fill="${BELLY}" ${ol(SW_IN)}/>
+      <ellipse cx="60" cy="102" rx="46" ry="23" fill="${BELLY_AQ}" ${ol(SW_IN)}/>
       ${bodyShade}
 
       ${arm}
@@ -486,7 +517,7 @@ export function creatureMagno({
       ${shadeCrescent(60, 45, 32, 25)}
       <!-- the underside of the jaw, visible because the head is tipped back.
            Eyes sit ABOVE the head's centre for the same reason. -->
-      <ellipse cx="60" cy="60" rx="21" ry="9.5" fill="${BELLY}" ${ol(SW_IN)}/>
+      <ellipse cx="60" cy="60" rx="21" ry="9.5" fill="${BELLY_AQ}" ${ol(SW_IN)}/>
 
       ${sleepyEyes(43, 77, 40, 7)}
       ${mouth(60, 58, 5)}
@@ -501,32 +532,58 @@ export function creatureMagno({
 // v7 the groove sat on the muzzle's surface and the figure read as a bear
 // with a swirl on its nose. The cone leaves the face down-and-left and its
 // rounded tip crosses the body outline, so the snout is part of the
-// silhouette. It also carries its own dark ochre tone, well away from both
-// bodyColor and accent (which are both pale warm sand and washed the old
-// spiral out at small sizes).
+// silhouette.
+//
+// v10 recoloured it to the brief's "brown plus a metal finish": a caramel-brown
+// body (#b06a2c, up from pale sand #e6c894) with the cone in real STEEL rather
+// than the ochre it used to share with the fur. Cool grey against warm brown is
+// the widest separation available without a second hue, so the drill now reads
+// as hardware bolted to an animal instead of as a differently-shaded nose --
+// which is the whole point of the character.
 export function creatureDrillo({
-  bodyColor = '#e6c894',
-  accent = '#c9a56e',
+  bodyColor = '#b06a2c',
+  accent = '#8a4d18',
   emblem = 'D',
   visorColor = BADGE,
 } = {}) {
-  const DRILL = '#8f7350' // dark warm ochre: separates from the body at 66 px
-  const DRILL_DK = '#6d5738'
+  // STEEL, WITHOUT A GRADIENT. SVG gradients are banned in this project, so the
+  // machined look is built the only way flat colour can build it: five vertical
+  // FACES stacked across the cone, dark on the shaded right rim through to a
+  // near-white specular band left of centre. Five steps is the point -- three
+  // read as stripes, five read as a turned surface.
+  //
+  // Every face is generated by `wedge(f)`, which takes the cone's OWN edge
+  // cubic and scales only its x by f. Scaling x on an x-symmetric convex shape
+  // can only move a point inward, so no face can poke through the outline no
+  // matter what f is, and every face still meets the tip at (0,52) and the
+  // mouth's midpoint at (0,-6.9) -- i.e. the faces converge exactly where a
+  // real cone's do. Negative f mirrors to the right side. This is the same
+  // "reuse the silhouette's own path" trick Magno's body shade uses, and it is
+  // why this pass needed no clipping fixes.
+  const STEEL = '#8b98a8'
+  const STEEL_DK = '#4d5766'
+  const STEEL_LT = '#ccd6e0'
+  const STEEL_HI = '#f2f6fa'
+  const FLUTE = '#3c4553'
+  const wedge = (f, fill) => `<path d="M 0,-6.9 Q ${(-6.8 * f).toFixed(2)},-6.9 ${(-9.5 * f).toFixed(2)},-2
+    C ${(-9.5 * f).toFixed(2)},16 ${(-5.5 * f).toFixed(2)},38 0,52 Z" fill="${fill}"/>`
   // Local space: the cone's mouth is the +-9.5 wide arc at y~0, the tip is at
   // y=52. Four curved bands cross it, each bowing the same way, which is what
   // makes a smooth taper read as a drill flute without a single straight edge
   // or corner anywhere in the shape. Band half-widths (8.6/7.2/4.4/2.6) were
   // taken off the cubic's actual width at each height, not guessed, so no band
-  // pokes through the cone's edge.
+  // pokes through the cone's edge. They are drawn LAST, over all five faces, so
+  // the banding ties the faces into one object instead of striping each.
   const drill = `
     <path d="M -9.5,-2 C -9.5,-8.5 9.5,-8.5 9.5,-2 C 9.5,16 5.5,38 0,52
              C -5.5,38 -9.5,16 -9.5,-2 Z"
-      fill="${DRILL}" ${ol(SW_MID)}/>
-    <path d="M -8.6,9 C -3,13.5 3,13.5 8.6,9" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
-    <path d="M -7.2,22 C -2.6,26.5 2.6,26.5 7.2,22" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
-    <path d="M -4.4,35 C -1.6,38.5 1.6,38.5 4.4,35" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
-    <path d="M -2.6,44 C -1,46.5 1,46.5 2.6,44" fill="none" stroke="${DRILL_DK}" stroke-width="1.8"/>
-    <path d="M -6.5,-1 C -3.5,6 -1.5,18 -0.8,32" fill="none" stroke="${BELLY}" stroke-width="1.8" opacity="0.45"/>`
+      fill="${STEEL}" ${ol(SW_MID)}/>
+    ${wedge(-1, STEEL_DK)}${wedge(-0.55, STEEL)}
+    ${wedge(0.62, STEEL_LT)}${wedge(0.45, STEEL_HI)}${wedge(0.18, STEEL_LT)}
+    <path d="M -8.6,9 C -3,13.5 3,13.5 8.6,9" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -7.2,22 C -2.6,26.5 2.6,26.5 7.2,22" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -4.4,35 C -1.6,38.5 1.6,38.5 4.4,35" fill="none" stroke="${FLUTE}" stroke-width="2.1"/>
+    <path d="M -2.6,44 C -1,46.5 1,46.5 2.6,44" fill="none" stroke="${FLUTE}" stroke-width="1.8"/>`
 
   return svgWrap(
     fig(`
@@ -558,7 +615,12 @@ export function creatureDrillo({
            leaves the head low and left, clearing the left eye's box
            (37..47 x 59..69) and passing left of the badge (x 46..74) at every
            height, so neither the face nor the letter is ever crossed. -->
-      <circle cx="58" cy="78" r="9.5" fill="${BADGE}" ${ol(SW_MID)}/>
+      <!-- muzzle collar in warm cream, not the badge's pure white: on the old
+           sand body the two whites were indistinguishable anyway, but against
+           brown a second pure-white disc 30 units above the emblem plate reads
+           as a second badge and the eye has to pick which one carries the
+           letter. -->
+      <circle cx="58" cy="78" r="9.5" fill="${BELLY}" ${ol(SW_MID)}/>
       <!-- scale 0.9 on top of the rotate: at full length the measured inked
            extent reached x=2.3, i.e. 2.3 units from the frame. Not clipping,
            but this file has a history of clipping accidents and a margin that
@@ -572,91 +634,270 @@ export function creatureDrillo({
   )
 }
 
-// Captain Red, the evolved boss form: a flame dragon, the biggest silhouette
-// in the family but drawn dependable rather than menacing -- same pastel
-// band, same dot eyes, same closed smile as the three small heroes. Rounded
-// wing lobes, a teardrop flame at the tail tip and two short blunt horns are
-// the only things the smaller heroes do not have.
+// Captain Red, the evolved boss form -- a flame dragon, and the one figure in
+// the file that has to look like it outranks the others. v10 rebuilt it from
+// the ground up, because v9 had left it as a round pastel body with two blunt
+// nubs on top: the head was fused straight onto the mass, the wings were one
+// flat cream shape, and its bounding box was no bigger than Rocket's, so
+// "evolved form" was carried by nothing at all.
+//
+// Four structural changes, in order of how much they buy:
+//
+//  1. A NECK AND A REAL DRAGON HEAD, drawn as separate masses. The head is its
+//     own ellipse 57 units above the body's centre, bridged by a tube that both
+//     ends swallow, and it carries a projecting cream MUZZLE whose bottom edge
+//     breaks the head's outline by 5 units. A snout that stays inside the head
+//     outline is just a face marking; it has to cross the silhouette to read as
+//     a snout. Every other figure here is a head-less blob, so the neck alone
+//     separates this one at a glance.
+//  2. TWO-TONE WINGS, which is the strongest species cue and was being spent on
+//     a single flat fill. The membrane is teal and the leading-edge ARM plus
+//     three finger struts are deep orange, i.e. the colour break follows the
+//     wing's actual anatomy rather than being a decorative stripe.
+//  3. BACKSWEPT HORNS, rooted inside the head so only the swept length shows.
+//     Blunt forward nubs read as ears; a horn has to go BACK.
+//  4. A THREE-LAYER FLAME at 32x28 (v9: 28x24), orange -> amber -> yellow core.
+//
+// On the copyright boundary (CLAUDE.md): the brief asked for orange with teal
+// wing membranes, which is close to the trademark character's colour placement,
+// so the separation is carried by everything else -- a chibi 3-lobed wing with
+// visible orange struts instead of a plain membrane, a round stub-limbed body
+// with a cream belly patch and a chest star badge, dot eyes, a closed smile,
+// and the family's sepia outline. The silhouette is not the original's and no
+// logo or marking is borrowed.
 export function creatureCaptainRed({
-  bodyColor = '#f0a196',
-  panelColor = '#fbe6c8',
-  accent = '#d4796e',
+  bodyColor = '#f4600f',
+  panelColor = '#ffdca6',
+  accent = '#c94409',
   visorColor = BADGE,
 } = {}) {
-  // Every wing point is an absolute viewBox coordinate in [5,52]; mirrored()
-  // maps x -> 120-x, so the mirror lands in [68,115]. With the 2.6 stroke's
-  // 1.3 half-width that leaves ~3.7 units of clearance at both edges -- the
-  // failure an earlier pass hit (a polygon scaled to x=-54, then mirrored to
-  // x=174) cannot recur from a shape written this way.
-  // v8 reach: the leading edge now climbs to y=20 (v7: 34, the original: 42)
-  // and the span runs x=5..115, i.e. 110 of the 120-unit box. The point of a
-  // final evolved form is that the wings dominate the silhouette, and at v7's
-  // span they were merely present. Every lobe still ends in a curve.
+  const WING_MEM = '#1a9ea8' // teal membrane
+  const WING_ARM = '#d9490f' // leading-edge arm and finger struts
+  // Horns are TEAL, not a warm brown. The first attempt made them dark amber
+  // and in a hard cutout they merged with the orange wing struts into one spiky
+  // thicket -- two horns and six struts all reading as the same kind of spine.
+  // Teal ties them to the wings as the figure's second colour while putting the
+  // widest possible value gap against the orange head they sit on.
+  const HORN = '#0e7a84'
+
+  // Every wing coordinate is an absolute viewBox value in [6,54]; mirrored()
+  // maps x -> 120-x, so the mirror lands in [66,114]. The failure an earlier
+  // pass hit (a polygon scaled to x=-54, then mirrored to x=174) cannot recur
+  // from a shape written this way.
+  //
+  // THE WING GEOMETRY IS A SILHOUETTE FIX, and the hard cutout is what forced
+  // it. The first v10 wing was a shallow fan beside a 84-wide body: it cleared
+  // the body's edge by only 13 units, so in cutout the wing lobes were ripples
+  // on one continuous blob and the two tips read as ears. Three changes, all
+  // measured against the cutout rather than the colour render:
+  //   * the body narrowed from rx 42 to rx 35, so each wing now protrudes 19
+  //     units past it instead of 13,
+  //   * the leading edge climbs to y=18, level with the head's top, and the tip
+  //     sits at x=8 while the head starts at x=35 -- a 27-unit notch of clear
+  //     background between wing tip and skull, which is the single feature that
+  //     makes the silhouette read "winged" rather than "lumpy",
+  //   * the trailing lobes cut deeper (to x=6/8/14 from 8/10/14) and the lowest
+  //     one now hangs to y=98, below the body's shoulder, so the wing breaks the
+  //     outline at the bottom as well as the top.
+  //
+  // The trailing edge's three lobes are listed once here and REUSED verbatim by
+  // the shade path below, which is the only way to guarantee the shade stays
+  // flush with the wing's own edge rather than drifting a unit off it.
+  // The arm tube's round cap is the westernmost ink in the figure, and it is
+  // 5.5 units wide on each side of its own path, so the tip sits at x=10 rather
+  // than the 8 it wants: at 8 the cap inked to x=2.5, and this file has already
+  // lost a session to a 13%-opacity shadow clipping at y=142. 4.5 units of
+  // margin, matching the deepest lobe notch's 4.7, is the budget.
+  const LOBES = `C 16,30 13,38 6,42 C 17,50 17,62 8,70 C 21,78 23,90 14,98`
+  const ARM = 'M 50,86 C 40,58 22,26 10,19'
   const wing = `
-    <path d="M 52,72 C 38,48 22,20 8,26 C 14,36 12,44 5,48
-             C 14,53 14,62 6,69 C 16,74 18,84 11,94
-             C 30,98 46,86 50,76 Z"
-      fill="${panelColor}" ${ol(SW)}/>
-    <path d="M 47,72 C 35,50 22,28 11,28 M 45,79 C 32,70 20,62 9,60" fill="none"
-      stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
+    <path d="M 50,86 C 40,58 22,26 10,19 ${LOBES} C 34,98 48,92 50,86 Z"
+      fill="${WING_MEM}" ${ol(SW)}/>
+    <path d="M 14,98 C 23,90 21,78 8,70 C 17,62 17,50 6,42 C 13,38 16,30 10,19
+             C 28,58 26,60 14,98 Z"
+      fill="${LINE}" opacity="0.15"/>
+    ${tube(ARM, 7, WING_ARM)}
+    ${tube('M 20.4,29.8 C 16,34 12,38 10.5,41', 3.4, WING_ARM)}
+    ${tube('M 30.5,44.5 C 24,52 16,60 12.5,67.5', 3.4, WING_ARM)}
+    ${tube('M 39.2,60.5 C 34,72 26,84 18.5,94', 3.4, WING_ARM)}`
+
+  // Horn. Swept at 34 deg, not the 42 of the first try: at 42 the tips landed at
+  // x=31, close enough to the wing arm that in a cutout the horns joined the
+  // struts into one undifferentiated thicket of spines.
+  //
+  // The length and the TAPER are what stop it reading as an ear, and this took
+  // a second pass to get. At 32 units long the horn's visible portion -- the
+  // part clear of the head -- was 15 long and 10 wide where it left the skull,
+  // and a 0.67 width-to-length wedge on top of a round head is a cat ear, which
+  // is exactly what the cutout showed. Now the horn runs to local y=-28 with the
+  // width collapsing early (half-width ~5.5 by y=-5 instead of ~7), so 23 units
+  // show above the skull at 11 wide: ratio 0.48, which is a horn.
+  // Root at (48,32)/(72,32) is inside the head ellipse (half-width 24.0 there,
+  // i.e. x 36..84) so the base is swallowed and only the swept length shows, and
+  // the tip lands at (32.4, 8.8) -- inked 7.8 from the top edge.
+  // The dark face REUSES the horn's own right edge verbatim, so it cannot poke
+  // through the outline, and closes with an inner curve. Two flat faces is all
+  // the roundness a banned-gradient horn can have, and without it the horn read
+  // as a flat paper triangle at 340 px.
   const horn = `
-    <path d="M -4.5,8 C -5.5,-2 -3.5,-11 0,-15 C 3.5,-11 5.5,-2 4.5,8 Z"
-      fill="${accent}" ${ol(SW_MID)}/>`
+    <path d="M -7,10 C -6,0 -3.5,-14 0,-28 C 3.5,-14 6,0 7,10 Z"
+      fill="${HORN}" ${ol(SW_MID)}/>
+    <path d="M 1.6,9.5 C 2.6,-1 2.2,-14 0,-28 C 3.5,-14 6,0 7,10 Z"
+      fill="#0a5d66"/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 42)}
+      ${shadow(60, 136, 44)}
 
       ${wing}
       ${mirrored(wing)}
 
-      ${paws(accent, 92, 11, 12)}
-      ${feet(accent, 128, 14, 7)}
-
       <!-- tail and flame in absolute coordinates, no rotate wrapper (a local-
            space curve carried through one is what pushed an earlier version
-           32 units off the bottom edge). Tail half-width 6 plus outline 2 is
-           budgeted into every point: max x 106+8=114, max y 120+8=128.
-           The flame is three nested teardrops now instead of two, and half
-           again as big (28x24 against v7's 20x17), peaking at (116,136) ->
-           117.3 and 137.3 inked. All of it clears the right foot (x 62..90). -->
-      ${tube('M 88,100 C 102,104 106,112 102,120', 12, accent)}
-      <path d="M 102,110 C 116,119 114,132 102,136 C 90,132 88,119 102,110 Z"
+           32 units off the bottom edge). Both go in BEFORE the body so the
+           body's fill eats the overlap and the flame reads as rising from
+           behind the hip. Tail: half-width 6 plus outline 2 budgeted into every
+           point, max x 103+8=111, max y 124+8=132. Flame 32x37 (v9: 28x24),
+           extents x 85..117 y 100..137, inked 83.7..118.3 x 98.7..138.3.
+           Three layers, orange to amber to yellow core -- the layering is what
+           the brief meant by a flame that reads as hot rather than as an
+           orange leaf. -->
+      ${tube('M 86,112 C 98,113 103,118 101,124', 12, accent)}
+      <path d="M 101,100 C 117,112 115,130 101,137 C 87,130 85,112 101,100 Z"
         fill="${FLAME}" ${ol(SW_MID)}/>
-      <path d="M 102,117 C 110,123 109,130 102,133 C 95,130 94,123 102,117 Z"
+      <path d="M 101,108 C 112,117 111,130 101,134 C 91,130 90,117 101,108 Z"
+        fill="${FLAME_MID}"/>
+      <path d="M 101,116 C 108,122 107,130 101,132 C 95,130 94,122 101,116 Z"
         fill="${FLAME_CORE}"/>
-      <path d="M 102,123 C 106,126 105,130 102,131 C 99,130 98,126 102,123 Z"
-        fill="${BADGE}" opacity="0.8"/>
 
-      ${blob(bodyColor, 60, 92, 42, 39)}
-      ${shadeCrescent(60, 92, 42, 39)}
+      <!-- feet at cy=129, not 131: at 131 the ry=7.5 stub plus its 2.0 outline
+           inked to y=139.5, half a unit from the frame. -->
+      ${paws(accent, 98, 11.5, 12.5)}
+      ${feet(accent, 129, 15, 7.5)}
 
-      <g transform="translate(47,61) rotate(-16)">${horn}</g>
-      <g transform="translate(73,61) rotate(16)">${horn}</g>
+      <!-- neck, and it is DRAWN AS A MASS rather than as a tube because it has
+           to be seen. The tube version was invisible: a stroke from head-centre
+           to body-centre is covered at both ends by the very shapes it joins,
+           leaving nothing in the gap. Even as a mass it only became visible once
+           the head moved UP to cy=38 -- at cy=42 the muzzle's own bottom edge
+           reached y=70 and covered the whole gap by itself, so the head still
+           sat straight on the body.
+           The second thing it needed was to be WIDER THAN THE MUZZLE. At x
+           48..72 the neck was exactly as wide as the snout above it, so the
+           snout's flare covered both flanks and the neck was again invisible in
+           the render even though the geometry said it was there. At 42..78
+           against a 28-wide muzzle, 20 units of neck show on each side, between
+           the head's underside at y=53.4 and the body's crown at y=74.1. The
+           bottom edge at y=79 is inside the body's own crown (35.7..84.3 there)
+           so the join is swallowed. -->
+      <path d="M 42,48 C 40,58 40,69 42,79 L 78,79 C 80,69 80,58 78,48 Z"
+        fill="${accent}" ${ol(SW)}/>
 
-      ${dotEyes(46, 74, 72, 5.2)}
-      ${mouth(60, 85, 6)}
+      ${blob(bodyColor, 60, 102, 35, 32, true, panelColor)}
+      ${shadeCrescent(60, 102, 35, 32)}
 
-      ${emblemBadge(60, 107, 16, visorColor, '★', 23)}
+      <g transform="translate(48,32) rotate(-34)">${horn}</g>
+      <g transform="translate(72,32) rotate(34)">${horn}</g>
+
+      <ellipse cx="60" cy="38" rx="25" ry="21" fill="${bodyColor}" ${ol(SW)}/>
+      ${shadeCrescent(60, 38, 25, 21)}
+
+      <!-- brow ridge: a shallow crescent in the accent, the one thing that
+           stops a round head with two dots on it reading as a cub. Kept to a
+           value step rather than a new hue, because a loud brow on a hero this
+           young an audience has to like would tip it into angry. -->
+      <path d="M 38,29 C 43,21 51,19 60,19 C 69,19 77,21 82,29
+               C 75,25 67,24 60,24 C 53,24 45,25 38,29 Z"
+        fill="${accent}"/>
+
+      <!-- SNOUT. Two failed attempts are worth recording, because the fix was
+           not the one that looks obvious. First it was a 30-wide rounded cream
+           pad with two round nostrils low in the middle, which read as a COW.
+           Narrowing it to 22 made that worse, not better -- a small cream tab
+           hanging off a round head reads as a bib. What actually carries "snout"
+           is the JAW, so the muzzle went back to 28 wide and the smile was
+           replaced by an open grinning maw with two fangs, and the nostrils
+           moved up to the bridge and in to 7 units apart. Nostrils sitting low
+           and 12 apart are a second pair of eyes on any face; up on the bridge
+           and close together they can only be nostrils.
+           A third pass fixed the TOP EDGE, which was the last thing keeping it
+           from working. A straight horizontal cut across the muzzle's top made
+           it a pale patch stuck on the face and, with the taper below, that
+           patch read as a hanging chin. The top now DOMES to y=40.5, so it
+           reads as the bridge of a snout continuing out of the forehead. It
+           stops 3.9 units short of the eyes' undersides at 37.6.
+           The muzzle's bottom (65) clears the head's own outline (59) by 6, so
+           the snout is part of the silhouette rather than a mark inside it. -->
+      <path d="M 46,47 C 47,40 73,40 74,47 C 75,56 70,65 60,65 C 50,65 45,56 46,47 Z"
+        fill="${panelColor}" ${ol(SW_MID)}/>
+      <ellipse cx="56.5" cy="45" rx="1.8" ry="1.4" fill="${INK}"/>
+      <ellipse cx="63.5" cy="45" rx="1.8" ry="1.4" fill="${INK}"/>
+      <!-- the maw's upper edge bows UP, which is the whole difference between a
+           grin and a snarl on a figure that has to stay likeable. Fangs are
+           taller than wide and sit at the CORNERS: Muncher's note in this file
+           records that two round teeth centred in a dark mouth read as eyes,
+           and this is the same shape, so both of that failure's conditions
+           (round, centred) are avoided. -->
+      <path d="M 52,53 Q 60,49.5 68,53 Q 60,62 52,53 Z" fill="${INK}" ${ol(SW_MID)}/>
+      <ellipse cx="55.5" cy="56.5" rx="1.6" ry="2.7" fill="#fff6e2"/>
+      <ellipse cx="64.5" cy="56.5" rx="1.6" ry="2.7" fill="#fff6e2"/>
+
+      <!-- eyes at r=4.6 and 20 apart, down from r=5.2 and 22. On a head this
+           size the bigger pair were two black voids taking a third of the face
+           each and, with the maw below them, the whole head read as a mask.
+           This is still the largest eye in the file (the small heroes use 4.8
+           to 5.0) which is what an evolved form should have. -->
+      ${dotEyes(50, 70, 33, 4.6)}
+
+      ${emblemBadge(60, 114.5, 14, visorColor, '★', 21)}
     `)
   )
 }
 
 // ---------------------------------------------------------------------------
-// VILLAINS. Same sepia-outline pastel language as the heroes -- an inked
-// pastel hero next to a saturated flat-colour villain was exactly the "these
-// do not belong together" complaint that produced this revision -- but one
-// step duller and darker in value, with the droopy outside-corner lid and a
+// VILLAINS. Same sepia-outline language as the heroes -- an inked hero next to
+// a differently-inked villain was the "these do not belong together" complaint
+// that produced this revision -- with the droopy outside-corner lid and a
 // lopsided smirk instead of the heroes' plain dots and level smile. No chest
 // badge: the letters belong to the heroes.
 // Villains take only { bodyColor, accent }.
+//
+// v10 PALETTE SPLIT. When both sides were pastel the client's complaint was
+// that hero and villain looked the same, and simply saturating both sides would
+// have reproduced that with louder colours. So the two sides now differ on
+// three axes at once:
+//
+//   * HUE FAMILY. The heroes hold warm-and-bright plus one cyan: yellow 45deg
+//     (Rocket), orange 25 (Captain Red), brown 28-dark (Drillo), cyan 181
+//     (Magno). The villains hold the cool and off-primary half of the wheel:
+//     violet 260 (Flippy), blue 217 (Corky), red 1 (Grabby), green 105
+//     (Slippy), magenta 313 (Muncher). No two figures in the file share a hue
+//     neighbourhood, which the pastel pass could not say -- Drillo, Grabby and
+//     Corky were three tans within one step of each other.
+//   * VALUE BAND. The villains sit in a deliberately narrow mid-dark band
+//     (relative luminance 0.17-0.21, plus Muncher lower still at 0.09) while
+//     the heroes span 0.16 to 0.62. Five figures at one dark value read as a
+//     faction; four figures at wildly different values read as individuals,
+//     which is what the two sides are.
+//   * BELLY TONE. The heroes' underside patches stay in the clean cream/white
+//     family. Every villain's is a DULLED tint of its own body instead -- the
+//     "one step duller" instruction applied where it actually shows, since on a
+//     dark body the belly is the largest light shape and a clean cream one
+//     would have been the brightest thing on the villain side of the screen.
+//
+// The floor on how dark a villain may go is set by its EYES, not by taste: the
+// dot eyes are INK (#2e2018) with no sclera and no outline, so the body they sit
+// on has to stay above ~3:1 against ink or the face turns to mush. Measured, at
+// these values: Flippy 3.53, Corky 3.30, Grabby 3.33, Slippy 4.33. Muncher is
+// the exception and is allowed to go to 0.09 because its eyes moved off the body
+// onto pale domes -- see its own note.
 // ---------------------------------------------------------------------------
 
 // Flippy: inverts the child's jump, so it hangs upside down. Built upright
 // and flipped with y -> 140-y, which is also why nothing here can leave the
 // box: that map sends [0,140] onto itself. The face is drawn AFTER the flip,
 // upright, so the droopy lids still droop.
-export function creatureFlippy({ bodyColor = '#b2a2d0', accent = '#8d7cb0' } = {}) {
+export function creatureFlippy({ bodyColor = '#8a5fd6', accent = '#6a3fae' } = {}) {
   const wing = `
     <path d="M 45,74 C 30,56 14,46 5,52 C 11,58 10,63 4,67
              C 12,71 12,78 5,84 C 15,88 17,95 12,102
@@ -682,6 +923,11 @@ export function creatureFlippy({ bodyColor = '#b2a2d0', accent = '#8d7cb0' } = {
          where a big pale disc above the face reads as the head and turns the
          real face into a mark on the chest. One clean mass is correct here. -->
     ${blob(bodyColor, 60, 88, 33, 34, false)}
+    <!-- this is the only "belly" Flippy has, and it needs no explicit tint: a
+         half-opacity cream over the violet body composites to #c3a8db, which is
+         already the dulled body tint the other four villains got by hand. It
+         also lands right under the eyes after the flip, so the face gets the
+         lightest field on the figure for free. -->
     <ellipse cx="60" cy="68" rx="20" ry="12" fill="${BELLY}" opacity="0.5"/>
   `
 
@@ -698,7 +944,12 @@ export function creatureFlippy({ bodyColor = '#b2a2d0', accent = '#8d7cb0' } = {
 // Slippy: melts the floor. No feet -- the lower body dissolves into a puddle
 // with round drips, the same "no legs" language platSlime and dinoSwamp use
 // for their own gripless villains.
-export function creatureSlippy({ bodyColor = '#a8c9a5', accent = '#7fa37e' } = {}) {
+export function creatureSlippy({ bodyColor = '#3f8f2a', accent = '#2c6b1c' } = {}) {
+  // Dulled tint of the body, per the villain note -- and dulled twice. The
+  // first value (#c9dfb4) measured out as the brightest shape on the whole
+  // villain side of the cast, and on a figure whose belly patch sits directly
+  // under the eyes it read as a pale muzzle rather than an underside.
+  const BELLY_GN = '#a9c98e'
   return svgWrap(
     fig(`
       <path d="M 16,120 C 26,113 34,122 46,116 C 60,109 70,120 84,114
@@ -716,7 +967,7 @@ export function creatureSlippy({ bodyColor = '#a8c9a5', accent = '#7fa37e' } = {
       <path d="M 60,54 C 84,54 94,72 92,94 C 90,112 78,122 60,122
                C 42,122 30,112 28,94 C 26,72 36,54 60,54 Z"
         fill="${bodyColor}" ${ol(SW)}/>
-      <ellipse cx="60" cy="100" rx="21" ry="17" fill="${BELLY}" ${ol(SW_IN)}/>
+      <ellipse cx="60" cy="100" rx="21" ry="17" fill="${BELLY_GN}" ${ol(SW_IN)}/>
       ${shadeCrescent(60, 88, 31, 33)}
 
       <!-- drips: rounded teardrops hanging off the belly edge, never a
@@ -736,7 +987,17 @@ export function creatureSlippy({ bodyColor = '#a8c9a5', accent = '#7fa37e' } = {
 // pole caps swapped. Grabby is the only figure in the file carrying a real
 // object, which is the point -- on a hero a detachable prop is a design
 // failure, on this one it is the crime.
-export function creatureGrabby({ bodyColor = '#d5a184', accent = '#ac7c60' } = {}) {
+export function creatureGrabby({ bodyColor = '#cc4340', accent = '#9c2a2c' } = {}) {
+  // Grabby moved OFF brown, and not for its own sake: Drillo took the saturated
+  // brown this pass, and a tan villain shaped like a round bear standing next to
+  // a brown hero shaped like a round bear was the single worst hero/villain
+  // collision in the pastel file. Red is the farthest the villain half of the
+  // wheel can get from Drillo while staying a primary.
+  // Dulled tint of the body, per the villain note -- and dulled twice, for the
+  // same reason as Slippy's. Grabby's belly patch is the largest light shape on
+  // any villain (a 56x30 oval on a 70-wide figure), so at #f2d3c4 it was the
+  // whole character: a pale pink bear rather than a dark red one.
+  const BELLY_RD = '#e0a898'
   return svgWrap(
     fig(`
       ${shadow(60, 134, 28)}
@@ -752,13 +1013,18 @@ export function creatureGrabby({ bodyColor = '#d5a184', accent = '#ac7c60' } = {
            a leg. From here only the arch's inner leg tucks behind the
            shoulder, and the rotated extents (x 120.3-6 = clear at 116.3
            inked, y from 29.9) still sit inside the box. -->
-      <g transform="translate(98,50) rotate(20) scale(1.4)">${archShape('#c2c7cf', '#8fa8c4', '#c98f88')}</g>
+      <!-- the warm pole cap went from a dusty pink to brass. A magnet's poles
+           are conventionally red and blue, but Grabby's body is now red, and a
+           red cap on a red animal loses exactly the "this belongs to someone
+           else" read the pale steel was chosen for. Brass keeps two metal tones
+           on the prop and nothing on it borrows the body's hue. -->
+      <g transform="translate(98,50) rotate(20) scale(1.4)">${archShape('#c2c7cf', '#8fa8c4', '#e2c15c')}</g>
 
-      ${roundEar(36, 62, 9, bodyColor, BELLY)}
-      ${roundEar(84, 62, 9, bodyColor, BELLY)}
+      ${roundEar(36, 62, 9, bodyColor, BELLY_RD)}
+      ${roundEar(84, 62, 9, bodyColor, BELLY_RD)}
       ${paws(accent, 100)}
       ${feet(accent, 128)}
-      ${blob(bodyColor, 60, 92, 35, 36)}
+      ${blob(bodyColor, 60, 92, 35, 36, true, BELLY_RD)}
       ${shadeCrescent(60, 92, 35, 36)}
 
       ${droopyEyes(47, 73, 80, 5)}
@@ -771,7 +1037,14 @@ export function creatureGrabby({ bodyColor = '#d5a184', accent = '#ac7c60' } = {
 // continuous cap fused over the top of the body (a row of separate bumps read
 // as ear tufts in an early draft) with soft seams and rounded plate edges, so
 // the face sits low, under its brim.
-export function creatureCorky({ bodyColor = '#cbb389', accent = '#9d8563' } = {}) {
+//
+// v10: blue body, SLATE shell. Corky is the one villain whose accent covers
+// half the figure, so making the accent a darker blue would have produced a
+// two-tone blue lump; a grey-slate cap over a blue body says "armour bolted to
+// an animal", which is the character. It also puts the shell a step LIGHTER
+// than the body, so the brim's edge is visible at 96 px -- in the tan pass the
+// cap and body were one value apart and the brim vanished.
+export function creatureCorky({ bodyColor = '#3a72c4', accent = '#5b6b82' } = {}) {
   const seam = (x) => `<path d="M ${x},48 C ${x - 2},58 ${x - 2},70 ${x},80" fill="none"
     stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
 
@@ -807,13 +1080,27 @@ export function creatureCorky({ bodyColor = '#cbb389', accent = '#9d8563' } = {}
 // checkerboard squares along one flank; those went with the rest of the
 // angular pass, replaced by three round crumbs, which also removes any chance
 // of the erosion settling into a right angle that reads as a letterform.
-export function creatureMuncher({ bodyColor = '#a49bb4', accent = '#7e7492' } = {}) {
+export function creatureMuncher({ bodyColor = '#932a80', accent = '#6b1c5c' } = {}) {
+  // Muncher is the chapter boss and is allowed to be the DARKEST figure in the
+  // file -- luminance 0.088, half the value of the other four villains -- which
+  // is only possible because of the domes below. Every other villain's floor is
+  // set by ink dot eyes sitting directly on the body; move the eyes onto a pale
+  // field and that floor disappears, so the boss can go as dark as it wants.
+  const BELLY_MG = '#e9bcd6' // dulled tint of the body, per the villain note
   // Domed toad eyes: the shells go in before the body so the body's outline
   // cuts across them (they bulge half above the head, the way a real toad's
   // do), but the pupils and lids go in after, or the body would clip the
   // bottom of each pupil.
+  //
+  // The domes are ACID YELLOW rather than body-coloured, and it does two jobs
+  // at once. Legibility: an ink pupil on #932a80 measures 2.0:1 and turns to
+  // mush, on #e8d84a it measures 10.7:1 -- the best eye contrast in the file.
+  // Character: a pale amphibian eye with a small dark pupil is the one facial
+  // arrangement in this soft-lined family that can look predatory, which is
+  // what the chapter boss needed and the pastel version could not do.
+  const DOME = '#e8d84a'
   const domeShell = (cx) => `
-    <circle cx="${cx}" cy="56" r="13" fill="${bodyColor}" ${ol(SW_MID)}/>`
+    <circle cx="${cx}" cy="56" r="13" fill="${DOME}" ${ol(SW_MID)}/>`
   const domeFace = (cx) => `
     <ellipse cx="${cx}" cy="55" rx="5" ry="5.4" fill="${INK}"/>
     <path d="M ${cx - 8},48 C ${cx - 4},43.5 ${cx + 4},43.5 ${cx + 8},48" fill="none"
@@ -827,7 +1114,7 @@ export function creatureMuncher({ bodyColor = '#a49bb4', accent = '#7e7492' } = 
       ${feet(accent, 128, 14, 8)}
       ${domeShell(42)}
       ${domeShell(78)}
-      ${blob(bodyColor, 60, 94, 40, 36)}
+      ${blob(bodyColor, 60, 94, 40, 36, true, BELLY_MG)}
       ${domeFace(42)}
       ${domeFace(78)}
       ${shadeCrescent(60, 94, 40, 36)}
