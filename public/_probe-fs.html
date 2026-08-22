@@ -896,9 +896,20 @@
       state.clearCheckpoint()
       await enterStage('chapter-1', 0)
       await until('.options-grid')
+      // A fixed sleep cannot measure this. It used to be wait(300), which
+      // raced audio.js's gap-before-a-tap: that gap is only short once the
+      // engine has proven its onend trustworthy, and at the start of a run it
+      // has proven nothing, so the utterance began after the 300ms window and
+      // the case reported `[]` -- a real-looking failure with no app bug
+      // behind it. Drain first, then wait on the transcript (the helper this
+      // file already has), then drain again so a *second*, leaked utterance
+      // still lands inside the snapshot -- the join()==='ai' assertion below
+      // is what catches a leak, and it can only catch what it can see.
+      await audio.whenAudioIdle()
       spoken = []
       document.querySelector('[data-id="ai"]').click()
-      await wait(300)
+      await waitForSpeech((sp) => sp.length > 0, 6000)
+      await audio.whenAudioIdle()
       results.matchShapeTapSpoke = [...spoken]
       results.matchShapeNoScroll = noScroll()
     } finally {
@@ -2743,6 +2754,382 @@
     state.clearCheckpoint()
   }
 
+  // --- damage lands WHEN the bolt lands, not 392ms before it ---------------
+  //
+  // The half of the bolt work that was still inverted: fireBolt() and
+  // dealHit() ran in the same tick, so `hit-shake` + 💥 + the health bar all
+  // finished BEFORE the bolt reached the villain -- the exact cause/effect
+  // reversal the bolt was added to fix. It cannot be checked from a
+  // screenshot: both orderings paint identical pixels a second later. What is
+  // checkable is the ORDER of DOM mutations against a measured clock, which
+  // is what these cases do.
+  //
+  // They exist mostly for the failure in the OTHER direction: schedule the
+  // paint wrong and the health bar never moves, the boss never reaches 0, and
+  // nothing throws while it happens.
+
+  const healthWidth = () => {
+    const el = document.getElementById('health-fill')
+    return el ? el.style.width : null
+  }
+  const sparkCount = () => document.querySelectorAll('.hit-spark').length
+  const hasShake = () =>
+    !!document.querySelector('.villain-sprite.hit-shake')
+  const hasLunge = () => !!document.querySelector('.hero-sprite.hero-lunge')
+  // DIAGNOSTIC ONLY -- DO NOT ASSERT ON THIS. `hit-shake` is never taken off
+  // the sprite after the animation ends, so the class only means "was ever
+  // hit in this stage", and the obvious fix -- ask for a *running* animation
+  // instead -- does not work here: under --virtual-time-budget the document
+  // timeline does not advance, so this reported `running` for a 0.4s
+  // animation that had ended more than a second earlier (measured, it is why
+  // seqbolt asserts on the spark instead). The reliable "it flinched just
+  // now" signal in this harness is `.hit-spark`, which is a real DOM node
+  // created by villainImpact() and removed by a setTimeout.
+  const shakeRunning = () => {
+    const el = document.querySelector('.villain-sprite')
+    if (!el || !el.getAnimations) return null
+    return el
+      .getAnimations()
+      .some((a) => a.animationName === 'hit-shake' && a.playState === 'running')
+  }
+
+  // Clicks with NO await between the poll and the click, so the caller
+  // observes the DOM inside the same task the handler's synchronous part ran
+  // in. clickWhenEnabled() awaits, and a microtask boundary is enough for a
+  // 0ms-scheduled paint to have already happened -- which would hide exactly
+  // the difference these cases measure.
+  async function clickNow(sel) {
+    for (let i = 0; i < 200; i++) {
+      const el = document.querySelector(sel)
+      if (el && !el.disabled) {
+        el.click()
+        return true
+      }
+      await wait(50)
+    }
+    return false
+  }
+
+  // Polls until pred() and reports how long that took. Measured on the clock
+  // AND on iteration count: under --virtual-time-budget the two are not the
+  // same thing, so a frozen performance.now() would otherwise read as "it
+  // landed instantly" -- a false PASS. Both go in the extra string.
+  async function msUntilTrue(pred, maxMs = 4000, step = 8) {
+    const t0 = performance.now()
+    let polls = 0
+    while (performance.now() - t0 < maxMs) {
+      if (pred()) break
+      polls += 1
+      await wait(step)
+    }
+    return { ms: Math.round(performance.now() - t0), polls, hit: !!pred() }
+  }
+
+  // Walks chapter-1 stage-1 to its first scored beat (beat 1: choose +
+  // readAloud) and stops on the read-aloud screen, whose 🎤 is the damage
+  // moment. Beat 1 is chosen because it is the stage's FIRST hit -- nothing
+  // has left a stale `hit-shake`/`hero-lunge` class on a sprite yet, so the
+  // absence of a flinch is meaningful.
+  async function toFirstDamageMoment() {
+    const stage = chapters[0].stages[0]
+    const beat = stage.beats[1]
+    state.clearCheckpoint()
+    await enterStage('chapter-1', 0)
+    await clickWhenEnabled('#continue-btn')
+    await until('.options-grid')
+    await answer(beat.options.find((o) => o.correct).id)
+    await until('.readaloud-beat')
+    await wait(700) // let any earlier spark/flinch expire before measuring
+    // Draining is load-bearing for the critical-path comparison, not tidiness.
+    // waitForTransition(500) is max(audio drain, 500ms), so a backlog left by
+    // an EARLIER CASE stretches the transition: measured 943ms in a full-suite
+    // run against 510ms in isolation, which read as "the flight is on the
+    // critical path" -- a failure with no app bug behind it. Both runs have to
+    // start from an empty queue for the flight to be the only variable.
+    await audio.whenAudioIdle()
+    return beat
+  }
+
+  // One damage moment, fully instrumented. Returns the ordering observations
+  // plus how long the beat transition took, so a caller can compare the
+  // transition against a different flight time and see whether the flight is
+  // on the critical path.
+  async function measureDamageMoment() {
+    const o = {}
+    o.healthBefore = healthWidth()
+    o.shakeBefore = hasShake()
+    o.sparksBefore = sparkCount()
+    // Everything below is timed from the PRESS, not from the previous
+    // measurement -- measuring the transition from the moment the bar moved
+    // is what makes a slower flight look like a faster transition, which is
+    // the shape of a false PASS on the critical-path question.
+    const pressedAt = performance.now()
+    const clicked = await clickNow('#mic-btn')
+    o.clicked = clicked
+    // Same task as the handler's synchronous half.
+    o.boltPresentAtPress = !!document.querySelector('body > .fx-bolt')
+    o.boltCountAtPress = document.querySelectorAll('.fx-bolt').length
+    o.healthAtPress = healthWidth()
+    o.healthHeldAtPress = o.healthAtPress === o.healthBefore
+    o.shakeAtPress = hasShake()
+    // The hero's lunge is the THROW, so unlike the flinch it must be
+    // immediate -- delaying it with the rest would only move the inversion
+    // onto the hero (throwing after its own bolt has landed).
+    o.lungeAtPress = hasLunge()
+    o.sparksAtPress = sparkCount()
+    // "Hit! 💥" is a claim about the villain, so it must not be on screen
+    // while the bolt is still crossing it.
+    o.feedbackAtPress = (document.getElementById('beat-feedback') || {}).textContent
+    const landed = await msUntilTrue(() => healthWidth() !== o.healthBefore)
+    o.landedMs = landed.ms
+    o.landedPolls = landed.polls
+    o.healthMoved = landed.hit
+    o.healthAfter = healthWidth()
+    // The flinch and the burst must arrive with the bar, not before it.
+    o.shakeAfter = hasShake()
+    o.sparksAfter = sparkCount()
+    o.feedbackAfter = (document.getElementById('beat-feedback') || {}).textContent
+    const gone = await msUntilTrue(() => !document.querySelector('.readaloud-beat'))
+    o.transitionMs = Math.round(performance.now() - pressedAt)
+    o.transitioned = gone.hit
+    return o
+  }
+
+  async function boltSync() {
+    errors = 0
+    let threw = null
+    const obs = {}
+    let injected = null
+    try {
+      // The contract itself. The fallback in screens.js is deliberately 0ms
+      // (a hold with no bolt to explain it is dead time in front of a
+      // 5-year-old), which means a renamed/removed variable would silently
+      // restore the bug instead of breaking anything -- this assertion is
+      // what makes that loud.
+      const declared = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          '--fx-bolt-flight-ms'
+        )
+      )
+      obs.declaredFlightMs = declared
+      obs.contractDeclared = Number.isFinite(declared) && declared > 0
+
+      await toFirstDamageMoment()
+      const real = await measureDamageMoment()
+      obs.real = real
+      // Generous window: the assertion is "after the bolt, before the round
+      // ends", not "exactly 392". A tight bound would fail every time layout
+      // retunes the animation, which is theirs to retune.
+      obs.heldForFlight =
+        real.healthHeldAtPress === true &&
+        real.shakeAtPress === false &&
+        real.sparksAtPress === 0 &&
+        real.lungeAtPress === true &&
+        real.healthMoved === true &&
+        real.shakeAfter === true &&
+        real.sparksAfter >= 1 &&
+        real.feedbackAtPress === '' &&
+        real.feedbackAfter === 'Hit! 💥' &&
+        real.landedMs >= declared * 0.6 &&
+        real.landedMs <= declared + 250
+
+      // Half the contract is that the VALUE is used, not that some delay
+      // exists -- a hard-coded 392 would pass everything above.
+      injected = document.createElement('style')
+      injected.textContent = '.fx-bolt{--fx-bolt-flight-ms:150ms}'
+      document.head.appendChild(injected)
+      await toFirstDamageMoment()
+      const short = await measureDamageMoment()
+      obs.short = short
+      obs.declaredValueHonoured =
+        short.healthHeldAtPress === true &&
+        short.healthMoved === true &&
+        short.landedMs < real.landedMs - 100
+
+      // ...and that the hold is NOT on the critical path. Same beat, same
+      // audio, only the flight differs -- both measured press-to-transition.
+      // If the transition were gated on the bolt, the 392ms run would finish
+      // ~242ms later than the 150ms run. It does not: waitForTransition(500)
+      // is what both are waiting on, and the flight fits inside it.
+      obs.transitionDeltaMs = real.transitionMs - short.transitionMs
+      obs.transitionUnaffected =
+        real.transitioned === true &&
+        short.transitioned === true &&
+        Math.abs(obs.transitionDeltaMs) < 120 &&
+        // A transition shorter than the flight would mean the bar painted
+        // into a screen that was already gone.
+        real.transitionMs > real.landedMs
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    if (injected) injected.remove()
+    check(
+      'damage-lands-with-the-bolt',
+      !threw &&
+        errors === 0 &&
+        obs.contractDeclared === true &&
+        obs.heldForFlight === true &&
+        obs.declaredValueHonoured === true &&
+        obs.transitionUnaffected === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- both bad directions of the flight value ----------------------------
+  // A malformed value must cost NOTHING (fall straight through to the old
+  // synchronous behaviour) and an absurd one must not push the paint past
+  // the end of the round -- every damage site is followed by
+  // waitForTransition(500), so an unclamped 5s flight would drop the health
+  // bar onto the *next* beat's screen.
+  async function boltFlightFallback() {
+    errors = 0
+    let threw = null
+    const obs = {}
+    let injected = null
+    try {
+      injected = document.createElement('style')
+      injected.textContent = '.fx-bolt{--fx-bolt-flight-ms:banana}'
+      document.head.appendChild(injected)
+      await toFirstDamageMoment()
+      const bad = await measureDamageMoment()
+      obs.bad = bad
+      // Fallback is 0: the paint happens in the click's own task, so it is
+      // already done by the time the first poll runs.
+      obs.malformedCostsNothing =
+        bad.healthHeldAtPress === false &&
+        bad.shakeAtPress === true &&
+        bad.healthMoved === true &&
+        bad.landedMs <= 40
+
+      injected.textContent = '.fx-bolt{--fx-bolt-flight-ms:5000ms}'
+      await toFirstDamageMoment()
+      const huge = await measureDamageMoment()
+      obs.huge = huge
+      // Clamped to FX_FLIGHT_MAX_MS (450), so it still lands inside the
+      // round rather than after it.
+      obs.hugeClamped =
+        huge.healthHeldAtPress === true &&
+        huge.healthMoved === true &&
+        huge.landedMs <= 700 &&
+        huge.shakeAfter === true
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    if (injected) injected.remove()
+    check(
+      'bolt-flight-value-fails-safe-both-ways',
+      !threw &&
+        errors === 0 &&
+        obs.malformedCostsNothing === true &&
+        obs.hugeClamped === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- choose-sequence: the one damage moment with no fireBolt() call -----
+  //
+  // Reported as "the health bar drops with no connection to the button". It
+  // is subtler than that: wireConfirmGrid fires a bolt from ✓ Check on EVERY
+  // step, last one included, so there was always a bolt in the air -- the
+  // damage just wasn't riding it. Fix = schedule the hit on that bolt's
+  // arrival, NOT fire a second one (two identical bolts on the same path in
+  // the same tick reads as a rendering glitch, not as two events).
+  //
+  // So this checks all three: every step still signals with a bolt, the last
+  // step has exactly ONE bolt, and the bar waits for it.
+  async function seqBolt() {
+    const stage = chapters[0].stages[3] // c1 stage-4, beat 9 = choose-sequence
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const bi = stage.beats.findIndex((b) => b.kind === 'choose-sequence')
+      if (bi < 0) throw new Error('stage-4 has no choose-sequence beat')
+      const beat = stage.beats[bi]
+      obs.steps = beat.steps.length
+      state.clearCheckpoint()
+      await enterStage('chapter-1', 3)
+      await walkBeats(stage, 0, bi)
+      await until('.options-grid')
+      await wait(700) // outlive any spark from the previous beat's hit
+
+      const boltsPerStep = []
+      let last = null
+      for (let s = 0; s < beat.steps.length; s++) {
+        const isLast = s === beat.steps.length - 1
+        const step = beat.steps[s]
+        await pick(step.options.find((o) => o.correct).id)
+        const healthBefore = healthWidth()
+        const sparksBefore = sparkCount()
+        await clickNow('#confirm-btn')
+        boltsPerStep.push(document.querySelectorAll('.fx-bolt').length)
+        if (isLast) {
+          last = {
+            healthBefore,
+            sparksBefore,
+            healthAtPress: healthWidth(),
+            // Class, not animation: beat 8 already hit this villain, so the
+            // class is stale by design here -- see shakeRunning().
+            shakeClassAtPress: hasShake(),
+            shakeRunningAtPress: shakeRunning(),
+            sparksAtPress: sparkCount(),
+          }
+          const landed = await msUntilTrue(
+            () => healthWidth() !== healthBefore
+          )
+          last.landedMs = landed.ms
+          last.healthMoved = landed.hit
+          last.sparksAfter = sparkCount()
+          last.shakeRunningAfter = shakeRunning()
+          last.healthAfter = healthWidth()
+        } else {
+          await wait(200)
+          // A non-final step deals no damage at all -- that is the rule the
+          // "bolt = correct answer" signal rests on.
+          obs.midStepDealtNoDamage =
+            (obs.midStepDealtNoDamage !== false) &&
+            healthWidth() === healthBefore &&
+            sparkCount() === sparksBefore
+          await wait(400)
+        }
+      }
+      obs.boltsPerStep = boltsPerStep
+      obs.last = last
+      obs.everyStepFiredABolt = boltsPerStep.every((n) => n >= 1)
+      // Exactly one, not two: no second bolt was added for the damage.
+      obs.lastStepFiredExactlyOne = boltsPerStep[boltsPerStep.length - 1] === 1
+      // The spark is the load-bearing signal: 0 at the press, 1 after the
+      // flight = villainImpact() ran on arrival, not on the press. (Neither
+      // the class nor getAnimations() can tell you that here -- see
+      // shakeRunning().)
+      obs.lastStepHeldForFlight =
+        last.healthAtPress === last.healthBefore &&
+        last.sparksAtPress === last.sparksBefore &&
+        last.sparksBefore === 0 &&
+        last.healthMoved === true &&
+        last.sparksAfter >= 1 &&
+        last.landedMs >= 200 &&
+        last.landedMs <= 700
+      obs.beatAdvanced = await until('.finale, .listen-beat', 60)
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'choose-sequence-damage-rides-its-own-bolt',
+      !threw &&
+        errors === 0 &&
+        obs.everyStepFiredABolt === true &&
+        obs.lastStepFiredExactlyOne === true &&
+        obs.midStepDealtNoDamage === true &&
+        obs.lastStepHeldForFlight === true &&
+        obs.beatAdvanced === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
   // --- taps fire on PRESS, and the paired click does not double-fire ------
   // The regression this guards is subtle: bind both pointerdown and click
   // without a guard and every real touch runs the handler twice, which on a
@@ -2931,6 +3318,9 @@
     combinetap: combineNeedsTap,
     rewardparts: rewardParts,
     boltfx: boltFx,
+    boltsync: boltSync,
+    boltfallback: boltFlightFallback,
+    seqbolt: seqBolt,
     pointertap: pointerTap,
     touchtargets: touchTargets,
   }

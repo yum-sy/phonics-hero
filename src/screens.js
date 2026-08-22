@@ -310,19 +310,42 @@ function onTapAll(nodes, makeHandler) {
 // waitForTransition() (audio + minimum delay) exactly as before -- making
 // them wait for a decoration would put the animation on the critical path
 // and could only ever make the app feel slower.
+//
+// What is NOT fire-and-forget is the bolt's ARRIVAL. fireBolt() returns the
+// flight time so a damage site can schedule the villain's reaction on it --
+// see dealHit(). Without that the flinch and the health bar fired in the
+// same tick as the bolt and finished 392ms BEFORE it landed, i.e. the exact
+// cause/effect inversion the bolt was added to fix ("버튼을 누르는거랑 위에서
+// 공격이 이뤄지는 것에 연관성이 보이지 않아").
 const FX_BOLT_FALLBACK_MS = 700
 // A malformed/huge --fx-bolt-ms must not leave the element on the page
 // forever; a sane ceiling is cheaper than trusting the value.
 const FX_BOLT_MAX_MS = 4000
+// An absent/malformed --fx-bolt-flight-ms falls back to 0, not to a guess:
+// no readable variable means the animation this is synchronising to is not
+// there either, and a hold with no bolt to explain it is pure dead time in
+// front of a 5-year-old. 0 degrades to exactly the shipped pre-sync
+// behaviour. The harness (`boltsync`) asserts the variable IS declared, so
+// losing the contract fails loudly instead of silently reverting to it.
+const FX_FLIGHT_FALLBACK_MS = 0
+// Separate, much tighter ceiling than FX_BOLT_MAX_MS: that one only has to
+// stop a node leaking, this one gates a *paint*. Every damage site is
+// followed by waitForTransition(500), so a flight time past that would land
+// the health bar after the screen had already moved on -- the bar would
+// appear to drop on the next beat. 450 keeps the paint inside the round no
+// matter what the stylesheet says (the real 392ms passes untouched).
+const FX_FLIGHT_MAX_MS = 450
 
+// Returns the bolt's flight time in ms (0 when no bolt was actually drawn),
+// so callers can hand it to dealHit().
 function fireBolt(fromEl) {
   const villain = document.getElementById('villain-sprite')
-  if (!fromEl || !fromEl.isConnected || !villain) return
+  if (!fromEl || !fromEl.isConnected || !villain) return 0
   const a = fromEl.getBoundingClientRect()
   const b = villain.getBoundingClientRect()
   // A zero box means the element is not laid out (display:none, detached
   // subtree) -- firing from 0,0 would draw a bolt from the screen corner.
-  if (!a.width || !a.height || !b.width || !b.height) return
+  if (!a.width || !a.height || !b.width || !b.height) return 0
   const bolt = document.createElement('div')
   bolt.className = 'fx-bolt'
   // pointer-events is part of the contract, not styling: until layout's rule
@@ -344,7 +367,19 @@ function fireBolt(fromEl) {
     Number.isFinite(declared) && declared > 0
       ? Math.min(declared, FX_BOLT_MAX_MS)
       : FX_BOLT_FALLBACK_MS
+  // Read off the element, not off :root, so a `.fx-bolt`-scoped override (or
+  // a reduced-motion variant) is honoured rather than bypassed. Clamped by
+  // `ms` too: the arrival can never be later than the bolt's own lifetime,
+  // whatever the two values say relative to each other.
+  const flightDeclared = parseFloat(
+    getComputedStyle(bolt).getPropertyValue('--fx-bolt-flight-ms')
+  )
+  const flightMs =
+    Number.isFinite(flightDeclared) && flightDeclared > 0
+      ? Math.min(flightDeclared, ms, FX_FLIGHT_MAX_MS)
+      : FX_FLIGHT_FALLBACK_MS
   setTimeout(() => bolt.remove(), ms)
+  return flightMs
 }
 
 // Waits for both a minimum visual-feedback delay AND the audio queue to
@@ -627,15 +662,30 @@ function updateHealthBar(runtime) {
   fill.style.width = pct + '%'
 }
 
-function pulseBattle() {
-  const villain = document.getElementById('villain-sprite')
+// ---- the attack is two moments, not one ----
+//
+// These were a single pulseBattle() call, which was correct only while the
+// hit was instantaneous. With a bolt that takes --fx-bolt-flight-ms to cross
+// the screen, throwing and landing are 392ms apart and each half has to sit
+// on its own side of that gap: the hero lunging BEFORE (it is what launches
+// the bolt -- its 0.35s animation now runs alongside the flight), the
+// villain's shake and 💥 AFTER (they are what being hit looks like). Fusing
+// them meant one of the two was always inverted.
+
+function heroLunge() {
   const hero = document.getElementById('hero-sprite')
-  if (!villain || !hero) return
-  villain.classList.remove('hit-shake')
+  if (!hero) return
   hero.classList.remove('hero-lunge')
+  void hero.offsetWidth
+  hero.classList.add('hero-lunge')
+}
+
+function villainImpact() {
+  const villain = document.getElementById('villain-sprite')
+  if (!villain) return
+  villain.classList.remove('hit-shake')
   void villain.offsetWidth
   villain.classList.add('hit-shake')
-  hero.classList.add('hero-lunge')
   const spark = document.createElement('div')
   spark.className = 'hit-spark'
   spark.textContent = '💥'
@@ -732,10 +782,37 @@ function advanceBeat(runtime) {
   runBeat(runtime)
 }
 
-function dealHit(runtime, beat) {
+// `boltFlightMs` is what fireBolt() returned for the bolt that carries THIS
+// hit -- 0 when no bolt was drawn, which makes the whole thing collapse back
+// to the old synchronous behaviour with no dead time.
+//
+// The split is deliberate and is not "delay dealHit":
+//   * hitsDealt advances NOW. It is read by saveCheckpoint() on the next
+//     runBeat() and by the reward gate; holding it back would let a slow
+//     bolt lose a hit across a reload, and a boss health bar never recovers
+//     from a missing hit. It is also why a mis-timed flight can only ever
+//     make the bar drop EARLY (runBeat() repaints it from the real number),
+//     never leave damage unapplied.
+//   * The hero's lunge fires now -- it is the throw, not the landing.
+//   * The two things the child reads as "it hit" -- the bar moving and the
+//     villain flinching -- wait for the bolt to arrive.
+// `onLand` is for anything else that is a claim about the villain rather
+// than about the button, so a beat does not have to re-derive the schedule.
+// Nothing awaits this: it schedules and returns, so waitForTransition() and
+// every beat transition are byte-identical to before.
+function dealHit(runtime, beat, boltFlightMs = 0, onLand) {
   runtime.hitsDealt = Math.min(runtime.healthMax, runtime.hitsDealt + (beat.hits || 1))
-  updateHealthBar(runtime)
-  pulseBattle()
+  heroLunge()
+  const land = () => {
+    // The child can leave the stage during the flight -- painting then would
+    // write a stale health bar into whatever screen replaced this one.
+    if (!ownsScreen(runtime)) return
+    updateHealthBar(runtime)
+    villainImpact()
+    if (onLand) onLand()
+  }
+  if (boltFlightMs > 0) setTimeout(land, boltFlightMs)
+  else land()
 }
 
 function flashCorrect(container) {
@@ -1148,8 +1225,12 @@ function wireConfirmGrid(runtime, area, cfg) {
       }
       settled = true
       confirmBtn.disabled = true
-      fireBolt(confirmBtn)
-      await onCorrect(chosen)
+      // The flight time is handed to onCorrect because for one grid kind --
+      // choose-sequence's final step -- the damage lands in this same tick,
+      // on this same bolt. That callback must schedule its hit reaction on
+      // THIS arrival rather than fire a second, identical bolt on top of it.
+      const boltFlightMs = fireBolt(confirmBtn)
+      await onCorrect(chosen, boltFlightMs)
     })
   )
 }
@@ -1357,14 +1438,27 @@ function renderChooseSequenceBeat(runtime, beat) {
           setTimeout(() => redemonstrateOption(area, step, correct), 1200)
         }
       },
-      onCorrect: async () => {
+      // This is the one damage moment that does NOT get its own fireBolt()
+      // call -- and it does not need one. wireConfirmGrid already launched a
+      // bolt from ✓ Check one line before this runs, on every step including
+      // the last, so at the instant the health bar owes a hit there is
+      // already a bolt in the air from the button the child pressed. Firing a
+      // second one here would put two identical bolts on the same path in the
+      // same tick, which reads as a rendering glitch, not as two events.
+      //
+      // That is not inconsistent with scored `choose` firing twice: there the
+      // two bolts are on two different screens, from two different buttons
+      // (✓ Check, then 🎤 on the read-aloud screen), hundreds of ms apart.
+      // The invariant is per-bolt, not per-beat: one bolt per button press,
+      // and damage rides the bolt from the press that caused it.
+      onCorrect: async (chosen, boltFlightMs) => {
         flashCorrect(area)
         stepIndex += 1
         if (stepIndex < beat.steps.length) {
           await waitForTransition(500)
           showStep()
         } else {
-          dealHit(runtime, beat)
+          dealHit(runtime, beat, boltFlightMs)
           await waitForTransition(500)
           advanceBeat(runtime)
         }
@@ -1580,7 +1674,10 @@ function renderBuildBeat(runtime, beat) {
       settled = true
       flashCorrect(area)
       // The tile the child just pressed is the origin: the last letter
-      // landing is the moment the word becomes an answer.
+      // landing is the moment the word becomes an answer. The return value is
+      // dropped on purpose -- no damage lands here. A scored build beat deals
+      // its hit on the read-aloud screen, which fires its own bolt from 🎤
+      // and schedules the hit on that one.
       fireBolt(tile)
       if (beat.scored && beat.readAloud) {
         await whenAudioIdle()
@@ -1639,8 +1736,7 @@ function renderListenRepeatBeat(runtime, beat) {
         showWord()
       } else {
         flashCorrect(area)
-        fireBolt(micBtn)
-        dealHit(runtime, beat)
+        dealHit(runtime, beat, fireBolt(micBtn))
         await waitForTransition(500)
         advanceBeat(runtime)
       }
@@ -1677,9 +1773,20 @@ function runReadAloud(runtime, beat, readAloud) {
     micBtn.disabled = true
     // This is where the damage actually lands, so this is where the bolt
     // fires -- the option grid's own bolt was the "correct!" beat before it.
-    fireBolt(micBtn)
-    dealHit(runtime, beat)
-    document.getElementById('beat-feedback').textContent = 'Hit! 💥'
+    // The hit reaction rides this bolt's arrival, so the villain flinches
+    // when it is struck rather than before.
+    //
+    // "Hit! 💥" goes with it. It is a claim about the villain, not an
+    // acknowledgement of the press (the button's own disabled state is
+    // that), and announcing a hit while the bolt is still crossing the
+    // screen is the same inversion in words. The node is captured rather
+    // than re-queried on arrival: #beat-feedback is reused by every beat, so
+    // a re-query could write this beat's text into the next beat's screen --
+    // isConnected is exact, the detached node means the screen moved on.
+    const feedbackEl = document.getElementById('beat-feedback')
+    dealHit(runtime, beat, fireBolt(micBtn), () => {
+      if (feedbackEl.isConnected) feedbackEl.textContent = 'Hit! 💥'
+    })
     await waitForTransition(500)
     advanceBeat(runtime)
   }))
