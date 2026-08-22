@@ -1,0 +1,514 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>probe</title>
+<link rel="stylesheet" href="/src/style.css" />
+<div id="app"></div>
+<script type="module">
+  import { renderMap, renderWorldSelect, renderChapterSelect } from '/src/screens.js'
+
+  // Layout/screenshot harness. Read the verdict from `data-probe` (also the
+  // document title and the on-screen HUD):
+  //   CH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  //   "$CH" --headless --disable-gpu --window-size=834,1281 \
+  //     --virtual-time-budget=6000 --dump-dom \
+  //     "http://localhost:5173/_probe.html?shot=long3"
+  // Portrait is 834,1281 and landscape 1194,921 -- NOT the iPad's own
+  // 834x1194, because headless Chrome's window chrome takes 87px off
+  // innerHeight (see CLAUDE.md). Two more, both of which have cost a
+  // misdiagnosis: an unknown ?shot= renders nothing and still reports
+  // `NOSCROLL gap=100%`, so always read `on=[...]`; and there is no `timeout`
+  // (or `gtimeout`) command on this Mac, so `timeout 200 "$CH" ...` exits 127
+  // without launching Chrome and looks identical to a hung run.
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+  const params = new URLSearchParams(location.search)
+  const shot = params.get('shot') || 'world'
+
+  // Fire onend immediately: a bare no-op stub never resolves audio.js's
+  // queue promise, so every utterance fell back to its 2.5s safety timeout
+  // and the whole harness ran far slower than the real app.
+  window.speechSynthesis.speak = (u) => {
+    setTimeout(() => u && typeof u.onend === 'function' && u.onend(), 0)
+  }
+
+  async function clickStage(chapterId, stageIndex) {
+    renderMap(chapterId)
+    await wait(120)
+    const nodes = document.querySelectorAll('.stage-node[data-stage]')
+    nodes[stageIndex].click()
+  }
+
+  // Click through beats to reach a specific beat kind. Beats advance via the
+  // primary button; options are answered by clicking the correct choice.
+  async function advanceTo(kindSel, maxSteps = 14) {
+    for (let i = 0; i < maxSteps; i++) {
+      if (document.querySelector(kindSel)) return true
+      const next = document.querySelector('.primary-btn')
+      if (next) { next.click(); await wait(160); continue }
+      const opt = document.querySelector('.option-btn:not(:disabled)')
+      if (opt) { opt.click(); await wait(160); continue }
+      const tile = document.querySelector('.letter-tile:not(.used)')
+      if (tile) { tile.click(); await wait(160); continue }
+      await wait(120)
+    }
+    return !!document.querySelector(kindSel)
+  }
+
+  // Beat-kind shots work by isolating one beat at index 0 of a real stage
+  // (the stage objects are live module state), instead of clicking through
+  // the whole stage -- clicking depends on answering correctly and on the
+  // audio-gated transition delays, and silently lands on the wrong beat.
+  // Vite appends a cache-busting query (?t=...) to modules it has seen
+  // change. Importing the plain path would then hand us a SECOND instance of
+  // the chapter data -- we would mutate a copy the app never reads, the shot
+  // would quietly fall back to the stage's real first beat, and the run would
+  // report a confident PASS for a screen it never rendered. So resolve the
+  // specifier screens.js itself imports.
+  async function dataModule() {
+    try {
+      const src = await (await fetch('/src/screens.js')).text()
+      const m = src.match(/from\s+['"]([^'"]*chapters\/index\.js[^'"]*)['"]/)
+      if (m) return await import(new URL(m[1], location.origin + '/src/').href)
+    } catch {}
+    return await import('/src/data/chapters/index.js')
+  }
+  const { getStageById } = await dataModule()
+
+  // Stage ids carry the chapter number as a `cN` prefix (bare `stage-N` ids
+  // are legacy chapter-1). Generalized so new chapters don't need a new
+  // branch here every time one is added.
+  function chapterIdFor(stageId) {
+    const m = stageId.match(/^c(\d+)/)
+    return m ? `chapter-${m[1]}` : 'chapter-1'
+  }
+
+  let wantKind = null
+  async function isolate(stageId, kind, nth = 0) {
+    wantKind = kind
+    const stage = getStageById(stageId)
+    const picks = stage.beats.filter((b) => b.kind === kind)
+    if (!picks.length) throw new Error(`no ${kind} beat in ${stageId}`)
+    stage.beats = [picks[Math.min(nth, picks.length - 1)]]
+    const idx = Number(stageId.replace(/\D/g, '').slice(-1)) - 1
+    await clickStage(chapterIdFor(stageId), idx)
+  }
+
+  async function emptyStage(stageId) {
+    const stage = getStageById(stageId)
+    stage.beats = []
+    const idx = Number(stageId.replace(/\D/g, '').slice(-1)) - 1
+    await clickStage(chapterIdFor(stageId), idx)
+  }
+
+  const SHOTS = {
+    world: () => renderWorldSelect(),
+    chapters: () => renderChapterSelect('world-1'),
+    map1: () => renderMap('chapter-1'),
+    map2: () => renderMap('chapter-2'),
+    map3: () => renderMap('chapter-3'),
+    map4: () => renderMap('chapter-4'),
+    battle1: () => isolate('stage-2', 'teach'),
+    battle2: () => isolate('c2-stage-2', 'teach'),
+    battle3: () => isolate('c3-stage-2', 'teach'),
+    battle4: () => isolate('c4-stage-2', 'teach'),
+    boss3: () => clickStage('chapter-3', 4),
+    boss1: () => clickStage('chapter-1', 4),
+    boss1after: async () => { await clickStage('chapter-1', 4); await wait(1900) },
+    boss2: () => clickStage('chapter-2', 4),
+    boss4: () => clickStage('chapter-4', 4),
+    boss4after: async () => { await clickStage('chapter-4', 4); await wait(1900) },
+    reward4: () => emptyStage('c4-stage-1'),
+    // Chapters 5-7 had no coverage at all, so a layout regression in the
+    // newest three chapters' art families could not be measured. An
+    // unknown shot renders nothing and still reports NOSCROLL gap=100%,
+    // which reads like a pass -- see `on=[none|-]` in the HUD.
+    map5: () => renderMap('chapter-5'),
+    map6: () => renderMap('chapter-6'),
+    map7: () => renderMap('chapter-7'),
+    battle5: () => isolate('c5-stage-2', 'teach'),
+    battle6: () => isolate('c6-stage-2', 'teach'),
+    battle7: () => isolate('c7-stage-2', 'teach'),
+    boss5: () => clickStage('chapter-5', 4),
+    boss6: () => clickStage('chapter-6', 4),
+    boss7: () => clickStage('chapter-7', 4),
+    boss6after: async () => { await clickStage('chapter-6', 4); await wait(1900) },
+    boss7after: async () => { await clickStage('chapter-7', 4); await wait(1900) },
+    // The screen right after the 합체 intro is the boss stage's teach beat,
+    // which is the only place the letter equation ("S + A + T = SAT") renders.
+    // Chapters 3-7 build two words there, so the equation is two lines and is
+    // the tallest form -- every chapter needs its own shot or the two-line
+    // case goes unmeasured.
+    boss2after: async () => { await clickStage('chapter-2', 4); await wait(1900) },
+    boss3after: async () => { await clickStage('chapter-3', 4); await wait(1900) },
+    boss5after: async () => { await clickStage('chapter-5', 4); await wait(1900) },
+    // chapter 7 is the first with array-slot drag-build targets (['R','AI','N'])
+    build7: () => isolate('c7-stage-5', 'drag-build'),
+    shape6: () => isolate('c6-stage-4', 'match-shape'),
+    // Icon-contrast checks: real choose/multiselect beats that mix the 13
+    // new icons (cat/hen/egg/hat/key/elephant/hand/king/cake/horse/kite/
+    // ten/bed) with older ones, inside the real .options-grid/.option-btn
+    // markup and beat background -- not a synthetic swatch page.
+    icons3: () => isolate('c3-stage-4', 'choose', 1), // hat / hen / egg
+    // Option labels long enough to wrap to two lines. No shot exercised one,
+    // so nothing could see a wrapped label eating the icon's height: the
+    // worst 3-option case is orange/octopus/umbrella and the worst
+    // 4-option case is octopus/umbrella/orange/gift.
+    long3: () => isolate('c5-stage-4', 'choose', 1),
+    long4: () => isolate('c7-stage-3', 'multiselect'),
+    icons3multi: () => isolate('c3-stage-4', 'multiselect'), // hat / cat / hen / horse
+    icons4multi: () => isolate('c4-stage-3', 'multiselect'), // cat / egg / key / cake
+    teach2: () => isolate('c2-stage-2', 'teach'),
+    break1: () => isolate('stage-2', 'break'),
+    choose2: () => isolate('c2-stage-2', 'choose'),
+    choose2b: () => isolate('c2-stage-2', 'choose', 2),
+    chooseseq1: () => isolate('stage-4', 'choose-sequence'),
+    multi1: () => isolate('stage-2', 'multiselect'),
+    multi2: () => isolate('c2-stage-2', 'multiselect'),
+    build1: () => isolate('stage-5', 'drag-build'),
+    build2: () => isolate('c2-stage-5', 'drag-build'),
+    build2c: () => isolate('c2-stage-5', 'drag-build', 2),
+    listen1: () => isolate('stage-2', 'listen-repeat'),
+    finale1: () => isolate('stage-1', 'finale'),
+    finale2: () => isolate('c2-stage-5', 'finale'),
+    reward1: () => emptyStage('stage-1'),
+    // Visual-only checks for states the normal flow won't hold still for.
+    recovery: () => {
+      document.querySelector('#app').innerHTML = `
+        <div class="screen stage-screen">
+          <button class="back-btn">\u25c0 \ub098\uac00\uae30</button>
+          <div class="beat recovery-beat">
+            <div class="beat-emoji">\ud83e\uddf8</div>
+            <div class="beat-instruction">\uc7a0\uc2dc \uc26c\uc5c8\ub2e4 \uac00\uc790!<br>\ub2e4\uc2dc \ud574\ubcfc\uae4c\uc694?</div>
+            <div class="beat-feedback">\uc9c0\ub3c4\ub85c \ub3cc\uc544\uac00\uc11c \ub2e4\uc2dc \uace0\ub97c \uc218 \uc788\uc5b4\uc694</div>
+            <button class="primary-btn">\ub2e4\uc2dc \ud574\ubcfc\uae4c\uc694 \u25b6</button>
+            <button class="secondary-btn">\uc9c0\ub3c4\ub85c</button>
+          </div>
+        </div>`
+    },
+  }
+
+  // ---- measurement -------------------------------------------------------
+  function paints(el, cs) {
+    if (el.tagName === 'svg' || el.tagName === 'IMG') return true
+    if (cs.backgroundImage !== 'none') return true
+    const bg = cs.backgroundColor
+    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') return true
+    if (parseFloat(cs.borderTopWidth) > 0 || parseFloat(cs.borderBottomWidth) > 0) return true
+    // A leaf with text, or an element whose OWN text nodes carry the text
+    // even though it also has an element child -- e.g. the stage label
+    // "Power of <span>S</span>", which used to read as unpainted (and so
+    // inflated the reported gap by a whole label's height) purely because
+    // one glyph is wrapped for colouring.
+    const ownsText = Array.from(el.childNodes).some(
+      (n) => n.nodeType === 3 && n.textContent.trim().length
+    )
+    if (ownsText) return true
+    if (el.children.length === 0 && el.textContent.trim().length) return true
+    return false
+  }
+
+  // clientWidth already drops the border but keeps the padding, and it is
+  // rounded -- comparing a fractional child width against it reported
+  // 196 > 200 as a spill. Compute the content box from the fractional rect.
+  function contentW(el, cs) {
+    return (
+      el.getBoundingClientRect().width -
+      parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) -
+      parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth)
+    )
+  }
+
+  function measure() {
+    const de = document.documentElement
+    const vh = window.innerHeight
+    const vw = window.innerWidth
+    const overflowY = Math.max(de.scrollHeight, document.body.scrollHeight) - vh
+    const overflowX = Math.max(de.scrollWidth, document.body.scrollWidth) - vw
+    const spans = []
+    for (const el of document.querySelectorAll('#app *')) {
+      const cs = getComputedStyle(el)
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue
+      if (cs.position === 'fixed') continue // full-bleed flash overlay would mask every gap
+      if (!el.getClientRects().length) continue
+      const r = el.getBoundingClientRect()
+      if (r.height < 1 || r.width < 1) continue
+      if (!paints(el, cs)) continue
+      // Screen-level colour fields cover the whole viewport, so counting them
+      // as "content" would report every screen as 0% empty. Anything covering
+      // more than half the viewport is a background, not content.
+      if (el.matches('.screen') || r.width * r.height > 0.85 * vw * vh) continue
+      spans.push([Math.max(0, r.top), Math.min(vh, r.bottom)])
+    }
+    spans.sort((a, b) => a[0] - b[0])
+    const merged = []
+    for (const s of spans) {
+      const last = merged[merged.length - 1]
+      if (last && s[0] <= last[1] + 1) last[1] = Math.max(last[1], s[1])
+      else merged.push([...s])
+    }
+    let gap = 0
+    let gapAt = 0
+    let cursor = 0
+    for (const [top, bottom] of merged) {
+      if (top - cursor > gap) { gap = top - cursor; gapAt = cursor }
+      cursor = Math.max(cursor, bottom)
+    }
+    if (vh - cursor > gap) { gap = vh - cursor; gapAt = cursor }
+    return { vw, vh, overflowY, overflowX, gap: Math.round(gap), gapAt: Math.round(gapAt), pct: (gap / vh * 100).toFixed(1) }
+  }
+
+  // The viewport gap metric is BLIND in landscape: the battle scene is a
+  // full-height side rail, so its painted band covers y=12..818 and masks
+  // every void inside the beat column beside it. icons3 reported
+  // gap=16px(1.9%) in landscape while its beat column actually held 486px of
+  // void -- 60% of the column -- which is worse than the portrait 10.5% that
+  // was being chased. So voids also get measured INSIDE .beat's own box,
+  // over .beat's painted descendants only. `bgap` is the number to trust for
+  // any beat screen; `gap` only ever sees whichever column is tallest.
+  function beatVoid() {
+    const beat = document.querySelector('.beat')
+    if (!beat) return null
+    const box = beat.getBoundingClientRect()
+    if (box.height < 1) return null
+    const spans = []
+    for (const el of beat.querySelectorAll('*')) {
+      const cs = getComputedStyle(el)
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue
+      if (cs.position === 'fixed' || cs.position === 'absolute') continue
+      if (!el.getClientRects().length) continue
+      const r = el.getBoundingClientRect()
+      if (r.height < 1 || r.width < 1) continue
+      if (!paints(el, cs)) continue
+      spans.push([Math.max(box.top, r.top), Math.min(box.bottom, r.bottom)])
+    }
+    spans.sort((a, b) => a[0] - b[0])
+    let gap = 0
+    let at = 0
+    let cursor = box.top
+    for (const [top, bottom] of spans) {
+      if (top - cursor > gap) { gap = top - cursor; at = cursor }
+      cursor = Math.max(cursor, bottom)
+    }
+    if (box.bottom - cursor > gap) { gap = box.bottom - cursor; at = cursor }
+    return {
+      h: Math.round(box.height),
+      gap: Math.round(gap),
+      at: Math.round(at),
+      pct: (gap / box.height * 100).toFixed(1),
+    }
+  }
+
+  // ?opts=N clones option buttons up to N. Chapters 8-33 want 4-5 choices to
+  // raise the difficulty, but no chapter ships 5 yet, so without this there
+  // is no way to find out whether 5 even fits before the content is written.
+  // Clones are real .option-btn markup inside the real grid, so every count
+  // rule (:has(> :nth-child(N))) and every icon-sizing rule applies exactly
+  // as it would to authored data.
+  function padOptions(n) {
+    const grid = document.querySelector('.options-grid')
+    if (!grid) return
+    const btns = Array.from(grid.querySelectorAll('.option-btn'))
+    if (!btns.length) return
+    for (let i = btns.length; i < n; i++) {
+      const c = btns[i % btns.length].cloneNode(true)
+      c.dataset.id = `pad-${i}`
+      grid.appendChild(c)
+    }
+    while (grid.querySelectorAll('.option-btn').length > n) {
+      grid.querySelector('.option-btn:last-child').remove()
+    }
+  }
+
+  // The 합체 intro is otherwise unshootable: it is replaced at 1.65 s, and
+  // headless Chrome's virtual clock renders animations at their end state, so
+  // the pre-emerge frames -- where the layout is most at risk of a void,
+  // since the hero art is scale(0) until 1.02 s -- never appeared in a
+  // screenshot. ?hold=1 drops the 1.65 s reveal timer so the intro stays up;
+  // ?hold=pre additionally pins the hero art before its entrance.
+  function holdIntro(mode) {
+    const realTimeout = window.setTimeout
+    window.setTimeout = (fn, ms, ...rest) =>
+      ms === 1650 ? 0 : realTimeout(fn, ms, ...rest)
+    const s = document.createElement('style')
+    s.textContent =
+      '.boss-intro-flash{display:none!important}' +
+      (mode === 'pre'
+        ? '.boss-intro-hero .carbot-art{animation-delay:9999s!important}'
+        : '')
+    document.head.appendChild(s)
+  }
+
+  // How much bigger can the text get? The gap metric cannot answer that:
+  // every screen's column is `flex: 1` with `space-evenly`, so it always
+  // reports as filled right up to the frame where it suddenly overflows.
+  // ?nat=1 switches off the stretching so the column collapses to the
+  // height its content actually needs; `nat` vs `vh` is then the real
+  // headroom, and vh/nat is the largest uniform scale-up that still fits.
+  function naturalMode() {
+    const s = document.createElement('style')
+    s.textContent = `
+      #app { min-height: 0 !important; }
+      .screen, .map-path, .chapter-grid, .chapter-card-art { flex: none !important; }
+      /* Landscape turns .stage-screen into a ROW. Two consequences, both of
+         which produced false readings before this split:
+         (a) align-items defaults to stretch, so both columns were pinned to
+             the viewport height and the reading was the battle rail's height,
+             not the beat's -- 1.46x room on screens that overflowed by 76px;
+         (b) the beat column's WIDTH comes from its flex, so zeroing that let
+             it grow to 1416px, text stopped wrapping, and the height came out
+             far too low. Hence the beat resets are portrait-only. */
+      .stage-screen { align-items: flex-start !important; }
+      @media (orientation: portrait) {
+        .beat, .beat-area, .teach-content, .boss-intro { flex: none !important; }
+      }
+      .chapter-grid { grid-auto-rows: min-content !important; }`
+    document.head.appendChild(s)
+  }
+
+  // ?css=<url-encoded CSS> appends a stylesheet before measuring, so a
+  // candidate size can be swept across every shot without editing
+  // style.css and reloading between each value. Whatever wins the sweep then
+  // gets written into style.css and re-measured for real.
+  function cssOverride(text) {
+    const s = document.createElement('style')
+    s.textContent = text
+    document.head.appendChild(s)
+  }
+
+  async function run() {
+    if (params.get('hold')) holdIntro(params.get('hold'))
+    if (params.get('css')) cssOverride(params.get('css'))
+    if (params.get('nat')) naturalMode()
+    // ?iso=<stageId>:<kind>[:nth] isolates any beat in the curriculum without
+    // minting a named shot for it. The named SHOTS are the regression suite --
+    // a fixed list whose count is part of the sign-off ("53 shots x 2
+    // orientations") -- so adding ten one-off entries to chase one defect
+    // across the beats that happen to contain it would dilute that number and
+    // leave dead shots behind once the defect is gone. This runs the exact
+    // same isolate() path, so an ad-hoc sweep and a suite shot measure the
+    // same thing. Note that a MISSPELLED kind throws (isolate() checks), which
+    // is the opposite of the ?shot= trap where an unknown name renders nothing
+    // and still reports NOSCROLL gap=100%.
+    const iso = params.get('iso')
+    if (iso) {
+      const [sid, kind, nth] = iso.split(':')
+      await isolate(sid, kind, Number(nth || 0))
+    } else {
+      const fn = SHOTS[shot]
+      if (fn) await fn()
+    }
+    await wait(Number(params.get('delay') || 260))
+    if (params.get('opts')) {
+      padOptions(Number(params.get('opts')))
+      await wait(60)
+    }
+    if (params.get('dis')) {
+      document.querySelectorAll('.primary-btn, .replay-btn').forEach((b) => (b.disabled = true))
+    }
+    const m = measure()
+    if (params.get('nat')) {
+      // #app's own height, not body's: `html, body { height: 100% }` pins
+      // body to the viewport, so body.scrollHeight reported the viewport
+      // height back and every screen looked like it had exactly 1.000x room.
+      const app = document.querySelector('#app')
+      const nat = Math.max(app.scrollHeight, Math.round(app.getBoundingClientRect().height))
+      m.nat = `${nat} room=${(m.vh / nat).toFixed(3)}x`
+    }
+    const verdict = m.overflowY > 0 || m.overflowX > 0 ? 'SCROLL' : 'NOSCROLL'
+    const screenCls = (document.querySelector('#app > .screen') || {}).className || 'none'
+    const beatCls = (document.querySelector('.beat') || {}).className || '-'
+    // beat.kind -> the class the renderer actually emits
+    const KIND_CLASS = {
+      teach: 'teach-beat', break: 'teach-beat', choose: 'choose-beat',
+      'choose-sequence': 'choose-beat', multiselect: 'multiselect-beat',
+      'drag-build': 'build-beat', 'listen-repeat': 'listen-beat', finale: 'listen-beat',
+      // match-shape is choose-beat minus sound-based speech, and reuses the
+      // same class; without this entry shape6 reported *** WRONG-BEAT.
+      'match-shape': 'choose-beat',
+    }
+    const kindOk = !wantKind || beatCls.includes(KIND_CLASS[wantKind] || wantKind)
+    // Screen class alone cannot tell two shots apart: renderWorldSelect and
+    // renderChapterSelect both emit `.chapter-select-screen`, so `world` and
+    // `chapters` reported an identical `on=[...]` and a swapped or broken
+    // shot would have looked fine. A census of the elements that actually
+    // differ makes each shot's identity visible in its own verdict line.
+    const census = ['.chapter-card', '.stage-node', '.option-btn', '.letter-tile',
+      '.beat-equation', '.mini-bot', '.stars-row .star']
+      .map((q) => `${q.replace(/[.\s]|-btn|-node|-card|-tile|-bot|s-row/g, '')}=${document.querySelectorAll(q).length}`)
+      .filter((s) => !s.endsWith('=0')).join(' ') || 'empty'
+    // Text that is being cut off rather than overflowing. `.chapter-card-title
+    // .range` sets overflow:hidden + text-overflow:ellipsis, so growing its
+    // font past the card width turns "Chapters 22-28" into "Chapters 22-…"
+    // while every scroll and gap number stays green. Nothing else in the HUD
+    // can see that, so it gets its own field.
+    const clipped = Array.from(document.querySelectorAll('#app *'))
+      .filter((el) => {
+        if (!el.getClientRects().length) return false
+        const cs = getComputedStyle(el)
+        if (cs.overflowX === 'visible' && cs.overflowY === 'visible') return false
+        // .sr-only is a 1px clipping box on purpose (single-letter option
+        // tiles hide their text label -- the tile IS the glyph), so it is
+        // always "clipped" and would otherwise mask every real clip.
+        if (el.classList.contains('sr-only')) return false
+        return el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1
+      })
+      .map((el) => `${el.className || el.tagName}(${el.scrollWidth}>${el.clientWidth})`)
+    // Text that spills OUT of its box instead of overflowing the page. The
+    // CLIP field above cannot see this: it skips every element whose
+    // overflow is `visible`, which is exactly the case where the spill is
+    // painted outside the parent. On main today the option labels
+    // "orange"/"octopus"/"umbrella" render past both edges of their card and
+    // collide with the neighbouring card's word -- a single unbroken word
+    // does not wrap, so nothing in the HUD moved. Reported as a child rect
+    // wider than the parent's content box, which is the shape of the bug.
+    const spill = Array.from(document.querySelectorAll('#app *'))
+      .filter((el) => {
+        const p = el.parentElement
+        if (!p || !el.getClientRects().length) return false
+        if (el.classList.contains('sr-only')) return false
+        const cs = getComputedStyle(el)
+        // Taken out of flow on purpose: the full-bleed flash overlay and the
+        // shout-burst speed lines are meant to paint past their parent.
+        if (cs.position === 'fixed' || cs.position === 'absolute') return false
+        const pcs = getComputedStyle(p)
+        if (pcs.overflowX !== 'visible') return false
+        return el.getBoundingClientRect().width > contentW(p, pcs) + 2
+      })
+      .map((el) => `${el.className || el.tagName}(${Math.round(el.getBoundingClientRect().width)}>${Math.round(contentW(el.parentElement, getComputedStyle(el.parentElement)))})`)
+    const bv = beatVoid()
+    const line = `${verdict}${kindOk ? '' : ' *** WRONG-BEAT'} shot=${params.get('iso') || shot} on=[${screenCls}|${beatCls}] ${census} ${
+      clipped.length ? `CLIP=[${clipped.slice(0, 3).join(' ')}] ` : ''
+    }${spill.length ? `SPILL=[${spill.slice(0, 3).join(' ')}] ` : ''}vp=${m.vw}x${m.vh} ovfY=${m.overflowY} ovfX=${m.overflowX} gap=${m.gap}px(${m.pct}%)@y${m.gapAt}${
+      bv ? ` bgap=${bv.gap}px(${bv.pct}%)@y${bv.at}/col${bv.h}` : ''
+    }${m.nat ? ` nat=${m.nat}` : ''}`
+    document.title = line
+    if (params.get('hud') !== '0') {
+      const hud = document.createElement('div')
+      hud.setAttribute('style', [
+        'position:fixed', 'left:0', 'right:0', 'bottom:0', 'z-index:9999',
+        'font:700 20px/1.3 ui-monospace,monospace', 'padding:6px 10px',
+        `background:${verdict === 'SCROLL' ? '#e24b4a' : '#3b9922'}`, 'color:#fff',
+        'text-align:center', 'pointer-events:none',
+      ].join(';'))
+      hud.textContent = line
+      document.body.appendChild(hud)
+    }
+    document.documentElement.setAttribute('data-probe', line)
+    if (params.get('dbg')) {
+      const sel = ['#app', '.screen', '.battle-scene', '.beat-area', '.beat', '.options-grid',
+        '.option-btn', '.option-emoji', '.option-emoji svg.word-icon-art', '.option-label', '.beat-instruction', '.map-path', '.stage-node-wrap', '.stage-label', '.map-header',
+        '.chapter-grid', '.chapter-card', '.chapter-card-art', '.chapter-card-order', '.chapter-card-title',
+        '.boss-intro', '.boss-intro-label', '.boss-intro-robots', '.mini-bot', '.boss-intro-hero', '.boss-intro-skip', '.teach-content', '.beat-avatar', '.big-letter', '.replay-btn', '.primary-btn',
+        '.teach-focus', '.beat-equation', '.beat-emoji', '.back-btn', '.nameplate', '.nameplate-name', '.villain-sprite', '.target-word', '.build-slots', '.tile-row', '.reward-title', '.recap-line']
+      const rows = sel.map((q) => {
+        const el = document.querySelector(q)
+        if (!el) return `${q}: -`
+        const r = el.getBoundingClientRect()
+        const cs = getComputedStyle(el)
+        return `${q}: left=${Math.round(r.left)} w=${Math.round(r.width)} top=${Math.round(r.top)} h=${Math.round(r.height)} flex=${cs.flexGrow}/${cs.flexBasis} jc=${cs.justifyContent} disp=${cs.display} fs=${cs.fontSize}`
+      })
+      document.documentElement.setAttribute('data-dbg', rows.join(' | '))
+    }
+  }
+  run()
+</script>

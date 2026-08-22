@@ -22,10 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# 검증 하네스 — 버려지는 파일이다. 이름을 하나씩 열거하면 새 하네스가 계속
-# 빠져나간다(실제로 _plat5/_platgap/_plat_before 세 개가 이렇게 새어 나왔다).
+# 일회용 하네스는 무시한다. 이름을 하나씩 열거하면 새 하네스가 계속 빠져나가므로
+# 패턴으로 잡는다(실제로 _plat5/_platgap/_plat_before 세 개가 이렇게 새어 나왔다).
 public/_*.html
 public/_*.js
 _art-preview.html
-_probe.html
-_art.html
+
+# 단, 회귀 스위트로 승격된 셋은 추적한다(git add -f 로 이미 인덱스에 있다).
+# 원래는 셋 다 버려지는 파일이었는데, 재구축 비용이 커졌다 -- _probe.html 은
+# shot 53개와 SPILL/nat/iso/CLIP 판정을, _probe-fs.html 은 오디오 큐 시나리오
+# 37개와 35스테이지 플레이스루를 담고 있다.
+!public/_probe.html
+!public/_probe-fs.html
+!public/_art.html

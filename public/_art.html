@@ -1,0 +1,156 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>아트 갤러리 · 카봇 파닉스</title>
+<style>
+  :root { --ink: #2a2438; --card: #fffdf4; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #f2efe6;
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    color: var(--ink);
+  }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  .sub { color: #6b6478; margin-bottom: 20px; }
+  .controls { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 22px; }
+  .controls label { display: flex; gap: 6px; align-items: center; font-weight: 600; }
+  h2 {
+    font-size: 19px;
+    margin: 28px 0 4px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid var(--ink);
+  }
+  .note { color: #6b6478; font-size: 13px; margin: 4px 0 12px; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+  .cell { text-align: center; }
+  .box {
+    background: var(--card);
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: 0 5px 0 var(--ink);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .box svg { width: 100%; height: 100%; display: block; }
+  .cap { font-size: 12px; margin-top: 8px; max-width: 130px; word-break: break-word; }
+  .cap b { display: block; font-size: 13px; }
+  .cap span { color: #6b6478; font-size: 11px; }
+  /* Silhouette mode: flatten every fill/stroke to one grey so shape alone is
+     judged -- the "does it read in 1 second" test the design agents run. */
+  body.silhouette .box svg * { fill: #6b6478 !important; stroke: #6b6478 !important; }
+  body.silhouette .box svg [opacity] { opacity: 1 !important; }
+</style>
+
+<h1>아트 갤러리</h1>
+<div class="sub">캐릭터 아트와 단어 아이콘 전체. 표시 크기와 실루엣 모드를 바꿔서 확인할 수 있어요.</div>
+
+<div class="controls">
+  <label>크기
+    <select id="size">
+      <option value="66">66px (합체 미니봇)</option>
+      <option value="96">96px (챕터 카드)</option>
+      <option value="132" selected>132px (합체 최종형)</option>
+      <option value="186">186px (전투 스프라이트)</option>
+      <option value="250">250px (리워드)</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="sil" /> 실루엣만 보기 (색 제거)</label>
+  <label><input type="checkbox" id="blue" /> 파란 버튼 배경 (아이콘 대비 확인)</label>
+</div>
+
+<div id="out"></div>
+
+<script type="module">
+  // Resolve the same module specifier screens.js imports: Vite appends a
+  // cache-busting query to changed modules, so importing the plain path can
+  // hand back a second instance with stale data.
+  async function dataModule() {
+    try {
+      const src = await (await fetch('/src/screens.js')).text()
+      const m = src.match(/from\s+['"]([^'"]*chapters\/index\.js[^'"]*)['"]/)
+      if (m) return await import(new URL(m[1], location.origin + '/src/').href)
+    } catch {}
+    return await import('/src/data/chapters/index.js')
+  }
+
+  const [{ chapters }, art, icons] = await Promise.all([
+    dataModule(),
+    import('/src/art.js'),
+    import('/src/icons.js'),
+  ])
+
+  const FAMILY = {
+    'chapter-1': '카봇 (변신 로봇)',
+    'chapter-2': '마블 히어로 계열',
+    'chapter-3': '공룡',
+    'chapter-4': '포켓몬 계열 (크리처)',
+    'chapter-5': '마리오 계열 (플랫포머)',
+    'chapter-6': '토이스토리 계열 (장난감)',
+    'chapter-7': 'DC 히어로 계열',
+  }
+
+  const out = document.getElementById('out')
+  let html = ''
+
+  for (const ch of chapters) {
+    const cast = []
+    const seen = new Set()
+    for (const st of ch.stages) {
+      for (const [role, fn] of [['hero', art.heroArt], ['villain', art.villainArt]]) {
+        const c = st[role]
+        if (seen.has(c.art)) continue
+        seen.add(c.art)
+        cast.push({ role, name: c.name, slug: c.art, svg: fn(c) })
+      }
+    }
+    const heroes = cast.filter((c) => c.role === 'hero')
+    const villains = cast.filter((c) => c.role === 'villain')
+    html += `<h2>챕터 ${ch.order} · ${ch.title}</h2>`
+    html += `<div class="note">${FAMILY[ch.id] || ''} · 히어로 ${heroes.length} / 빌런 ${villains.length}</div>`
+    for (const [label, group] of [['히어로', heroes], ['빌런', villains]]) {
+      html += `<div class="note">${label}</div><div class="row">`
+      for (const c of group) {
+        html += `<div class="cell"><div class="box art">${c.svg}</div>
+          <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div></div>`
+      }
+      html += `</div>`
+    }
+  }
+
+  html += `<h2>단어 아이콘 (${icons.wordIconKeys.length}개)</h2>`
+  html += `<div class="note">선택지 버튼에 실제로 쓰이는 크기는 150px입니다. 혼동되는 쌍이 있는지 확인해 주세요.</div><div class="row" id="iconrow">`
+  for (const key of icons.wordIconKeys) {
+    if (key === 'letterTile') continue
+    html += `<div class="cell"><div class="box icon">${icons.wordIcon(key, '')}</div>
+      <div class="cap"><b>${key}</b></div></div>`
+  }
+  html += `</div>`
+
+  out.innerHTML = html
+
+  const sizeSel = document.getElementById('size')
+  function applySize() {
+    const px = sizeSel.value
+    for (const b of document.querySelectorAll('.box.art')) {
+      b.style.width = px + 'px'
+      b.style.height = px + 'px'
+    }
+    // Icons are square and always shown at their real button size.
+    for (const b of document.querySelectorAll('.box.icon')) {
+      b.style.width = '150px'
+      b.style.height = '150px'
+    }
+  }
+  sizeSel.addEventListener('change', applySize)
+  applySize()
+
+  document.getElementById('sil').addEventListener('change', (e) => {
+    document.body.classList.toggle('silhouette', e.target.checked)
+  })
+  document.getElementById('blue').addEventListener('change', (e) => {
+    document.documentElement.style.setProperty('--card', e.target.checked ? '#378add' : '#fffdf4')
+  })
+</script>

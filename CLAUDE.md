@@ -69,9 +69,13 @@ src/
                        #   validateChapters() (dev 전용 계약 검증)
       chapter-01.js    # …  chapter-07.js (챕터 1–7, 스테이지 35개)
     stages.js          # 하위 호환 shim → chapters/index.js 재export
-public/                # 검증 하네스 — 전부 gitignore, 버려지는 파일
-  _probe.html          # 앱 화면 + 스크롤/여백 판정 HUD
-  _probe-fs.html       # 게임 로직·오디오 하네스 (현실적 TTS 스텁)
+public/                # 검증 하네스 — 셋은 회귀 스위트로 승격돼 추적된다
+  _probe.html          # 앱 화면 HUD: shot 53개 × 세로/가로, NOSCROLL/SCROLL,
+                       #   gap/bgap, SPILL(라벨 넘침), CLIP, on=[…] 요소 인구조사,
+                       #   ?nat=1 여유 측정, ?css= 오버라이드, ?iso=<stage>:<kind>
+  _probe-fs.html       # 게임 로직·오디오: 시나리오 37개 + 35스테이지 플레이스루.
+                       #   REAL_MS 테이블은 rate 0.5 실측값이고 낡으면 거짓 통과를
+                       #   만든다 — 그걸 잡는 자체 테스트가 들어있다
   _art.html            # 아트 갤러리 (크기 전환 + 실루엣 모드)
 ```
 
@@ -301,6 +305,19 @@ villainArt(villainOrName)
   파싱이 거부되고 아무것도 렌더되지 않는다.** 그러면 클리핑 검사가 "초과 0" 을
   보고한다 — **거짓 통과다.** 렌더 실패 개수와 잉크 픽셀 수를 항상 함께 출력해라.
   리더가 실제로 이 함정에 빠졌고 PARSE-FAIL 줄 덕에 잡았다.
+- **이 맥에는 `timeout` 도 `gtimeout` 도 없다** (coreutils 미설치). `timeout 200 "$CH" …`
+  는 exit 127 로 **Chrome 을 아예 실행하지 않으면서** "NO RESULTS" 를 남긴다 —
+  에이전트 하나가 이걸로 "하네스 행업" 오진을 했다가 재현으로 뒤집었다.
+  `_probe-fs.html?only=allstages` 는 `--virtual-time-budget=3000000` 이 필요하고,
+  가상 시간은 실제 시간이 아니라서 큰 예산은 거의 무료다(35/35 가 실측 3.1초).
+- **`_probe.html` 의 `gap` 수치는 비트 안정이 아니다.** `boss1`/`boss2`/`boss5`/`boss6`
+  가 **동일한 실행 사이에** `@y` ±1px, `bgap` ±0.1% 흔들린다(3회 반복으로 확인,
+  매번 다른 부분집합이 흔들린다). **1px 차이를 회귀로 읽지 마라.**
+- **Chrome 병렬은 머신이 유휴일 때만 4-wide 가 안전하다.** 에이전트 여럿이 동시에
+  돌아 로드가 22 에 헤드리스 24개가 뜬 상황에서 4-wide 가 **첫 작업들에 몰린
+  spurious NO-VERDICT 21건**을 만들었다. 3-wide + NO-VERDICT 재시도가 깨끗했다.
+- **`pkill -f "Google Chrome.*headless"` 를 쓰지 마라.** 동시 실행 중인 다른
+  에이전트의 Chrome 을 죽인다(실제로 한 번 일어났다).
 - **파일 소유권 표를 무시한 동시 쓰기가 이번 세션에 2건 있었다.** 한 번은
   `style.css` 에 소유자가 아닌 에이전트가 규칙을 추가했고(이번엔 가산적이라
   무해했지만 같은 영역이면 탄성 그리드를 조용히 덮었을 것이다), 한 번은 공유
