@@ -116,6 +116,33 @@
     await clickStage(chapterIdFor(stageId), idx)
   }
 
+  // The 합체 intro used to hand itself off after 1650ms, so every `*after`
+  // shot just waited it out. It no longer does -- the child taps the combined
+  // form to continue (QA: nobody got to look at it) -- and the wait alone now
+  // leaves the intro on screen. That mattered quietly rather than loudly: the
+  // census counts `.beat-equation` with querySelectorAll, and the equation
+  // element exists inside `teach-content` while that div is still
+  // display:none, so all seven `*after` shots kept reporting
+  // `beat-equation=1` and NOSCROLL for a screen they had stopped rendering.
+  // The equation beat is the tallest form in the app, so those seven were the
+  // suite's whole coverage of it.
+  //
+  // Throwing when the intro is absent is the point: an intro that stops
+  // existing (renamed id, reordered render) has to break the shot instead of
+  // downgrading it to "measured the intro again".
+  async function dismissIntro() {
+    const intro = document.getElementById('boss-intro')
+    if (!intro) throw new Error('dismissIntro: no #boss-intro to tap through')
+    // onTap() listens for pointerdown AND click, suppressing the click only
+    // when a real pointerup preceded it -- a synthetic click has no
+    // pointerup, so this takes the click path.
+    intro.click()
+    await wait(200)
+    if (document.getElementById('boss-intro')) {
+      throw new Error('dismissIntro: intro survived the tap')
+    }
+  }
+
   async function emptyStage(stageId) {
     const stage = getStageById(stageId)
     stage.beats = []
@@ -136,10 +163,10 @@
     battle4: () => isolate('c4-stage-2', 'teach'),
     boss3: () => clickStage('chapter-3', 4),
     boss1: () => clickStage('chapter-1', 4),
-    boss1after: async () => { await clickStage('chapter-1', 4); await wait(1900) },
+    boss1after: async () => { await clickStage('chapter-1', 4); await wait(1700); await dismissIntro() },
     boss2: () => clickStage('chapter-2', 4),
     boss4: () => clickStage('chapter-4', 4),
-    boss4after: async () => { await clickStage('chapter-4', 4); await wait(1900) },
+    boss4after: async () => { await clickStage('chapter-4', 4); await wait(1700); await dismissIntro() },
     reward4: () => emptyStage('c4-stage-1'),
     // Chapters 5-7 had no coverage at all, so a layout regression in the
     // newest three chapters' art families could not be measured. An
@@ -154,16 +181,16 @@
     boss5: () => clickStage('chapter-5', 4),
     boss6: () => clickStage('chapter-6', 4),
     boss7: () => clickStage('chapter-7', 4),
-    boss6after: async () => { await clickStage('chapter-6', 4); await wait(1900) },
-    boss7after: async () => { await clickStage('chapter-7', 4); await wait(1900) },
+    boss6after: async () => { await clickStage('chapter-6', 4); await wait(1700); await dismissIntro() },
+    boss7after: async () => { await clickStage('chapter-7', 4); await wait(1700); await dismissIntro() },
     // The screen right after the 합체 intro is the boss stage's teach beat,
     // which is the only place the letter equation ("S + A + T = SAT") renders.
     // Chapters 3-7 build two words there, so the equation is two lines and is
     // the tallest form -- every chapter needs its own shot or the two-line
     // case goes unmeasured.
-    boss2after: async () => { await clickStage('chapter-2', 4); await wait(1900) },
-    boss3after: async () => { await clickStage('chapter-3', 4); await wait(1900) },
-    boss5after: async () => { await clickStage('chapter-5', 4); await wait(1900) },
+    boss2after: async () => { await clickStage('chapter-2', 4); await wait(1700); await dismissIntro() },
+    boss3after: async () => { await clickStage('chapter-3', 4); await wait(1700); await dismissIntro() },
+    boss5after: async () => { await clickStage('chapter-5', 4); await wait(1700); await dismissIntro() },
     // chapter 7 is the first with array-slot drag-build targets (['R','AI','N'])
     build7: () => isolate('c7-stage-5', 'drag-build'),
     shape6: () => isolate('c6-stage-4', 'match-shape'),
@@ -194,6 +221,80 @@
     finale1: () => isolate('stage-1', 'finale'),
     finale2: () => isolate('c2-stage-5', 'finale'),
     reward1: () => emptyStage('stage-1'),
+    // ---- feedback-FX states -------------------------------------------
+    // These four exist because every one of them is a class applied by
+    // screens.js at a moment the flow does not hold still for, so none of
+    // them is reachable from a plain ?shot=. They are transforms and
+    // fixed/animated boxes over screens that already pass, which is exactly
+    // the shape of a regression the suite would otherwise miss: transformed
+    // and scaled boxes DO count toward scrollable overflow, so an FX pose
+    // can push a passing screen into SCROLL without changing any layout box.
+    //
+    // Not folded into the 53: that count is the sign-off for the app's real
+    // screens, and these are overlays on five of them.
+
+    // .fx-bolt mid-flight over a real battle beat. Coordinates are taken
+    // from the actual button and villain rects, so the element is measured
+    // where screens.js will really put it -- a hand-picked pair of numbers
+    // could sit safely inside the viewport by luck.
+    fxbolt: async () => {
+      await isolate('c2-stage-2', 'choose')
+      const btn = document.querySelector('.option-btn')
+      const vil = document.querySelector('.villain-sprite')
+      if (!btn || !vil) throw new Error('fxbolt: no button or villain to aim between')
+      const b = btn.getBoundingClientRect()
+      const v = vil.getBoundingClientRect()
+      const fx = document.createElement('div')
+      fx.className = 'fx-bolt'
+      fx.style.cssText =
+        `--fx-x1:${b.left + b.width / 2}px;--fx-y1:${b.top + b.height / 2}px;` +
+        `--fx-x2:${v.left + v.width / 2}px;--fx-y2:${v.top + v.height / 2}px`
+      document.body.appendChild(fx)
+      await wait(40)
+    },
+    // Combined form waiting to be tapped -- the state the intro now rests in
+    // indefinitely. The class is NOT added here: screens.js adds it on its own
+    // timer, so this measures the real thing and fails loudly if that wiring
+    // goes away, rather than measuring a pose only the harness ever produces.
+    invite: async () => {
+      await clickStage('chapter-1', 4)
+      await wait(1900)
+      const hero = document.querySelector('.boss-intro-hero.combine-invite')
+      if (!hero) throw new Error('invite: combine-invite never applied')
+      await wait(40)
+    },
+    // Boss result with the victory tableau. The scaled/leaning sprites are
+    // the reason this needs its own shot: reward1 measures the layout boxes,
+    // this measures where the poses actually paint.
+    victory: async () => {
+      await emptyStage('stage-1')
+      // Asserted, not applied: renderReward() emits both classes itself, so a
+      // shot that added them would keep passing after the markup dropped them
+      // and would be measuring a pose only the harness produces.
+      if (!document.querySelector('.reward-hero.reward-victor')) {
+        throw new Error('victory: hero is not .reward-victor')
+      }
+      if (!document.querySelector('.reward-villain.reward-defeated')) {
+        throw new Error('victory: villain is not .reward-defeated')
+      }
+      await wait(40)
+    },
+    // Wrong-order slot plus the pulsing Undo, together, because they are one
+    // moment: the pulse scales the button 1.06 at the same time.
+    buildwrong: async () => {
+      await isolate('c7-stage-5', 'drag-build')
+      const slots = document.querySelectorAll('.build-slot')
+      const tiles = document.querySelectorAll('.letter-tile:not(.used)')
+      // One short of full on purpose. Filling the last slot triggers grading,
+      // which either advances the beat or clears the row -- either way the
+      // shot would no longer be showing the state it is named for.
+      for (let i = 0; i < slots.length - 1 && i < tiles.length; i++) tiles[i].click()
+      await wait(200)
+      slots[0]?.classList.add('wrong')
+      document.querySelector('.secondary-btn')?.classList.add('hint-pulse')
+      await wait(40)
+    },
+
     // Visual-only checks for states the normal flow won't hold still for.
     recovery: () => {
       document.querySelector('#app').innerHTML = `
@@ -402,12 +503,18 @@
     }
   }
 
-  // The 합체 intro is otherwise unshootable: it is replaced at 1.65 s, and
-  // headless Chrome's virtual clock renders animations at their end state, so
-  // the pre-emerge frames -- where the layout is most at risk of a void,
-  // since the hero art is scale(0) until 1.02 s -- never appeared in a
-  // screenshot. ?hold=1 drops the 1.65 s reveal timer so the intro stays up;
-  // ?hold=pre additionally pins the hero art before its entrance.
+  // The 합체 intro's early frames are otherwise unshootable: headless
+  // Chrome's virtual clock renders animations at their end state, so the
+  // pre-emerge frames -- where the layout is most at risk of a void, since
+  // the hero art is scale(0) until 1.02 s -- never appeared in a screenshot.
+  // ?hold=pre pins the hero art before its entrance.
+  //
+  // The 1650ms timer this drops is no longer the reveal (the intro now waits
+  // for a tap and does not time out at all); it is the timer that adds
+  // `.combine-invite` and un-hides the tap hint. So ?hold=1 on its own now
+  // means "intro, still, with no invitation to tap yet" -- which is still a
+  // real frame worth measuring, just not the one the name suggests. The flash
+  // suppression is what makes any of these frames legible.
   function holdIntro(mode) {
     const realTimeout = window.setTimeout
     window.setTimeout = (fn, ms, ...rest) =>
@@ -522,8 +629,8 @@
     // shot would have looked fine. A census of the elements that actually
     // differ makes each shot's identity visible in its own verdict line.
     const census = ['.chapter-card', '.stage-node', '.option-btn', '.letter-tile',
-      '.beat-equation', '.mini-bot', '.stars-row .star']
-      .map((q) => `${q.replace(/[.\s]|-btn|-node|-card|-tile|-bot|s-row/g, '')}=${document.querySelectorAll(q).length}`)
+      '.beat-equation', '.mini-bot']
+      .map((q) => `${q.replace(/[.\s]|-btn|-node|-card|-tile|-bot/g, '')}=${document.querySelectorAll(q).length}`)
       .filter((s) => !s.endsWith('=0')).join(' ') || 'empty'
     // Text that is being cut off rather than overflowing. `.chapter-card-title
     // .range` sets overflow:hidden + text-overflow:ellipsis, so growing its
