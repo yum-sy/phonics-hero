@@ -67,10 +67,8 @@ function runScreen(render, retry) {
   } catch (e) {
     console.error('[screen] 렌더 실패', e)
     app.innerHTML = `<div class="screen">${failurePanelHtml('◀ Worlds')}</div>`
-    document.getElementById('retry-beat').addEventListener('click', retry)
-    document
-      .getElementById('failure-escape')
-      .addEventListener('click', () => renderWorldSelect())
+    onTap(document.getElementById('retry-beat'), retry)
+    onTap(document.getElementById('failure-escape'), () => renderWorldSelect())
   }
 }
 
@@ -232,6 +230,123 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+// ---- tap wiring ----
+//
+// Every control in the app is bound through here instead of straight
+// addEventListener('click'). Two reasons, both about a 5-year-old's finger:
+//
+//  * `click` only fires if the press and the release land on the same
+//    element within the browser's movement slop. A child who puts a finger
+//    down and rolls it produces pointerdown/pointermove/pointerup with NO
+//    click at all -- the button does nothing, which reads as a broken app
+//    and gets hit harder. Acting on pointerdown makes the movement
+//    afterwards irrelevant.
+//  * `click` arrives on RELEASE. `touch-action: manipulation` (already set
+//    in style.css) is what removes the historical 300ms double-tap wait, but
+//    it cannot make the event fire before the finger lifts. pointerdown can.
+//
+// The app has no scrolling and no drag gestures (the one drag-ish beat,
+// drag-build, is tap-to-place), so there is no gesture that acting on press
+// could steal.
+//
+// `click` stays bound too, for the activations that never produce a pointer
+// event: both harnesses drive the app with `el.click()`, and so do keyboard
+// and assistive-tech activations. So the pointerdown+click PAIR from one
+// touch has to be collapsed to one activation, and the suppression is keyed
+// on POINTERUP, not on how long ago the pointerdown was. A window measured
+// from pointerdown looked fine and was wrong: a child who holds a finger on
+// a button for a second and then lifts produces its click *after* any
+// plausible window, so the handler ran twice -- on a toggle (option select)
+// that reads as the button not working at all. A click always follows its
+// pointerup within a few ms, however long the press was, so pairing on the
+// release is exact.
+//
+// It deliberately does NOT suppress a genuine second tap: that arrives as
+// its own pointerdown and must reach the handler, because the double-tap
+// defence lives in each beat's `settled` guard and swallowing taps here
+// would leave those guards un-exercised (and untestable).
+const PAIRED_CLICK_MS = 700
+
+function onTap(el, handler) {
+  if (!el) return
+  let suppressClickUntil = 0
+  const endOfTouch = () => {
+    suppressClickUntil = Date.now() + PAIRED_CLICK_MS
+  }
+  el.addEventListener('pointerdown', (e) => {
+    // A right/middle mouse button is not a tap.
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    handler(e)
+  })
+  // pointercancel too: the browser can end a touch without a pointerup, and
+  // some of those still deliver a click.
+  el.addEventListener('pointerup', endOfTouch)
+  el.addEventListener('pointercancel', endOfTouch)
+  el.addEventListener('click', (e) => {
+    if (Date.now() < suppressClickUntil) return
+    handler(e)
+  })
+}
+
+// `makeHandler(el)` is called once per element and returns that element's
+// handler, so a renderer can close over the button it belongs to.
+function onTapAll(nodes, makeHandler) {
+  nodes.forEach((el) => onTap(el, makeHandler(el)))
+}
+
+// ---- correct-answer bolt (layout owns the animation) ----
+//
+// Contract with the layout agent: a `.fx-bolt` element on <body> carrying the
+// two endpoints as custom properties, and layout exposes its own duration as
+// `--fx-bolt-ms` so this can clean the element up without hard-coding the
+// animation length in two files.
+//
+// It is appended to <body>, not to the beat area, on purpose: the bolt is
+// fired at the moment the answer is accepted and the beat area is replaced a
+// few hundred ms later (read-aloud screen, next beat), which would cut the
+// animation off mid-flight.
+//
+// Fire-and-forget: nothing awaits it. Beat transitions stay gated on
+// waitForTransition() (audio + minimum delay) exactly as before -- making
+// them wait for a decoration would put the animation on the critical path
+// and could only ever make the app feel slower.
+const FX_BOLT_FALLBACK_MS = 700
+// A malformed/huge --fx-bolt-ms must not leave the element on the page
+// forever; a sane ceiling is cheaper than trusting the value.
+const FX_BOLT_MAX_MS = 4000
+
+function fireBolt(fromEl) {
+  const villain = document.getElementById('villain-sprite')
+  if (!fromEl || !fromEl.isConnected || !villain) return
+  const a = fromEl.getBoundingClientRect()
+  const b = villain.getBoundingClientRect()
+  // A zero box means the element is not laid out (display:none, detached
+  // subtree) -- firing from 0,0 would draw a bolt from the screen corner.
+  if (!a.width || !a.height || !b.width || !b.height) return
+  const bolt = document.createElement('div')
+  bolt.className = 'fx-bolt'
+  // pointer-events is part of the contract, not styling: until layout's rule
+  // lands this is an unstyled div, and once it does land it is an overlay
+  // that must never sit between the child's finger and a button.
+  bolt.style.pointerEvents = 'none'
+  bolt.style.setProperty('--fx-x1', Math.round(a.left + a.width / 2) + 'px')
+  bolt.style.setProperty('--fx-y1', Math.round(a.top + a.height / 2) + 'px')
+  bolt.style.setProperty('--fx-x2', Math.round(b.left + b.width / 2) + 'px')
+  bolt.style.setProperty('--fx-y2', Math.round(b.top + b.height / 2) + 'px')
+  document.body.appendChild(bolt)
+  // Read AFTER insertion -- a detached element resolves no custom property.
+  // Fallback matters: this is a parallel change, so the CSS may not exist
+  // yet, and without a fallback every correct answer would leak one node.
+  const declared = parseFloat(
+    getComputedStyle(bolt).getPropertyValue('--fx-bolt-ms')
+  )
+  const ms =
+    Number.isFinite(declared) && declared > 0
+      ? Math.min(declared, FX_BOLT_MAX_MS)
+      : FX_BOLT_FALLBACK_MS
+  setTimeout(() => bolt.remove(), ms)
+}
+
 // Waits for both a minimum visual-feedback delay AND the audio queue to
 // fully drain, whichever takes longer -- so a transition never cuts off
 // in-flight speech, but also never feels laggier than it needs to when
@@ -305,11 +420,9 @@ function worldSelectScreen() {
     </div>
   `
 
-  app.querySelectorAll('.chapter-card[data-world]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      unlockAudio()
-      renderChapterSelect(btn.dataset.world)
-    })
+  onTapAll(app.querySelectorAll('.chapter-card[data-world]'), (btn) => () => {
+    unlockAudio()
+    renderChapterSelect(btn.dataset.world)
   })
 }
 
@@ -363,15 +476,11 @@ function chapterSelectScreen(worldId) {
     </div>
   `
 
-  document
-    .getElementById('back-to-worlds')
-    .addEventListener('click', renderWorldSelect)
+  onTap(document.getElementById('back-to-worlds'), renderWorldSelect)
 
-  app.querySelectorAll('.chapter-card[data-chapter]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      unlockAudio()
-      renderMap(btn.dataset.chapter)
-    })
+  onTapAll(app.querySelectorAll('.chapter-card[data-chapter]'), (btn) => () => {
+    unlockAudio()
+    renderMap(btn.dataset.chapter)
   })
 }
 
@@ -433,18 +542,14 @@ function mapScreen(chapterId) {
     </div>
   `
 
-  document
-    .getElementById('back-to-chapters')
-    .addEventListener('click', () => {
-      const world = getWorldForChapterOrder(chapter.order)
-      renderChapterSelect(world.id)
-    })
+  onTap(document.getElementById('back-to-chapters'), () => {
+    const world = getWorldForChapterOrder(chapter.order)
+    renderChapterSelect(world.id)
+  })
 
-  app.querySelectorAll('.stage-node[data-stage]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      unlockAudio()
-      renderStage(btn.dataset.stage)
-    })
+  onTapAll(app.querySelectorAll('.stage-node[data-stage]'), (btn) => () => {
+    unlockAudio()
+    renderStage(btn.dataset.stage)
   })
 }
 
@@ -506,7 +611,7 @@ function renderHealthShell(runtime) {
     </div>
   `
 
-  document.getElementById('exit-stage').addEventListener('click', () => {
+  onTap(document.getElementById('exit-stage'), () => {
     // Leaving on purpose means "start this one over next time".
     clearCheckpoint()
     const chapter = getChapterForStage(stage.id)
@@ -599,10 +704,8 @@ function renderBeatFailure(runtime, err) {
   const area = beatArea()
   if (!area) return
   area.innerHTML = failurePanelHtml('◀ Map')
-  document
-    .getElementById('retry-beat')
-    .addEventListener('click', () => runBeat(runtime))
-  document.getElementById('failure-escape').addEventListener('click', () => {
+  onTap(document.getElementById('retry-beat'), () => runBeat(runtime))
+  onTap(document.getElementById('failure-escape'), () => {
     // Also an intentional leave -- and it must clear, or a beat that throws
     // every time would resume straight back into this panel forever.
     clearCheckpoint()
@@ -748,9 +851,9 @@ function wireTeachButtons(beat, runtime) {
   play()
   const replayBtn = document.getElementById('replay-btn')
   const continueBtn = document.getElementById('continue-btn')
-  if (replayBtn) replayBtn.addEventListener('click', play)
+  onTap(replayBtn, play)
   if (continueBtn)
-    continueBtn.addEventListener('click', withRecovery(runtime, async () => {
+    onTap(continueBtn, withRecovery(runtime, async () => {
       // Acknowledge the tap immediately (don't leave it feeling unresponsive)
       // even though we wait for any in-flight teach/break audio to finish
       // before actually moving to the next beat, so its own auto-played
@@ -794,6 +897,11 @@ function buildEquationsHtml(stage) {
   }
   return rows.join('')
 }
+
+// When the combined form starts asking to be tapped. The emerge animation
+// runs 1.02s -> 1.54s (style.css `hero-emerge`), so this lands just after it
+// settles: the form holds still long enough to be looked at, then wobbles.
+const COMBINE_INVITE_MS = 1650
 
 function renderNonScoredBeat(runtime, beat) {
   const area = beatArea()
@@ -859,38 +967,60 @@ function renderNonScoredBeat(runtime, beat) {
 
     area.innerHTML = `
       <div class="beat teach-beat">
-        <div class="boss-intro" id="boss-intro" role="button" tabindex="0" aria-label="Skip intro" style="cursor:pointer">
+        <div class="boss-intro" id="boss-intro" role="button" tabindex="0" aria-label="Continue" style="cursor:pointer">
           <div class="boss-intro-label">UNITE!</div>
           <div class="boss-intro-robots">${robotsHtml}</div>
           <div class="boss-intro-flash"></div>
-          <div class="boss-intro-hero">${heroArt(runtime.stage.hero)}</div>
-          <div class="boss-intro-skip">화면을 탭하면 넘어가요</div>
+          <div class="boss-intro-hero" id="boss-intro-hero">${heroArt(
+            runtime.stage.hero
+          )}</div>
+          <div class="boss-intro-skip" id="boss-intro-hint" style="visibility:hidden">탭하면 계속해요!</div>
         </div>
         <div class="teach-content" id="teach-content" style="display:none">${teachInner}</div>
       </div>
     `
 
-    // Reveal the teach content either when the animation finishes or as soon
-    // as the child taps the intro, whichever comes first -- so the timeout
-    // and the tap must not both run wireTeachButtons (that would double up
-    // the auto-played teach audio). No audio is in flight yet at this point
-    // (wireTeachButtons is what starts it), so skipping early can't cut
-    // any speech off.
+    // A TAP is now the only way out of the intro. QA: "합체 결과물을 감상 할
+    // 시간이 전혀 주어지지 않더라" -- the old 1650ms auto-reveal fired 110ms
+    // after the final form finished materialising (hero-emerge runs
+    // 1.02s->1.54s), so the thing the whole animation builds up to was on
+    // screen for about one frame. Nothing about the combined form is
+    // time-critical, and holding it costs the child nothing: they end it when
+    // they have looked at it.
+    //
+    // The timer that used to advance the beat now only INVITES the tap:
+    // `.combine-invite` on the final form is layout's infinite wobble
+    // (contract), and it is removed here on the tap. It is added late, not at
+    // render, so the wobble cannot fight the emerge animation -- and so that
+    // "hold still, then wiggle" reads as the robot asking to be touched.
+    //
+    // The `revealed` guard is now the ONLY thing standing between a
+    // 5-year-old's double tap and wireTeachButtons() running twice (which
+    // would double up the auto-played teach audio). It used to also cover the
+    // timer-vs-tap race; both callers are gone but the guard matters more
+    // than before, not less, because pointerdown fires the handler earlier.
     const intro = document.getElementById('boss-intro')
     let revealed = false
+    const inviteTimer = setTimeout(() => {
+      const hero = document.getElementById('boss-intro-hero')
+      if (hero) hero.classList.add('combine-invite')
+      const hint = document.getElementById('boss-intro-hint')
+      if (hint) hint.style.visibility = ''
+    }, COMBINE_INVITE_MS)
     const revealTeach = () => {
       if (revealed) return
       const content = document.getElementById('teach-content')
       // The player may have navigated away mid-animation.
       if (!content) return
       revealed = true
-      clearTimeout(introTimer)
+      clearTimeout(inviteTimer)
+      const hero = document.getElementById('boss-intro-hero')
+      if (hero) hero.classList.remove('combine-invite')
       if (intro) intro.remove()
       content.style.display = ''
       wireTeachButtons(beat, runtime)
     }
-    const introTimer = setTimeout(revealTeach, 1650)
-    if (intro) intro.addEventListener('click', revealTeach)
+    onTap(intro, revealTeach)
     return
   }
 
@@ -900,6 +1030,128 @@ function renderNonScoredBeat(runtime, beat) {
     </div>
   `
   wireTeachButtons(beat, runtime)
+}
+
+// ---- pick, then confirm ----
+//
+// Tapping an option used to BE the answer. Two QA defects came out of that
+// single tap doing two jobs at once:
+//
+//  * a child auditioning the board ("what does this one say?") answered by
+//    accident, so rounds were won by luck and the stage ran past them;
+//  * the tapped option's sound and the round's outcome fired together, so
+//    tapping `sock` and then the correct `dog` played "sock" at the exact
+//    moment `dog` was accepted (speakTap coalesces while an utterance is
+//    still in flight, so `dog`'s own sound was the one dropped). The child
+//    heard the wrong word as their right answer was taken.
+//
+// So the jobs are split: a tap SELECTS and speaks, `✓ Check` grades.
+//
+// Applied to ALL FOUR option-grid beat kinds -- choose, match-shape, every
+// step of choose-sequence, and multiselect -- not only to the odd-one-out
+// rounds QA pointed at. All four render the identical `.options-grid`, so a
+// rule that held for some of them would leave the child working out per
+// screen whether a tap auditions or answers, which is a worse problem than
+// the one being fixed. choose-sequence is included despite being the
+// rapid-fire drill for the same reason: it looks exactly like choose.
+//
+// drag-build is deliberately NOT changed: it already judges on completion
+// with Undo as the escape, which is the same pick-then-commit shape arrived
+// at from the other direction.
+//
+// The button reuses `.mic-btn` (green = go, and its :disabled is a plain
+// opacity drop) rather than `.primary-btn`, whose :disabled state is the
+// "audio is playing, wait" breathing animation -- wrong meaning for "nothing
+// picked yet". `.confirm-btn` is on it so layout can take it over later.
+const CONFIRM_BTN_HTML =
+  '<button class="mic-btn confirm-btn" id="confirm-btn" disabled>✓ Check</button>'
+
+// `judge(pickedIds)` decides; `onCorrect` runs once and the grid locks;
+// `onWrong` runs the beat's own feedback + rescue and the round stays open
+// (no health cost, no penalty -- "no fail state" is untouched: what changed
+// is only WHICH tap is the answer).
+function wireConfirmGrid(runtime, area, cfg) {
+  const {
+    options,
+    multi = false,
+    speakFor,
+    judge,
+    onCorrect,
+    onWrong,
+    // Which of the confirmed picks a wrong verdict throws away (they are the
+    // ones that get shaken). Default: all of them, which is right for a
+    // single-select round. multiselect keeps the picks that WERE correct --
+    // "you haven't found them all yet" must not cost the child the ones they
+    // already had.
+    dropOnWrong = (ids) => ids,
+  } = cfg
+  const confirmBtn = area.querySelector('#confirm-btn')
+  const picked = new Set()
+  // Same double-fire guard the beats had before: the correct branch acts
+  // after an await, so an excited second tap could otherwise advance twice --
+  // skipping a beat and the damage it owed, which a boss health bar can
+  // never recover from.
+  let settled = false
+
+  const feedback = () => area.querySelector('#beat-feedback')
+  const deselectAll = () => {
+    picked.clear()
+    area
+      .querySelectorAll('.option-btn.selected')
+      .forEach((b) => b.classList.remove('selected'))
+  }
+  const syncConfirm = () => {
+    confirmBtn.disabled = picked.size === 0
+  }
+
+  onTapAll(area.querySelectorAll('.option-btn'), (btn) =>
+    withRecovery(runtime, async () => {
+      if (settled) return
+      const opt = options.find((o) => o.id === btn.dataset.id)
+      // Speaking on every tap is the point of the split -- the board is for
+      // listening to, and it stays listenable after a wrong confirm too.
+      speakTap(speakFor(opt))
+      if (picked.has(opt.id)) {
+        picked.delete(opt.id)
+        btn.classList.remove('selected')
+      } else {
+        if (!multi) deselectAll()
+        picked.add(opt.id)
+        btn.classList.add('selected')
+      }
+      const fb = feedback()
+      if (fb) fb.textContent = ''
+      syncConfirm()
+    })
+  )
+
+  onTap(
+    confirmBtn,
+    withRecovery(runtime, async () => {
+      if (settled || confirmBtn.disabled) return
+      const chosen = [...picked]
+      if (!judge(chosen)) {
+        // Dropping the wrong pick is what makes the next tap a fresh choice:
+        // left selected, the child can re-press ✓ Check on the same answer
+        // and the only thing that produces is a second "wrong".
+        for (const id of dropOnWrong(chosen)) {
+          picked.delete(id)
+          const btn = area.querySelector(`[data-id="${id}"]`)
+          if (btn) {
+            btn.classList.remove('selected')
+            shakeEl(btn)
+          }
+        }
+        syncConfirm()
+        onWrong(chosen)
+        return
+      }
+      settled = true
+      confirmBtn.disabled = true
+      fireBolt(confirmBtn)
+      await onCorrect(chosen)
+    })
+  )
 }
 
 // ---- choose ----
@@ -931,50 +1183,43 @@ function renderChooseBeat(runtime, beat) {
       ${promptHtml}
       ${replayHtml}
       <div class="options-grid">${optionsHtml}</div>
+      ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
 
   if (beat.promptAudio) {
     speakEN(beat.promptAudio)
-    document
-      .getElementById('replay-btn')
-      .addEventListener('click', () => speakTap(beat.promptAudio))
+    onTap(document.getElementById('replay-btn'), () =>
+      speakTap(beat.promptAudio)
+    )
   }
 
   const wrongStreak = makeWrongStreakTracker()
-  // The correct answer is acted on after an await, so a 5-year-old's second
-  // excited tap used to run the whole branch again and advance twice --
-  // skipping a beat outright, and with it any damage that beat was supposed
-  // to deal (a boss whose health can then never reach 0). Wrong taps stay
-  // unlimited: the no-fail rule is about retries, not double-fires.
-  let settled = false
 
-  area.querySelectorAll('.option-btn').forEach((btn) => {
-    btn.addEventListener('click', withRecovery(runtime, async () => {
-      if (settled) return
-      const opt = beat.options.find((o) => o.id === btn.dataset.id)
-      speakTap(optionSpeech(opt))
-      if (opt.correct) {
-        settled = true
-        flashCorrect(area)
-        if (beat.scored && beat.readAloud) {
-          await whenAudioIdle()
-          runReadAloud(runtime, beat, beat.readAloud)
-        } else {
-          await waitForTransition(600)
-          advanceBeat(runtime)
-        }
-      } else {
-        shakeEl(btn)
-        document.getElementById('beat-feedback').textContent =
-          '다시 들어볼까요?'
-        if (wrongStreak.registerWrong()) {
-          const correct = beat.options.find((o) => o.correct)
-          setTimeout(() => redemonstrateOption(area, beat, correct), 1200)
-        }
+  wireConfirmGrid(runtime, area, {
+    options: beat.options,
+    speakFor: optionSpeech,
+    judge: (ids) =>
+      ids.length === 1 &&
+      !!beat.options.find((o) => o.id === ids[0] && o.correct),
+    onWrong: () => {
+      document.getElementById('beat-feedback').textContent = '다시 들어볼까요?'
+      if (wrongStreak.registerWrong()) {
+        const correct = beat.options.find((o) => o.correct)
+        setTimeout(() => redemonstrateOption(area, beat, correct), 1200)
       }
-    }))
+    },
+    onCorrect: async () => {
+      flashCorrect(area)
+      if (beat.scored && beat.readAloud) {
+        await whenAudioIdle()
+        runReadAloud(runtime, beat, beat.readAloud)
+      } else {
+        await waitForTransition(600)
+        advanceBeat(runtime)
+      }
+    },
   })
 }
 
@@ -1024,42 +1269,40 @@ function renderMatchShapeBeat(runtime, beat) {
       <div class="beat-instruction">${beat.instructionKo}</div>
       ${promptHtml}
       <div class="options-grid">${optionsHtml}</div>
+      ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
 
   const wrongStreak = makeWrongStreakTracker()
-  // Same double-fire guard as choose -- see the comment there.
-  let settled = false
 
-  area.querySelectorAll('.option-btn').forEach((btn) => {
-    btn.addEventListener('click', withRecovery(runtime, async () => {
-      if (settled) return
-      const opt = beat.options.find((o) => o.id === btn.dataset.id)
-      // opt.label, deliberately not optionSpeech(opt) -- see block comment above.
-      speakTap(opt.label)
-      if (opt.correct) {
-        settled = true
-        flashCorrect(area)
-        if (beat.scored && beat.readAloud) {
-          await whenAudioIdle()
-          runReadAloud(runtime, beat, beat.readAloud)
-        } else {
-          await waitForTransition(600)
-          advanceBeat(runtime)
-        }
-      } else {
-        shakeEl(btn)
-        // "Listen again?" would be nonsense here -- nothing was played --
-        // so this round gets its own look-again phrasing rather than
-        // choose's "들어볼까요?".
-        document.getElementById('beat-feedback').textContent = '다시 봐볼까요?'
-        if (wrongStreak.registerWrong()) {
-          const correct = beat.options.find((o) => o.correct)
-          setTimeout(() => redemonstrateShapeOption(area, correct), 1200)
-        }
+  wireConfirmGrid(runtime, area, {
+    options: beat.options,
+    // opt.label, deliberately not optionSpeech(opt) -- see block comment above.
+    speakFor: (opt) => opt.label,
+    judge: (ids) =>
+      ids.length === 1 &&
+      !!beat.options.find((o) => o.id === ids[0] && o.correct),
+    onWrong: () => {
+      // "Listen again?" would be nonsense here -- nothing was played -- so
+      // this round gets its own look-again phrasing rather than choose's
+      // "들어볼까요?".
+      document.getElementById('beat-feedback').textContent = '다시 봐볼까요?'
+      if (wrongStreak.registerWrong()) {
+        const correct = beat.options.find((o) => o.correct)
+        setTimeout(() => redemonstrateShapeOption(area, correct), 1200)
       }
-    }))
+    },
+    onCorrect: async () => {
+      flashCorrect(area)
+      if (beat.scored && beat.readAloud) {
+        await whenAudioIdle()
+        runReadAloud(runtime, beat, beat.readAloud)
+      } else {
+        await waitForTransition(600)
+        advanceBeat(runtime)
+      }
+    },
   })
 }
 
@@ -1087,48 +1330,45 @@ function renderChooseSequenceBeat(runtime, beat) {
     }/${beat.steps.length})</div>
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <div class="options-grid">${optionsHtml}</div>
+        ${CONFIRM_BTN_HTML}
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
     speakEN(step.promptAudio)
-    document
-      .getElementById('replay-btn')
-      .addEventListener('click', () => speakTap(step.promptAudio))
+    onTap(document.getElementById('replay-btn'), () =>
+      speakTap(step.promptAudio)
+    )
 
     // Fresh streak per step -- each step is effectively its own mini
-    // question, so 2 wrong taps within *that* step trigger the hint.
+    // question, so 2 wrong answers within *that* step trigger the hint.
     const wrongStreak = makeWrongStreakTracker()
-    // Per-step lock: a double tap on the right answer would otherwise skip a
-    // step, or on the last step deal its damage twice and skip the next beat.
-    let settled = false
 
-    area.querySelectorAll('.option-btn').forEach((btn) => {
-      btn.addEventListener('click', withRecovery(runtime, async () => {
-        if (settled) return
-        const opt = step.options.find((o) => o.id === btn.dataset.id)
-        speakTap(optionSpeech(opt))
-        if (opt.correct) {
-          settled = true
-          flashCorrect(area)
-          stepIndex += 1
-          if (stepIndex < beat.steps.length) {
-            await waitForTransition(500)
-            showStep()
-          } else {
-            dealHit(runtime, beat)
-            await waitForTransition(500)
-            advanceBeat(runtime)
-          }
-        } else {
-          shakeEl(btn)
-          document.getElementById('beat-feedback').textContent =
-            '다시 들어볼까요?'
-          if (wrongStreak.registerWrong()) {
-            const correct = step.options.find((o) => o.correct)
-            setTimeout(() => redemonstrateOption(area, step, correct), 1200)
-          }
+    wireConfirmGrid(runtime, area, {
+      options: step.options,
+      speakFor: optionSpeech,
+      judge: (ids) =>
+        ids.length === 1 &&
+        !!step.options.find((o) => o.id === ids[0] && o.correct),
+      onWrong: () => {
+        document.getElementById('beat-feedback').textContent =
+          '다시 들어볼까요?'
+        if (wrongStreak.registerWrong()) {
+          const correct = step.options.find((o) => o.correct)
+          setTimeout(() => redemonstrateOption(area, step, correct), 1200)
         }
-      }))
+      },
+      onCorrect: async () => {
+        flashCorrect(area)
+        stepIndex += 1
+        if (stepIndex < beat.steps.length) {
+          await waitForTransition(500)
+          showStep()
+        } else {
+          dealHit(runtime, beat)
+          await waitForTransition(500)
+          advanceBeat(runtime)
+        }
+      },
     })
   }
 
@@ -1153,6 +1393,7 @@ function renderMultiselectBeat(runtime, beat) {
     <div class="beat multiselect-beat">
       <div class="beat-instruction">${beat.instructionKo}</div>
       <div class="options-grid">${optionsHtml}</div>
+      ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
@@ -1160,42 +1401,36 @@ function renderMultiselectBeat(runtime, beat) {
   const correctIds = new Set(
     beat.options.filter((o) => o.correct).map((o) => o.id)
   )
-  const picked = new Set()
   const wrongStreak = makeWrongStreakTracker()
-  let settled = false
 
-  area.querySelectorAll('.option-btn').forEach((btn) => {
-    btn.addEventListener('click', withRecovery(runtime, async () => {
-      if (settled) return
-      const opt = beat.options.find((o) => o.id === btn.dataset.id)
-      speakTap(optionSpeech(opt))
-      if (opt.correct) {
-        if (picked.has(opt.id)) {
-          picked.delete(opt.id)
-          btn.classList.remove('selected')
-          document.getElementById('beat-feedback').textContent = ''
-          return
-        }
-        picked.add(opt.id)
-        btn.classList.add('selected')
-        if (picked.size === correctIds.size) {
-          settled = true
-          flashCorrect(area)
-          await whenAudioIdle()
-          runReadAloud(runtime, beat, beat.readAloud)
-        }
-      } else {
-        shakeEl(btn)
-        document.getElementById('beat-feedback').textContent =
-          '다시 골라볼까요?'
-        if (wrongStreak.registerWrong()) {
-          const remaining = beat.options.find(
-            (o) => o.correct && !picked.has(o.id)
-          )
-          setTimeout(() => redemonstrateOption(area, beat, remaining), 1200)
-        }
+  wireConfirmGrid(runtime, area, {
+    options: beat.options,
+    multi: true,
+    speakFor: optionSpeech,
+    // Exact set match. Before the confirm button a wrong option shook the
+    // instant it was touched, which handed the answer over one tap at a
+    // time; now every option selects silently and the SET is what is judged.
+    judge: (ids) =>
+      ids.length === correctIds.size && ids.every((id) => correctIds.has(id)),
+    dropOnWrong: (ids) => ids.filter((id) => !correctIds.has(id)),
+    onWrong: (ids) => {
+      const hadWrongPick = ids.some((id) => !correctIds.has(id))
+      document.getElementById('beat-feedback').textContent = hadWrongPick
+        ? '다시 골라볼까요?'
+        : '아직 더 있어요!'
+      if (wrongStreak.registerWrong()) {
+        const kept = new Set(ids.filter((id) => correctIds.has(id)))
+        const remaining = beat.options.find(
+          (o) => o.correct && !kept.has(o.id)
+        )
+        setTimeout(() => redemonstrateOption(area, beat, remaining), 1200)
       }
-    }))
+    },
+    onCorrect: async () => {
+      flashCorrect(area)
+      await whenAudioIdle()
+      runReadAloud(runtime, beat, beat.readAloud)
+    },
   })
 }
 
@@ -1314,8 +1549,8 @@ function renderBuildBeat(runtime, beat) {
     }
   }
 
-  tiles.forEach((tile) => {
-    tile.addEventListener('click', withRecovery(runtime, async () => {
+  onTapAll(tiles, (tile) =>
+    withRecovery(runtime, async () => {
       if (settled || tile.disabled) return
       const { text: letter, say } = letters[Number(tile.dataset.tile)]
       if (placed.length >= target.length) {
@@ -1344,6 +1579,9 @@ function renderBuildBeat(runtime, beat) {
       }
       settled = true
       flashCorrect(area)
+      // The tile the child just pressed is the origin: the last letter
+      // landing is the moment the word becomes an answer.
+      fireBolt(tile)
       if (beat.scored && beat.readAloud) {
         await whenAudioIdle()
         runReadAloud(runtime, beat, beat.readAloud)
@@ -1351,10 +1589,10 @@ function renderBuildBeat(runtime, beat) {
         await waitForTransition(600)
         advanceBeat(runtime)
       }
-    }))
-  })
+    })
+  )
 
-  undoBtn.addEventListener('click', () => {
+  onTap(undoBtn, () => {
     if (settled) return
     undoOne()
   })
@@ -1385,11 +1623,9 @@ function renderListenRepeatBeat(runtime, beat) {
       </div>
     `
     speakEN(say)
-    document
-      .getElementById('replay-btn')
-      .addEventListener('click', () => speakTap(say))
+    onTap(document.getElementById('replay-btn'), () => speakTap(say))
     const micBtn = document.getElementById('mic-btn')
-    micBtn.addEventListener('click', withRecovery(runtime, async () => {
+    onTap(micBtn, withRecovery(runtime, async () => {
       micBtn.disabled = true
       document.getElementById('beat-feedback').textContent = 'Great! 🎉'
       // No speech recognition here on purpose -- see tryRecognize() in
@@ -1403,6 +1639,7 @@ function renderListenRepeatBeat(runtime, beat) {
         showWord()
       } else {
         flashCorrect(area)
+        fireBolt(micBtn)
         dealHit(runtime, beat)
         await waitForTransition(500)
         advanceBeat(runtime)
@@ -1434,12 +1671,13 @@ function runReadAloud(runtime, beat, readAloud) {
     </div>
   `
   speakEN(say)
-  document
-    .getElementById('replay-btn')
-    .addEventListener('click', () => speakTap(say))
+  onTap(document.getElementById('replay-btn'), () => speakTap(say))
   const micBtn = document.getElementById('mic-btn')
-  micBtn.addEventListener('click', withRecovery(runtime, async () => {
+  onTap(micBtn, withRecovery(runtime, async () => {
     micBtn.disabled = true
+    // This is where the damage actually lands, so this is where the bolt
+    // fires -- the option grid's own bolt was the "correct!" beat before it.
+    fireBolt(micBtn)
     dealHit(runtime, beat)
     document.getElementById('beat-feedback').textContent = 'Hit! 💥'
     await waitForTransition(500)
@@ -1449,6 +1687,17 @@ function runReadAloud(runtime, beat, readAloud) {
 
 // ---------- REWARD SCREEN ----------
 
+// The three-star row is gone (QA: "별 3개 행은 어떤 의미도 없는 것 같아").
+// It was unconditional -- every clear painted three lit stars -- so it carried
+// no information at all, and a row of glyphs that never changes teaches a
+// 5-year-old to stop reading the screen. markStageCleared() still banks a
+// star count: it is the only mutation site, nothing reads progress.stars back
+// yet, and a scoring rule (retries, hints used) is a plausible future feature
+// that would want the field already persisted rather than back-filled.
+//
+// `.reward-victor` / `.reward-defeated` are the layout contract for the
+// won-the-fight staging (QA: "그냥 나란히 서있네?"). The existing
+// .reward-hero/.reward-villain classes stay -- they carry the current sizing.
 function renderReward(runtime) {
   const { stage } = runtime
   markStageCleared(stage.id, 3)
@@ -1456,16 +1705,13 @@ function renderReward(runtime) {
     <div class="screen reward-screen">
       <div class="reward-title">${stage.title} Clear!</div>
       <div class="reward-scene">
-        <span class="reward-hero">${heroArt(stage.hero)}</span>
+        <span class="reward-hero reward-victor">${heroArt(stage.hero)}</span>
         <span class="reward-bolt">⚡</span>
-        <span class="reward-villain">${villainArt(stage.villain)}</span>
+        <span class="reward-villain reward-defeated">${villainArt(
+          stage.villain
+        )}</span>
       </div>
       <div class="reward-line">You beat ${stage.villain.name}!</div>
-      <div class="stars-row">
-        <span class="star on">★</span>
-        <span class="star on">★</span>
-        <span class="star on">★</span>
-      </div>
       <div class="recap-line">${stage.recapKo}</div>
       <button class="primary-btn" id="back-to-map">◀ Back to Map</button>
     </div>
@@ -1479,9 +1725,7 @@ function renderReward(runtime) {
   // shared queue, so this never overlaps whatever the last beat was saying.
   speakKO(stage.recapAudio.ko)
   speakSequence(stage.recapAudio.en, 'en-US')
-  document
-    .getElementById('back-to-map')
-    .addEventListener('click', () => {
+  onTap(document.getElementById('back-to-map'), () => {
       const chapter = getChapterForStage(stage.id)
       renderMap(chapter.id)
     })

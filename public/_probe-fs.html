@@ -156,6 +156,26 @@
     return false
   }
 
+  // ---- pick-then-confirm ----
+  // Option-grid beats (choose, match-shape, each choose-sequence step,
+  // multiselect) no longer answer on the option tap: the tap selects and
+  // speaks, "✓ Check" grades. Every walker in this file goes through these
+  // two helpers, so a beat that stops accepting the confirmation shows up
+  // once, here, rather than as 30 unrelated timeouts.
+  async function pick(id) {
+    await until(`[data-id="${id}"]`)
+    document.querySelector(`[data-id="${id}"]`).click()
+  }
+
+  async function confirmPick() {
+    return clickWhenEnabled('#confirm-btn')
+  }
+
+  async function answer(id) {
+    await pick(id)
+    return confirmPick()
+  }
+
   const instruction = () =>
     (document.querySelector('.beat-instruction') || {}).textContent || ''
 
@@ -210,7 +230,13 @@
     document.getElementById('continue-btn').click()
     await until('.choose-beat')
     const correctId = beat1.options.find((o) => o.correct).id
-    const btn = document.querySelector(`[data-id="${correctId}"]`)
+    // The double-fire risk moved with the grading: an option tap is now just
+    // a selection (idempotent by construction), and "✓ Check" is the button
+    // an excited 5-year-old hits three times. onTap() deliberately does NOT
+    // swallow repeat taps -- the beat's own `settled` guard is what has to
+    // hold, so hit it directly.
+    await pick(correctId)
+    const btn = document.getElementById('confirm-btn')
     btn.click()
     btn.click()
     btn.click()
@@ -232,7 +258,7 @@
     document.getElementById('continue-btn').click()
     await until('.choose-beat')
     const correctId = beat1.options.find((o) => o.correct).id
-    document.querySelector(`[data-id="${correctId}"]`).click()
+    await answer(correctId)
     document.getElementById('exit-stage').click()
     await wait(4000)
     const onMap = !!document.querySelector('.map-screen')
@@ -439,7 +465,7 @@
     await until('.choose-beat')
     const stage = chapters[0].stages[0]
     const correctId = stage.beats[1].options.find((o) => o.correct).id
-    document.querySelector(`[data-id="${correctId}"]`).click()
+    await answer(correctId)
     const gotMic = await until('#mic-btn', 60)
     if (gotMic) document.getElementById('mic-btn').click()
     await wait(2500)
@@ -502,22 +528,22 @@
         // torn down (data-id from the wrong beat -> querySelector returns
         // null -> "Cannot read properties of null (reading 'click')").
         const id = beat.options.find((o) => o.correct).id
-        await until(`[data-id="${id}"]`)
-        document.querySelector(`[data-id="${id}"]`).click()
+        await answer(id)
       } else if (beat.kind === 'choose-sequence') {
         for (const step of beat.steps) {
           const id = step.options.find((o) => o.correct).id
-          await until(`[data-id="${id}"]`)
-          document.querySelector(`[data-id="${id}"]`).click()
+          await answer(id)
           await wait(150)
         }
       } else if (beat.kind === 'multiselect') {
         await until('.options-grid')
         for (const opt of beat.options.filter((o) => o.correct)) {
-          await until(`[data-id="${opt.id}"]`)
-          document.querySelector(`[data-id="${opt.id}"]`).click()
+          await pick(opt.id)
           await wait(150)
         }
+        // One confirmation for the whole SET -- the round is judged on the
+        // set, not on each tap.
+        await confirmPick()
       } else if (beat.kind === 'drag-build') {
         await until('.build-slots')
         // Same normalisation the renderer does: a target is a list of
@@ -760,9 +786,7 @@
       if (beat.kind === 'teach' || beat.kind === 'break') {
         await clickWhenEnabled('#continue-btn')
       } else if (beat.kind === 'choose') {
-        const id = beat.options.find((o) => o.correct).id
-        await until(`[data-id="${id}"]`)
-        document.querySelector(`[data-id="${id}"]`).click()
+        await answer(beat.options.find((o) => o.correct).id)
       } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
         for (let i = 0; i < beat.words.length; i++) {
           await clickWhenEnabled('#mic-btn')
@@ -771,10 +795,10 @@
       } else if (beat.kind === 'multiselect') {
         await until('.options-grid')
         for (const opt of beat.options.filter((o) => o.correct)) {
-          await until(`[data-id="${opt.id}"]`)
-          document.querySelector(`[data-id="${opt.id}"]`).click()
+          await pick(opt.id)
           await wait(150)
         }
+        await confirmPick()
       }
       if (beat.scored && beat.readAloud) await clickWhenEnabled('#mic-btn')
       await wait(200)
@@ -916,6 +940,7 @@
 
   async function digraphShotChoose() {
     const stage = chapters[0].stages[0]
+    const saved = stage.beats
     stage.beats = [
       {
         kind: 'choose',
@@ -932,16 +957,23 @@
     await enterStage('chapter-1', 0)
     await until('.big-letter')
     check('digraphshot-choose-rendered', !!document.querySelector('.big-letter'))
+    // Restore the data as soon as the fixture is PAINTED. The screenshot only
+    // needs the DOM, and leaving chapter-1 stage-1's beats replaced poisons
+    // every later case that walks that stage in a full (no ?only=) sweep --
+    // which reads as "stage-1 has no choose beat", i.e. an app bug.
+    stage.beats = saved
   }
 
   async function digraphShotTeach() {
     const stage = chapters[0].stages[0]
+    const saved = stage.beats
     stage.beats = [
       { kind: 'teach', instructionKo: 'ai 소리를 배워봐요', letter: 'ai', repeatAudio: ['ai'] },
     ]
     await enterStage('chapter-1', 0)
     await until('.big-letter')
     check('digraphshot-teach-rendered', !!document.querySelector('.big-letter'))
+    stage.beats = saved // see digraphShotChoose
   }
 
   // renderBuildBeat's tiles are plain text buttons (not the letterTile SVG
@@ -2075,6 +2107,778 @@
     check('shadowshot-rendered', true, which)
   }
 
+  // ======================================================================
+  // QA round 2: pick-then-confirm, tap-to-continue combine, bolt fx
+  // ======================================================================
+
+  // Walks to a stage's first beat of a given kind and hands the beat back,
+  // rendered. Same shape as toFirstBuild() below, generalised.
+  async function toFirstBeat(chapterId, stageIndex, stage, kind, sel) {
+    const bi = stage.beats.findIndex((b) => b.kind === kind)
+    if (bi < 0) throw new Error(`${stage.id} has no ${kind} beat`)
+    state.clearCheckpoint()
+    await enterStage(chapterId, stageIndex)
+    await walkBeats(stage, 0, bi)
+    await until(sel)
+    return stage.beats[bi]
+  }
+
+  const selectedIds = () =>
+    [...document.querySelectorAll('.option-btn.selected')].map((b) => b.dataset.id)
+
+  const feedbackText = () =>
+    (document.getElementById('beat-feedback') || {}).textContent || ''
+
+  // Speech redemonstrateOption() will produce for a beat/step: its own
+  // promptAudio when it has one, else the correct option's own sound.
+  const expectedHintSay = (beatOrStep) => {
+    if (beatOrStep.promptAudio) return beatOrStep.promptAudio
+    const c = beatOrStep.options.find((o) => o.correct)
+    return c.say || c.label
+  }
+
+  // --- the whole point of the change: an option tap is NOT an answer -------
+  // The silent failure to fear is the opposite of the old one: if the confirm
+  // button is what scores, a beat that never accepts the confirmation stalls
+  // forever, and one that scores on BOTH paths is the accidental-win bug
+  // still shipping. Both are asserted here on a real scored beat.
+  async function confirmGate() {
+    const stage = chapters[0].stages[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBeat('chapter-1', 0, stage, 'choose', '.options-grid')
+      obs.beat = beat.id
+      obs.scored = !!beat.scored
+      const before = instruction()
+      const confirm = () => document.getElementById('confirm-btn')
+      obs.confirmPresent = !!confirm()
+      obs.disabledWithNoPick = confirm().disabled
+      // Pressing it with nothing selected must be inert, not a wrong answer.
+      confirm().click()
+      await wait(400)
+      obs.feedbackAfterEmptyConfirm = feedbackText()
+      obs.hpBefore = healthPct()
+      // Tap every option twice, the correct one included -- the exact
+      // exploring a 5-year-old does, which used to answer for them.
+      for (let round = 0; round < 2; round++) {
+        for (const o of beat.options) {
+          await pick(o.id)
+          await wait(200)
+        }
+      }
+      await wait(1500)
+      obs.sameBeat = instruction() === before
+      obs.hpAfterTaps = healthPct()
+      obs.noDamageFromTaps = obs.hpAfterTaps === obs.hpBefore
+      obs.readAloudLeaked = !!document.querySelector('.readaloud-beat')
+      // Single-select: exactly one option is held, never a growing set.
+      obs.selectedAfterTaps = selectedIds().length
+      // A tap must not judge anything, so nothing may be shaking.
+      obs.shakenByTaps = document.querySelectorAll('.option-btn.shake').length
+      // ...and now the confirmation does answer. Drain first: the correct
+      // branch waits on whenAudioIdle() by design, and the taps above (plus
+      // whatever an earlier case left queued in a full sweep) put a real
+      // backlog in front of it -- without this the poll below times out on
+      // the queue, not on the app.
+      await audio.whenAudioIdle()
+      const correct = beat.options.find((o) => o.correct)
+      await pick(correct.id)
+      obs.enabledWithPick = !confirm().disabled
+      await confirmPick()
+      obs.movedOn =
+        (await until('.readaloud-beat', 150)) || instruction() !== before
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'confirm-button-is-the-only-answer',
+      !threw &&
+        errors === 0 &&
+        obs.confirmPresent === true &&
+        obs.disabledWithNoPick === true &&
+        obs.feedbackAfterEmptyConfirm === '' &&
+        obs.sameBeat === true &&
+        obs.noDamageFromTaps === true &&
+        obs.readAloudLeaked === false &&
+        obs.selectedAfterTaps === 1 &&
+        obs.shakenByTaps === 0 &&
+        obs.enabledWithPick === true &&
+        obs.movedOn === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- confirming a WRONG pick: costs nothing, clears, still winnable -----
+  async function confirmWrong() {
+    const stage = chapters[0].stages[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBeat('chapter-1', 0, stage, 'choose', '.options-grid')
+      const wrongs = beat.options.filter((o) => !o.correct)
+      const correct = beat.options.find((o) => o.correct)
+      obs.wrongOptions = wrongs.length
+      obs.hpBefore = healthPct()
+      await pick(wrongs[0].id)
+      obs.selectedBeforeConfirm = selectedIds()
+      await confirmPick()
+      await wait(600)
+      obs.hpAfterWrongConfirm = healthPct()
+      obs.costNothing = obs.hpAfterWrongConfirm === obs.hpBefore
+      obs.stillOnRound = !!document.querySelector('.options-grid')
+      obs.leakedToReadAloud = !!document.querySelector('.readaloud-beat')
+      obs.selectionCleared = selectedIds().length === 0
+      obs.confirmDisabledAgain = document.getElementById('confirm-btn').disabled
+      obs.feedback = feedbackText()
+      // Second wrong confirmation in a row: the same rescue every other beat
+      // has -- replay the sound and pulse the right answer, never place it.
+      spoken = []
+      await pick((wrongs[1] || wrongs[0]).id)
+      await confirmPick()
+      obs.redemonstrated = await waitForSpeech(
+        (sp) => sp.includes(expectedHintSay(beat)),
+        6000
+      )
+      let pulsed = false
+      for (let i = 0; i < 40 && !pulsed; i++) {
+        pulsed = !!document.querySelector('.option-btn.hint-pulse')
+        if (!pulsed) await wait(50)
+      }
+      obs.pulsed = pulsed
+      obs.stillOnRoundAfterRescue = !!document.querySelector('.options-grid')
+      // and it is still winnable afterwards
+      await answer(correct.id)
+      obs.reachedReadAloud = await until('.readaloud-beat', 60)
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'confirm-wrong-costs-nothing-and-rescues',
+      !threw &&
+        errors === 0 &&
+        obs.selectedBeforeConfirm.length === 1 &&
+        obs.costNothing === true &&
+        obs.stillOnRound === true &&
+        obs.leakedToReadAloud === false &&
+        obs.selectionCleared === true &&
+        obs.confirmDisabledAgain === true &&
+        obs.feedback !== '' &&
+        obs.redemonstrated === true &&
+        obs.pulsed === true &&
+        obs.stillOnRoundAfterRescue === true &&
+        obs.reachedReadAloud === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- multiselect is judged on the SET, not tap by tap -------------------
+  async function multiConfirm() {
+    const stage = chapters[0].stages[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBeat('chapter-1', 0, stage, 'multiselect', '.multiselect-beat')
+      const correct = beat.options.filter((o) => o.correct)
+      const wrong = beat.options.filter((o) => !o.correct)
+      obs.beat = beat.id
+      obs.correctCount = correct.length
+      obs.hpBefore = healthPct()
+      // 1. touching a WRONG option no longer gives the answer away
+      await pick(wrong[0].id)
+      obs.wrongPickSelected = selectedIds().includes(wrong[0].id)
+      obs.wrongPickShaken = document.querySelectorAll('.option-btn.shake').length
+      // 2. confirming it is wrong, and only the wrong pick is dropped
+      await confirmPick()
+      await wait(500)
+      obs.afterWrongConfirm = selectedIds()
+      obs.feedbackWrong = feedbackText()
+      obs.hpAfterWrongConfirm = healthPct()
+      // 3. an INCOMPLETE but all-correct set keeps what the child had
+      await pick(correct[0].id)
+      await confirmPick()
+      await wait(500)
+      obs.afterIncompleteConfirm = selectedIds()
+      obs.keptCorrectPick = obs.afterIncompleteConfirm.includes(correct[0].id)
+      obs.feedbackIncomplete = feedbackText()
+      obs.leaked = !!document.querySelector('.readaloud-beat')
+      // 4. the full set confirms
+      for (const o of correct.slice(1)) {
+        await pick(o.id)
+        await wait(120)
+      }
+      await confirmPick()
+      obs.reachedReadAloud = await until('.readaloud-beat', 80)
+      await clickWhenEnabled('#mic-btn')
+      await wait(600)
+      obs.hpAfterHit = healthPct()
+      obs.damageLanded = obs.hpAfterHit < obs.hpBefore
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'multiselect-judged-on-the-whole-set',
+      !threw &&
+        errors === 0 &&
+        obs.wrongPickSelected === true &&
+        obs.wrongPickShaken === 0 &&
+        obs.afterWrongConfirm.length === 0 &&
+        obs.hpAfterWrongConfirm === obs.hpBefore &&
+        obs.keptCorrectPick === true &&
+        obs.feedbackIncomplete === '아직 더 있어요!' &&
+        obs.leaked === false &&
+        obs.reachedReadAloud === true &&
+        obs.damageLanded === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- THE silent-failure check for this change --------------------------
+  // Moving the scoring point to a new button is exactly the shape of change
+  // that ends with a boss whose health never reaches 0 -- and it fails
+  // quietly, since every individual beat still looks like it worked. Play
+  // whole stages where EVERY option-grid round is first answered WRONG
+  // through the confirm button, then answered right, and assert the bar
+  // still lands on 0% and the reward screen still paints.
+  async function confirmHealthStages() {
+    const targets = [
+      [0, 4], // chapter 1 boss (choose + multiselect + drag-build + finale)
+      [3, 3], // c4-stage-4 -- the app's only match-shape beat
+      [6, 4], // chapter 7 boss (digraph)
+    ]
+    const rows = []
+    for (const [ci, si] of targets) {
+      const chapter = chapters[ci]
+      const stage = chapter.stages[si]
+      errors = 0
+      state.clearCheckpoint()
+      let threw = null
+      let minHp = null
+      let wrongConfirms = 0
+      const sampler = setInterval(() => {
+        const p = healthPct()
+        if (p !== null && (minHp === null || p < minHp)) minHp = p
+      }, 40)
+      try {
+        await enterStage(chapter.id, si)
+        for (let bi = 0; bi < stage.beats.length; bi++) {
+          const beat = stage.beats[bi]
+          if (beat.kind === 'choose' || beat.kind === 'match-shape') {
+            await until('.options-grid')
+            const wrong = beat.options.find((o) => !o.correct)
+            if (wrong) {
+              wrongConfirms += 1
+              await pick(wrong.id)
+              await confirmPick()
+              await wait(300)
+              if (!document.querySelector('.options-grid')) {
+                throw new Error(
+                  `beat[${bi}] ${beat.id}: a WRONG confirmation ended the round`
+                )
+              }
+            }
+            await answer(beat.options.find((o) => o.correct).id)
+          } else if (beat.kind === 'multiselect') {
+            await until('.options-grid')
+            const wrong = beat.options.find((o) => !o.correct)
+            if (wrong) {
+              wrongConfirms += 1
+              await pick(wrong.id)
+              await confirmPick()
+              await wait(300)
+            }
+            for (const o of beat.options.filter((o) => o.correct)) {
+              await pick(o.id)
+              await wait(120)
+            }
+            await confirmPick()
+          } else if (beat.kind === 'choose-sequence') {
+            for (const step of beat.steps) {
+              const wrong = step.options.find((o) => !o.correct)
+              if (wrong) {
+                wrongConfirms += 1
+                await pick(wrong.id)
+                await confirmPick()
+                await wait(300)
+              }
+              await answer(step.options.find((o) => o.correct).id)
+              await wait(150)
+            }
+          } else {
+            await walkBeats(stage, bi, bi + 1)
+            continue
+          }
+          if (beat.scored && beat.readAloud) await clickWhenEnabled('#mic-btn')
+          await wait(200)
+        }
+        await until('.reward-screen', 80)
+      } catch (e) {
+        threw = e.message || String(e)
+      }
+      clearInterval(sampler)
+      const reached = !!document.querySelector('.reward-screen')
+      rows.push({
+        stage: stage.id,
+        wrongConfirms,
+        minHealthPct: minHp,
+        reachedReward: reached,
+        errors,
+        threw,
+        ok: !threw && errors === 0 && reached && minHp === 0 && wrongConfirms > 0,
+      })
+      state.clearCheckpoint()
+    }
+    const bad = rows.filter((r) => !r.ok)
+    check(
+      'confirm-flow-health-still-reaches-zero',
+      bad.length === 0,
+      JSON.stringify(rows)
+    )
+  }
+
+  // --- the confirm button is extra vertical furniture ---------------------
+  // It lands on the app's tightest screens. Measure, per real option count,
+  // in whatever orientation the window is set to.
+  async function confirmFit() {
+    const out = document.getElementById('out')
+    const prev = out.style.display
+    out.style.display = 'none'
+    const de = document.documentElement
+    const rows = []
+    let threw = null
+    try {
+      const probes = [
+        ['chapter-1', 0, chapters[0].stages[0], 'choose', '.options-grid'],
+        ['chapter-1', 0, chapters[0].stages[0], 'multiselect', '.options-grid'],
+        ['chapter-4', 3, chapters[3].stages[3], 'match-shape', '.options-grid'],
+        ['chapter-1', 3, chapters[0].stages[3], 'choose-sequence', '.options-grid'],
+      ]
+      for (const [cid, si, stage, kind, sel] of probes) {
+        await toFirstBeat(cid, si, stage, kind, sel)
+        await wait(150)
+        const grid = document.querySelector('.options-grid')
+        const btn = document.getElementById('confirm-btn')
+        const measure = (label) => ({
+          probe: label,
+          options: grid.querySelectorAll('.option-btn').length,
+          confirmH: btn ? Math.round(btn.getBoundingClientRect().height) : null,
+          confirmW: btn ? Math.round(btn.getBoundingClientRect().width) : null,
+          // ovfY alone cannot see a control pushed past the fold: nothing in
+          // the beat column clips, so a button sitting below the viewport
+          // would still report scrollHeight == clientHeight if its parent's
+          // own box ends earlier. The button's own bottom edge is the check
+          // that matters -- it is the one the child has to reach.
+          confirmBottom: btn ? Math.round(btn.getBoundingClientRect().bottom) : null,
+          vh: window.innerHeight,
+          confirmOffscreenBy: btn
+            ? Math.max(0, Math.round(btn.getBoundingClientRect().bottom) - window.innerHeight)
+            : 0,
+          gridH: Math.round(grid.getBoundingClientRect().height),
+          ovfY:
+            Math.max(de.scrollHeight, document.body.scrollHeight) -
+            window.innerHeight,
+          ovfX:
+            Math.max(de.scrollWidth, document.body.scrollWidth) -
+            window.innerWidth,
+        })
+        rows.push(measure(kind))
+        // Headroom probe: clone options up to 5 (the ceiling the elastic grid
+        // was built for) and re-measure with the confirm button present.
+        const first = grid.querySelector('.option-btn')
+        while (grid.querySelectorAll('.option-btn').length < 5) {
+          const c = first.cloneNode(true)
+          c.dataset.id = 'pad-' + grid.children.length
+          grid.appendChild(c)
+        }
+        await wait(150)
+        rows.push(measure(kind + '+padded5'))
+        state.clearCheckpoint()
+      }
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    out.style.display = prev
+    const bad = rows.filter(
+      (r) => r.ovfY > 0 || r.ovfX > 0 || r.confirmOffscreenBy > 0
+    )
+    check(
+      'confirm-button-does-not-scroll',
+      !threw && bad.length === 0,
+      `${window.innerWidth}x${window.innerHeight} threw=${threw} ${JSON.stringify(rows)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- combine intro waits for a tap ------------------------------------
+  async function combineNeedsTap() {
+    const chapter = chapters[0]
+    const si = chapter.stages.findIndex((s) => s.chapterBoss)
+    const beat = chapter.stages[si].beats[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      state.clearCheckpoint()
+      await enterStage(chapter.id, si)
+      obs.introRendered = await until('#boss-intro', 60)
+      const hidden = () => {
+        const c = document.getElementById('teach-content')
+        return !!c && c.style.display === 'none'
+      }
+      obs.teachHiddenAtStart = hidden()
+      // Well past the 1650ms auto-reveal this used to have.
+      await wait(4000)
+      obs.introStillUp = !!document.getElementById('boss-intro')
+      obs.teachStillHidden = hidden()
+      // The invite: layout's wobble class on the final form, plus the hint.
+      obs.inviteOnFinalForm = !!document.querySelector(
+        '.boss-intro-hero.combine-invite'
+      )
+      const hint = document.getElementById('boss-intro-hint')
+      obs.hintVisible =
+        !!hint && getComputedStyle(hint).visibility === 'visible'
+      // Tap three times: the double-execution guard is the only thing left
+      // between an excited 5-year-old and wireTeachButtons() running twice
+      // (which would double up the auto-played teach audio).
+      spoken = []
+      const intro = document.getElementById('boss-intro')
+      intro.click()
+      intro.click()
+      intro.click()
+      await wait(400)
+      obs.introRemoved = !document.getElementById('boss-intro')
+      obs.inviteGone = !document.querySelector('.combine-invite')
+      obs.teachRevealed = !hidden()
+      const firstItem = (beat.repeatAudio || [])[0]
+      obs.firstTeachItem = firstItem
+      await waitForSpeech((sp) => sp.includes(firstItem), 8000)
+      await wait(1200)
+      obs.timesSpoken = spoken.filter((t) => t === firstItem).length
+      // and the beat is still finishable
+      obs.continueWorks = await clickWhenEnabled('#continue-btn')
+      obs.movedOn = await until('.beat:not(.teach-beat), .options-grid', 60)
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'combine-waits-for-a-tap',
+      !threw &&
+        errors === 0 &&
+        obs.introRendered === true &&
+        obs.teachHiddenAtStart === true &&
+        obs.introStillUp === true &&
+        obs.teachStillHidden === true &&
+        obs.inviteOnFinalForm === true &&
+        obs.hintVisible === true &&
+        obs.introRemoved === true &&
+        obs.inviteGone === true &&
+        obs.teachRevealed === true &&
+        obs.timesSpoken === 1,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- reward screen: no stars, and the victory-staging hooks are there ---
+  async function rewardParts() {
+    const stage = chapters[0].stages[1]
+    const saved = stage.beats
+    stage.beats = [saved[0], saved[saved.length - 1]]
+    const words = saved[saved.length - 1].words
+    const out = document.getElementById('out')
+    const prevDisp = out.style.display
+    let threw = null
+    const obs = {}
+    try {
+      out.style.display = 'none'
+      state.clearCheckpoint()
+      await enterStage('chapter-1', 1)
+      await clickWhenEnabled('#continue-btn')
+      await until('.listen-beat')
+      for (let i = 0; i < words.length; i++) {
+        await clickWhenEnabled('#mic-btn')
+        await wait(400)
+      }
+      obs.reachedReward = await until('.reward-screen', 80)
+      obs.starRows = document.querySelectorAll('.stars-row').length
+      obs.stars = document.querySelectorAll('.star').length
+      obs.starGlyphs = (
+        document.querySelector('.reward-screen').textContent.match(/★/g) || []
+      ).length
+      const victor = document.querySelector('.reward-victor')
+      const defeated = document.querySelector('.reward-defeated')
+      obs.victors = document.querySelectorAll('.reward-victor').length
+      obs.defeateds = document.querySelectorAll('.reward-defeated').length
+      // The hooks must be on the right sprites, or layout's staging would
+      // put the villain in the winner's pose.
+      obs.victorIsHero = !!victor && victor.classList.contains('reward-hero')
+      obs.defeatedIsVillain =
+        !!defeated && defeated.classList.contains('reward-villain')
+      const de = document.documentElement
+      obs.ovfY =
+        Math.max(de.scrollHeight, document.body.scrollHeight) -
+        window.innerHeight
+      obs.ovfX =
+        Math.max(de.scrollWidth, document.body.scrollWidth) - window.innerWidth
+      // progress.stars is still written (nothing reads it yet, but the clear
+      // must keep banking one -- see the comment in renderReward).
+      obs.starsPersisted = state.progress.stars[stage.id]
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    out.style.display = prevDisp
+    stage.beats = saved
+    check(
+      'reward-has-no-stars-and-carries-victory-hooks',
+      !threw &&
+        obs.reachedReward === true &&
+        obs.starRows === 0 &&
+        obs.stars === 0 &&
+        obs.starGlyphs === 0 &&
+        obs.victors === 1 &&
+        obs.defeateds === 1 &&
+        obs.victorIsHero === true &&
+        obs.defeatedIsVillain === true &&
+        obs.ovfY <= 0 &&
+        obs.ovfX <= 0 &&
+        obs.starsPersisted === 3,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- the bolt: contract shape, self-cleanup, and off the critical path --
+  async function boltFx() {
+    const stage = chapters[0].stages[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    let injected = null
+    try {
+      const beat = await toFirstBeat('chapter-1', 0, stage, 'choose', '.options-grid')
+      const correct = beat.options.find((o) => o.correct)
+      const villain = document.getElementById('villain-sprite')
+      const vr = villain.getBoundingClientRect()
+      await pick(correct.id)
+      const confirmRect = document
+        .getElementById('confirm-btn')
+        .getBoundingClientRect()
+      // fireBolt() runs synchronously inside the confirm handler, before its
+      // first await -- so the element exists the moment the click returns.
+      document.getElementById('confirm-btn').click()
+      const bolt = document.querySelector('body > .fx-bolt')
+      obs.present = !!bolt
+      if (bolt) {
+        obs.parentIsBody = bolt.parentElement === document.body
+        obs.pointerEvents = bolt.style.pointerEvents
+        const p = (k) => bolt.style.getPropertyValue(k)
+        obs.props = {
+          x1: p('--fx-x1'), y1: p('--fx-y1'), x2: p('--fx-x2'), y2: p('--fx-y2'),
+        }
+        obs.allPx = Object.values(obs.props).every((v) => /^-?\d+px$/.test(v))
+        const n = (k) => parseFloat(p(k))
+        // Endpoint 1 = the pressed button's centre, endpoint 2 = the villain.
+        obs.startsAtButton =
+          Math.abs(n('--fx-x1') - (confirmRect.left + confirmRect.width / 2)) <= 1 &&
+          Math.abs(n('--fx-y1') - (confirmRect.top + confirmRect.height / 2)) <= 1
+        obs.endsAtVillain =
+          Math.abs(n('--fx-x2') - (vr.left + vr.width / 2)) <= 1 &&
+          Math.abs(n('--fx-y2') - (vr.top + vr.height / 2)) <= 1
+      }
+      // No --fx-bolt-ms in style.css yet (layout is writing it in parallel):
+      // the fallback has to clean up, or every correct answer leaks a node.
+      let goneAfter = null
+      for (let i = 0; i < 60; i++) {
+        if (!document.querySelector('.fx-bolt')) { goneAfter = i * 50; break }
+        await wait(50)
+      }
+      obs.removedAfterMs = goneAfter
+      obs.selfCleaned = goneAfter !== null
+      // The decoration must not gate the beat.
+      obs.beatAdvanced = await until('.readaloud-beat', 80)
+      obs.leakedNodes = document.querySelectorAll('.fx-bolt').length
+
+      // Now the other half of the contract: when layout DOES declare a
+      // duration, that is the lifetime used.
+      injected = document.createElement('style')
+      injected.textContent = '.fx-bolt{--fx-bolt-ms:150ms}'
+      document.head.appendChild(injected)
+      await clickWhenEnabled('#mic-btn')
+      const bolt2 = document.querySelector('body > .fx-bolt')
+      obs.secondBoltPresent = !!bolt2
+      let gone2 = null
+      for (let i = 0; i < 40; i++) {
+        if (!document.querySelector('.fx-bolt')) { gone2 = i * 25; break }
+        await wait(25)
+      }
+      obs.declaredDurationRespected = gone2 !== null && gone2 < 600
+      obs.removedAfterMsDeclared = gone2
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    if (injected) injected.remove()
+    check(
+      'fx-bolt-contract-and-cleanup',
+      !threw &&
+        errors === 0 &&
+        obs.present === true &&
+        obs.parentIsBody === true &&
+        obs.pointerEvents === 'none' &&
+        obs.allPx === true &&
+        obs.startsAtButton === true &&
+        obs.endsAtVillain === true &&
+        obs.selfCleaned === true &&
+        obs.beatAdvanced === true &&
+        obs.leakedNodes === 0 &&
+        obs.secondBoltPresent === true &&
+        obs.declaredDurationRespected === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- taps fire on PRESS, and the paired click does not double-fire ------
+  // The regression this guards is subtle: bind both pointerdown and click
+  // without a guard and every real touch runs the handler twice, which on a
+  // toggle (option select) looks like the button not working at all.
+  async function pointerTap() {
+    const stage = chapters[0].stages[0]
+    errors = 0
+    let threw = null
+    const obs = {}
+    try {
+      const beat = await toFirstBeat('chapter-1', 0, stage, 'choose', '.options-grid')
+      const id = beat.options[0].id
+      const btn = document.querySelector(`[data-id="${id}"]`)
+      const fire = (type) =>
+        btn.dispatchEvent(
+          new PointerEvent(type, {
+            bubbles: true,
+            pointerType: 'touch',
+            isPrimary: true,
+          })
+        )
+      const sel = () => btn.classList.contains('selected')
+      // 1. immediacy: the press alone already selects, before any release.
+      fire('pointerdown')
+      await wait(200)
+      obs.selectedByPressAlone = sel()
+      // 2. finishing that SAME touch the way a browser does -- pointerup and
+      //    then click -- must not run the handler a second time and toggle it
+      //    straight back off. A long hold is the case a pointerdown-relative
+      //    window got wrong, so hold well past PAIRED_CLICK_MS before lifting.
+      await wait(1400)
+      fire('pointerup')
+      btn.click()
+      await wait(200)
+      obs.oneActivationPerLongPress = sel()
+      // 3. a genuine SECOND touch must still get through -- swallowing repeat
+      //    taps here would hide the double-tap guards other cases rely on.
+      fire('pointerdown')
+      fire('pointerup')
+      btn.click()
+      await wait(200)
+      obs.secondTouchToggledOff = !sel()
+      // 4. and a click with no pointer events at all (both harnesses drive the
+      //    app this way, as do keyboard and assistive tech) still activates,
+      //    once the paired-click window from the touch above has lapsed.
+      await wait(900)
+      btn.click()
+      await wait(200)
+      obs.bareClickWorks = sel()
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'tap-fires-on-press-without-double-firing',
+      !threw &&
+        errors === 0 &&
+        obs.selectedByPressAlone === true &&
+        obs.oneActivationPerLongPress === true &&
+        obs.secondTouchToggledOff === true &&
+        obs.bareClickWorks === true,
+      `threw=${threw} errors=${errors} ${JSON.stringify(obs)}`
+    )
+    state.clearCheckpoint()
+  }
+
+  // --- touch target census ------------------------------------------------
+  // QA said the buttons respond badly; size is one of the two candidates
+  // (the other, event timing, is what pointerTap covers). style.css is not
+  // this agent's file, so this measures and names anything under the 88px
+  // floor rather than fixing it.
+  const TOUCH_FLOOR = 88
+
+  // .back-btn is exempt, and deliberately so: style.css says in as many words
+  // that it is "an adult navigation affordance, not learning content" and is
+  // held down on purpose (measured 190x47 / 110x47 in portrait), because at
+  // learning-content size it cost 87px off the top of every screen. A child
+  // being able to hit "exit" less easily is the intent, not a defect -- so
+  // this floor applies to the controls the CHILD is meant to hit, and the
+  // back buttons are reported as data instead.
+  const TOUCH_EXEMPT = '.back-btn'
+
+  async function touchTargets() {
+    const out = document.getElementById('out')
+    const prevDisp = out.style.display
+    out.style.display = 'none'
+    const rows = []
+    let threw = null
+    const scan = (screen) => {
+      const sel =
+        'button, [role="button"], .option-btn, .letter-tile, .stage-node, .chapter-card'
+      for (const el of document.querySelectorAll(sel)) {
+        const r = el.getBoundingClientRect()
+        if (!r.width || !r.height) continue
+        const w = Math.round(r.width)
+        const h = Math.round(r.height)
+        rows.push({
+          screen,
+          el:
+            (el.id && '#' + el.id) ||
+            '.' + (el.className || '').toString().split(/\s+/)[0],
+          w,
+          h,
+          exempt: el.matches(TOUCH_EXEMPT),
+          small: !el.matches(TOUCH_EXEMPT) && Math.min(w, h) < TOUCH_FLOOR,
+        })
+      }
+    }
+    try {
+      state.clearCheckpoint()
+      screens.renderWorldSelect()
+      await until('.chapter-card')
+      scan('world')
+      screens.renderMap('chapter-1')
+      await until('.stage-node')
+      scan('map')
+      const stage = chapters[0].stages[0]
+      await toFirstBeat('chapter-1', 0, stage, 'choose', '.options-grid')
+      scan('choose')
+      await toFirstBeat('chapter-1', 4, chapters[0].stages[4], 'drag-build', '.build-slots')
+      scan('build')
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    out.style.display = prevDisp
+    const small = rows.filter((r) => r.small)
+    const exempt = rows.filter((r) => r.exempt)
+    check(
+      'touch-targets-meet-88px-floor',
+      !threw && small.length === 0,
+      `${window.innerWidth}x${window.innerHeight} threw=${threw} ` +
+        `under=${JSON.stringify(small)} exempt=${JSON.stringify(exempt)} ` +
+        `all=${JSON.stringify(rows)}`
+    )
+    state.clearCheckpoint()
+  }
+
   const CASES = {
     worldheader: worldHeaderFit,
     tap: tapBacklog,
@@ -2119,6 +2923,16 @@
     bosseq: bossEquations,
     eqdelta: eqHeightDelta,
     bosseqshot: bossEqShot,
+    confirmgate: confirmGate,
+    confirmwrong: confirmWrong,
+    multiconfirm: multiConfirm,
+    confirmhealth: confirmHealthStages,
+    confirmfit: confirmFit,
+    combinetap: combineNeedsTap,
+    rewardparts: rewardParts,
+    boltfx: boltFx,
+    pointertap: pointerTap,
+    touchtargets: touchTargets,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)
