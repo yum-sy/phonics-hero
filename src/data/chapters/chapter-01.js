@@ -34,7 +34,7 @@ export const chapter1 = {
           kind: 'teach',
           instructionKo: '새미가 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['sssss', 'sssss', 'sssss'],
+          repeatAudio: ['sssss', 'sun', 'sssss'],
         },
         {
           id: 's1-r1',

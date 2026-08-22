@@ -47,7 +47,7 @@ export const chapter4 = {
           kind: 'teach',
           instructionKo: '로켓런이 달릴 때 나는 소리예요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['rrr', 'rrr', 'rrr'],
+          repeatAudio: ['rrr', 'rat', 'rrr'],
         },
         {
           id: 'c4s1-r1',
