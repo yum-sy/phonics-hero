@@ -151,7 +151,7 @@ export const chapter7 = {
           // 소리가 들어있는 그림 하나만 고르게 한다. 오답 둘은 어중 모음이
           // 서로도 다르고 AI 와도 다르다(bed /e/, box /o/).
           instructionKo: '이 소리가 들어있는 그림을 찾아보세요!',
-          promptAudio: 'a',
+          promptAudio: 'a, a, a',
           options: [
             { id: 'c7s1-rain', icon: 'rain', label: 'rain', correct: true },
             { id: 'c7s1-bed', icon: 'bed', label: 'bed', correct: false },
@@ -207,7 +207,7 @@ export const chapter7 = {
       recapKo: '새로운 소리를 찾았어요! Rain, aim — 모두 이 소리로 시작해요!',
       recapAudio: {
         ko: '에이아이는 이런 소리를 내요. 잘 들어보세요.',
-        en: ['a', 'rain', 'aim'],
+        en: ['a, a, a', 'rain', 'aim'],
       },
     },
 
@@ -235,7 +235,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: false,
           instructionKo: '이 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'a',
+          promptAudio: 'a, a, a',
           // 혼동 보기는 단모음 A 하나 -- 이미 배운 단모음과의 의도된 대비쌍.
           options: [
             { id: 'c7s2-AI1', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
@@ -268,7 +268,7 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 AI를 따라 그리면서 소리를 내보세요!',
-          words: [{ text: 'AI', say: 'a' }],
+          words: [{ text: 'AI', say: 'a, a, a' }],
         },
         {
           id: 'c7s2-break',
@@ -298,7 +298,7 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '이 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'a',
+          promptAudio: 'a, a, a',
           // 여기 세 번째 보기는 E(`eh`)였다. **`eh` 는 두 음성 모두에서 `a` 와
           // 바이트 단위로 동일하게 렌더된다** -- 즉 프롬프트 소리와 오답 타일이
           // 완전히 같은 소리였고, 아이가 E 를 탭하면 방금 들은 소리를 그대로
@@ -314,7 +314,7 @@ export const chapter7 = {
             { id: 'c7s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c7s2-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
           ],
-          readAloud: { targetText: 'AI', say: 'a' },
+          readAloud: { targetText: 'AI', say: 'a, a, a' },
         },
         {
           id: 'c7s2-r6-reversed',
@@ -348,13 +348,13 @@ export const chapter7 = {
           hits: 2,
           // 보스 단어 'rain' 사전 노출 (AI 로 완성, R·N 은 이미 기지).
           instructionKo: '마지막 공격! 이 소리로 크게 외쳐보세요!',
-          words: [{ text: 'AI', say: 'a' }, 'rain'],
+          words: [{ text: 'AI', say: 'a, a, a' }, 'rain'],
         },
       ],
       recapKo: 'AI는 A가 이름을 말할 때 소리를 내요 — rain, aim!',
       recapAudio: {
         ko: '에이아이는 이런 소리를 내요. 레인, 에임!',
-        en: ['a', 'rain', 'aim'],
+        en: ['a, a, a', 'rain', 'aim'],
       },
     },
 
@@ -383,7 +383,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: false,
           instructionKo: 'juh 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'juh',
+          promptAudio: 'juh, juh, juh',
           // 혼동 보기는 G 하나 -- /d3/ 와 /g/ 는 둘 다 연구개 근처 파열/
           // 파찰음이라 살짝 대비된다(측정으로 안전 확인).
           options: [
@@ -413,7 +413,7 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 J를 따라 그리면서 juh 소리를 내보세요!',
-          words: [{ text: 'J', say: 'juh' }],
+          words: [{ text: 'J', say: 'juh, juh, juh' }],
         },
         {
           id: 'c7s3-break',
@@ -443,13 +443,13 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: 'juh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'juh',
+          promptAudio: 'juh, juh, juh',
           options: [
             { id: 'c7s3-J3', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
             { id: 'c7s3-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
             { id: 'c7s3-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
           ],
-          readAloud: { targetText: 'J', say: 'juh' },
+          readAloud: { targetText: 'J', say: 'juh, juh, juh' },
         },
         {
           id: 'c7s3-r6-reversed',
@@ -480,13 +480,13 @@ export const chapter7 = {
           hits: 2,
           // 보스 단어가 아닌 보너스 단어 'jam' (J+A+M 전부 기지 글자).
           instructionKo: '마지막 공격! J 소리로 크게 외쳐보세요!',
-          words: [{ text: 'J', say: 'juh' }, 'jam'],
+          words: [{ text: 'J', say: 'juh, juh, juh' }, 'jam'],
         },
       ],
       recapKo: 'J는 juh 소리를 내요 — jam, jog! AI 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '제이는 이런 소리를 내요. 잼, 조그!',
-        en: ['juh', 'jam', 'jog'],
+        en: ['juh, juh, juh', 'jam', 'jog'],
       },
     },
 
@@ -515,7 +515,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: false,
           instructionKo: '이 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'oh',
+          promptAudio: 'oh, oh, oh',
           // 혼동 보기는 단모음 O 하나 -- 챕터5 의 단모음 O 와의 대비쌍.
           options: [
             { id: 'c7s4-OA1', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
@@ -545,7 +545,7 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 OA를 따라 그리면서 소리를 내보세요!',
-          words: [{ text: 'OA', say: 'oh' }],
+          words: [{ text: 'OA', say: 'oh, oh, oh' }],
         },
         {
           id: 'c7s4-break',
@@ -575,13 +575,13 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '이 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'oh',
+          promptAudio: 'oh, oh, oh',
           options: [
             { id: 'c7s4-OA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
             { id: 'c7s4-O3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
             { id: 'c7s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
           ],
-          readAloud: { targetText: 'OA', say: 'oh' },
+          readAloud: { targetText: 'OA', say: 'oh, oh, oh' },
         },
         {
           id: 'c7s4-r6-reversed',
@@ -615,7 +615,7 @@ export const chapter7 = {
           instructionKo: 'AI, J, OA와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
-              promptAudio: 'a',
+              promptAudio: 'a, a, a',
               options: [
                 { id: 'c7s4-qAI', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
                 { id: 'c7s4-qJ', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
@@ -623,7 +623,7 @@ export const chapter7 = {
               ],
             },
             {
-              promptAudio: 'juh',
+              promptAudio: 'juh, juh, juh',
               options: [
                 { id: 'c7s4-qJ2', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
                 { id: 'c7s4-qOA2', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
@@ -631,7 +631,7 @@ export const chapter7 = {
               ],
             },
             {
-              promptAudio: 'oh',
+              promptAudio: 'oh, oh, oh',
               options: [
                 { id: 'c7s4-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
                 { id: 'c7s4-qAI3', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
@@ -660,13 +660,13 @@ export const chapter7 = {
           hits: 1,
           // 보스 단어 'boat' 사전 노출 (OA 로 완성, B·T 는 이미 기지).
           instructionKo: '마지막 공격! 이 소리로 크게 외쳐보세요!',
-          words: [{ text: 'OA', say: 'oh' }, 'boat'],
+          words: [{ text: 'OA', say: 'oh, oh, oh' }, 'boat'],
         },
       ],
       recapKo: '이제 AI, J, OA를 모두 알아요! Ray, Jett, Cloak이 합체할 준비를 해요!',
       recapAudio: {
         ko: '오에이는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['oh', 'boat', 'coat'],
+        en: ['oh, oh, oh', 'boat', 'coat'],
       },
     },
 
@@ -686,7 +686,7 @@ export const chapter7 = {
           id: 'c7s5-teach',
           kind: 'teach',
           instructionKo: 'Ray + Jett + Cloak이 합체해요! 먼저 rain을 만들어요.',
-          repeatAudio: ['rrr', 'a', 'nnn', 'rain', 'rain'],
+          repeatAudio: ['rrr', 'a, a, a', 'nnn', 'rain', 'rain'],
         },
         {
           id: 'c7s5-r1-warmup',
@@ -711,7 +711,7 @@ export const chapter7 = {
           instructionKo: '천천히 따라 말해보세요.',
           words: [
             { text: 'R', say: 'rrr' },
-            { text: 'AI', say: 'a' },
+            { text: 'AI', say: 'a, a, a' },
             { text: 'N', say: 'nnn' },
             'rain',
           ],
@@ -721,7 +721,7 @@ export const chapter7 = {
           kind: 'break',
           instructionKo: '이번엔 boat예요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['buh', 'oh', 'tuh', 'boat'],
+          repeatAudio: ['buh, buh, buh', 'oh, oh, oh', 'tuh, tuh, tuh', 'boat'],
         },
         {
           id: 'c7s5-r3-quickfire',
@@ -731,7 +731,7 @@ export const chapter7 = {
           instructionKo: 'AI, J, OA와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
-              promptAudio: 'oh',
+              promptAudio: 'oh, oh, oh',
               options: [
                 { id: 'c7s5-qOA', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
                 { id: 'c7s5-qAI', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
@@ -739,7 +739,7 @@ export const chapter7 = {
               ],
             },
             {
-              promptAudio: 'a',
+              promptAudio: 'a, a, a',
               options: [
                 { id: 'c7s5-qAI2', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
                 { id: 'c7s5-qJ2', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
@@ -747,7 +747,7 @@ export const chapter7 = {
               ],
             },
             {
-              promptAudio: 'juh',
+              promptAudio: 'juh, juh, juh',
               options: [
                 { id: 'c7s5-qJ3', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
                 { id: 'c7s5-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
@@ -759,7 +759,7 @@ export const chapter7 = {
             // 차이가 토큰당 ~50ms(Samantha)/~70ms(Alex)로 비례 증가하므로
             // 0 수렴이 아니라 별개 음소다(20x 에서 996~1393ms).
             {
-              promptAudio: 'ough',
+              promptAudio: 'ough, ough, ough',
               options: [
                 { id: 'c7s5-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
                 { id: 'c7s5-qOA4', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },

@@ -419,7 +419,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: false,
           instructionKo: 'duh 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'duh',
+          promptAudio: 'duh, duh, duh',
           // 혼동 보기는 T 하나 -- /t/ 와 /d/ 는 무성/유성 대비로 유용하다.
           // B 는 절대 넣지 않는다 (SPEECH_COLLISION_PAIRS 참조).
           options: [
@@ -448,7 +448,7 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 D를 따라 그리면서 duh 소리를 내보세요!',
-          words: [{ text: 'D', say: 'duh' }],
+          words: [{ text: 'D', say: 'duh, duh, duh' }],
         },
         {
           id: 'c4s4-break',
@@ -482,14 +482,14 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: 'duh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'duh',
+          promptAudio: 'duh, duh, duh',
           // 혼동 보기는 P 하나 (회전 혼동). B 는 여기에도 넣지 않는다.
           options: [
             { id: 'c4s4-D3', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
             { id: 'c4s4-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
             { id: 'c4s4-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
           ],
-          readAloud: { targetText: 'D', say: 'duh' },
+          readAloud: { targetText: 'D', say: 'duh, duh, duh' },
         },
         {
           id: 'c4s4-r5b-shape',
@@ -557,7 +557,7 @@ export const chapter4 = {
               ],
             },
             {
-              promptAudio: 'duh',
+              promptAudio: 'duh, duh, duh',
               options: [
                 { id: 'c4s4-qD3', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
                 { id: 'c4s4-qR3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
@@ -573,13 +573,13 @@ export const chapter4 = {
           hits: 1,
           // 보스 단어 'red' 사전 노출 (조립은 보스에서).
           instructionKo: '마지막 공격! D 소리로 크게 외쳐보세요!',
-          words: [{ text: 'D', say: 'duh' }, 'red'],
+          words: [{ text: 'D', say: 'duh, duh, duh' }, 'red'],
         },
       ],
       recapKo: '이제 R, M, D를 모두 알아요! 로켓런, 마그넷몬, 드릴돌이가 합체할 준비를 해요!',
       recapAudio: {
         ko: '디는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
-        en: ['duh', 'dog', 'dad', 'red'],
+        en: ['duh, duh, duh', 'dog', 'dad', 'red'],
       },
     },
 
@@ -596,7 +596,7 @@ export const chapter4 = {
           id: 'c4s5-teach',
           kind: 'teach',
           instructionKo: '로켓런 + 마그넷몬 + 드릴돌이가 합체해요! 먼저 mat을 만들어요.',
-          repeatAudio: ['mmm', 'aaa', 'tuh', 'mat', 'mat'],
+          repeatAudio: ['mmm', 'aaa', 'tuh, tuh, tuh', 'mat', 'mat'],
         },
         {
           id: 'c4s5-r1-warmup',
@@ -619,7 +619,7 @@ export const chapter4 = {
           words: [
             { text: 'M', say: 'mmm' },
             { text: 'A', say: 'aaa' },
-            { text: 'T', say: 'tuh' },
+            { text: 'T', say: 'tuh, tuh, tuh' },
             'mat',
           ],
         },
@@ -628,7 +628,7 @@ export const chapter4 = {
           kind: 'break',
           instructionKo: '이번엔 red예요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['rrr', 'eh', 'duh', 'red'],
+          repeatAudio: ['rrr', 'eh, eh, eh', 'duh, duh, duh', 'red'],
         },
         {
           id: 'c4s5-r3-quickfire',
@@ -654,7 +654,7 @@ export const chapter4 = {
               ],
             },
             {
-              promptAudio: 'duh',
+              promptAudio: 'duh, duh, duh',
               options: [
                 { id: 'c4s5-qD3', icon: 'letterTile', label: 'D', say: 'duh', correct: true },
                 { id: 'c4s5-qM3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },

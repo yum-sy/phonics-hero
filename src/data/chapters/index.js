@@ -182,6 +182,61 @@ const HYPHENED_IN_TEXT = /\b([a-z])(-\1)+\b/
 // 그래서 규칙을 "여러 토큰이면 전부 같은 토큰이어야 한다" 로 정밀화한다.
 const SPEECH_TOKEN_SPLIT = /[,\s]+/
 
+// 콤마 묶음을 **그 안의 소리 하나**로 되돌린다. 한 발화의 토큰이 전부 같아야
+// 한다는 것은 위 검사가 이미 강제하므로 이 축약은 항상 잘 정의된다.
+//
+// 이게 없으면 검사가 조용히 죽는다: 아래 충돌 검사들이 `t.say === promptAudio`
+// 처럼 **원문 문자열**을 비교하는데, promptAudio 가 'tuh, tuh, tuh' 가 되는
+// 순간 'tuh' 타일과 절대 같아지지 않는다. 콤마 도입 시점에 이 앱에서 그 형태가
+// 55개 프롬프트 그룹이었다 -- 즉 실패가 아니라 **통과**로 사라진다.
+// 충돌은 표기가 아니라 소리의 속성이므로 비교는 언제나 소리로 한다.
+function soundOf(text) {
+  if (typeof text !== 'string') return text
+  const tokens = text.trim().split(SPEECH_TOKEN_SPLIT).filter(Boolean)
+  return tokens.length ? tokens[0] : text
+}
+
+// ---------- 소리 표기의 길이 계급 (say + afinfo, `-r 88` = EN_RATE 0.5) ----------
+//
+// 단일 발화가 아이 귀에 붙잡히는 하한은 ~780ms 다(기준선: `lll` 863/586,
+// `sss` 921/1178 -- Samantha/Alex ms). 그 아래로 렌더되는 표기는 rate 로도
+// 철자로도 늘릴 수 없다: rate 0.10 에서도 `tuh` 는 684ms 고, `tuhh`/`tuhhh`/
+// `ttuh` 는 `tuh` 와 **바이트 단위로 동일**하게 렌더된다(엔진이 정규화한다).
+// 유일하게 작동하는 처방이 **콤마 반복**이고, 토큰당 실효 길이가 Samantha
+// 813ms -- 정확히 가청 대역이다.
+//
+// 콤마가 필요한 13종 (단일 렌더 Samantha < 550ms AND Alex < 440ms):
+//   파열음 8종  tuh 534/328 · puh 491/362 · kuh 499/363 · buh 480/324
+//               duh 446/326 · guh 446/329 · huh 489/363 · juh 505/359
+//   짧은 모음 5종  a 399/413 · eh 399/413 · uh 419/354 · ough 474/435 · oh 419/355
+// 파열음은 물리적으로 지속 불가하고, 짧은 모음은 두 엔진이 블립으로 정규화한다.
+const COMMA_REQUIRED_SOUNDS = new Set([
+  'tuh', 'puh', 'kuh', 'buh', 'duh', 'guh', 'huh', 'juh',
+  'a', 'eh', 'uh', 'ough', 'oh',
+])
+
+// 콤마를 걸면 **역효과**인 지속음. 단일이 이미 가청 대역이고, 콤마 삼중은
+// 한 발화가 2~4초가 된다:
+//   sss 922/1179 -> 삼중 3185/4011 · aaa 841/1075 · fff 864/1307
+//   rrr 875/749 · nnn 747/610 · mmm 736/633 · lll 863/587 · iii 512/1004
+// 게다가 audio.js 의 minSpeechMs 바닥(콤마 115ms/char)을 넘겨버린다:
+// 'lll, lll, lll' 는 Samantha 2988ms vs 바닥 1495 = **1100ms 시퀀스 갭을
+// 393ms 초과**하고, 'iii, iii, iii' 는 Alex 3408ms 로 1913ms 초과다. 즉
+// 지속음 콤마는 바닥이 막으려던 바로 그 뭉개짐을 스스로 만든다.
+const SINGLE_ONLY_SOUNDS = new Set(['sss', 'sssss', 'aaa', 'iii', 'nnn', 'mmm', 'lll', 'rrr', 'fff', 'zz'])
+
+// 발화 사이트의 두 역할. **처방이 다르다.**
+//   MODEL - 아이가 모델로 듣고 따라하는 소리(자동재생 프롬프트, 읽어보기 대상,
+//           listen-repeat/finale 의 words, 리워드 recap, 보스 블렌딩 슬롯).
+//           사용자 불만("5세 아이가 듣고 따라하기엔 너무 너무 너무 빨라")이
+//           가리키는 자리가 정확히 이것이다 -> 콤마 계급을 적용한다.
+//   TAP   - 아이가 타일을 **탭했을 때** 나오는 확인 피드백(options[].say,
+//           letters[].say). 모델이 아니라 응답이고, speakTap 이 큐를 타므로
+//           탭 하나가 곧 다음 화면까지의 지연이다. 콤마 삼중을 걸면 3글자
+//           drag-build 한 번에 ~8초가 붙는다 -> 단일을 유지한다.
+const MODEL_ROLE = 'model'
+const TAP_ROLE = 'tap'
+
 // Kinds whose renderer deals its hit unconditionally; every other scored kind
 // needs a readAloud to have any damage path at all.
 const SELF_PAYING_KINDS = new Set(['choose-sequence', 'listen-repeat', 'finale'])
@@ -401,12 +456,16 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           if (checkSpeechCollisions) {
             const tileSounds = options
               .filter((o) => o.icon === 'letterTile' && o.say)
-              .map((o) => ({ id: o.id, say: o.say }))
+              // soundOf: 충돌은 표기가 아니라 **소리**의 속성이다. 콤마 묶음이
+              // 들어오면 원문 비교는 조용히 통과해버린다 -- soundOf 정의 위의
+              // 주석 참조.
+              .map((o) => ({ id: o.id, say: soundOf(o.say) }))
             const bySay = new Map()
             for (const o of options) {
               if (o.icon !== 'letterTile' || !o.say) continue
-              if (!bySay.has(o.say)) bySay.set(o.say, [])
-              bySay.get(o.say).push(o)
+              const key = soundOf(o.say)
+              if (!bySay.has(key)) bySay.set(key, [])
+              bySay.get(key).push(o)
             }
             for (const [say, sharing] of bySay) {
               if (sharing.length < 2) continue
@@ -438,14 +497,15 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             // 프롬프트 소리와 **오답** 타일이 같게 들리면 아이는 방금 들은 소리를
             // 그대로 다시 듣고 오답 처리된다 -- 타일끼리 겹치는 것과 같은 결함이다.
             if (promptAudio) {
+              const promptSound = soundOf(promptAudio)
               for (const t of tileSounds) {
                 const o = options.find((x) => x.id === t.id)
                 if (o.correct) continue
                 const same =
-                  t.say === promptAudio ||
+                  t.say === promptSound ||
                   SPEECH_COLLISION_PAIRS.some(
                     ([x, y]) =>
-                      (t.say === x && promptAudio === y) || (t.say === y && promptAudio === x)
+                      (t.say === x && promptSound === y) || (t.say === y && promptSound === x)
                   )
                 if (same) {
                   problems.push(
@@ -462,7 +522,8 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               problems.push(`${at}/${option.id}: icons.js 에 없는 아이콘 '${option.icon}'`)
             }
             displayed.push([`${at}/${option.id} label`, option.label])
-            if (option.say !== undefined) spoken.push([`${at}/${option.id} say`, option.say])
+            if (option.say !== undefined)
+              spoken.push([`${at}/${option.id} say`, option.say, TAP_ROLE])
           }
         }
 
@@ -476,7 +537,8 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               } else if (word && typeof word.text === 'string' && word.text) {
                 checkKeys(problems, `${at} words[${i}]`, word, SPOKEN_PAIR_KEYS, 'word')
                 displayed.push([`${at} words[${i}].text`, word.text])
-                if (word.say !== undefined) spoken.push([`${at} words[${i}].say`, word.say])
+                if (word.say !== undefined)
+                  spoken.push([`${at} words[${i}].say`, word.say, MODEL_ROLE])
               } else {
                 problems.push(`${at}: words[${i}] 가 문자열도 { text } 객체도 아님`)
               }
@@ -510,7 +572,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             if (l && typeof l === 'object') {
               checkKeys(problems, `${at} letters[${i}]`, l, SPOKEN_PAIR_KEYS, 'letter')
             }
-            if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say])
+            if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say, TAP_ROLE])
           }
           slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
         }
@@ -519,15 +581,16 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           checkKeys(problems, at, beat.readAloud, READ_ALOUD_KEYS, 'readAloud')
           displayed.push([`${at} readAloud.targetText`, beat.readAloud.targetText])
           if (beat.readAloud.say !== undefined)
-            spoken.push([`${at} readAloud.say`, beat.readAloud.say])
+            spoken.push([`${at} readAloud.say`, beat.readAloud.say, MODEL_ROLE])
         }
         if (beat.letter) displayed.push([`${at} letter`, beat.letter])
         if (beat.promptLetter) displayed.push([`${at} promptLetter`, beat.promptLetter])
-        if (beat.promptAudio !== undefined) spoken.push([`${at} promptAudio`, beat.promptAudio])
+        if (beat.promptAudio !== undefined)
+          spoken.push([`${at} promptAudio`, beat.promptAudio, MODEL_ROLE])
         for (const [i, step] of (beat.steps || []).entries()) {
           checkKeys(problems, `${at} steps[${i}]`, step, STEP_KEYS, 'step')
           if (step.promptAudio !== undefined)
-            spoken.push([`${at} steps[${i}].promptAudio`, step.promptAudio])
+            spoken.push([`${at} steps[${i}].promptAudio`, step.promptAudio, MODEL_ROLE])
         }
 
         // 보스 인트로(= 보스 스테이지의 첫 teach beat)는 renderNonScoredBeat 이
@@ -576,7 +639,15 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         }
 
         for (const [i, line] of (beat.repeatAudio || []).entries()) {
-          spoken.push([`${at} repeatAudio[${i}]`, line])
+          // 보스 teach/break 은 낱소리 -> 단어 **블렌딩 시연**이고 각 슬롯이
+          // 화면의 글자 등식과 1:1 이다 -- 아이가 모델로 듣는 자리(MODEL).
+          // 비보스는 한 소리 드릴이고 원소가 1100ms 갭으로 이미 또박또박
+          // 떨어지므로 콤마 계급을 강제하지 않는다(둘 다 허용).
+          spoken.push([
+            `${at} repeatAudio[${i}]`,
+            line,
+            stage.chapterBoss ? MODEL_ROLE : 'drill',
+          ])
           if (typeof line === 'string') {
             const tokens = line.trim().split(SPEECH_TOKEN_SPLIT).filter(Boolean)
             const distinct = new Set(tokens.map((t) => t.toLowerCase()))
@@ -642,6 +713,23 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               )
             } else if (HYPHENED_SPEECH.test(line)) {
               problems.push(`${where}: recapAudio.en[${i}] 가 하이픈 절단형 '${line}'`)
+            } else {
+              // recapAudio.en 은 spoken[] 을 타지 않으므로 콤마 계급을 여기서 본다.
+              // 리워드 화면에서 speakSequence 로 읽히는 **모델**이다.
+              const sound = soundOf(line)
+              const hasComma = line.includes(',')
+              if (COMMA_REQUIRED_SOUNDS.has(sound) && !hasComma) {
+                problems.push(
+                  `${where}: recapAudio.en[${i}] 의 '${sound}' 가 단일이다 -- 가청 하한 ` +
+                    `아래로 렌더된다. '${sound}, ${sound}, ${sound}' 로 써라`
+                )
+              }
+              if (SINGLE_ONLY_SOUNDS.has(sound) && hasComma) {
+                problems.push(
+                  `${where}: recapAudio.en[${i}] 가 지속음 '${sound}' 를 콤마로 묶었다 ` +
+                    `('${line}') -- 한 발화가 2~4초가 된다. 단일로 써라`
+                )
+              }
             }
           })
         }
@@ -652,6 +740,45 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           problems.push(
             `${field}: 하이픈 절단형 소리 표기 '${text}' -- 두 음성 모두에서 글자 ` +
               `이름으로 읽힌다. '<자음>uh' 형(tuh/puh/kuh/huh/duh/buh)을 써라`
+          )
+        }
+      }
+
+      // ---------- 콤마 계급 (COMMA_REQUIRED_SOUNDS / SINGLE_ONLY_SOUNDS) ----------
+      // 사용자가 실기기에서 신고한 결함 두 개가 정확히 이 계약의 부재였다:
+      // "1-7 ... SAT 이라고 하네 TTT 발음이 없어"(블렌딩 슬롯의 /t/ 가 안 들린다)
+      // 와 "반복 음성이 너무 빨라. 5세 아이가 듣고 따라하기엔 너무 너무 너무 빨라".
+      // 산문 규칙만 있던 동안 같은 소리가 사이트마다 다른 표기를 갖고 있었다
+      // (`kuh`/`guh` 는 일부 챕터에서만 콤마, `iii`/`lll` 은 콤마여선 안 되는데
+      // 콤마). 챕터 8-33 에서 다시 갈리지 않도록 표로 강제한다.
+      for (const [field, text, role] of spoken) {
+        if (typeof text !== 'string' || !text.trim()) continue
+        const sound = soundOf(text)
+        const hasComma = text.includes(',')
+        if (SINGLE_ONLY_SOUNDS.has(sound) && hasComma) {
+          problems.push(
+            `${field}: 지속음 '${sound}' 를 콤마로 묶었다 ('${text}') -- 역효과다. ` +
+              `단일이 이미 가청 대역(${sound} 단일 >=500ms)인데 콤마 삼중은 한 발화가 ` +
+              `2~4초가 되고(예: 'sss, sss, sss' = Alex 4011ms), audio.js 의 ` +
+              `minSpeechMs 바닥도 넘겨 뭉개진다. 단일로 쓰고 반복이 필요하면 ` +
+              `배열 원소를 늘려라 -- 원소 사이 1100ms 갭이 아이의 실제 따라할 시간이다`
+          )
+        }
+        if (role === MODEL_ROLE && COMMA_REQUIRED_SOUNDS.has(sound) && !hasComma) {
+          problems.push(
+            `${field}: '${sound}' 를 단일로 발화한다 -- 두 음성 모두에서 가청 하한 ` +
+              `(~780ms) 아래로 렌더되어 아이 귀에 잡히지 않는다(사용자가 실기기에서 ` +
+              `'TTT 발음이 없어' 로 신고한 결함이다). rate 도 철자도 이걸 못 고친다 ` +
+              `(rate 0.10 에서도 tuh 684ms, 'tuhh'/'ttuh' 는 'tuh' 와 바이트 동일). ` +
+              `'${sound}, ${sound}, ${sound}' 로 써라`
+          )
+        }
+        if (role === TAP_ROLE && COMMA_REQUIRED_SOUNDS.has(sound) && hasComma) {
+          problems.push(
+            `${field}: 탭 확인 피드백에 콤마 묶음 ('${text}') -- 여기는 아이가 모델로 ` +
+              `듣는 자리가 아니라 **탭에 대한 응답**이고, speakTap 이 큐를 타므로 ` +
+              `탭 하나가 곧 다음 화면까지의 지연이다(3글자 drag-build 한 번에 ~8초). ` +
+              `단일로 유지하고, 모델이 필요하면 같은 beat 의 promptAudio 를 콤마로 써라`
           )
         }
       }
