@@ -680,13 +680,16 @@ function buildEquationsHtml(stage) {
     const word = slots.join('')
     if (seen.has(word)) continue
     seen.add(word)
-    // Styled by .beat-instruction (the only existing text class a 17-char
-    // equation fits in: measured 491px of 834px in portrait, where
-    // .big-letter would need 1253px and .target-word 1185px). .beat-equation
-    // carries no rules today -- it is a hook so the design owner can give the
-    // equation its own size later without this file changing.
+    // The equation is bounded by WIDTH, not height, and how wide it is
+    // depends on the chapter: "S + A + T = SAT" is 15 glyphs, chapter 7's
+    // "R + AI + N = RAIN" is 17, and a future 4-letter boss word would be 20.
+    // A single font-size big enough for 15 makes 17 wrap. So the glyph count
+    // travels to CSS and the rule divides the column width by it -- every
+    // chapter then gets the largest size that still fits on one line, and a
+    // new chapter cannot silently regress into a wrapped equation.
+    const text = `${slots.join(' + ')} = ${word}`
     rows.push(
-      `<div class="beat-instruction beat-equation">${slots.join(
+      `<div class="beat-equation" style="--eq-len:${text.length}">${slots.join(
         ' + '
       )} = <b>${word}</b></div>`
     )
@@ -707,10 +710,24 @@ function renderNonScoredBeat(runtime, beat) {
     ? `<div class="beat-avatar">${heroArt(runtime.stage.hero)}</div>`
     : `<div class="beat-emoji">${beat.emoji || ''}</div>`
 
+  // The decorative visual and the letter sit in one row instead of stacked.
+  // Stacked, they cost the sum of their heights; a portrait teach beat needed
+  // 1165px of the 1194px available, which left the letter no room to grow at
+  // all. Side by side the row costs only the taller of the two -- measured
+  // 99px reclaimed -- and that is what pays for the bigger letter. Nothing is
+  // removed from the screen. The boss equation is excluded: it is already a
+  // full-width block and two chapters render two of them, which a row would
+  // put side by side.
+  const letterHtml = beat.letter
+    ? `<div class="big-letter">${beat.letter}</div>`
+    : ''
+  const focus = isBossIntro
+    ? visual + letterHtml
+    : `<div class="teach-focus">${visual}${letterHtml}</div>`
+
   const teachInner = `
     <div class="beat-instruction">${beat.instructionKo}</div>
-    ${visual}
-    ${beat.letter ? `<div class="big-letter">${beat.letter}</div>` : ''}
+    ${focus}
     <button class="replay-btn" id="replay-btn">🔊 Listen</button>
     <button class="primary-btn" id="continue-btn">Next ▶</button>
   `

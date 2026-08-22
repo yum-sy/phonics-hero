@@ -272,9 +272,17 @@ villainArt(villainOrName)
 - Node 가 PATH 에 없을 수 있다: `/Users/kami.san/.nvm/versions/node/v24.19.0/bin/node`
 
 ### 이미 비싸게 배운 함정 — 다시 겪지 마라
-- **`--dump-dom` 의 뷰포트는 `--window-size` 보다 87px 짧지만 `--screenshot` 은
-  정확히 window-size 다.** 그래서 측정용 창은 세로 `834,1281` / 가로 `1194,921` 이다.
-  이걸 모르고 `834,1194` 로 재면 세로 87px 을 덜 주고 측정하는 셈이다
+- **`window.innerHeight` 는 항상 `--window-size` 보다 87px 짧다** (headless Chrome
+  창 크롬). `--screenshot` 이미지는 정확히 window-size 지만, 그건 **뷰포트보다 87px
+  큰 이미지**라는 뜻이다 — 아래쪽 87px 은 실제 기기에 없는 영역이다. 측정으로 확인:
+  ```
+  window-size=834,1194  ->  innerHeight=1107   screenshot=834x1194
+  window-size=834,1281  ->  innerHeight=1194   screenshot=834x1281
+  ```
+  따라서 **측정이든 스크린샷이든 세로는 `834,1281`, 가로는 `1194,921`** 이다.
+  `834,1194` 로 찍으면 뷰포트가 1107 이 되어 아이패드보다 87px 좁게 레이아웃되고,
+  스크린샷은 아래가 잘린 것처럼 보인다. **이 문서에 "screenshot 은 window-size 라
+  괜찮다"고 적혀 있었는데 틀렸다** — 에이전트 둘이 이 문장 때문에 혼동했다
 - **HUD 의 `on=[…]` 를 항상 확인해라.** 존재하지 않는 `?shot=` 은 아무것도 렌더하지
   않으면서 `NOSCROLL gap=100%` 를 보고한다 — 통과처럼 읽힌다. `on=[none|-]` 이
   유일한 단서다. 실제로 이 때문에 "boss6 스크롤 4px" 오진 보고가 나왔다

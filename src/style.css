@@ -72,7 +72,10 @@ button {
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
-  padding: 16px 20px 20px;
+  /* Trimmed from 16/20 to 10/14: on a portrait iPad the stage screen spends
+     432px of its 1194px on chrome before any learning content, so every
+     non-text pixel here is one the letters and words do not get. */
+  padding: 10px 20px 14px;
 }
 
 /* Each screen gets its own colour field -- flat, saturated, cartoon. */
@@ -99,10 +102,13 @@ button {
   border: none;
   background: transparent;
   color: var(--accent-dark);
-  font-size: clamp(26px, 3.5vh, 44px);
+  /* Deliberately NOT scaled up with the rest of the screen: this is an adult
+     navigation affordance, not learning content, and at 44px/8px it was
+     taking 87px off the top of every screen. */
+  font-size: clamp(24px, 3vh, 36px);
   font-weight: 700;
-  padding: 8px 4px;
-  margin-bottom: 4px;
+  padding: 2px 4px;
+  margin-bottom: 0;
 }
 
 .back-btn:active {
@@ -144,6 +150,22 @@ button {
   padding: 14px 10px 12px;
 }
 
+/* Only the seven-card chapter grid: its titles run to one, two or three
+   lines, and because the art was `flex: 1 1 auto` a taller title stole the
+   art's height and pulled that card's "CHAPTER n" line up out of step with
+   its neighbours -- the same defect the stage nodes had. Pinning the art and
+   packing from the top puts every card's label and title on the same line.
+   The five-card world grid keeps the flexible art: its labels are all one
+   line so they already align, and there flex-start would just leave a void
+   at the foot of every card. */
+.chapter-grid:has(> :nth-child(6)) .chapter-card {
+  justify-content: flex-start;
+}
+
+.chapter-grid:has(> :nth-child(6)) .chapter-card-art {
+  flex: 0 0 auto;
+}
+
 .chapter-card:active:not(:disabled) {
   transform: translateY(8px);
   box-shadow: 0 0 0 var(--border);
@@ -181,14 +203,14 @@ button {
 }
 
 .chapter-card-order {
-  font-size: clamp(22px, 3.4vh, 42px);
+  font-size: clamp(24px, 4vh, 50px);
   font-weight: 700;
   color: var(--text);
   text-transform: uppercase;
 }
 
 .chapter-card-title {
-  font-size: clamp(20px, 3.2vh, 40px);
+  font-size: clamp(22px, 3.8vh, 47px);
   font-weight: 700;
   text-align: center;
   line-height: 1.12;
@@ -198,7 +220,15 @@ button {
 /* Narrower cards, so the title backs off just enough that the longest
    chapter title ("Pixel Kingdom Passage") stays within two lines. */
 .chapter-grid:has(> :nth-child(6)) .chapter-card-title {
-  font-size: clamp(18px, 2.9vh, 35px);
+  font-size: clamp(20px, 3.4vh, 42px);
+}
+
+/* "Chapter 7" wrapped to two lines in the 244px card of the seven-card grid,
+   and three rows of that pushed the screen 191px past a portrait iPad. It is
+   the least interesting text on the card -- the number is already implied by
+   position -- so it, not the chapter's name, is what gives way. */
+.chapter-grid:has(> :nth-child(6)) .chapter-card-order {
+  font-size: clamp(20px, 2.9vh, 36px);
 }
 
 /* "Chapters 22-28" on the world screen must never break: normal line
@@ -213,7 +243,7 @@ button {
 }
 
 .chapter-card-badge {
-  font-size: clamp(22px, 3vh, 38px);
+  font-size: clamp(24px, 3.5vh, 44px);
   font-weight: 700;
   color: var(--success-dark);
 }
@@ -222,27 +252,21 @@ button {
 
 .map-header {
   text-align: center;
-  font-size: clamp(30px, 4.2vh, 52px);
+  font-size: clamp(32px, 4.8vh, 58px);
   color: var(--text);
   line-height: 1.14;
   margin-bottom: 14px;
 }
 
-/* Two-column wrap rather than one tall column of five. The single column
-   only just fitted 1194px and already overflowed shorter viewports, and it
-   forced small nodes; wrapping 2+2+1 pays for much bigger tap targets and
-   spreads the rows over the full height. Same pattern the landscape layout
-   already used. */
+/* One tall column in portrait, two in landscape -- see .stage-node-wrap for
+   why the title moved beside the node rather than under it. `stretch` (not
+   flex-start) so the two cells of a landscape row get equal height and their
+   nodes therefore sit on the same line. */
 .map-path {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* flex-start, not center: the stage title under each node wraps to a
-     different number of lines per stage ("Power of I" vs "A Strange Sound"),
-     and centring made every wrap's *box* centre line up, which pushed the
-     node buttons of the taller wraps upward. Aligning to the row's top edge
-     keeps the buttons on one line however the titles break. */
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   align-content: space-evenly;
   gap: 20px 34px;
@@ -252,12 +276,28 @@ button {
   margin: 0 auto;
 }
 
+/* Title BESIDE the node, not under it, in a two-column grid whose first
+   track is a fixed width.
+   Two things come out of that. Alignment: every node is centred in an
+   identically sized track, so the small stage nodes and the wider boss node
+   all line up and every title starts at the same x -- whether the title runs
+   to one line or three. And size: under the node a title only had the 348px
+   of a half-width cell to wrap in, which capped it at 58px before the maps
+   overflowed; beside the node it has ~530px and one column instead of two,
+   which measures out at 88px. 84px is used, for margin.
+   (The old comment here argued a single column "forced small nodes". That
+   was true when the row cost node height PLUS title height. Beside the node
+   a row costs only the node's own height, so the arithmetic reverses.) */
 .stage-node-wrap {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: clamp(120px, 15.4vh, 192px) 1fr;
   align-items: center;
-  gap: 8px;
-  width: 348px;
+  gap: 22px;
+  width: 100%;
+}
+
+.stage-node-wrap .stage-node {
+  justify-self: center;
 }
 
 .stage-node {
@@ -305,29 +345,22 @@ button {
 }
 
 /* The always-three stars that used to sit here carried no information, so
-   the row was dropped and its height handed to the title instead. min-height
-   reserves two lines so a one-line title ("Power of I") and a three-line one
-   ("Boss: RAIN and BOAT!") produce rows of similar height rather than a
-   ragged path. */
+   the row was dropped and its height handed to the title. No min-height any
+   more: beside the node the title is shorter than the node in every chapter,
+   so reserving lines would only pad the row. */
 .stage-label {
-  font-size: clamp(28px, 5vh, 62px);
+  font-size: clamp(30px, 7vh, 84px);
   font-weight: 700;
-  line-height: 1.1;
-  min-height: 2.2em;
+  line-height: 1.08;
+  text-align: left;
   text-wrap: balance;
 }
 
+/* The phonics target inside "Power of I" / "Power of AI", tinted by
+   screens.js. A digraph is one sound, so both of its letters are inside the
+   one span. */
 .stage-label-target {
   color: var(--danger-dark);
-}
-
-.star {
-  font-size: 16px;
-  color: var(--hairline);
-}
-
-.star.on {
-  color: var(--warning);
 }
 
 /* ---------- Stage screen ---------- */
@@ -337,8 +370,8 @@ button {
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px;
-  padding: 14px 20px 12px;
-  margin-bottom: 14px;
+  padding: 8px 20px 8px;
+  margin-bottom: 10px;
   border-radius: 30px;
   /* Hard horizon, no soft blend: a cartoon sky over cartoon grass. */
   background: linear-gradient(
@@ -361,12 +394,47 @@ button {
   flex: 1;
 }
 
+/* Only the villain carries a nameplate, so stacking it above the sprite made
+   the villain slot 275px against the hero slot's 186px -- and the band is as
+   tall as its tallest slot, so those 89px were bought for nothing. Beside the
+   sprite the band costs only the sprite's own height, at no cost to the art
+   or to any text. (Landscape puts this back to a column: there the battle
+   scene is a narrow full-height side rail where the width, not the height, is
+   the scarce axis.) */
+.villain-slot {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  /* The hero slot reserved an equal half of the band and then used only its
+     sprite's width, so the villain group was squeezed to ~149px -- narrower
+     than "Floodlight" (250px) and narrower than the health bar, which
+     produced mid-word breaks ("Slipp / y") and a bar bleeding out through
+     the frame's left edge. Handing the slack to the villain group instead
+     gives it ~290px, which clears the longest one-word name. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hero-slot {
+  flex: 0 0 auto;
+}
+
 .nameplate {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  min-width: 230px;
+  /* min-width, not the health bar's own width: the plate is content-sized,
+     so a short name like "Slippy" made the bar narrow and a long one made it
+     wide -- the same bar changing size stage to stage. Pinning the floor to
+     the bar's natural width keeps it constant, and a longer name can still
+     push the plate wider. */
+  min-width: 210px;
+  flex: 0 1 auto;
+}
+
+.villain-slot .villain-sprite {
+  flex: 0 0 auto;
 }
 
 .nameplate-name {
@@ -374,6 +442,10 @@ button {
   line-height: 1.06;
   font-weight: 700;
   color: var(--text);
+  /* "Pixel Muncher", the longest name, wraps at its space into two lines,
+     which is still shorter than the sprite beside it and so costs no height.
+     Deliberately NOT overflow-wrap: anywhere -- that broke "Slippy" into
+     "Slipp / y" back when the box was too narrow. */
 }
 
 .villain-sprite,
@@ -412,9 +484,17 @@ button {
   padding-bottom: 56px;
 }
 
+/* Bigger than it was, at no cost: inside .teach-focus the row is as tall as
+   the letter beside it (268px in portrait), so anything up to that height is
+   free. 132px is the size the 합체 mini-bots use, comfortably clear of the
+   66px floor where this art turns to mush. */
 .beat-avatar {
-  width: clamp(60px, 7.3vh, 88px);
-  height: clamp(60px, 7.3vh, 88px);
+  width: clamp(76px, 11vh, 132px);
+  height: clamp(76px, 11vh, 132px);
+}
+
+.teach-focus .beat-emoji {
+  font-size: clamp(88px, 13vh, 156px);
 }
 
 .beat-avatar .carbot-art {
@@ -423,7 +503,11 @@ button {
 }
 
 .health-track {
-  width: 210px;
+  /* Was a flat 210px, which is wider than the nameplate it sits in and so
+     escaped through the battle frame's rounded left edge. */
+  width: 100%;
+  max-width: 210px;
+  min-width: 96px;
   height: 26px;
   border-radius: 8px;
   background: var(--surface);
@@ -519,7 +603,7 @@ button {
 }
 
 .beat-instruction {
-  font-size: clamp(32px, 5.8vh, 74px);
+  font-size: clamp(34px, 7.2vh, 86px);
   font-weight: 700;
   line-height: 1.14;
 }
@@ -528,24 +612,55 @@ button {
   font-size: clamp(70px, 10.4vh, 126px);
 }
 
+/* The decorative avatar/emoji and the letter share this row so the beat pays
+   for the taller of the two rather than their sum -- see .teach-focus in
+   screens.js. align-items: center hangs the small avatar on the letter's
+   optical centre. */
+.teach-focus {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
 .big-letter {
-  font-size: clamp(96px, 14.8vh, 182px);
+  font-size: clamp(96px, 21.4vh, 256px);
   font-weight: 800;
+  line-height: 1.05;
   color: var(--accent-dark);
 }
 
-/* Same colour and weight as .big-letter but not its size: a letter equation
-   ("S + A + T = SAT") is ~15 glyphs, and 15 glyphs at .big-letter's cap
-   would be roughly 1700px wide inside a 760px column. Sized off the
-   viewport width instead of its height for that reason. */
-.big-letter.equation {
-  font-size: clamp(34px, 6.2vw, 56px);
+/* The boss "S + A + T = SAT" equation. Bounded by WIDTH, not height, which
+   is why it cannot use .big-letter: at that rule's cap the 17-glyph
+   chapter-7 equation measures 1253px inside a 760px column.
+   `--eq-len` (the glyph count) comes from screens.js, and the numerator was
+   found by sweep, not by arithmetic: a per-glyph width fitted from one
+   chapter predicted 1416 and still wrapped chapters 4 and 5, because
+   "D + O + G" is wider than "C + A + T" at the same length. Sweeping the
+   numerator over all seven chapters x both orientations, 1340 is the largest
+   value at which every equation renders as a single line (checked by
+   measuring the element's height against its font-size); 1280 is used, for
+   margin against a future chapter's glyph mix.
+   The binding column is LANDSCAPE at 679px, not portrait's 760: landscape
+   looks like the roomy orientation, but the battle scene takes a 220px rail
+   out of it. The vw term only binds on viewports narrower than an iPad; the
+   104px cap only binds for equations of 12 glyphs or fewer. */
+.beat-equation {
+  font-size: min(104px, calc(1280px / var(--eq-len, 15)), 12vw);
+  font-weight: 800;
+  color: var(--accent-dark);
+  line-height: 1.0;
   letter-spacing: 1px;
-  white-space: nowrap;
+}
+
+.beat-equation b {
+  color: var(--danger-dark);
 }
 
 .target-word {
-  font-size: clamp(80px, 13.6vh, 166px);
+  font-size: clamp(84px, 17vh, 203px);
   font-weight: 800;
   color: var(--accent-dark);
   letter-spacing: 2px;
@@ -559,7 +674,7 @@ button {
   border: 5px solid var(--border);
   background: var(--surface);
   box-shadow: 0 8px 0 var(--border);
-  font-size: clamp(32px, 4.5vh, 56px);
+  font-size: clamp(34px, 5.2vh, 62px);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -577,7 +692,7 @@ button {
   border: 5px solid var(--border);
   background: var(--accent);
   color: #fff;
-  font-size: clamp(34px, 5.1vh, 62px);
+  font-size: clamp(36px, 5.6vh, 67px);
   font-weight: 700;
   box-shadow: 0 8px 0 var(--border);
 }
@@ -647,8 +762,8 @@ button {
 }
 
 .beat-feedback {
-  min-height: 34px;
-  font-size: clamp(28px, 3.8vh, 47px);
+  min-height: 30px;
+  font-size: clamp(30px, 4.4vh, 53px);
   color: var(--danger);
   font-weight: 600;
 }
@@ -728,7 +843,7 @@ button {
 }
 
 .option-label {
-  font-size: clamp(30px, 4.6vh, 57px);
+  font-size: clamp(32px, 5.6vh, 67px);
   font-weight: 700;
   color: var(--text);
 }
@@ -739,14 +854,14 @@ button {
 }
 
 .build-slot {
-  width: clamp(84px, 9.4vh, 112px);
-  height: clamp(96px, 11vh, 132px);
+  width: clamp(92px, 11vh, 132px);
+  height: clamp(104px, 13vh, 156px);
   border: 5px dashed var(--border);
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(56px, 7.8vh, 96px);
+  font-size: clamp(62px, 9.4vh, 112px);
   font-weight: 800;
   color: var(--accent-dark);
   background: var(--surface);
@@ -760,12 +875,12 @@ button {
 }
 
 .letter-tile {
-  width: clamp(88px, 10.4vh, 124px);
-  height: clamp(88px, 10.4vh, 124px);
+  width: clamp(92px, 12.4vh, 150px);
+  height: clamp(92px, 12.4vh, 150px);
   border-radius: 26px;
   border: 5px solid var(--border);
   background: var(--warning);
-  font-size: clamp(54px, 7.6vh, 94px);
+  font-size: clamp(58px, 9.2vh, 110px);
   font-weight: 800;
   color: var(--accent-dark);
   box-shadow: 0 8px 0 var(--border);
@@ -850,7 +965,7 @@ button {
 
 .listen-beat.finale .target-word {
   color: var(--danger);
-  font-size: clamp(88px, 14.5vh, 178px);
+  font-size: clamp(92px, 18vh, 215px);
 }
 
 /* ---------- Reward screen ---------- */
@@ -863,7 +978,10 @@ button {
 }
 
 .reward-title {
-  font-size: 94px;
+  /* 100, not 112: the title is "${stage.title} Clear!" and wraps to two
+     lines, so each 12px costs 28px of the reward screen -- the app's
+     second-tightest portrait layout. */
+  font-size: 100px;
   font-weight: 800;
   color: var(--success-dark);
 }
@@ -873,7 +991,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .reward-hero,
@@ -894,7 +1012,7 @@ button {
 }
 
 .reward-line {
-  font-size: 70px;
+  font-size: 84px;
   font-weight: 700;
 }
 
@@ -913,9 +1031,12 @@ button {
 }
 
 .recap-line {
-  font-size: 50px;
+  font-size: 60px;
   color: var(--text);
-  max-width: 560px;
+  /* Widened from 560px: the recap is the longest Korean sentence in the app
+     and at 560px it ran to four lines (216px). The extra width takes it to
+     three at exactly the same font size -- 54px reclaimed for nothing. */
+  max-width: 700px;
   margin: 0;
 }
 
@@ -937,9 +1058,9 @@ button {
 
   /* Map: lay stage nodes out in a wrapping row instead of one tall
      column so all of them are visible without scrolling. */
-  /* Capped width so five nodes wrap 3+2 instead of sitting in one short
-     row that leaves ~30% of the height empty; space-evenly then spreads
-     the two rows over the full column. */
+  /* Two node+title cells per row here (portrait uses one), so five stages
+     wrap 2+2+1 over three rows -- which fits the short landscape column
+     with room to spare. */
   .map-path {
     flex-direction: row;
     flex-wrap: wrap;
@@ -963,20 +1084,21 @@ button {
   }
 
   .map-header {
-    font-size: 42px;
+    font-size: 48px;
     margin-bottom: 8px;
   }
 
   .stage-node-wrap {
-    width: 318px;
+    width: 496px;
+    gap: 18px;
   }
 
   .stage-label {
-    font-size: 48px;
+    font-size: 64px;
   }
 
   .back-btn {
-    font-size: 38px;
+    font-size: 30px;
   }
 
   /* Chapter select: let the grid use the extra width instead of staying
@@ -1000,11 +1122,15 @@ button {
     gap: 20px;
   }
 
+  /* space-evenly, not center: the rail is a full-height 220px column but its
+     contents only came to ~396px of 834, so the bottom half was bare grass.
+     The gap metric cannot see this -- the rail's own background spans the
+     whole height, so it reads as painted content. */
   .battle-scene {
-    flex: 0 0 220px;
+    flex: 0 0 244px;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-bottom: 0;
     padding: 14px 10px;
     gap: 14px;
@@ -1015,15 +1141,27 @@ button {
     flex: none;
   }
 
+  /* Back to a stack: the landscape battle scene is a 220px-wide full-height
+     rail, so here width is the scarce axis and height is free. */
+  .villain-slot {
+    flex-direction: column;
+  }
+
+  .nameplate {
+    flex: none;
+  }
+
   .vs-mark {
     padding-bottom: 0;
     font-size: 18px;
   }
 
+  /* Grown with the rail's spare height. The rail is the shorter of the two
+     landscape columns, so this is free until it passes the beat column. */
   .villain-sprite,
   .hero-sprite {
-    width: 132px;
-    height: 132px;
+    width: 186px;
+    height: 186px;
   }
 
   .nameplate {
@@ -1031,7 +1169,7 @@ button {
   }
 
   .nameplate-name {
-    font-size: 37px;
+    font-size: 42px;
   }
 
   .health-track {
@@ -1049,7 +1187,7 @@ button {
   }
 
   .beat-instruction {
-    font-size: 54px;
+    font-size: 66px;
   }
 
   .beat-avatar {
@@ -1062,15 +1200,15 @@ button {
   }
 
   .big-letter {
-    font-size: 138px;
+    font-size: 186px;
   }
 
   .target-word {
-    font-size: 106px;
+    font-size: 134px;
   }
 
   .listen-beat.finale .target-word {
-    font-size: 116px;
+    font-size: 146px;
   }
 
   /* 88px is the tap-target floor for a 5-year-old; the old 64px was under it. */
@@ -1079,17 +1217,17 @@ button {
   .mic-btn {
     height: 96px;
     min-width: 230px;
-    font-size: 42px;
+    font-size: 50px;
   }
 
   .secondary-btn {
     height: 78px;
-    font-size: 36px;
+    font-size: 42px;
   }
 
   .beat-feedback {
-    font-size: 36px;
-    min-height: 28px;
+    font-size: 44px;
+    min-height: 26px;
   }
 
   .options-grid {
@@ -1109,7 +1247,7 @@ button {
   }
 
   .option-label {
-    font-size: 42px;
+    font-size: 50px;
   }
 
   .option-emoji svg.word-icon-art {
@@ -1118,15 +1256,15 @@ button {
   }
 
   .build-slot {
-    width: 88px;
-    height: 102px;
-    font-size: 62px;
+    width: 104px;
+    height: 120px;
+    font-size: 76px;
   }
 
   .letter-tile {
-    width: 98px;
-    height: 98px;
-    font-size: 62px;
+    width: 112px;
+    height: 112px;
+    font-size: 76px;
   }
 
   /* Reward screen also benefits from tighter vertical rhythm. */
@@ -1141,20 +1279,20 @@ button {
   }
 
   .reward-title {
-    font-size: 54px;
+    font-size: 66px;
   }
 
   .reward-line {
-    font-size: 41px;
+    font-size: 50px;
   }
 
   .recap-line {
-    font-size: 36px;
+    font-size: 44px;
     margin: 0;
   }
 
   .chapter-card-order {
-    font-size: 30px;
+    font-size: 36px;
   }
 
   .chapter-card-title {
@@ -1162,11 +1300,11 @@ button {
        the available card width is smaller here despite the wider viewport --
        it needs a smaller size than portrait's 40px cap to keep
        "Chapters 22-28" on one line. */
-    font-size: 30px;
+    font-size: 36px;
   }
 
   .chapter-grid:has(> :nth-child(6)) .chapter-card-title {
-    font-size: 28px;
+    font-size: 33px;
   }
 }
 
@@ -1222,13 +1360,13 @@ button {
 /* Read-aloud confirmation: a distinctly bigger word than the plain
    .target-word default, to sell "say it loud" as its own moment. */
 .readaloud-beat .target-word-wrap .target-word {
-  font-size: clamp(88px, 14.3vh, 174px);
+  font-size: clamp(92px, 17.6vh, 210px);
 }
 
 /* Finale "big attack": the loudest, most dramatic version -- bigger word,
    a warm glow, a bigger/faster-pulsing burst tinted danger-red. */
 .listen-beat.finale .target-word-wrap .target-word {
-  font-size: clamp(94px, 15.6vh, 190px);
+  font-size: clamp(98px, 18.8vh, 224px);
   text-shadow: 0 0 22px rgba(209, 51, 47, 0.4);
 }
 
@@ -1254,11 +1392,11 @@ button {
   }
 
   .readaloud-beat .target-word-wrap .target-word {
-    font-size: 106px;
+    font-size: 134px;
   }
 
   .listen-beat.finale .target-word-wrap .target-word {
-    font-size: 122px;
+    font-size: 154px;
   }
 }
 
@@ -1437,11 +1575,14 @@ button {
 /* teach-content sits hidden (display:none inline style) until JS reveals
    it after the intro plays out. No separate animation needed — the dramatic
    intro exit is the transition. */
+/* gap is a floor here, not the actual spacing -- space-evenly hands out
+   whatever slack is left. So a 20px floor bought nothing on roomy beats and
+   cost 4 x 8px on the boss beat, which is the tallest one in the app. */
 .teach-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   width: 100%;
   flex: 1;
   justify-content: space-evenly;
