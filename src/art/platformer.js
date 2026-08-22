@@ -782,6 +782,25 @@ function heroHead(cx, capTop, faceTop, faceW, faceH, capHalf, bodyColor, accent,
 // bright plate keeps its edge on any denim.
 function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
   const r = Math.min(w, h) * 0.26
+  // A NON-LETTER LABEL NEEDS ITS OWN SIZE STEP. A capital inks 0.72 of its em
+  // box; the boss's ★ inks 0.93. One `size` for both is why Captain Gum's star
+  // measured 20.6 units tall inside a plate whose clear interior is 16.8 (21
+  // minus the 3.2 outline) -- it overflowed onto its own dark outline by ~1.9
+  // units a side, invisible only because both are dark. The three letters at
+  // the same nominal 24 ink 17.3-18.2 and do fit. Scaling by 0.72/0.93 makes
+  // the call sites comparable again: every hero here asks for 24 and the letter
+  // and the star come out the same INKED height.
+  // Deliberately NOT fixed by growing the plate: the plate already fills the
+  // bib to 0.5 units top and bottom, so a bigger plate means a bigger bib,
+  // and v6 spent the whole torso budget getting the legs to a human ratio.
+  // The label being traded down is a star, not a phonics letter.
+  // The star also sits HIGHER in its em box than a capital does: measured, its
+  // ink centre is 0.75 units above where the 0.36 baseline factor puts a
+  // letter's, so the star needs its own baseline too or it overflows the top
+  // while leaving slack at the bottom.
+  const lettery = /^[A-Za-z0-9]+$/.test(String(label))
+  const size2 = lettery ? size : size * 0.75
+  const base = lettery ? 0.36 : 0.4
   return [
     R(x, y, w, h, r, plateColor, ink(3.2)),
     R(x + 3, y + 3, w - 6, h * 0.26, r * 0.5, '#fff', { opacity: 0.5, nohalo: true }),
@@ -789,7 +808,7 @@ function emblemPlate(x, y, w, h, plateColor, textColor, label, size) {
     C(x + w - 5.5, y + 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
     C(x + 5.5, y + h - 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
     C(x + w - 5.5, y + h - 5.5, 1.7, LINE, { opacity: 0.4, nohalo: true }),
-    TEXT(x + w / 2, y + h / 2 + size * 0.36, size, textColor, label),
+    TEXT(x + w / 2, y + h / 2 + size2 * base, size2, textColor, label),
   ]
 }
 
@@ -1131,6 +1150,21 @@ export function platPowerup({
   panelColor = '#fff6df',
   accent = '#f0b429',
   visorColor = '#ffe066',
+  // The star used to be inked in `bodyColor` straight onto the cream plate,
+  // which measured 3.08:1 -- the worst emblem in the app, and a full point
+  // below the next worst. The cause was not the plate and not the size: this
+  // figure already carries the second-largest glyph in the app (21.6 units
+  // inked, 17 px at a 96 px card). It was that a MID-TONE cannot be rescued by
+  // a background. #e05a9e against pure white is 2.9:1; against the brightest
+  // conceivable plate it still cannot pass 3.1. So the ink moves and the plate
+  // does not -- which is also why this fix costs the costume nothing: the plate
+  // stays 34x20 at the same anchor, and the two-tone dungarees, the buttons and
+  // the topstitch that v6 fought for are untouched.
+  //
+  // The three non-boss heroes ink their letter with `accent`; this one cannot,
+  // because Captain Gum's accent is gold. A deepened plum is the same hue as
+  // its body, pushed dark: 11.0:1.
+  inkColor = '#5c1a3d',
 } = {}) {
   const star = (cx, cy, r, fill, extra) => {
     const pts = []
@@ -1238,7 +1272,7 @@ export function platPowerup({
     plankPanel(82),
     bigButton(26, 84.5, 8),
     mirror(bigButton(26, 84.5, 8)),
-    emblemPlate(43, 74.5, 34, 20, panelColor, bodyColor, '★', 24),
+    emblemPlate(43, 74.5, 34, 20, panelColor, inkColor, '★', 24),
 
     heroArm(armL, bodyColor, bodyColor, 10.5),
     mirror(heroArm(armL, bodyColor, bodyColor, 10.5)),

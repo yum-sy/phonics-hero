@@ -71,6 +71,70 @@ function svgWrap(inner, viewBox = '0 0 120 120') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="carbot-art">${inner}</svg>`
 }
 
+const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+
+// ---------------------------------------------------------------------------
+// EMBLEM NAMEPLATE (superhero family)
+//
+// The four heroes below used to carry four INLINE copies of `<circle r=9..13>`
+// plus `<text>`, and that is exactly how this family's type sizes drifted to
+// 10 / 12 / 12 / 14 while every other family sits at 18-26. Measured inked
+// glyph height at a 96 px chapter card was 6-9 px here against 12-15 px
+// everywhere else: a child was reading chapter 2's I/P/N at half the size of
+// chapter 1's S/A/T, and chapter 2 is the second chapter it ever sees. The
+// geometry now lives in one function and each hero only picks an anchor box
+// and its own two colours.
+//
+// WIDE BORDERED PLATE, not a badge -- the shape the leader's A/B settled on.
+// A circle is also the wrong container for a two-glyph label, and that is not
+// hypothetical: chapter 9 is this family's next slot and it teaches digraphs,
+// and the old circles already overflowed on OA (Inky and Nord had 0.5 units of
+// margin left, Captain Pin -1.0).
+//
+// ASPECT 0.68, DERIVED, not copied from the DC family's 0.60. These chests are
+// narrower than that family's, and on a width-limited chest a squarer plate
+// buys a taller SINGLE glyph for free: the two-glyph case is limited by width,
+// never by height, so lowering the plate's height would cost the single-letter
+// case without buying the digraph case anything. Both limits are applied:
+//   by height -- 1.06h for one letter, 0.94h for two, 0.82h for a non-letter
+//     (a star inks 0.93 of its em box where a capital inks 0.72, so one rule
+//      for both crams the star to the plate edge; the DC family hit this too)
+//   by width  -- worst-case advance measured off the rendered families: 0.85
+//     of the font size for one capital (M), 1.45 for two (OA)
+// Whichever limit is tighter wins, so a narrow chest yields a smaller letter
+// instead of an overflowing one.
+const SH_PLATE = '#f7f3e6'
+const SH_ASPECT = 0.68
+
+function superheroPlate(
+  cx,
+  cy,
+  w,
+  label,
+  borderColor,
+  inkColor,
+  border = 2.2,
+  keylineColor = null
+) {
+  const text = String(label)
+  const h = w * SH_ASPECT
+  const lettery = /^[A-Za-z0-9]+$/.test(text)
+  const byHeight = text.length > 1 ? h * 0.94 : lettery ? h * 1.06 : h * 0.82
+  const byWidth = (w - 4) / (text.length > 1 ? 1.45 : 0.85)
+  const size = Math.min(byHeight, byWidth)
+  const rx = w * 0.12
+  const box = (inset, fill, r) =>
+    `<rect x="${(cx - w / 2 - inset).toFixed(1)}" y="${(cy - h / 2 - inset).toFixed(1)}" ` +
+    `width="${(w + inset * 2).toFixed(1)}" height="${(h + inset * 2).toFixed(1)}" ` +
+    `rx="${r.toFixed(1)}" fill="${fill}"/>`
+  return `
+      ${box(border, borderColor, rx + border)}
+      ${keylineColor ? box(border * 0.62, keylineColor, rx + border * 0.62) : ''}
+      ${box(0, SH_PLATE, rx)}
+      <text x="${cx}" y="${(cy + size * 0.355).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+        font-size="${size.toFixed(1)}" font-weight="800" fill="${inkColor}">${text}</text>`
+}
+
 // A rounder, chibi-caped "superhero" hero: big round head and torso instead
 // of the transforming-robot's angular shoulder blocks, a flowing cape, a
 // domino mask, and a chest emblem badge. An original silhouette that only
@@ -81,6 +145,12 @@ export function heroSuperhero({
   accent = '#f4c95d',
   capeColor = '#d1332f',
   maskColor = '#1c1c1c',
+  // The letter ink is a DEEPENED TONE OF THE CHARACTER'S OWN HUE, never black
+  // and never the mid-tone body colour. Measured: `bodyColor` #3a63c7 on the
+  // cream plate is 4.77:1, and a mid-tone simply cannot be fixed by any plate
+  // -- the brightest possible background only takes it to 5.0:1. Deepening the
+  // same blue reaches 11:1 and still reads as this character's blue.
+  inkColor = '#16255c',
   emblem = '★',
 } = {}) {
   return svgWrap(
@@ -94,8 +164,12 @@ export function heroSuperhero({
       <rect x="60" y="120" width="20" height="12" rx="6" fill="${capeColor}"/>
       <rect x="34" y="52" width="52" height="56" rx="26" fill="${bodyColor}"/>
       <rect x="34" y="92" width="52" height="10" rx="5" fill="${accent}"/>
-      <circle cx="60" cy="74" r="13" fill="#fff"/>
-      <text x="60" y="79" text-anchor="middle" font-size="15" font-weight="800" fill="${bodyColor}">${emblem}</text>
+      ${/* The torso is a capsule (rx=26 on a 52x56 rect), so it is only wide
+            enough for a 38-unit outer plate between y=60.5 and y=99.5 -- above
+            that the top arc cuts in and the plate would poke outside the body,
+            which changes the hard cut-out silhouette. cy=76 centres it in that
+            window and still clears the belt at y=92. */ ''}
+      ${superheroPlate(60, 76, 34, emblem, capeColor, inkColor)}
       <circle cx="28" cy="68" r="12" fill="${bodyColor}"/>
       <circle cx="92" cy="68" r="12" fill="${bodyColor}"/>
       <rect x="20" y="76" width="16" height="10" rx="5" fill="${accent}"/>
@@ -129,6 +203,10 @@ export function heroAcrobat({
   // Web line-work needs its own colour: it has to stay legible on both the
   // suit and the white mask lenses, so it can't reuse any of the above.
   webColor = '#0f2350',
+  // Deep navy: Inky's own accent hue pushed dark. The red `bodyColor` used to
+  // ink this letter and red tops out at 4.35:1 on cream no matter what -- a
+  // mid-tone red cannot be rescued by the plate.
+  inkColor = '#1a3372',
   emblem = 'I',
 } = {}) {
   return svgWrap(
@@ -141,21 +219,27 @@ export function heroAcrobat({
       <rect x="61" y="121" width="21" height="11" rx="5" fill="${accent}"/>
       <polygon points="42,56 51,63 38,94 28,89" fill="${bodyColor}"/>
       <circle cx="32" cy="93" r="7" fill="${accent}"/>
-      <polygon points="48,58 72,58 68,98 52,98" fill="${bodyColor}"/>
+      ${/* Chest widened 24 -> 34 units at the shoulder and the taper cut from
+            4 to 3, purely to earn the nameplate honestly: the old 24-unit
+            chest could not hold a plate at all, which is why this hero's
+            letter was 8.6 units tall against chapter 1's 15.8. Still the
+            slimmest torso of the four (thunder 34 tapering to 30, shield 38,
+            armour 56), and the webs and no-cape are what carry "acrobat"
+            anyway, not the chest width. */ ''}
+      <polygon points="43,58 77,58 74,98 46,98" fill="${bodyColor}"/>
       <g stroke="${webColor}" stroke-width="1.5" fill="none" opacity="0.8">
-        <line x1="60" y1="58" x2="60" y2="90"/>
-        <line x1="50" y1="66" x2="70" y2="66"/>
-        <line x1="51" y1="78" x2="69" y2="78"/>
-        <line x1="49" y1="60" x2="69" y2="88"/>
-        <line x1="71" y1="60" x2="51" y2="88"/>
+        <line x1="60" y1="58" x2="60" y2="92"/>
+        <line x1="47" y1="64" x2="73" y2="64"/>
+        <line x1="49" y1="84" x2="71" y2="84"/>
+        <line x1="45" y1="60" x2="73" y2="90"/>
+        <line x1="75" y1="60" x2="47" y2="90"/>
       </g>
-      <circle cx="60" cy="80" r="9" fill="#fff"/>
-      <text x="60" y="85" text-anchor="middle" font-size="12" font-weight="800" fill="${bodyColor}">${emblem}</text>
-      <rect x="51" y="90" width="18" height="6" fill="${accent}"/>
+      ${superheroPlate(60, 70, 25, emblem, bodyColor, inkColor, 2.0)}
+      <rect x="48" y="90" width="24" height="6" fill="${accent}"/>
       <path d="M106 61 L118 50" stroke="#f5f2ea" stroke-width="2.5" fill="none"/>
       <path d="M108 58 L116 56 M110 64 L118 63" stroke="#f5f2ea" stroke-width="1.8" fill="none"/>
-      <circle cx="47" cy="61" r="8" fill="${bodyColor}"/>
-      <circle cx="73" cy="61" r="8" fill="${bodyColor}"/>
+      <circle cx="45" cy="61" r="8.5" fill="${bodyColor}"/>
+      <circle cx="75" cy="61" r="8.5" fill="${bodyColor}"/>
       <rect x="76" y="56" width="32" height="11" rx="5" fill="${bodyColor}"/>
       <circle cx="106" cy="61" r="8" fill="${accent}"/>
       <circle cx="60" cy="32" r="19" fill="${maskColor}"/>
@@ -185,6 +269,10 @@ export function heroShield({
   accent = '#f5f2ea',
   capeColor = '#c0272d',
   maskColor = '#2c2c2a',
+  // Deep navy: Pip's own blue pushed dark. The letter used to be WHITE on the
+  // mid-blue shield boss, which measures 5.54:1 -- and white on that blue
+  // cannot pass 5.5 whatever else changes, because the pair is fixed.
+  inkColor = '#1a2f63',
   emblem = 'P',
 } = {}) {
   return svgWrap(
@@ -218,8 +306,14 @@ export function heroShield({
       <circle cx="74" cy="32" r="3" fill="#fff"/>
       <circle cx="34" cy="76" r="25" fill="${capeColor}"/>
       <circle cx="34" cy="76" r="18" fill="#f5f2ea"/>
-      <circle cx="34" cy="76" r="11" fill="${bodyColor}"/>
-      <text x="34" y="81" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${emblem}</text>
+      ${/* The nameplate rides the shield instead of the chest, because the
+            chest is the one place it cannot go on THIS hero: the shield is
+            drawn last and largest and covers the torso's left half. A
+            34.4x24.8 outer plate has a 21.2-unit half-diagonal, inside the
+            rim's r=25, so the shield's own outline -- the whole read at 96 px
+            -- is untouched. The old r=11 boss disc is gone: it was the small
+            container that held the letter to 10.1 units. */ ''}
+      ${superheroPlate(34, 76, 30, emblem, bodyColor, inkColor)}
     </g>
   `,
     '0 0 120 140'
@@ -234,6 +328,11 @@ export function heroThunder({
   accent = '#eafcff',
   capeColor = '#14513c',
   maskColor = '#b8b8b8',
+  // Deep slate: Nord's own body hue pushed dark. Its palette's mid slate
+  // already measured 9.48:1 against white, but the art function's own default
+  // green would have been 3.49:1 -- an emblem colour that only passes when a
+  // palette happens to override the body is not a rule, it is luck.
+  inkColor = '#1e2430',
   emblem = 'N',
 } = {}) {
   return svgWrap(
@@ -246,14 +345,16 @@ export function heroThunder({
       <rect x="62" y="96" width="14" height="26" rx="3" fill="${bodyColor}"/>
       <rect x="44" y="118" width="21" height="13" rx="4" fill="${maskColor}"/>
       <rect x="59" y="118" width="21" height="13" rx="4" fill="${maskColor}"/>
-      <polygon points="44,58 78,58 74,100 48,100" fill="${bodyColor}"/>
-      <circle cx="52" cy="67" r="4.5" fill="${maskColor}"/>
-      <circle cx="70" cy="67" r="4.5" fill="${maskColor}"/>
-      <circle cx="53" cy="82" r="4.5" fill="${maskColor}"/>
-      <circle cx="69" cy="82" r="4.5" fill="${maskColor}"/>
+      ${/* Taper cut from 4 to 3 units per side so the plate's outer box clears
+            the torso edge at its lowest row (measured 44.6 / 76.2 there). */ ''}
+      <polygon points="44,58 78,58 75,100 45,100" fill="${bodyColor}"/>
+      ${superheroPlate(60, 72, 25, emblem, capeColor, inkColor, 2.0)}
+      ${/* Four armour discs used to sit exactly where the plate now is. Two
+            survive, below it: the winged helm and the hammer are what carry
+            this hero, and the letter outranks a rivet. */ ''}
+      <circle cx="50" cy="86" r="4.2" fill="${maskColor}"/>
+      <circle cx="70" cy="86" r="4.2" fill="${maskColor}"/>
       <rect x="47" y="90" width="28" height="7" fill="${accent}"/>
-      <circle cx="61" cy="74" r="9" fill="#fff"/>
-      <text x="61" y="79" text-anchor="middle" font-size="12" font-weight="800" fill="${bodyColor}">${emblem}</text>
       <rect x="32" y="66" width="13" height="28" rx="6" fill="${bodyColor}"/>
       <circle cx="38" cy="96" r="7" fill="${maskColor}"/>
       <circle cx="46" cy="62" r="9" fill="${bodyColor}"/>
@@ -289,6 +390,10 @@ export function heroPoweredArmor({
   visorColor = '#5dd6e0',
   capeColor = '#d1332f',
   maskColor = '#2c2c2a',
+  // Deep indigo by default; Captain Pin's palette overrides it with its own
+  // deep crimson. The old star was inked in `bodyColor` at font-size 10 -- the
+  // smallest type in the whole app on the biggest figure in the chapter.
+  inkColor = '#241d5c',
   emblem = '★',
 } = {}) {
   return svgWrap(
@@ -307,20 +412,30 @@ export function heroPoweredArmor({
       <rect x="37" y="112" width="23" height="13" rx="4" fill="${panelColor}"/>
       <rect x="60" y="112" width="23" height="13" rx="4" fill="${panelColor}"/>
       <polygon points="32,52 88,52 82,100 38,100" fill="${bodyColor}"/>
-      <polygon points="35,55 50,55 48,74 37,70" fill="${panelColor}"/>
-      <polygon points="85,55 70,55 72,74 83,70" fill="${panelColor}"/>
+      ${/* The two chest facets were 15-unit wedges across the middle of the
+            chest, i.e. exactly under the plate. They are now narrow lit edges
+            OUTBOARD of it, so the armour still reads as panelled and nothing
+            is merely hidden behind the plate. */ ''}
+      <polygon points="33,55 39,55 38,84 35,81" fill="${panelColor}"/>
+      <polygon points="87,55 81,55 82,84 85,81" fill="${panelColor}"/>
       <rect x="40" y="86" width="40" height="5" fill="${panelColor}"/>
       <rect x="41" y="93" width="38" height="5" fill="${panelColor}"/>
-      <circle cx="60" cy="70" r="14" fill="${accent}"/>
-      <circle cx="60" cy="70" r="10" fill="${visorColor}"/>
-      <circle cx="60" cy="70" r="6" fill="#fff"/>
-      <text x="60" y="74" text-anchor="middle" font-size="10" font-weight="800" fill="${bodyColor}">${emblem}</text>
+      ${/* The chest reactor becomes the plate's frame rather than a separate
+            ornament: gold border, a thin energy keyline in the visor colour,
+            cream field. The two hand thrusters already carry that glow twice
+            over, so nothing about "powered armour" is lost. */ ''}
+      ${superheroPlate(60, 70, 36, emblem, accent, inkColor, 2.6, visorColor)}
       <rect x="18" y="40" width="9" height="9" rx="2" fill="${maskColor}"/>
       <rect x="93" y="40" width="9" height="9" rx="2" fill="${maskColor}"/>
       <rect x="12" y="46" width="28" height="24" rx="8" fill="${panelColor}"/>
       <rect x="80" y="46" width="28" height="24" rx="8" fill="${panelColor}"/>
       <rect x="12" y="57" width="28" height="3" fill="${bodyColor}"/>
       <rect x="80" y="57" width="28" height="3" fill="${bodyColor}"/>
+      ${/* Two core lights, added back because the nameplate replaced the chest
+            reactor and with it the figure's only large patch of the visor
+            glow. Regression found by rendering, not by measuring. */ ''}
+      <circle cx="26" cy="58.5" r="4" fill="${visorColor}"/>
+      <circle cx="94" cy="58.5" r="4" fill="${visorColor}"/>
       <rect x="16" y="66" width="18" height="30" rx="6" fill="${bodyColor}"/>
       <rect x="86" y="66" width="18" height="30" rx="6" fill="${bodyColor}"/>
       <rect x="16" y="80" width="18" height="6" fill="${panelColor}"/>
@@ -447,9 +562,11 @@ export function villainEraser({
       <rect x="84" y="118" width="4" height="4" fill="${collarColor}"/>
       <rect x="95" y="124" width="6" height="6" fill="${collarColor}"/>
       <rect x="30" y="54" width="16" height="14" fill="${accent}"/>
-      <rect x="1" y="44" width="35" height="30" fill="${blockColor}" stroke="${collarColor}" stroke-width="3"/>
+      ${/* x=1 with a 3-wide stroke put ink at x=-0.5; the padded-viewBox alpha
+            scan catches it, getBoundingClientRect does not (no stroke). */ ''}
+      <rect x="2.6" y="44" width="33.4" height="30" fill="${blockColor}" stroke="${collarColor}" stroke-width="3"/>
       <rect x="21" y="44" width="15" height="30" fill="${bodyColor}" stroke="${collarColor}" stroke-width="3"/>
-      <polygon points="1,64 13,74 1,74" fill="#b8b8b8"/>
+      <polygon points="2.6,64 13,74 2.6,74" fill="#b8b8b8"/>
       <rect x="5" y="80" width="5" height="5" fill="${collarColor}"/>
       <rect x="15" y="86" width="4" height="4" fill="${collarColor}"/>
       <rect x="44" y="8" width="32" height="30" fill="${bodyColor}"/>
@@ -562,7 +679,9 @@ export function villainShadowKing({
   return svgWrap(
     `
     <g>
-      <ellipse cx="60" cy="136" rx="36" ry="6" fill="#000" opacity="0.14"/>
+      ${/* cy=136 ry=6 reached y=142. The 14%-opacity shadow is the easiest kind
+            of clip to miss by eye and the easiest to fix. */ ''}
+      <ellipse cx="60" cy="134" rx="36" ry="5" fill="#000" opacity="0.14"/>
       <polygon points="40,44 6,110 18,104 14,126 30,116 36,132 48,120 60,136 72,120 84,132 90,116 106,126 102,104 114,110 80,44" fill="${collarColor}"/>
       <polygon points="34,54 12,26 26,52" fill="${accent}"/>
       <polygon points="40,50 24,18 34,48" fill="${accent}"/>
@@ -601,18 +720,37 @@ export function villainShadowKing({
 // `style`, which is how a bare name still resolves to a non-robot art
 // function. Boss entries deliberately carry no colors so they render with
 // their deluxe art's own signature palette.
+// EMBLEM INK IS A PALETTE CONCERN. Every family except the frozen creature
+// cast inks its emblem with a colour that arrives from here -- `accent` for
+// most, `bodyColor` for three of the bosses -- so a palette entry decides
+// whether a five-year-old can read the letter it is being taught.
+//
+// The floor is 7:1, measured from rendered pixels (see the report). It is not
+// 15.8:1, which is what the creature and DC families reach with near-black ink
+// on cream: forcing that everywhere would put one ink colour on all 28 heroes
+// and delete the per-family palette identity the project deliberately wants.
+// 7:1 is WCAG's normal-text AAA level, and normal-text is the right bar here
+// because the inked glyph is 10-17 px on a 96 px chapter card.
+//
+// Where an entry below is darker than its family's body colour, that is the
+// rule at work: the same hue pushed deep, never black, never a hue change.
 const HERO_PALETTES = {
   'sammy': { bodyColor: '#3b9922', accent: '#27500a', emblem: 'S' },
-  'ace': { bodyColor: '#ef9f27', accent: '#854f0b', emblem: 'A' },
+  // 6.02 -> 8.23. Same brown, deeper; it also paints Ace's trim.
+  'ace': { bodyColor: '#ef9f27', accent: '#6b3d07', emblem: 'A' },
   'turbo': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T' },
   'carbon': { style: 'robot-deluxe' },
   'inky': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
   'pip': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
   'nord': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
-  'captain-pin': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', emblem: '★' },
-  'coco': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#1f6b45', emblem: 'C' },
+  // `inkColor` is set here rather than left to the art function because this
+  // character is red/gold while heroPoweredArmor's own default is indigo.
+  'captain-pin': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', inkColor: '#6e1216', emblem: '★' },
+  // 6.00 -> 8.75
+  'coco': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#17512f', emblem: 'C' },
   'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
-  'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
+  // 6.78 -> 9.40
+  'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#6b3009', emblem: 'H' },
   'trike': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
   // Chapter 4's creature cast carries no colours here on purpose: the pastel
   // line-art palette is the whole point of that family's look, and a palette
@@ -623,12 +761,16 @@ const HERO_PALETTES = {
   'drillo': { style: 'creature-drillo', emblem: 'D' },
   'captain-red': { style: 'creature-boss' },
   'gogo': { style: 'plat-jumper', bodyColor: '#d1332f', accent: '#7a1a18', emblem: 'G' },
-  'ollie': { style: 'plat-spring', bodyColor: '#e8732a', accent: '#8a3d10', emblem: 'O' },
+  // 6.85 -> 9.32
+  'ollie': { style: 'plat-spring', bodyColor: '#e8732a', accent: '#6b2c07', emblem: 'O' },
   'umo': { style: 'plat-block', bodyColor: '#3aa15a', accent: '#1c5c30', emblem: 'U' },
-  'captain-gum': { style: 'plat-powerup', bodyColor: '#e05a9e', accent: '#f4c95d', panelColor: '#fff3c4' },
+  // 3.08 -> 11.0 by moving the ink, not the plate. See platPowerup's note.
+  'captain-gum': { style: 'plat-powerup', bodyColor: '#e05a9e', accent: '#f4c95d', panelColor: '#fff3c4', inkColor: '#5c1a3d' },
   'leo': { style: 'toy-soldier', bodyColor: '#3f7d55', accent: '#f4c95d', emblem: 'L' },
-  'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#8a5426', emblem: 'F' },
-  'bobo': { style: 'toy-block', bodyColor: '#7fd6a3', accent: '#2f7a52', emblem: 'B' },
+  // 5.76 -> 8.60
+  'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#6b3d15', emblem: 'F' },
+  // 4.83 -> 8.09, the worst of the letter emblems before this round
+  'bobo': { style: 'toy-block', bodyColor: '#7fd6a3', accent: '#1c5233', emblem: 'B' },
   'captain-big': { style: 'toy-boss', bodyColor: '#6b4ea8', accent: '#f4c95d', panelColor: '#f5f2ea' },
   // DC family: style only. Every colour lives in art/dc.js because the family
   // is built on a narrow dark palette that a stray bodyColor here would break.
