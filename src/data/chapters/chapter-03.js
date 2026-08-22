@@ -8,19 +8,32 @@
 //
 // 표시/발화 규칙: 화면에는 실제 글자·단어, 발화에는 소리. 둘이 다르면
 // { text: 'C', say: 'kuh' } / readAloud.say / options[].say / letters[].
-// 이 챕터의 소리 표기: C `k-k-k` · K `k-k-k` (같은 소리!) · E `eh` · H `h-h-h`
+// 이 챕터의 소리 표기: C `kuh` · K `kuh` (같은 소리!) · E `eh` · H `huh`
+// (하이픈 절단형 `k-k-k` 이 여기 적혀 있었는데 TTS 가 그걸 글자 이름으로 읽는다 --
+//  validateChapters 가 지금은 그 패턴을 거부한다. 데이터는 처음부터 `kuh` 였다.)
 //
 // --- C 와 K 를 어떻게 다루는가 (이 챕터 최대 설계 과제) ---
-// Jolly 는 c 와 k 를 같은 /k/ 로 함께 가르친다. 5세에게 위험한 건 "글자가 둘"
-// 자체가 아니라, 둘을 **변별 대상으로 물어보는 문항**이다 -- "k-k-k 소리를
-// 내는 글자는?" 에 C 와 K 를 함께 넣으면 정답이 두 개인 답할 수 없는 문제가
-// 되고, 아이는 자기가 틀렸다고 학습한다. 그래서:
-//   1. 채점 문항에서 C 와 K 를 절대 함께 보기로 두지 않는다 (변별 금지).
+// Jolly 는 c 와 k 를 같은 /k/ 로 함께 가르치되 **글자꼴은 둘 다** 가르친다.
+// 5세에게 위험한 건 "글자가 둘" 자체가 아니라, 둘을 **소리로 변별하게 묻는
+// 문항**이다 -- "kuh 소리를 내는 글자는?" 에 C 와 K 를 함께 넣으면 정답이
+// 두 개인 답할 수 없는 문제가 되고, 아이는 자기가 틀렸다고 학습한다. 그래서:
+//   1. 정방향(소리 -> 글자) 채점 문항에서 C 와 K 를 절대 함께 보기로 두지 않는다.
 //   2. 대신 multiselect 에서 **둘 다 정답**으로 제시한다 -- "모두 찾기" 는
 //      다대일 대응을 테스트가 아니라 수업으로 바꾼다. c3s2-r4, c3s3-r4.
 //   3. C 를 변별시킬 때 상대는 S (c 가 /s/ 로도 읽히는 실제 함정) 나 소리가
 //      확실히 다른 글자로만 한다.
-//   4. 비채점 break 에서 "쌍둥이" 로 명시 -- 틀릴 수 없는 자리에서 사실로 제시.
+//   4. **K 의 글자꼴은 정방향을 우회해서 가르친다** -- c3s2-break 가 `letter: 'K'`
+//      로 큰 글자를 띄우고(비채점, 틀릴 수 없는 자리), c3s3-r4b-kreversed 가
+//      `promptLetter: 'K'` 역방향으로 인출한다. 역방향은 **글자**를 묻기 때문에
+//      소리를 공유해도 정답이 하나다. 이 두 자리가 없던 판에서는 K 가 챕터 3
+//      전체에서 큰 글자로 한 번도 나오지 않았고, multiselect 타일 2개뿐이었다
+//      (오답 패널티가 없으므로 전부 탭하면 K 를 못 알아봐도 통과됐다).
+//   5. **정방향으로 K 를 정답으로 묻는 문항은 일부러 만들지 않는다.** C 를 보기에서
+//      빼면 문항 자체는 성립하지만, "kuh 는 K" 와 "kuh 는 C"(c3s2-r5, c3s4 퀵파이어)가
+//      5세에게 모순으로 읽힌다. 같은 이유로 c3s4 퀵파이어의 kuh 스텝은 C 만 쓴다.
+//   6. 따라서 K 는 `beat.letter` 커리큘럼에 들어간다 -- reviewTargets 는 C 다음에
+//      K 를 포함한다(챕터 3~7 전부). 누적 복습 배선 시 주의: **C 와 K 는 동음이라
+//      소리 -> 글자 복습 문항을 생성하면 정답이 둘이 된다.** 생성기는 이 쌍을 알아야 한다.
 //
 // --- 아이콘 ---
 // /k/ = cat·key·cake·king·kite·car·cup, /e/ = egg·elephant, /h/ = hat·hen·hand·horse.
@@ -185,11 +198,22 @@ export const chapter3 = {
         {
           id: 'c3s2-break',
           kind: 'break',
-          // 쌍둥이 사실을 "틀릴 수 없는" 비채점 자리에서 먼저 제시한다.
-          // 큰 글자를 C 하나만 띄우면 K 발화와 어긋나 보이므로 letter 를 뺐다.
-          instructionKo: 'C와 K는 쌍둥이예요! 글자는 다른데 소리는 똑같이 kuh 예요.',
+          // **K 의 글자꼴이 소개되는 유일한 자리다.** 이전 판은 `['C','kuh','K','kuh']`
+          // 를 발화하면서 letter 를 뺐다(C 만 띄우면 K 발화와 어긋난다는 이유).
+          // 그 결과 챕터 3 에서 K 가 **한 번도 큰 글자로 화면에 나오지 않았고**,
+          // 아이는 빈 화면에 대고 "씨 kuh 케이 kuh" 를 들었다. C 는 이 스테이지에서
+          // 이미 teach(letter 'C')와 r3-trace 로 글자꼴을 두 번 받았으므로,
+          // break 는 **새 글자꼴 K** 에 준다. 화면과 발화가 K 로 일치한다.
+          //
+          // 쌍둥이 사실은 여기서 빠지지 않는다 -- 바로 다음 r4-multiselect 가
+          // C 와 K 를 둘 다 정답으로 놓고, 타일을 탭하면 둘 다 'kuh' 를 발화한다
+          // (renderMultiselectBeat -> speakTap). 말로 하는 주장보다 강한 시연이고,
+          // c3s3-r4 에서 한 번 더 반복되며, 스테이지 recapAudio.ko 가 한국어로
+          // 명시한다. instructionKo 는 발화되지 않는 표시 전용 필드다.
+          instructionKo: 'C와 쌍둥이인 K예요! 손가락으로 K를 그리면서 함께 외쳐요.',
           art: 'hero',
-          repeatAudio: ['C', 'kuh', 'K', 'kuh'],
+          letter: 'K',
+          repeatAudio: ['K', 'kuh', 'K', 'kuh'],
         },
         {
           id: 'c3s2-r4-multiselect',
@@ -267,7 +291,7 @@ export const chapter3 = {
       villain: { name: 'Upsy', art: 'upsy', style: 'dino' },
       hero: { name: 'Eddy', art: 'eddy', style: 'dino' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E'],
       beats: [
         {
           id: 'c3s3-teach',
@@ -334,6 +358,34 @@ export const chapter3 = {
           readAloud: { targetText: 'C', say: 'kuh' },
         },
         {
+          id: 'c3s3-r4b-kreversed',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          // K 가 **글자꼴로 차갑게 인출되는 유일한 문항**이다. 앞의 multiselect 는
+          // 타일 4개를 다 탭하면(오답 패널티가 없다) K 를 못 알아봐도 통과되고,
+          // 2연속 오답이면 redemonstrateOption 이 남은 정답을 짚어준다 -- 즉 K 의
+          // 모양에 주의를 주지 않고도 클리어된다. 역방향은 그게 불가능하다.
+          //
+          // **역방향이어야 하는 이유**: 정방향("kuh 소리를 내는 글자는?")은 C 가
+          // 보기에 있으면 정답이 둘이라 물을 수 없고, C 를 빼면 "kuh 는 K" 와
+          // "kuh 는 C"(c3s2-r5, c3s4 퀵파이어)가 서로 모순처럼 보인다. 반대로
+          // promptLetter 는 **글자**를 묻기 때문에 소리를 공유해도 정답이 하나다
+          // (CLAUDE.md: "보기가 그림인 promptLetter 역방향 문항은 무해하다").
+          //
+          // 오답은 소리가 확실히 다른 기지 단어로만 한다. cat/cake 를 넣으면
+          // "소리는 같은데 글자가 다르다" 를 5세에게 변별시키는 문항이 되어
+          // 이 챕터 설계 규칙 3 을 어긴다.
+          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
+          promptLetter: 'K',
+          options: [
+            { id: 'c3s3-key2', icon: 'key', label: 'key', correct: true },
+            { id: 'c3s3-egg3', icon: 'egg', label: 'egg', correct: false },
+            { id: 'c3s3-net', icon: 'net', label: 'net', correct: false },
+          ],
+          readAloud: { targetText: 'key' },
+        },
+        {
           id: 'c3s3-r5-hard',
           kind: 'choose',
           scored: true,
@@ -393,7 +445,7 @@ export const chapter3 = {
       villain: { name: 'Muddy', art: 'muddy', style: 'dino' },
       hero: { name: 'Huey', art: 'huey', style: 'dino' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H'],
       beats: [
         {
           id: 'c3s4-teach',
@@ -553,7 +605,7 @@ export const chapter3 = {
       villain: { name: 'Shadow Rex', art: 'shadow-rex', style: 'dino' },
       hero: { name: 'Trike', art: 'trike', style: 'dino' },
       chapterBoss: true,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H'],
       beats: [
         {
           id: 'c3s5-teach',

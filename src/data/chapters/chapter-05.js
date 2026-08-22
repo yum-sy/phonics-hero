@@ -305,7 +305,7 @@ export const chapter5 = {
       villain: { name: 'Snatchy', art: 'snatchy', style: 'plat-magnetjack' },
       hero: { name: 'Ollie', art: 'ollie', style: 'plat-spring' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D', 'G', 'O'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M', 'D', 'G', 'O'],
       beats: [
         {
           id: 'c5s3-teach',
@@ -432,8 +432,8 @@ export const chapter5 = {
       hero: { name: 'Umo', art: 'umo', style: 'plat-block' },
       chapterBoss: false,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U',
       ],
       beats: [
         {
@@ -615,8 +615,8 @@ export const chapter5 = {
       hero: { name: 'Captain Gum', art: 'captain-gum', style: 'plat-powerup' },
       chapterBoss: true,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U',
       ],
       beats: [
         {

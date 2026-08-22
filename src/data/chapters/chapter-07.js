@@ -299,10 +299,20 @@ export const chapter7 = {
           hits: 1,
           instructionKo: '이 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'a',
+          // 여기 세 번째 보기는 E(`eh`)였다. **`eh` 는 두 음성 모두에서 `a` 와
+          // 바이트 단위로 동일하게 렌더된다** -- 즉 프롬프트 소리와 오답 타일이
+          // 완전히 같은 소리였고, 아이가 E 를 탭하면 방금 들은 소리를 그대로
+          // 다시 듣고 오답 처리됐다. 이 챕터 헤더는 `a` 를 `aaa`(단모음 A)·
+          // 글자이름·`ey` 와 대조 측정했지만 `eh` 와는 대조하지 않았다.
+          // SPEECH_COLLISION_PAIRS 에 ['a','eh'] 를 추가해 재발을 막았다.
+          //
+          // 대체는 I(`iii`) -- 한국어 화자에게 /ei/↔/i/ 는 실제 근접쌍(ㅔ이/ㅣ)
+          // 이면서 측정상 두 음성 모두 배수에 비례해 벌어진다(30x 기준 Alex
+          // 15.5초, Samantha 5.5초 차이, 파형 차이 140~142%).
           options: [
             { id: 'c7s2-AI3', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
             { id: 'c7s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-            { id: 'c7s2-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+            { id: 'c7s2-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
           ],
           readAloud: { targetText: 'AI', say: 'a' },
         },
@@ -356,8 +366,8 @@ export const chapter7 = {
       hero: { name: 'Jett', art: 'jett', style: 'dc-hero' },
       chapterBoss: false,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J',
       ],
       beats: [
         {
@@ -488,8 +498,8 @@ export const chapter7 = {
       hero: { name: 'Cloak', art: 'cloak', style: 'dc-hero' },
       chapterBoss: false,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J', 'OA',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J', 'OA',
       ],
       beats: [
         {
@@ -668,8 +678,8 @@ export const chapter7 = {
       hero: { name: 'Nightray', art: 'nightray', style: 'dc-hero' },
       chapterBoss: true,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J', 'OA',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F', 'B', 'AI', 'J', 'OA',
       ],
       beats: [
         {

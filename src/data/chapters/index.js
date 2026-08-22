@@ -131,9 +131,40 @@ const HYPHENED_SPEECH = /^\w+(-\w+)+$/
 //            B/D 반전은 원래 *글자 모양* 혼동이므로 귀로 변별시키는 게 애초에
 //            약한 연습이다. 그래서 표기를 바꾸는 대신 같은 문항 배치를 금지한다.
 //
+//   a/eh:    **두 음성 모두에서 바이트 단위로 완전히 동일하다.** 단일 토큰으로
+//            합성하면 `a`(=AI 표기) · `eh`(=E 표기) · `eigh` 가 같은 파일이 되고
+//            (Alex 는 `ay` 까지 포함) 길이가 소수점 6자리까지 같다. 즉 두 음성이
+//            `eh` 를 /e/(bed 의 에)가 아니라 **글자 이름 A = /ei/** 로 정규화한다
+//            -- CLAUDE.md 가 O 의 `aw`/`ah`/`awe` 에서 이미 기록한 그 실패 모드가
+//            E 에서도 일어나고 있었고, 아무도 이 쌍을 측정하지 않았다.
+//            **buh/duh 보다 강한 충돌이다**: buh/duh 는 길이만 같고 파형은 45%
+//            다른데(Alex, 30x), a/eh 는 파형 차이가 0.0% 다.
+//            재현: `say -v Alex -o x.aiff "a"; say -v Alex -o y.aiff "eh"; cmp x.aiff y.aiff`
+//            (대조군: 같은 텍스트를 두 번 합성하면 0 differing bytes -- say 는
+//             결정적이므로 바이트 비교가 길이 비교보다 강한 판정이다)
+//
 // 보기가 **그림**인 문항은 무해하다(발화되는 건 그림 단어다) -- letterTile 만 본다.
 // 새 충돌쌍이 측정으로 발견되면 여기 한 줄 추가하면 된다.
-const SPEECH_COLLISION_PAIRS = [['buh', 'duh']]
+const SPEECH_COLLISION_PAIRS = [
+  ['buh', 'duh'],
+  ['a', 'eh'],
+]
+
+// 위 표는 **표기가 다른데 같게 들리는** 쌍(엔진 결함)이다. 그것과 별개로,
+// 커리큘럼 자체가 **한 소리에 글자꼴을 둘** 배정하는 경우가 있다 -- 챕터 3 의
+// C/K 가 그렇고(둘 다 `kuh`), Jolly Group 5-7 에는 ai/ay, oa/ow, ee/ea, or/aw,
+// c/k/ck 가 줄줄이 나온다. 이때 "이 소리를 내는 글자는?" 문항에 두 글자꼴을
+// 함께 넣으면 **정답이 둘인 답할 수 없는 문항**이 되고, 아이는 맞는 타일을 탭하고
+// 틀렸다는 피드백을 받는다 -- 오답 패널티가 없는 앱이라 크래시도 로그도 없고,
+// 아이만 자기가 틀렸다고 학습한다.
+//
+// 챕터 3 은 이 규칙을 파일 헤더 산문으로만 갖고 있었고 강제하는 코드가 없었다.
+// 같은 소리를 공유하는 글자꼴은 앞으로 계속 늘어나므로 여기서 강제한다:
+// **한 문항(또는 choose-sequence 한 스텝)의 letterTile 보기 중 같은 `say` 를
+// 가진 것이 둘 이상이면, 그 전부가 정답인 multiselect 여야 한다.** multiselect
+// 예외가 있는 이유는 "모두 찾기" 가 다대일 대응을 답할 수 없는 문항이 아니라
+// **수업**으로 바꾸기 때문이다(c3s2-r4, c3s3-r4 가 정확히 그 용도다).
+// match-shape 는 opt.say 를 아예 읽지 않으므로(순수 시각 변별) 해당 없다.
 
 // recapKo 는 화면에 표시되면서 speakKO() 로도 발화된다. 문장 안에 하이픈 절단형
 // 소리 표기가 섞이면 한국어 음성이 그걸 읽는다. 같은 소문자가 하이픈으로 반복되는
@@ -349,12 +380,17 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           }
         }
 
+        // 프롬프트 소리를 같이 들고 다닌다 -- 오답 타일이 **프롬프트와** 같은
+        // 소리를 내는 경우가 타일끼리 겹치는 경우와 똑같이 답할 수 없는 문항이고,
+        // 실제로 c7s2-r5-hard 가 그 형태였다(promptAudio 'a' + 오답 타일 'eh').
+        // 거기서는 정답 타일도 'a' 여서 타일끼리 검사에 걸렸지만, 정답 타일의
+        // say 가 프롬프트와 다르게 적힌 문항에서는 그 그물이 없다.
         const optionGroups = beat.options
-          ? [beat.options]
+          ? [{ options: beat.options, promptAudio: beat.promptAudio }]
           : beat.steps
-          ? beat.steps.map((s) => s.options)
+          ? beat.steps.map((s) => ({ options: s.options, promptAudio: s.promptAudio }))
           : []
-        for (const options of optionGroups) {
+        for (const { options, promptAudio } of optionGroups) {
           const correct = options.filter((o) => o.correct).length
           const checkSpeechCollisions = beat.kind !== 'match-shape'
           if (beat.kind === 'multiselect') {
@@ -366,6 +402,29 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             const tileSounds = options
               .filter((o) => o.icon === 'letterTile' && o.say)
               .map((o) => ({ id: o.id, say: o.say }))
+            const bySay = new Map()
+            for (const o of options) {
+              if (o.icon !== 'letterTile' || !o.say) continue
+              if (!bySay.has(o.say)) bySay.set(o.say, [])
+              bySay.get(o.say).push(o)
+            }
+            for (const [say, sharing] of bySay) {
+              if (sharing.length < 2) continue
+              const taughtAsSet = beat.kind === 'multiselect' && sharing.every((o) => o.correct)
+              if (!taughtAsSet) {
+                const nCorrect = sharing.filter((o) => o.correct).length
+                problems.push(
+                  `${at}: letterTile 보기 [${sharing.map((o) => o.label).join(', ')}] 가 같은 소리 ` +
+                    `'${say}' 를 낸다 -- ` +
+                    (nCorrect > 1
+                      ? `정답이 ${nCorrect}개인 답할 수 없는 문항이다(아이가 맞는 타일을 탭하고 ` +
+                        `오답 피드백을 받는다)`
+                      : `탭했을 때 두 타일이 똑같은 소리를 내므로 아이가 소리로 고를 수 없다`) +
+                    `. 한 소리에 글자꼴이 둘이면 정방향(소리 -> 글자) 문항에서는 하나만 쓰고, ` +
+                    `둘을 함께 보여줄 자리는 **둘 다 correct 인 multiselect** 다`
+                )
+              }
+            }
             for (const [x, y] of SPEECH_COLLISION_PAIRS) {
               const hitX = tileSounds.filter((t) => t.say === x)
               const hitY = tileSounds.filter((t) => t.say === y)
@@ -374,6 +433,26 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
                   `${at}: 한 문항에 음성 충돌쌍 '${x}'(${hitX[0].id}) + '${y}'(${hitY[0].id}) ` +
                     `-- 특정 음성에서 두 타일이 같은 소리를 내 변별 불가. 보기를 갈라라`
                 )
+              }
+            }
+            // 프롬프트 소리와 **오답** 타일이 같게 들리면 아이는 방금 들은 소리를
+            // 그대로 다시 듣고 오답 처리된다 -- 타일끼리 겹치는 것과 같은 결함이다.
+            if (promptAudio) {
+              for (const t of tileSounds) {
+                const o = options.find((x) => x.id === t.id)
+                if (o.correct) continue
+                const same =
+                  t.say === promptAudio ||
+                  SPEECH_COLLISION_PAIRS.some(
+                    ([x, y]) =>
+                      (t.say === x && promptAudio === y) || (t.say === y && promptAudio === x)
+                  )
+                if (same) {
+                  problems.push(
+                    `${at}: promptAudio '${promptAudio}' 와 오답 타일 ${t.id}('${t.say}') 가 ` +
+                      `같게 들린다 -- 아이가 프롬프트와 똑같은 소리를 듣고 오답 처리된다`
+                  )
+                }
               }
             }
           }

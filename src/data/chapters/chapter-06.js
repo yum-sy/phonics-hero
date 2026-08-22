@@ -290,8 +290,8 @@ export const chapter6 = {
       hero: { name: 'Fifi', art: 'fifi', style: 'toy' },
       chapterBoss: false,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F',
       ],
       beats: [
         {
@@ -421,8 +421,8 @@ export const chapter6 = {
       hero: { name: 'Bobo', art: 'bobo', style: 'toy' },
       chapterBoss: false,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F', 'B',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F', 'B',
       ],
       beats: [
         {
@@ -622,8 +622,8 @@ export const chapter6 = {
       hero: { name: 'Captain Big', art: 'captain-big', style: 'toy' },
       chapterBoss: true,
       reviewTargets: [
-        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D',
-        'G', 'O', 'U', 'L', 'F', 'B',
+        'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
+        'D', 'G', 'O', 'U', 'L', 'F', 'B',
       ],
       beats: [
         {

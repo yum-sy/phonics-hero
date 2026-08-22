@@ -270,7 +270,7 @@ export const chapter4 = {
       villain: { name: 'Grabby', art: 'grabby', style: 'creature' },
       hero: { name: 'Magno', art: 'magno', style: 'creature' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M'],
       beats: [
         {
           id: 'c4s3-teach',
@@ -404,7 +404,7 @@ export const chapter4 = {
       villain: { name: 'Corky', art: 'corky', style: 'creature' },
       hero: { name: 'Drillo', art: 'drillo', style: 'creature' },
       chapterBoss: false,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M', 'D'],
       beats: [
         {
           id: 'c4s4-teach',
@@ -590,7 +590,7 @@ export const chapter4 = {
       villain: { name: 'Pixel Muncher', art: 'pixel-muncher', style: 'creature' },
       hero: { name: 'Captain Red', art: 'captain-red', style: 'creature' },
       chapterBoss: true,
-      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'E', 'H', 'R', 'M', 'D'],
+      reviewTargets: ['S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M', 'D'],
       beats: [
         {
           id: 'c4s5-teach',
