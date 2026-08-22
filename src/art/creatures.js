@@ -669,60 +669,100 @@ export function creatureDrillo({
 // Captain Red, the evolved boss form -- a flame dragon, and the one figure in
 // the file that has to look like it outranks the others.
 //
-// v11 IS A HEAD REBUILD, and the reason is structural rather than a matter of
-// taste. v10's head was a round orange ellipse, front-facing, carrying a wide
-// pale muzzle pad in the middle of it, and three separate attempts to fix that
-// pad (30 wide with low nostrils = a COW; 22 wide = a BIB; 28 wide with an open
-// maw, nostrils moved to the bridge and a domed top edge = better but still
-// wrong) all read as an APE: small dots high on a round face with a broad pale
-// area below them is the primate arrangement, and no width solves it.
+// v12 IS A COMPOSITION PASS. v11's head rebuild worked -- the snout reads as a
+// snout in a hard cutout -- but the FIGURE got worse: of the four heroes it was
+// the only one a cutout could not name. Two measurements at 4 px per viewBox
+// unit say why. v11 had 14 separate protrusions off its core mass against
+// Rocket's 5, Drillo's 3 and Magno's 0; and counting runs of painted pixels
+// across single rows, v11 read:
+//     y=40  wing 9.5-24 | head 30.8-87.8 | wing 96-110.5   3 runs
+//     y=50  13.5-106.5                                     ONE run, 93 wide
+//     y=60  8.8-11 | 11.8-44 | 44.8-74.5 | 76-108.3 | ...  5 runs
+//     y=70  13.5-106.5                                     ONE run
+// The wings cleared the head for eight rows and then fused with it; the neck
+// "waist" existed only as one of five noisy runs at y=60; from y=70 down the
+// figure was a single 96-wide band with a frilly edge. Nothing in it could be
+// read as head, wing or body.
 //
-// The measurement that ended the width experiments: in a hard cutout, v10's
-// head DID NOT EXIST. The neck was 36 wide, the head 50, and the muzzle bottom
-// covered the gap, so skull + neck + body were one continuous mass with two
-// horns on top -- and a muzzle that points at the viewer contributes NOTHING to
-// a front-facing silhouette by definition. A snout is a projection; in front
-// view it projects along the view axis, which is exactly the direction a
-// silhouette cannot see. That is why every front-view fix failed.
+// THE METRIC THIS PASS IS AIMED AT, because coverage and compactness both miss
+// it: for each row, count the runs and ask whether any GAP between them is at
+// least 6 units (about 7 px on a 132-px sprite, i.e. actually visible). Summing
+// the rows that qualify gives the height over which the figure reads as more
+// than one part; summing the rows with a gap under 3 units gives the height of
+// pure hairline noise.
+//                       reads as >1 part     hairline noise
+//     Captain Red v11        10.5 units         14.0 units   <- worst in file
+//     Captain Red v12        54.8                4.3
+//     Rocket                 61.0                3.8   <- the readable one
+//     Magno                   8.0                0.5   <- single mass by design
+//     Drillo                  9.8                2.3
+// v11 was the noisiest figure in the file. v12 has Rocket's profile, which is
+// the one the leader named as instantly readable.
 //
-// So the head is now TURNED, and everything else follows from making room:
+// v12 keeps everything v11 earned -- the same turned head path, the snout spur,
+// the overbite, the backswept horns, the primaries -- and moves the parts:
 //
-//  1. THE HEAD IS ONE PATH: skull, snout and jaw are a single outlined shape,
-//     three-quarter view with the snout swinging out to the LEFT. Between the
-//     brow (x=44) and the snout the outline comes back RIGHT to x=46 -- the
-//     dragon "stop" -- and then out to the snout front at x=30. That notch plus
-//     spur is the snout in the silhouette, 16 units of projection where v10 had
-//     zero. The cream muzzle is painted ON that same outline (its outer edge
-//     reuses the head path's own segments verbatim) so it can never again be a
-//     pad floating inside a face.
-//  2. THE WINGS CAME DOWN off the skull, apex (11,40) instead of (10,19).
-//     They used to peak ABOVE the skull and frame it, which is the other half
-//     of why the head vanished in cutout. Above y=40 the whole head band is
-//     clear background, and the wing tip sits 8 units clear of the snout's
-//     inked edge. The apex height is a MEASURED compromise, not a taste call:
-//     the first v11 draft put it at y=48 and the figure's painted coverage fell
-//     from v10's 65.6% to 56.9%, i.e. the boss stopped being the largest thing
-//     in the file (Magno is 60.4%) -- which was v10's own answer to "the fused
-//     form has to be special". Almost all of that loss was wing: v10's wing
-//     spanned y 19..98 and the draft's spanned 48..98. Raising the apex back to
-//     40 and restoring the flame to its v10 mass recovers it.
-//  3. THE NECK IS THE WAIST. 25 wide against a head ~55 wide and a body 70
-//     wide, exposed from y=59 to y=72. v10's 36-wide neck was the same width as
-//     the body's crown and so joined the two masses instead of separating them.
-//  4. BOTH HORNS SWEEP RIGHT, staggered, because in a head turned left "back"
-//     is to the right. Symmetric horns are what a front-facing head wants and
-//     they were part of the cub read. Freeing the space above y=48 is what let
-//     them go there at all.
-//  5. AN OVERBITE. Two pale fangs hang BELOW the jaw outline, which is a
-//     silhouette feature no ape has and the cheapest reptile cue available.
+//  1. THE HEAD BAND IS EMPTY. Above y=38 nothing exists but head and horns; the
+//     wings' own tips start there, 16 units clear of the head at y=40 and 7.8
+//     at y=50, which is the narrowest point and the same clearance v11 used
+//     between its wing tip and the snout. The head owns the top 40% of the
+//     frame, which is what makes a head read at 132 px.
+//     The head is also 12% larger, one uniform scale-and-shift of the whole
+//     head group (X = 1.12x - 6.48, Y = 1.12y - 3.08) so the stop and the snout
+//     spur keep their proportions. Filled area 2079 -> 2609 units: the body
+//     ellipse is unchanged at 3519, so the body/head ratio the leader called
+//     out goes 1.69 to 1.35, and head plus horns is now the largest mass in the
+//     figure. The 4-unit rightward shift is what stops the snout from
+//     overhanging the left wing.
+//  2. THE WINGS ARE BEHIND AND BELOW, not beside the head. Each is one big
+//     triangular sail: the arm runs from inside the hip up-and-out to a wrist
+//     tip at (9,38), and the outer edge comes back down with ONE notch at
+//     (22,82) splitting it into two large lobes. v11 had three lobes per wing,
+//     and three notches on a 40-wide wing leaves lobes too small to survive
+//     being 12 px tall on a chapter card -- they read as a hem. Two lobes of
+//     ~30 units survive. Same "fewer, larger" result the platformer family
+//     measured for its halo.
+//     v11 bought its coverage by letting the wing climb into the head band;
+//     v12 buys it back by spanning further down and further out, where nothing
+//     else lives, and by growing the horns instead.
+//  3. THE NECK NOTCH IS THE POINT OF THE POSE. From y=63 to y=76 the only
+//     painted things are the neck (27 wide, x 46.5..73.5) and the two wings out
+//     at the frame edges -- three runs with 8.5 and 8.0 units of clear
+//     background between them at y=70. That is what says "head on a neck above
+//     a body with wings behind it" in one glance, and it is why the side paws
+//     had to go: at cx 32 a paw sat exactly in that gap. Wings-as-arms is a
+//     wyvern, and it is also one fewer pair of stubs to confuse with the wing
+//     lobes, which was a recorded v11 defect on Drillo.
+//     The neck is centred on 60, not on the head: at v11's x-offset the right
+//     gap measured 6.5 against the left's 10.
+//  4. THE BODY DID NOT SHRINK -- it moved DOWN, cy 102 to 105, which is what
+//     opens the neck band; 35x32 is v11's own size. The badge went 14 to 13.5
+//     because v11's plate, measured against the belly patch it is supposed to
+//     sit inside, was 3% outside it at the top.
+//  5. THE FLAME MOVED OUT into the empty bottom-right corner, tip (110,102).
+//     v11's flame passed 1.3 units from the right wing's lower lobe -- at 132 px
+//     they touch, and two black shapes touching in a cutout cost the flame its
+//     outline. It now clears the mirrored lower lobe by 8 units and the right
+//     foot by 3.8, and the lobe was shortened (y 102 to 96) to buy that. This
+//     corner is contested by three parts and is the one place in the figure
+//     where every unit was spent twice.
+//
+// THE ARM TUBE IS PART OF THE SILHOUETTE, which is the trap here and the reason
+// the first v12 draft failed its own row scan with a 1.0-unit gap at y=50.
+// `tube` paints the path twice, so an arm on the membrane's leading edge inks
+// (width/2 + 2) units OUTSIDE the membrane along its whole length. The arm is
+// deliberately left ON the edge -- inboard it read as a bone floating in the
+// membrane, and its outer half is real silhouette area the figure needs -- so
+// every clearance above is measured from the TUBE's outer skin, not from the
+// membrane path.
 //
 // On the copyright boundary (CLAUDE.md): the brief asked for orange with teal
 // wing membranes, which is close to the trademark character's colour placement,
-// so the separation is carried by everything else -- a chibi 3-lobed wing with
-// visible orange struts instead of a plain membrane, a round stub-limbed body
-// with a cream belly patch and a chest star badge, dot eyes, and the family's
-// sepia outline. The silhouette is not the original's and no logo or marking is
-// borrowed.
+// so the separation is carried by everything else -- a two-lobed chibi sail wing
+// with visible orange struts instead of a plain membrane, a round stub-legged
+// body with a cream belly patch and a chest star badge, dot eyes, and the
+// family's sepia outline. The silhouette is not the original's and no logo or
+// marking is borrowed.
 export function creatureCaptainRed({
   bodyColor = '#f4600f',
   panelColor = '#ffdca6',
@@ -730,7 +770,7 @@ export function creatureCaptainRed({
   visorColor = BADGE,
 } = {}) {
   const WING_MEM = '#1a9ea8' // teal membrane
-  const WING_ARM = '#d9490f' // leading-edge arm and finger struts
+  const WING_ARM = '#d9490f' // arm bone and finger struts
   // Horns are TEAL, not a warm brown. The first attempt made them dark amber
   // and in a hard cutout they merged with the orange wing struts into one spiky
   // thicket -- two horns and six struts all reading as the same kind of spine.
@@ -739,54 +779,45 @@ export function creatureCaptainRed({
   const HORN = '#0e7a84'
   const TOOTH = '#fff6e2'
 
-  // Every wing coordinate is an absolute viewBox value in [8,48]; mirrored()
-  // maps x -> 120-x, so the mirror lands in [72,112]. The failure an earlier
+  // Every wing coordinate is an absolute viewBox value in [6,48]; mirrored()
+  // maps x -> 120-x, so the mirror lands in [72,114]. The failure an earlier
   // pass hit (a polygon scaled to x=-54, then mirrored to x=174) cannot recur
   // from a shape written this way.
   //
-  // Margins are budgeted per shape because the widths differ: the arm tube is 7
-  // wide plus a 2.0 outline on each side, so its round cap at (11,48) inks to
-  // x=5.5; the membrane's deepest notch at x=8 inks to 6.7. Both clear the 4.5
-  // this file settled on after losing a session to a 13%-opacity shadow that
-  // clipped at y=142.
+  // Margins are budgeted per shape because the widths differ. The membrane's
+  // outer edge bottoms out at x=6 and its 2.6 stroke inks to 4.7; the arm tube
+  // rides the same leading edge at 4.2 wide plus a 2.0 outline each side, so at
+  // the wrist tip (9,38) it inks to 4.9. Both clear the 4.5 this file settled on
+  // after losing a session to a 13%-opacity shadow that clipped at y=142.
+  // Measured on the rendered pixels the whole figure inks to x 4.83..115.17,
+  // y 5.67..138.5, with no painted pixel in any edge row or column.
   //
-  // THE LEADING EDGE IS CURVED, and that is a colour-render fix the cutout
-  // could not see: as a near-straight bar from (48,92) to the apex it read as
-  // an ARM, and the figure looked like it was holding two fans. The struts stay
-  // CROSSING the membrane rather than fanning out of the wrist -- fanning them
-  // from one point was tried and it bunched all three against the trailing edge
-  // (they end within 10 units of each other), which turned each wing into a
-  // broom and left the membrane's middle empty.
-  //
-  // The trailing edge's three lobes are listed once here and REUSED verbatim by
-  // the shade path below, which is the only way to guarantee the shade stays
-  // flush with the wing's own edge rather than drifting a unit off it. The
-  // bottom lobe stops at y=98 rather than running on down: below that it
-  // reaches the same ground as the tail flame, and two black shapes touching in
-  // a cutout cost the flame its own outline.
-  const LOBES = `C 22,50 20,60 6,64 C 21,70 21,80 7,86 C 25,90 27,96 14,98`
-  const ARM = 'M 48,92 C 46,68 36,48 14,41'
+  // The outer edge is listed once in LOBES and REUSED verbatim by the shade
+  // path, which is the only way to keep the shade flush with the wing's own
+  // edge rather than a unit off it. The lower lobe stops at y=96 rather than
+  // running on down: below that the mirrored copy reaches the flame.
+  const LOBES = `C 6,48 6,60 9,71 C 15,74 20,78 22,82 C 15,86 10,90 19,96`
+  const EDGE = 'M 48,92 C 44,78 12,61 9,38'
   const wing = `
-    <path d="M 48,92 C 46,68 36,48 14,41 ${LOBES} C 30,98 44,97 48,92 Z"
+    <path d="${EDGE} ${LOBES} C 30,104 42,102 48,92 Z"
       fill="${WING_MEM}" ${ol(SW)}/>
-    <path d="M 14,98 C 27,96 25,90 7,86 C 21,80 21,70 6,64
-             C 20,60 22,50 14,41 C 32,70 30,72 14,98 Z"
+    <path d="M 9,38 ${LOBES} C 24,80 22,54 9,38 Z"
       fill="${LINE}" opacity="0.15"/>
-    ${tube(ARM, 5.4, WING_ARM)}
-    ${tube('M 22,47 C 18,51 13,55 10,57', 2.6, WING_ARM)}
-    ${tube('M 33,64 C 27,70 20,76 14,79', 2.6, WING_ARM)}
-    ${tube('M 43,82 C 37,88 29,93 21,96', 2.6, WING_ARM)}`
+    ${tube(EDGE, 4.2, WING_ARM)}
+    ${tube('M 24,62 C 19,65 15,68 12,70', 1.8, WING_ARM)}
+    ${tube('M 34,84 C 28,87 22,90 17,92', 1.8, WING_ARM)}`
 
-  // Horn. The local shape is unchanged from v10 -- it points along -y, runs to
+  // Horn. The local shape is unchanged since v10 -- it points along -y, runs to
   // y=-28, and collapses its half-width early (~5.5 by y=-5) so the exposed
   // portion is 23 long at 11 wide, ratio 0.48. That ratio is the whole reason
   // it is a horn: v9's 0.67 wedge on a round head was a CAT EAR in cutout.
-  // What changed is where they go. Both sweep RIGHT now (76 and 70 degrees off
-  // vertical), staggered so the near one is lower and longer and the far one is
-  // shorter -- which is what two backswept horns do on a head turned to the
-  // left. Roots (82,30) and (68,20) sit inside the head path so only the swept
-  // length shows; tips land at (109.2,23.3) and (89.6,12.2), inked 110.2 and
-  // 11.2 from their nearest edges.
+  // Both sweep RIGHT, staggered, because on a head turned left "back" is to the
+  // right, and both grew a lot in v12 -- scale 1.45 and 1.6 against v11's 1.15
+  // and 1.0. That is where the coverage the wings gave up came back, and it is
+  // the right place to spend it: a horn is one large protrusion, which is what
+  // this pass is buying. Roots (73,34) and (70,25) sit inside the head path so
+  // only the swept length shows; tips land at (113.2,28.4) and (112.6,11.2),
+  // both inked ~1 unit further out, which is why neither may grow again.
   // The dark face REUSES the horn's own right edge verbatim, so it cannot poke
   // through the outline, and closes with an inner curve. Two flat faces is all
   // the roundness a banned-gradient horn can have, and without it the horn read
@@ -799,24 +830,25 @@ export function creatureCaptainRed({
 
   // THE HEAD, as one path, clockwise from the back of the skull. Read it as
   // five features rather than nine curves:
-  //   (87,33) -> (65,9)   the crown, high and to the right (the back of a
-  //                       turned head)
-  //   (65,9)  -> (44,19)  the brow, coming forward and down
-  //   (44,19) -> (46,32)  THE STOP: the outline reverses direction, moving
-  //                       back to the RIGHT. Without this the head is an egg
-  //                       and the snout is just its narrow end.
-  //   (46,32) -> (30,45)  the bridge, out to the snout front
-  //   (30,45) -> (38,55)  the nose, rounding under
-  //   (38,55) -> (87,33)  the lower jaw and cheek, back to the start
-  // Extents x 29..87, y 9..59; inked 27.7..88.3 x 7.7..60.3.
-  const HEAD = `M 87,33
-    C 86,17 78,9 65,9
-    C 55,9 47,12 44,19
-    C 46,25 48,29 46,32
-    C 39,34 31,39 30,45
-    C 29,50 32,54 38,55
-    C 46,58 57,59 68,58
-    C 80,57 87,47 87,33 Z`
+  //   (91,34)   -> (66,7)    the crown, high and to the right (the back of a
+  //                          turned head)
+  //   (66,7)    -> (42.8,18) the brow, coming forward and down
+  //   (42.8,18) -> (45,33)   THE STOP: the outline reverses direction, moving
+  //                          back to the RIGHT. Without this the head is an egg
+  //                          and the snout is just its narrow end.
+  //   (45,33)   -> (27,47)   the bridge, out to the snout front
+  //   (27,47)   -> (36,58)   the nose, rounding under
+  //   (36,58)   -> (91,34)   the lower jaw and cheek, back to the start
+  // Extents x 27.1..91, y 7..63; inked 25.8..92.3 x 5.7..64.3. Stroke widths
+  // did NOT scale with the head -- the file's 2.6/2.0/1.4 tiers are absolute.
+  const HEAD = `M 91,33.9
+    C 89.8,16 80.9,7 66.3,7
+    C 55.1,7 46.2,10.4 42.8,18.2
+    C 45,24.9 47.3,29.4 45,32.8
+    C 37.2,35 28.2,40.6 27.1,47.3
+    C 26,52.9 29.4,57.4 36.1,58.5
+    C 45,61.9 57.4,63 69.7,61.9
+    C 83.1,60.8 91,49.6 91,33.9 Z`
 
   return svgWrap(
     fig(`
@@ -829,60 +861,62 @@ export function creatureCaptainRed({
            space curve carried through one is what pushed an earlier version
            32 units off the bottom edge). Both go in BEFORE the body so the
            body's fill eats the overlap and the flame reads as rising from
-           behind the hip. Flame extents x 89..115 y 101..136, inked 87.7..116.3
-           x 99.7..137.3; its tip is now POINTED at (102,101) instead of the
-           rounded leaf v10 had, so the cutout shows a spike. -->
-      ${tube('M 88,114 C 99,116 104,120 102,126', 12, accent)}
-      <path d="M 102,101 C 110,112 117,121 114,131 C 111,137 93,137 90,131
-               C 87,121 94,112 102,101 Z"
+           behind the hip. The flame sits in the bottom-right corner, the only
+           large empty region left once the wings went low, and it LEANS OUT:
+           tip (110,102), base y=136, extents x 92..113. Leaning is what buys
+           the clearance -- an upright flame in this corner is either inside the
+           right foot or inside the mirrored wing's lower lobe. As drawn it
+           clears the lobe by 8 units and the foot by 3.8. Its tip is POINTED so
+           the cutout shows a spike rather than a leaf. -->
+      ${tube('M 84,114 C 98,118 105,123 104,129', 11, accent)}
+      <path d="M 110,102 C 114,112 114,124 111,131 C 108,136 95,136 93,130
+               C 91,121 101,113 110,102 Z"
         fill="${FLAME}" ${ol(SW_MID)}/>
-      <path d="M 102,110 C 108,118 113,124 111,130 C 108,134 96,134 93,130
-               C 91,124 96,118 102,110 Z"
+      <path d="M 109,110 C 112,117 112,125 110,131 C 107,135 97,135 95,130
+               C 93,123 102,118 109,110 Z"
         fill="${FLAME_MID}"/>
-      <path d="M 102,119 C 106,124 109,127 108,130 C 106,133 98,133 96,130
-               C 95,127 98,124 102,119 Z"
+      <path d="M 108,118 C 110,123 111,127 109,131 C 107,134 99,134 98,130
+               C 97,126 104,122 108,118 Z"
         fill="${FLAME_CORE}"/>
 
-      <!-- paws pulled in from cx 22 to 32. The wings dropped into the space the
-           old paws occupied, and a paw at 22 sat on the wing's middle notch
-           (x=10, y=86) and filled it, which is the one thing that makes three
-           lobes read as one hem. Feet at cy=129, not 131: at 131 the ry=7.5
-           stub plus its 2.0 outline inked to y=139.5, half a unit from the
-           frame. -->
-      ${stub(32, 100, 11.5, 12.5, accent)}
-      ${stub(88, 100, 11.5, 12.5, accent)}
-      ${feet(accent, 129, 15, 7.5)}
+      <!-- feet at cx 46/74 rather than the shared feet() helper's 44/76: at 76
+           the right foot's inked edge came within 1.5 units of the flame.
+           cy=129, not 131: at 131 the ry=8 stub plus its 2.0 outline inked to
+           y=140, at the frame. No side paws -- see note 3. -->
+      ${stub(46, 129, 12.5, 8, accent)}
+      ${stub(74, 129, 12.5, 8, accent)}
 
-      <!-- neck as a MASS, 25 wide (x 47..72), slanting slightly. Its top at
-           y=52 is under the jaw and its bottom at y=78 is inside the body's
-           crown, so both joins are swallowed and 13 units show. The width is
-           the load-bearing number: at v10's 36 the neck matched the body's
-           crown width (24.4 at y=72) and the two masses fused. -->
-      <path d="M 47,52 C 45,60 46,70 48,78 L 72,78 C 74,70 74,60 72,52 Z"
+      <!-- neck as a MASS, 27 wide (x 46.5..73.5), slanting slightly. Its top at
+           y=54 is under the jaw and its bottom at y=84 is inside the body's
+           crown, so both joins are swallowed and 13 units show. Two numbers are
+           load-bearing: the WIDTH, because at v10's 36 the neck matched the
+           body's crown and the two masses fused, and the CENTRE, because the
+           head sits right of centre and a neck centred on the head left only
+           6.5 units between it and the right wing against 10 on the left. -->
+      <path d="M 46.5,54 C 44.5,64 45.5,74 47.5,84 L 73.5,84 C 75.5,74 75.5,64 73.5,54 Z"
         fill="${accent}" ${ol(SW)}/>
 
-      ${blob(bodyColor, 60, 102, 35, 32, true, panelColor)}
-      ${shadeCrescent(60, 102, 35, 32)}
+      ${blob(bodyColor, 60, 105, 35, 32, true, panelColor)}
+      ${shadeCrescent(60, 105, 35, 32)}
 
-      <g transform="translate(80,32) rotate(80) scale(1.15)">${horn}</g>
-      <g transform="translate(68,24) rotate(60)">${horn}</g>
-      <g transform="translate(72,52) rotate(122) scale(0.52)">${horn}</g>
+      <g transform="translate(73,34) rotate(82) scale(1.45)">${horn}</g>
+      <g transform="translate(70,25) rotate(72) scale(1.6)">${horn}</g>
 
       <path d="${HEAD}" fill="${bodyColor}" ${ol(SW)}/>
       <!-- head shade: outer boundary is the head path's own crown and jaw
            segments, verbatim, closed by one interior curve. Same trick as the
            body's shadeCrescent and Drillo's steel faces -- a shade generated
            from the silhouette cannot leave it. -->
-      <path d="M 87,33 C 87,47 80,57 68,58 C 76,44 78,34 87,33 Z"
+      <path d="M 91,33.9 C 91,49.6 83.1,60.8 69.7,61.9 C 78.6,46.2 80.9,35 91,33.9 Z"
         fill="${LINE}" opacity="0.15"/>
 
       <!-- brow ridge in the accent, angled down toward the snout. On a turned
            head this is not decoration: the brow is what puts the eyes at the
            snout's root instead of high on a dome, which was the primate
            arrangement v10 could not shake. -->
-      <path d="M 60,25 C 66,18 79,18 84,25 C 79,22 66,22 60,25 Z"
+      <path d="M 60.7,24.9 C 67.4,17.1 82,17.1 87.6,24.9 C 82,21.6 67.4,21.6 60.7,24.9 Z"
         fill="${accent}"/>
-      <path d="M 45,26 C 49,20 57,20 60,25 C 56,23 49,23 45,26 Z"
+      <path d="M 43.9,26 C 48.4,19.3 57.4,19.3 60.7,24.9 C 56.2,22.7 48.4,22.7 43.9,26 Z"
         fill="${accent}"/>
 
       <!-- CHIN, not a muzzle pad. The cream covers only the snout's
@@ -894,35 +928,39 @@ export function creatureCaptainRed({
            Leaving the snout body-coloured is affordable now precisely because
            the OUTLINE carries the snout: the fill no longer has to say
            "projection", so it is free to say "reptile underside" instead. -->
-      <path d="M 30,45 C 29,50 32,54 38,55 C 45,57 51,54 52,47
-               C 45,49 36,48 30,45 Z"
+      <path d="M 27.1,47.3 C 26,52.9 29.4,57.4 36.1,58.5 C 43.9,60.8 50.6,57.4 51.8,49.6
+               C 43.9,51.8 33.8,50.7 27.1,47.3 Z"
         fill="${panelColor}" ${ol(SW_MID)}/>
       <!-- one nostril, at the snout FRONT rather than on the bridge. In a
            turned head only one shows, and that is the point: a pair of dark
            spots on a pale muzzle is a second pair of eyes on any face, which is
            the failure v10 recorded when its nostrils sat low and 12 apart. -->
-      <ellipse cx="34" cy="41" rx="2" ry="1.6" fill="${INK}"/>
-      <path d="M 32,48 C 37,51 43,53 49,54" fill="none" stroke="${INK}" stroke-width="2.2"/>
+      <ellipse cx="31.6" cy="42.8" rx="2.2" ry="1.8" fill="${INK}"/>
+      <path d="M 29.4,50.7 C 35,54 41.7,56.3 48.4,57.4" fill="none"
+        stroke="${INK}" stroke-width="2.4"/>
 
       <!-- overbite: two pale fangs hanging past the jaw outline (which runs
-           y 55..58 here), so they are silhouette, not marking. Kept pale with
+           y 58..62 here), so they are silhouette, not marking. Kept pale with
            a sepia outline rather than ink -- two dark spikes under a jaw read
-           as a gap in the outline instead of as teeth. -->
-      <path d="M 37,53 C 41,53 42,54 41.5,55 C 41,60 40,63 39,65
-               C 38,62 37,58 36.5,55 C 36,54 36,53 37,53 Z"
+           as a gap in the outline instead of as teeth. They stop at y=67/68:
+           scaled with the head they reached 70.8, which put the far one across
+           the neck's own left edge and closed part of the notch note 3 is
+           about. -->
+      <path d="M 35,56.3 C 39.4,56.3 40.6,57.4 40,58.5 C 39.4,63.4 38.3,65.8 37.2,67
+               C 36.1,64 35,61.9 34.4,58.5 C 33.8,57.4 33.8,56.3 35,56.3 Z"
         fill="${TOOTH}" ${ol(SW_IN)}/>
-      <path d="M 45.5,56 C 49.5,56 50.5,57 50,58 C 49.5,62 48.5,64 47.5,66
-               C 46.5,63 45.5,60 45,58 C 44.5,57 44.5,56 45.5,56 Z"
+      <path d="M 44.5,59.6 C 49,59.6 50.1,60.8 49.5,61.9 C 49,65.8 47.8,67.2 46.7,68
+               C 45.6,65.5 44.5,64.1 43.9,61.9 C 43.4,60.8 43.4,59.6 44.5,59.6 Z"
         fill="${TOOTH}" ${ol(SW_IN)}/>
 
       <!-- eyes: the near one (right) larger, the far one smaller and closer to
            the bridge, which is what a turned head does to a pair. Still the
            largest eyes in the file (the small heroes use 4.8 to 5.0) which is
            what an evolved form should have. -->
-      ${dot(70, 30, 4.8)}
-      ${dot(53, 29, 4.0)}
+      ${dot(71.9, 30.5, 5.4)}
+      ${dot(52.9, 29.4, 4.5)}
 
-      ${emblemBadge(60, 114.5, 14, visorColor, '★', 21)}
+      ${emblemBadge(60, 117.5, 13.5, visorColor, '★', 21)}
     `)
   )
 }
