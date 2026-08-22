@@ -131,6 +131,68 @@ function optionLabelHtml(opt) {
   return `<span class="${cls}" style="--label-len:${len}">${opt.label}</span>`
 }
 
+// ---- unrevealed character art ("shadow" state) ----
+//
+// QA runs on the dev server, where DEV_UNLOCK_ALL opens every stage, so the
+// card and map screens were showing all 70 characters at once -- including
+// the ones still being drawn. A portrait outside of play is therefore a
+// SHADOW until the stage that character belongs to has actually been
+// cleared, which also turns the roster into something the child uncovers by
+// playing rather than a catalogue handed over up front.
+//
+// Keyed on isStageCleared, never on isStageUnlocked: "unlocked" means *you
+// may play it* and is unconditionally true in dev, while "cleared" means
+// *you have met this character* -- the only one of the two that says the art
+// should be visible. So the reveal behaves identically in dev and in a
+// production build.
+//
+// The filter goes on the <svg> itself rather than on a wrapper element: the
+// svg gets its size from descendant rules on the card/node
+// (`.chapter-card-art .carbot-art`, `.stage-node.boss .carbot-art`), which a
+// wrapper would have to re-create, and a filter on the CARD would blacken
+// its background along with the art. brightness(0) is the same hard cutout
+// the art review uses to judge silhouettes; the opacity term lands it as a
+// dark grey shadow on the cream card instead of a pitch-black hole, which
+// reads as "not yet" rather than as something scary. Class name included so
+// this can be promoted to style.css (owned elsewhere) unchanged.
+const SHADOW_ART_STYLE = 'filter:brightness(0) opacity(0.42)'
+
+function shadowArt(svgHtml) {
+  if (svgHtml.includes('class="carbot-art"')) {
+    return svgHtml.replace(
+      'class="carbot-art"',
+      `class="carbot-art art-shadow" style="${SHADOW_ART_STYLE}"`
+    )
+  }
+  // Art that doesn't carry the shared wrapper class still has to be hidden --
+  // failing open here would leak exactly what this is for. Only the style is
+  // injected, so whatever classes it does have (and the sizing they carry)
+  // survive.
+  return svgHtml.replace('<svg', `<svg style="${SHADOW_ART_STYLE}"`)
+}
+
+function portraitHtml(svgHtml, revealed) {
+  return revealed ? svgHtml : shadowArt(svgHtml)
+}
+
+// Overlaid on the node, not appended below it: the world/chapter/map screens
+// run at 1.2-1.9% vertical slack and a real device has already been seen to
+// scroll where headless does not, so a mark in the flow is the thing that
+// would finally push one over. Absolutely positioned, it costs 0 height.
+// A check mark rather than a star (stars were removed from the map for
+// carrying no meaning) and deliberately not a letterform -- an
+// alphabet-shaped badge in a phonics app gets read as a letter.
+function clearMarkHtml() {
+  return (
+    `<span class="clear-mark" aria-hidden="true" style="position:absolute;` +
+    `top:-2px;right:-2px;width:clamp(34px,4.2svh,50px);height:clamp(34px,4.2svh,50px);` +
+    `border-radius:50%;background:var(--success-dark);color:#fff;` +
+    `font-size:clamp(22px,2.7svh,32px);font-weight:800;line-height:1;` +
+    `display:flex;align-items:center;justify-content:center;` +
+    `border:3px solid var(--surface)">✓</span>`
+  )
+}
+
 // What the child SEES and what the voice SAYS are separate concerns in
 // phonics content, and forcing them to be one string means giving up one
 // of them: displaying "I" makes TTS read the letter *name* ("eye", or
@@ -202,10 +264,17 @@ function worldSelectScreen() {
       let cls = 'chapter-card'
       if (cleared) cls += ' cleared'
       if (!unlocked) cls += ' locked'
+      // The card's portrait is one specific character -- the boss of the
+      // world's first chapter -- so it is revealed by THAT stage being
+      // cleared, not by the whole world being finished.
+      const faceStage = firstChapter
+        ? firstChapter.stages[firstChapter.stages.length - 1]
+        : null
       const inner =
-        unlocked && firstChapter
-          ? villainArt(
-              firstChapter.stages[firstChapter.stages.length - 1].villain
+        unlocked && faceStage
+          ? portraitHtml(
+              villainArt(faceStage.villain),
+              isStageCleared(faceStage.id)
             )
           : '<i class="lock">🔒</i>'
       const [start, end] = world.chapterRange
@@ -267,8 +336,12 @@ function chapterSelectScreen(worldId) {
       let cls = 'chapter-card'
       if (cleared) cls += ' cleared'
       if (!unlocked) cls += ' locked'
+      const faceStage = chapter.stages[chapter.stages.length - 1]
       const inner = unlocked
-        ? villainArt(chapter.stages[chapter.stages.length - 1].villain)
+        ? portraitHtml(
+            villainArt(faceStage.villain),
+            isStageCleared(faceStage.id)
+          )
         : '<i class="lock">🔒</i>'
       return `
         <button class="${cls}" data-chapter="${chapter.id}" ${
@@ -332,14 +405,19 @@ function mapScreen(chapterId) {
       if (!unlocked) cls += ' locked'
       const inner = unlocked
         ? stage.chapterBoss
-          ? villainArt(stage.villain)
+          ? portraitHtml(villainArt(stage.villain), cleared)
           : String(stage.order)
         : '<i class="lock">🔒</i>'
+      // position:relative only where a mark actually goes, so an uncleared
+      // node's markup is unchanged.
+      const mark = cleared ? clearMarkHtml() : ''
       return `
         <div class="stage-node-wrap">
-          <button class="${cls}" data-stage="${stage.id}" ${
+          <button class="${cls}" ${
+        cleared ? 'style="position:relative"' : ''
+      } data-stage="${stage.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked stage"'
-      }>${inner}</button>
+      }>${inner}${mark}</button>
           <div class="stage-label">${
             unlocked ? stageTitleHtml(stage.title) : ''
           }</div>

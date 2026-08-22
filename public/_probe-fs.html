@@ -3,7 +3,11 @@
 <title>fullstack probe</title>
 <link rel="stylesheet" href="/src/style.css" />
 <div id="app"></div>
-<pre id="out" style="font:600 14px ui-monospace,monospace;white-space:pre-wrap"></pre>
+<!-- margin:0 is load-bearing: a <pre> carries a 1em (14px) default margin
+     top and bottom, and since .screen became `min-height: 100svh` that margin
+     is 14px of page height the APP does not have. Every ovfY reading here was
+     reporting it as an app overflow (digraph/bosseq both went red at once). -->
+<pre id="out" style="margin:0;font:600 14px ui-monospace,monospace;white-space:pre-wrap"></pre>
 <script type="module">
   // Behavioural harness for the fullstack agent's robustness fixes.
   // Separate from _probe.html (layout/screenshot harness owned by design 1)
@@ -1953,6 +1957,124 @@
     )
   }
 
+  // --- shadowed (unrevealed) character art + clear mark -------------------
+  // Characters outside of play are silhouetted until their stage is cleared.
+  // The silent failure to fear is the REVEAL: if the shadow never comes off,
+  // the child clears a stage and still can't see the character. So both
+  // states are asserted, on all three out-of-play screens, plus the negative
+  // (the battle screen must never shadow anything) and the vertical cost of
+  // the clear mark -- these screens run at 1-2% slack.
+  const wipeProgress = () => {
+    state.progress.clearedStages.length = 0
+    for (const k of Object.keys(state.progress.stars)) delete state.progress.stars[k]
+    state.clearCheckpoint()
+    state.save()
+  }
+
+  const shadowScan = (sel) => {
+    const arts = [...document.querySelectorAll(`${sel} svg`)]
+    return {
+      arts: arts.length,
+      shadowed: arts.filter((a) => a.classList.contains('art-shadow')).length,
+      // The class alone would pass even if the filter were dropped.
+      filtered: arts.filter((a) => /brightness\(0\)/.test(a.style.filter)).length,
+      marks: document.querySelectorAll(`${sel} .clear-mark`).length,
+    }
+  }
+
+  async function shadowReveal() {
+    const out = document.getElementById('out')
+    const prevDisp = out.style.display
+    out.style.display = 'none'
+    const de = document.documentElement
+    const ovf = () => ({
+      y: Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight,
+      x: Math.max(de.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+    })
+    const obs = { vp: `${window.innerWidth}x${window.innerHeight}` }
+    let threw = null
+    try {
+      wipeProgress()
+      screens.renderWorldSelect()
+      await until('.chapter-card')
+      obs.worldFresh = shadowScan('.chapter-card-art')
+      obs.worldOvfFresh = ovf()
+      screens.renderChapterSelect('world-1')
+      await until('.chapter-card[data-chapter]')
+      obs.chaptersFresh = shadowScan('.chapter-card-art')
+      obs.chaptersOvfFresh = ovf()
+      screens.renderMap('chapter-1')
+      await until('.stage-node')
+      obs.mapFresh = shadowScan('.stage-node')
+      obs.mapOvfFresh = ovf()
+
+      // clear chapter 1's boss (art node) and its stage 1 (number node)
+      state.markStageCleared('stage-1', 3)
+      state.markStageCleared('stage-5', 3)
+      screens.renderMap('chapter-1')
+      await until('.stage-node')
+      obs.mapCleared = shadowScan('.stage-node')
+      obs.mapOvfCleared = ovf()
+      screens.renderChapterSelect('world-1')
+      await until('.chapter-card[data-chapter]')
+      obs.chaptersCleared = shadowScan('.chapter-card-art')
+      obs.chaptersOvfCleared = ovf()
+      screens.renderWorldSelect()
+      await until('.chapter-card')
+      obs.worldCleared = shadowScan('.chapter-card-art')
+      obs.worldOvfCleared = ovf()
+
+      // in play: never shadowed, cleared stage or not
+      await enterStage('chapter-1', 0)
+      await until('.villain-sprite svg')
+      obs.battle = shadowScan('.battle-scene')
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    out.style.display = prevDisp
+    wipeProgress()
+    const ok =
+      !threw &&
+      // fresh: every portrait shadowed, no marks anywhere
+      obs.worldFresh.arts > 0 &&
+      obs.worldFresh.shadowed === obs.worldFresh.arts &&
+      obs.worldFresh.filtered === obs.worldFresh.arts &&
+      obs.chaptersFresh.arts > 0 &&
+      obs.chaptersFresh.shadowed === obs.chaptersFresh.arts &&
+      obs.mapFresh.arts > 0 &&
+      obs.mapFresh.shadowed === obs.mapFresh.arts &&
+      obs.mapFresh.marks === 0 &&
+      // cleared: boss portrait revealed, exactly the 2 cleared nodes marked
+      obs.mapCleared.shadowed === 0 &&
+      obs.mapCleared.marks === 2 &&
+      obs.chaptersCleared.shadowed === obs.chaptersCleared.arts - 1 &&
+      obs.worldCleared.shadowed === obs.worldCleared.arts - 1 &&
+      // battle screen: hero + villain, neither shadowed
+      obs.battle.arts >= 2 &&
+      obs.battle.shadowed === 0 &&
+      // and no screen scrolls in either state
+      [obs.worldOvfFresh, obs.chaptersOvfFresh, obs.mapOvfFresh,
+       obs.worldOvfCleared, obs.chaptersOvfCleared, obs.mapOvfCleared]
+        .every((o) => o.x <= 0 && o.y <= 0)
+    check('shadow-art-hides-until-cleared', ok, `threw=${threw} ${JSON.stringify(obs)}`)
+  }
+
+  // Screenshot: ?cleared=1 shows the revealed + marked state, otherwise the
+  // fresh all-shadow state. ?screen=world|chapters|map picks the screen.
+  async function shadowShot() {
+    if (params.get('cleared') === '1') {
+      state.markStageCleared('stage-1', 3)
+      state.markStageCleared('stage-5', 3)
+    }
+    const which = params.get('screen') || 'map'
+    if (which === 'world') screens.renderWorldSelect()
+    else if (which === 'chapters') screens.renderChapterSelect('world-1')
+    else screens.renderMap('chapter-1')
+    await until('.chapter-card, .stage-node')
+    document.getElementById('out').style.display = 'none'
+    check('shadowshot-rendered', true, which)
+  }
+
   const CASES = {
     worldheader: worldHeaderFit,
     tap: tapBacklog,
@@ -1988,6 +2110,8 @@
     buildwrongdigraph: buildWrongOrderDigraph,
     buildwrongstages: buildWrongOrderStages,
     buildwrongfit: buildWrongFit,
+    shadow: shadowReveal,
+    shadowshot: shadowShot,
     buildwrongshot: buildWrongShot,
     artscan: artCrashScan,
     onendearly: onendEarlyHypothesis,
