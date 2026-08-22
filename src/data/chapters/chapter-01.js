@@ -65,7 +65,13 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          // 앱 전체에서 아이가 처음 만나는 옵션 그리드다. 확인 버튼(`51cdd44`)
+          // 이후로 탭은 **고르기**이고 채점은 ✓ 가 하므로, 그 기제를 여기서
+          // 한 번 말한다. 나머지 27개 '다른 소리로 시작하는 걸 찾아보세요!' 는
+          // 그대로 둔다 -- 그 문장은 완료 조건을 주장하지 않으므로 틀리지 않았고,
+          // 158개 옵션 그리드 지시문 전부에 UI 기제를 붙이면 매 화면의 문장이
+          // 파닉스 내용 대신 버튼 설명이 된다. 첫 만남에서만 스캐폴딩한다.
+          instructionKo: '다른 소리로 시작하는 걸 고르고 ✓를 누르세요!',
           options: [
             { id: 'dog', icon: 'dog', label: 'dog', correct: true },
             { id: 'sun', icon: 'sun', label: 'sun', correct: false },
@@ -112,7 +118,7 @@ export const chapter1 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/s/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/s/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'snake2', icon: 'snake', label: 'snake', correct: true },
             { id: 'star2', icon: 'star', label: 'star', correct: true },
@@ -207,7 +213,7 @@ export const chapter1 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/s/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/s/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'sock', icon: 'sock', label: 'sock', correct: true },
             { id: 'moon', icon: 'moon', label: 'moon', correct: false },
@@ -221,7 +227,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'sss 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'sss 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'sss',
           options: [
             { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zz', correct: false },
@@ -331,7 +337,7 @@ export const chapter1 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/a/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/a/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'apple2', icon: 'apple', label: 'apple', correct: true },
             { id: 'sun', icon: 'sun', label: 'sun', correct: false },
@@ -345,7 +351,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'aaa 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'aaa 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'aaa',
           options: [
             { id: 'A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
@@ -455,7 +461,7 @@ export const chapter1 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/t/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/t/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'top2', icon: 'top', label: 'top', correct: true },
             { id: 'ant', icon: 'ant', label: 'ant', correct: false },
@@ -469,7 +475,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'tuh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'tuh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'tuh',
           options: [
             { id: 'D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
@@ -505,7 +511,7 @@ export const chapter1 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'sss',
@@ -601,7 +607,7 @@ export const chapter1 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'sss',

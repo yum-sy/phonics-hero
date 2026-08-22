@@ -20,8 +20,18 @@ import { chapter4 } from './chapter-04.js'
 import { chapter5 } from './chapter-05.js'
 import { chapter6 } from './chapter-06.js'
 import { chapter7 } from './chapter-07.js'
+import { chapter8 } from './chapter-08.js'
 
-export const chapters = [chapter1, chapter2, chapter3, chapter4, chapter5, chapter6, chapter7]
+export const chapters = [
+  chapter1,
+  chapter2,
+  chapter3,
+  chapter4,
+  chapter5,
+  chapter6,
+  chapter7,
+  chapter8,
+]
 
 export const stages = chapters.flatMap((c) => c.stages)
 
@@ -238,6 +248,11 @@ const MISREAD_NOTATIONS = new Map([
   ['aaaa', '"aa" 와 바이트 동일(포화). `aaa` 를 써라'],
   ['mmmm', '"mm" 와 바이트 동일(포화). `mmm` 을 써라'],
   ['llll', '"ll" 와 바이트 동일(포화). `lll` 을 써라'],
+  // 챕터 8(IE/EE/OR) 을 쓰면서 측정했다. 둘 다 **다이그래프의 원문 철자를 그대로
+  // 발화 필드에 넣는** 가장 자연스러운 실수이고, 그래서 앞으로 반복될 실수다.
+  //   say -v Samantha -r 88 -o a.aiff "ai"; say -v Samantha -r 88 -o b.aiff "eye"; cmp a.aiff b.aiff
+  ['ai', 'Samantha 에서 글자 이름 I("i"/"eye"/"igh")와 바이트 동일하다 -- AI 의 목표음 /ei/ 가 아니라 /ai/(eye)를 가르친다. Alex 는 또 다르게(703ms) 읽어 두 음성이 서로 다른 소리를 낸다. AI 는 `a`(글자 이름 A)를 써라'],
+  ['ay', '두 음성이 **서로 다른 글자 이름**으로 읽는다: Samantha 는 글자 이름 I(=`eye`/`i`/`igh` 와 바이트 동일), Alex 는 글자 이름 A(=`a`/`eh` 와 바이트 동일). 즉 같은 데이터가 기기 음성에 따라 다른 소리를 가르친다. /ei/ 는 `a`, /ai/ 는 `eye` 를 써라'],
 ])
 
 // 단일 소문자 한 글자는 예외 없이 글자 **이름**으로 읽힌다(s==ess, n==en,
@@ -927,6 +942,13 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
 
       for (const [field, text] of displayed) {
         if (typeof text !== 'string') continue
+        // LETTERFORM(대문자 1~2자)은 이 검사에서 면제한다. SOUND_NOTATION 이
+        // `/^(.)\1+$/i` 라서 **같은 글자가 겹친 다이그래프를 소리 표기로 오인**한다
+        // -- 챕터 8 의 `EE`, Jolly group 5 의 `OO` 두 개가 정확히 여기 걸린다.
+        // 챕터 1~7 은 다이그래프가 `AI`/`OA` 라서 우연히 통과하고 있었고, 그래서
+        // 이 결함은 group 4 후반에 처음 드러났다. 검사의 목적은 `sss` 같은 소문자
+        // 소리 표기가 화면으로 새는 것이고, 대문자 1~2자는 정의상 글자꼴이다.
+        if (LETTERFORM.test(text)) continue
         if (SOUND_NOTATION.test(text) || CHOPPED_NOTATION.test(text)) {
           problems.push(`${field}: 화면에 소리 표기 '${text}' 노출 -- 표시는 실제 글자·단어여야 함`)
         }

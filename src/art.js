@@ -780,6 +780,21 @@ const HERO_PALETTES = {
   'jett': { style: 'dc-jett' },
   'cloak': { style: 'dc-cloak' },
   'nightray': { style: 'dc-boss' },
+  // 챕터 8 (카봇 두 번째 슬롯). 챕터 1 의 초록/주황/파랑/빨강과 색상 이웃이
+  // 겹치지 않게 청록·자주·황토를 골랐다 -- 같은 계열이 두 번 나오므로 배색이
+  // 유일한 구분 수단이다.
+  //
+  // emblem 이 '★' 인 이유: 챕터 8 은 IE/EE/OR 셋 다 다이그래프인데 카봇의
+  // 엠블럼 판이 두 글자를 못 담는다(실측: IE +3.65 여유, EE +0.52, OR -2.04 초과).
+  // 첫 글자만 새기는 우회는 **축약이 아니라 모순**이다 -- 세 다이그래프가 하필
+  // 전부 앱이 이미 다른 소리로 가르친 모음으로 시작한다(I=짧은 /i/ 챕터2,
+  // E=짧은 /e/ 챕터3, O=짧은 /o/ 챕터5). 가슴에 'I' 만 새기면 /ai/ 히어로가
+  // /i/ 의 글자를 달고 나온다. 정보 0 인 '★' 가 틀린 정보보다 낫다.
+  // robots.js 의 판이 넓어지면 'IE'/'EE'/'OR' 로 바꾼다.
+  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: '★' },
+  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: '★' },
+  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: '★' },
+  'nitrostorm': { style: 'robot-deluxe', bodyColor: '#2f7fd6', accent: '#12406e' },
 }
 
 const VILLAIN_PALETTES = {
@@ -819,6 +834,12 @@ const VILLAIN_PALETTES = {
   'gridlock': { style: 'dc-gridlock' },
   'floodlight': { style: 'dc-floodlight' },
   'nightfall': { style: 'dc-nightfall' },
+  // 챕터 8 빌런. 챕터 1 의 회색/보라/암회색/주황/검정과 갈리게.
+  'rustbot': { bodyColor: '#a1552e', accent: '#4f2513' },
+  'crashbot': { bodyColor: '#4f6b8a', accent: '#243546' },
+  'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16' },
+  'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c' },
+  'iron-wreck': { style: 'robot-deluxe', bodyColor: '#5a5f68', accent: '#25282e' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,

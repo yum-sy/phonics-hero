@@ -112,7 +112,7 @@ export const chapter3 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/k/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/k/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c3s1-cat2', icon: 'cat', label: 'cat', correct: true },
             { id: 'c3s1-bus', icon: 'bus', label: 'bus', correct: false },
@@ -221,7 +221,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이를 "모두 찾기" 로 물어 다대일 대응을 수업으로 만든다.
-          instructionKo: 'kuh 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
+          instructionKo: 'kuh 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
           options: [
             { id: 'c3s2-C2', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-S2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
@@ -235,7 +235,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'kuh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'kuh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'kuh',
           // 혼동 보기는 S 하나 -- c 가 /s/ 로도 읽히는 실제 함정이다.
           options: [
@@ -348,7 +348,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이 개념 2회차 간격 복습 -- 이 챕터에서 가장 어려운 개념이다.
-          instructionKo: 'kuh 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
+          instructionKo: 'kuh 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
           options: [
             { id: 'c3s3-K2', icon: 'letterTile', label: 'K', say: 'kuh', correct: true },
             { id: 'c3s3-E2', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
@@ -390,7 +390,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'eh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'eh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'eh',
           // 혼동 보기는 I 하나 -- 챕터 2 의 /i/ 와 최대 혼동쌍이다.
           options: [
@@ -501,7 +501,7 @@ export const chapter3 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c3s4-hat2', icon: 'hat', label: 'hat', correct: true },
             { id: 'c3s4-cat', icon: 'cat', label: 'cat', correct: false },
@@ -515,7 +515,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'huh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'huh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'huh',
           // 혼동 보기는 S 하나 -- /h/ 와 /s/ 는 둘 다 무성 마찰음이라 진짜 근접쌍이고,
           // S 는 챕터 1 에서 이미 배운 글자다 (N 은 warmup 에서 이미 썼다).
@@ -554,7 +554,7 @@ export const chapter3 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'kuh',
@@ -651,7 +651,7 @@ export const chapter3 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'kuh',

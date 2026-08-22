@@ -121,7 +121,7 @@ export const chapter6 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/p/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c6s1-pig2', icon: 'pig', label: 'pig', correct: true },
             { id: 'c6s1-net', icon: 'net', label: 'net', correct: false },
@@ -220,7 +220,7 @@ export const chapter6 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c6s2-hat', icon: 'hat', label: 'hat', correct: true },
             { id: 'c6s2-moon', icon: 'moon', label: 'moon', correct: false },
@@ -234,7 +234,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'lll 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'lll 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'lll',
           options: [
             { id: 'c6s2-R3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
@@ -351,7 +351,7 @@ export const chapter6 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/e/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/e/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c6s3-egg', icon: 'egg', label: 'egg', correct: true },
             { id: 'c6s3-hat', icon: 'hat', label: 'hat', correct: false },
@@ -365,7 +365,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'fff 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'fff 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'fff',
           options: [
             { id: 'c6s3-F3', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
@@ -488,7 +488,7 @@ export const chapter6 = {
           hits: 1,
           // /b/ 그림이 ball/bed/box/bus 네 개라 정답 2개를 세울 수 있다.
           // 오답 하나는 /p/ 로 두어 유무성 짝을 계속 맞붙인다.
-          instructionKo: '/b/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/b/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c6s4-box', icon: 'box', label: 'box', correct: true },
             { id: 'c6s4-pig', icon: 'pig', label: 'pig', correct: false },
@@ -502,7 +502,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'buh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'buh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'buh',
           options: [
             { id: 'c6s4-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
@@ -556,7 +556,7 @@ export const chapter6 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'lll',
@@ -669,7 +669,7 @@ export const chapter6 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'fff',

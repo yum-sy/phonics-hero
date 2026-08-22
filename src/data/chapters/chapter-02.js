@@ -90,7 +90,7 @@ export const chapter2 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/i/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/i/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c2s1-ink2', icon: 'ink', label: 'ink', correct: true },
             { id: 'c2s1-insect3', icon: 'insect', label: 'insect', correct: true },
@@ -185,7 +185,7 @@ export const chapter2 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/i/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/i/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c2s2-ink', icon: 'ink', label: 'ink', correct: true },
             { id: 'c2s2-sock', icon: 'sock', label: 'sock', correct: false },
@@ -199,7 +199,7 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'ihh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'ihh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'ihh',
           options: [
             { id: 'c2s2-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
@@ -309,7 +309,7 @@ export const chapter2 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/p/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c2s3-pot', icon: 'pot', label: 'pot', correct: true },
             { id: 'c2s3-igloo', icon: 'igloo', label: 'igloo', correct: false },
@@ -323,7 +323,7 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'puh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'puh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'puh',
           options: [
             { id: 'c2s3-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
@@ -433,7 +433,7 @@ export const chapter2 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/n/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/n/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c2s4-net2', icon: 'net', label: 'net', correct: true },
             { id: 'c2s4-pen', icon: 'pen', label: 'pen', correct: false },
@@ -447,7 +447,7 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'nnn 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'nnn 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
@@ -483,7 +483,7 @@ export const chapter2 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'ihh',
@@ -579,7 +579,7 @@ export const chapter2 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'puh',

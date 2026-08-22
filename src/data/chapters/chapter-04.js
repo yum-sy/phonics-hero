@@ -104,7 +104,7 @@ export const chapter4 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/e/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/e/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c4s1-egg2', icon: 'egg', label: 'egg', correct: true },
             { id: 'c4s1-moon', icon: 'moon', label: 'moon', correct: false },
@@ -201,7 +201,7 @@ export const chapter4 = {
           hits: 1,
           // 챕터 3 의 H 는 그림 문항이 하나도 없었다 -- 이제 아이콘이 생겼으니
           // 여기서 /h/ 를 그림으로 복습한다.
-          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c4s2-hat', icon: 'hat', label: 'hat', correct: true },
             { id: 'c4s2-pig', icon: 'pig', label: 'pig', correct: false },
@@ -215,7 +215,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'rrr 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'rrr 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'rrr',
           // 혼동 보기는 L 하나 -- /r/ 와 /l/ 은 한국어 화자에게 최대 난점이다.
           options: [
@@ -331,7 +331,7 @@ export const chapter4 = {
           // 오답을 net 으로 둔다 -- 이 스테이지는 M/N 을 계속 맞붙이고 있다
           // (warmup 의 혼동 보기도 N, r6 의 오답도 net/nose). 무작위 오답이면
           // 그림 이름 대기 문항이 되지만, /n/ 오답은 실제 소리 변별을 묻는다.
-          instructionKo: '/m/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/m/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c4s3-man', icon: 'man', label: 'man', correct: true },
             { id: 'c4s3-net2', icon: 'net', label: 'net', correct: false },
@@ -345,7 +345,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'mmm 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'mmm 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'mmm',
           // 혼동 보기는 R 하나 -- 방금 배운 글자이고 /m/ 처럼 지속음이다.
           options: [
@@ -467,7 +467,7 @@ export const chapter4 = {
           // 쓰였다. 세 문항 모두 같은 그림이 되지 않게 여기서는 새 그림 둘만
           // 정답으로 세우고, 오답은 /p/ 로 둔다 -- r5-hard 가 D↔P 를 letterTile
           // 로 대비시키는 것과 같은 대비를 그림으로 한 번 더 준다.
-          instructionKo: '/d/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/d/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c4s4-duck', icon: 'duck', label: 'duck', correct: true },
             { id: 'c4s4-pig', icon: 'pig', label: 'pig', correct: false },
@@ -481,7 +481,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'duh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'duh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'duh',
           // 혼동 보기는 P 하나 (회전 혼동). B 는 여기에도 넣지 않는다.
           options: [
@@ -538,7 +538,7 @@ export const chapter4 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'rrr',
@@ -635,7 +635,7 @@ export const chapter4 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
           steps: [
             {
               promptAudio: 'mmm',

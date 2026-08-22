@@ -148,7 +148,7 @@ export const chapter5 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c5s1-hat3', icon: 'hat', label: 'hat', correct: true },
             { id: 'c5s1-moon', icon: 'moon', label: 'moon', correct: false },
@@ -246,7 +246,7 @@ export const chapter5 = {
           hits: 1,
           // /g/ 그림이 없어 /k/ 복습으로 대체 -- G/K 는 이 챕터의 핵심 대비쌍
           // 이라 오히려 자연스러운 연결이다.
-          instructionKo: '/k/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/k/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c5s2-cat', icon: 'cat', label: 'cat', correct: true },
             { id: 'c5s2-moon', icon: 'moon', label: 'moon', correct: false },
@@ -260,7 +260,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'guh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'guh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'guh',
           options: [
             { id: 'c5s2-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
@@ -372,7 +372,7 @@ export const chapter5 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/e/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/e/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c5s3-egg', icon: 'egg', label: 'egg', correct: true },
             { id: 'c5s3-hat', icon: 'hat', label: 'hat', correct: false },
@@ -386,7 +386,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'awh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'awh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'awh',
           options: [
             { id: 'c5s3-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: true },
@@ -507,7 +507,7 @@ export const chapter5 = {
           // 어중 /u/ -- 근거는 파일 헤더에 있다. 보기 넷이 모두 자음으로
           // 시작하므로 초성 매칭으로는 풀 수 없고, 오답 dog 은 어중이 /o/ 라
           // 이 문항이 그대로 어중 /o/ 대 /u/ 변별이 된다.
-          instructionKo: 'uh 소리가 가운데 들어있는 걸 모두 찾아 탭하세요!',
+          instructionKo: 'uh 소리가 가운데 들어있는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c5s4-cup', icon: 'cup', label: 'cup', correct: true },
             { id: 'c5s4-dog', icon: 'dog', label: 'dog', correct: false },
@@ -521,7 +521,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'uh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'uh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'uh',
           // 혼동 보기는 O 하나 -- 방금 배운 글자와 대비시킨다(U/O 도 의도된
           // 대비쌍). warmup 에서 이미 U/A 를 다뤄서 여기선 겹치지 않는다.
@@ -559,7 +559,7 @@ export const chapter5 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'guh',
@@ -672,7 +672,7 @@ export const chapter5 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'guh',

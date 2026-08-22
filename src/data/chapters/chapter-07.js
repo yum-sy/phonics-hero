@@ -178,7 +178,7 @@ export const chapter7 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/h/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/h/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c7s1-hat', icon: 'hat', label: 'hat', correct: true },
             { id: 'c7s1-fan', icon: 'fan', label: 'fan', correct: false },
@@ -253,7 +253,7 @@ export const chapter7 = {
           // 렌더러는 promptAudio 를 읽지 않으므로 소리는 문장으로 지목한다.
           // 어중(rain/train)과 어두(aim)를 한 문항에 섞어 위치가 아니라
           // 소리로 판단하게 만든다.
-          instructionKo: 'AI 소리가 들어있는 걸 모두 찾아 탭하세요!',
+          instructionKo: 'AI 소리가 들어있는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c7s2-rain', icon: 'rain', label: 'rain', correct: true },
             { id: 'c7s2-bed2', icon: 'bed', label: 'bed', correct: false },
@@ -283,7 +283,7 @@ export const chapter7 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/f/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/f/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c7s2-fish', icon: 'fish', label: 'fish', correct: true },
             { id: 'c7s2-bed', icon: 'bed', label: 'bed', correct: false },
@@ -297,7 +297,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'a',
           // 여기 세 번째 보기는 E(`eh`)였다. **`eh` 는 두 음성 모두에서 `a` 와
           // 바이트 단위로 동일하게 렌더된다** -- 즉 프롬프트 소리와 오답 타일이
@@ -428,7 +428,7 @@ export const chapter7 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/o/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/o/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c7s3-octopus', icon: 'octopus', label: 'octopus', correct: true },
             { id: 'c7s3-umbrella', icon: 'umbrella', label: 'umbrella', correct: false },
@@ -442,7 +442,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'juh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'juh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'juh',
           options: [
             { id: 'c7s3-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
@@ -560,7 +560,7 @@ export const chapter7 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/l/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          instructionKo: '/l/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c7s4-lion', icon: 'lion', label: 'lion', correct: true },
             { id: 'c7s4-bed', icon: 'bed', label: 'bed', correct: false },
@@ -574,7 +574,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'oh',
           options: [
             { id: 'c7s4-OA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
@@ -612,7 +612,7 @@ export const chapter7 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'a',
@@ -728,7 +728,7 @@ export const chapter7 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '소리를 듣고 맞는 글자를 탭하세요! 지금까지 배운 글자도 나와요.',
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
           steps: [
             {
               promptAudio: 'oh',
