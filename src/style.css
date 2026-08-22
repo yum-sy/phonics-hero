@@ -813,8 +813,12 @@ button {
 
 /* No side padding: the icons carry their own margin inside a 64x64 viewBox,
    so horizontal padding only shrinks the picture (211px -> 231px without it)
-   and pushes the long option words further outside the card. */
+   and pushes the long option words further outside the card.
+   `container-type` is here so .option-label can size itself against THIS
+   card's width (see that rule). inline-size only: the card's height still
+   comes from its contents. */
 .option-btn {
+  container-type: inline-size;
   min-height: 0;
   padding: 10px 0;
   height: 100%;
@@ -891,24 +895,47 @@ button {
   display: block;
 }
 
-/* PRE-EXISTING DEFECT, not fixed here: a single long word does not wrap, so
-   "orange"/"octopus"/"umbrella" (12 beats across chapters 3-7) render past
-   both edges of their card and collide with the neighbour's word. The card's
-   inner width is unchanged from before this pass (211px portrait), so this is
-   no worse -- but nothing in the harness could see it, hence the new SPILL
-   field in _probe.html.
-   It cannot be fixed from CSS alone: fitting text to a box needs the
-   character count. The fix follows the .beat-equation precedent -- have
-   optionLabelHtml() in screens.js emit style="--label-len:${label.length}"
-   and size this rule as
-     min(clamp(32px, 5.6vh, 67px), calc(<K>px / var(--label-len, 3)))
-   with K found by sweep. Shrinking the font unconditionally is the wrong
-   trade: 258 of the 306 labels are 3-4 characters and lose size for the 48
-   that are long. Breaking the word (overflow-wrap) was measured too and
-   removes the collision, but "umbrel/la" teaches a false syllable split in a
-   phonics app. */
+/* A long option word does not wrap, so at the plain 67px cap "elephant" is
+   262px and "octopus" 239px inside a 231px card -- they were painted past
+   both edges and two neighbours printed as "octopusumbrella". 8 of the 12
+   affected beats spilled; the other 4 are 4-option beats whose 2x2 cards are
+   WIDER (261px), which is the whole reason a size cap alone cannot decide
+   this: the answer depends on the card, not on the viewport.
+   So the budget is taken from the card itself. `--label-len` (longest
+   unbreakable run, from optionLabelHtml) is the divisor and `cqw` -- 1% of
+   .option-btn's content box -- is the unit, which is why there is no
+   per-option-count and no per-orientation table here: 3/5/6 options are 231px
+   wide in portrait, 4 options 261px, landscape 200px and 264px, and one rule
+   fits all of them.
+   180 by sweep over all 12 beats x both orientations x 3/4/5/6 options: 197
+   is the last clean value and 198 spills ("octopus" at 234px), so 180 keeps
+   ~9% of margin -- deliberate, because the numbers above are headless
+   Chrome's -apple-system metrics and the device is iPad Safari, and the two
+   failure directions are not symmetric (too small is a slightly smaller word,
+   too large is the collision back on the child's screen).
+   What it costs, worst case (the narrowest card, 231px): nothing for 576 of
+   the 590 labels -- the cap still wins for every label of 6 characters or
+   fewer, and only the 5 seven-character and 9 eight-character ones shrink, to
+   59px and 52px. In a 261px card even the seven-character ones keep the full
+   67px, which is the point of measuring the card. Sizing the numerator
+   in px instead was measured and also passes today, but it has to be set for
+   the narrowest card in the app and then applies everywhere: at 420px it
+   shrinks "octopus" to 60px in the roomy 4-option card where this rule leaves
+   it at the full 67px.
+   Rejected: shrinking the font unconditionally (258 of the 306 visible labels
+   are 3-4 characters and would pay for the 48 long ones), and overflow-wrap,
+   which does remove the collision but prints "umbrel/la" -- a false syllable
+   boundary, in a phonics app.
+   `max(1, ...)` is not decoration: validateChapters() checks option labels for
+   leaked sound notation but not for emptiness, so an empty label is reachable
+   from a content typo, and it would make this a divide-by-zero -- which does
+   not fail loudly, it just drops the declaration and renders the whole row at
+   the inherited 16px.
+   Needs container queries (Safari 16); `:has()` above already sets the floor
+   at Safari 15.4, so this is not a new class of dependency. */
 .option-label {
-  font-size: clamp(32px, 5.6vh, 67px);
+  --label-cap: clamp(32px, 5.6vh, 67px);
+  font-size: min(var(--label-cap), calc(180cqw / max(1, var(--label-len, 3))));
   font-weight: 700;
   color: var(--text);
   flex: 0 0 auto;
@@ -1326,16 +1353,20 @@ button {
 
   /* No side padding here, unlike portrait. Landscape cards are the narrowest
      in the app (210px across for three options) and the long option words
-     ("umbrella" at 50px is 196px wide) already sit within a pixel or two of
-     the card's inner edge -- 10px a side pushed them out of it. See the
-     .option-label note about the real fix. */
+     ("umbrella" at 50px was 196px wide) sat within a pixel or two of the
+     card's inner edge -- 10px a side pushed them out of it. The cqw term in
+     .option-label now holds that case with real room (45px, 175px wide), but
+     the padding stays out: it buys picture, and the icons carry their own. */
   .option-btn {
     min-height: 0;
     padding: 8px 0;
   }
 
+  /* Only the CAP is overridden -- the per-card fit term stays in the base
+     rule, so the swept 180 lives in exactly one place and changing this
+     number cannot re-open the spill on its own. */
   .option-label {
-    font-size: 50px;
+    --label-cap: 50px;
   }
 
   .build-slot {

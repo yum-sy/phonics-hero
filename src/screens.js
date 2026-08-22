@@ -113,10 +113,22 @@ function renderStage(stageId) {
 // different thing -- testing whole-word reading, not one letterform -- and
 // keep their visible label as before. The letter stays in the DOM as
 // screen-reader-only text either way, for accessibility.
+//
+// `--label-len` is the length of the longest UNBREAKABLE run in the label,
+// which is what CSS needs to fit the word to the card and cannot work out on
+// its own (same reason .beat-equation is handed `--eq-len`). Measured on the
+// longest run rather than the whole string because that is the run that
+// actually cannot wrap: "octopus" and "umbrella" render 239px and 261px wide
+// inside a 231px card today and print as "octopusumbrella" across the gap
+// between two cards. Shrinking every label instead would cost the 258 short
+// labels to save the 48 long ones, and letting the word break would print
+// "umbrel/la" -- a false syllable boundary in front of a child who is being
+// taught to read by sound.
 function optionLabelHtml(opt) {
   const isLetterformTile = opt.icon === 'letterTile' && opt.label.length <= 2
   const cls = isLetterformTile ? 'option-label sr-only' : 'option-label'
-  return `<span class="${cls}">${opt.label}</span>`
+  const len = Math.max(...opt.label.split(/\s+/).map((w) => w.length))
+  return `<span class="${cls}" style="--label-len:${len}">${opt.label}</span>`
 }
 
 // What the child SEES and what the voice SAYS are separate concerns in
