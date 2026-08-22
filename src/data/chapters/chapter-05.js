@@ -70,7 +70,7 @@ export const chapter5 = {
           kind: 'teach',
           instructionKo: 'Gogo가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['guh', 'guh', 'guh'],
+          repeatAudio: ['guh, guh, guh', 'gap', 'guh, guh, guh'],
         },
         {
           id: 'c5s1-r1',
@@ -86,7 +86,7 @@ export const chapter5 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['guh', 'guh', 'Gogo', 'guh', 'guh', 'gap'],
+          repeatAudio: ['guh, guh', 'Gogo', 'guh, guh', 'gap'],
         },
         {
           id: 'c5s1-r2',

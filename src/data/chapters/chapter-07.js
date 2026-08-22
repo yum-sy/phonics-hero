@@ -102,7 +102,7 @@ export const chapter7 = {
           kind: 'teach',
           instructionKo: 'Ray가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['a', 'a', 'a'],
+          repeatAudio: ['a, a, a', 'rain', 'a, a, a'],
         },
         {
           id: 'c7s1-r1',
@@ -118,7 +118,7 @@ export const chapter7 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['a', 'a', 'Ray', 'a', 'a', 'rain'],
+          repeatAudio: ['a, a', 'Ray', 'a, a', 'rain'],
         },
         {
           id: 'c7s1-r2',
@@ -203,7 +203,7 @@ export const chapter7 = {
           instructionKo: 'AI는 A가 자기 이름을 말할 때처럼 소리를 내요!',
           art: 'hero',
           letter: 'AI',
-          repeatAudio: ['a', 'a', 'a', 'a'],
+          repeatAudio: ['a, a, a', 'rain', 'a, a, a'],
         },
         {
           id: 'c7s2-r1-warmup',
@@ -246,7 +246,7 @@ export const chapter7 = {
           instructionKo: '손가락으로 AI를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'AI',
-          repeatAudio: ['a', 'a', 'Ray', 'a', 'a', 'rain'],
+          repeatAudio: ['a, a', 'Ray', 'a, a', 'rain'],
         },
         {
           id: 'c7s2-r4-multiselect',
@@ -462,7 +462,7 @@ export const chapter7 = {
           instructionKo: 'OA는 O가 자기 이름을 말할 때처럼 소리를 내요!',
           art: 'hero',
           letter: 'OA',
-          repeatAudio: ['oh', 'oh', 'oh', 'oh'],
+          repeatAudio: ['oh, oh, oh', 'boat', 'oh, oh, oh'],
         },
         {
           id: 'c7s4-r1-warmup',
@@ -505,7 +505,7 @@ export const chapter7 = {
           instructionKo: '손가락으로 OA를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'OA',
-          repeatAudio: ['oh', 'oh', 'Cloak', 'oh', 'oh', 'boat'],
+          repeatAudio: ['oh, oh', 'Cloak', 'oh, oh', 'boat'],
         },
         {
           id: 'c7s4-r4-multiselect',

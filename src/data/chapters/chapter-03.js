@@ -45,7 +45,7 @@ export const chapter3 = {
           kind: 'teach',
           instructionKo: '케이라가 골짜기에서 나는 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['kuh', 'kuh', 'kuh'],
+          repeatAudio: ['kuh, kuh, kuh', 'cat', 'kuh, kuh, kuh'],
         },
         {
           id: 'c3s1-r1',
@@ -65,7 +65,7 @@ export const chapter3 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['kuh', 'kuh', 'Coco', 'kuh', 'kuh', 'cup'],
+          repeatAudio: ['kuh, kuh', 'Coco', 'kuh, kuh', 'cup'],
         },
         {
           id: 'c3s1-r2',

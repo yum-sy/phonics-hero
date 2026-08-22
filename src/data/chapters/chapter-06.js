@@ -68,7 +68,7 @@ export const chapter6 = {
           kind: 'teach',
           instructionKo: 'Leo가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['lll', 'lll', 'lll'],
+          repeatAudio: ['lll, lll, lll', 'lap', 'lll, lll, lll'],
         },
         {
           id: 'c6s1-r1',
@@ -84,7 +84,7 @@ export const chapter6 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['lll', 'lll', 'Leo', 'lll', 'lll', 'lap'],
+          repeatAudio: ['lll, lll', 'Leo', 'lll, lll', 'lap'],
         },
         {
           id: 'c6s1-r2',

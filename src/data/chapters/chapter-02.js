@@ -36,7 +36,7 @@ export const chapter2 = {
           kind: 'teach',
           instructionKo: '잉키가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['iii', 'iii', 'iii'],
+          repeatAudio: ['iii, iii, iii', 'ink', 'iii, iii, iii'],
         },
         {
           id: 'c2s1-r1',
@@ -56,7 +56,7 @@ export const chapter2 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['iii', 'iii', 'Inky', 'iii', 'iii', 'ink'],
+          repeatAudio: ['iii, iii', 'Inky', 'iii, iii', 'ink'],
         },
         {
           id: 'c2s1-r2',

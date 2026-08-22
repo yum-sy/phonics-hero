@@ -140,6 +140,17 @@ const SPEECH_COLLISION_PAIRS = [['buh', 'duh']]
 // 패턴만 잡는다 -- 'C-A-T는 CAT' 같은 대문자 낱자 나열은 정상 표기다.
 const HYPHENED_IN_TEXT = /\b([a-z])(-\1)+\b/
 
+// "repeatAudio 원소 하나 = 발화 하나" 규칙의 **취지**는 서로 다른 단어를 한
+// 문자열에 cramming 하지 말라는 것이다(그러면 TTS 가 이어 읽어 아이가 개별
+// 단어를 못 잡는다). 반면 **같은 소리를 콤마로 반복**하는 건 측정 결과 정반대
+// 효과다: 'a' 단일 발화는 두 음성 모두 0.33s 짜리 블립이고 1.1s 침묵 사이에
+// 3번 떨어지면 붙잡을 수 없는데, 'a, a, a' 한 발화는 토큰당 ~510ms(콤마가
+// 만드는 운율 휴지 포함)로 **또박또박 끊어** 읽힌다 -- N=2..5 에서 증분이
+// 일정해 실제로 N개 토큰이 나오는 것을 확인했다. 공백 연결('a a a')은 반대로
+// 압축돼(0.50s) 더 나빠지므로 반드시 콤마여야 한다.
+// 그래서 규칙을 "여러 토큰이면 전부 같은 토큰이어야 한다" 로 정밀화한다.
+const SPEECH_TOKEN_SPLIT = /[,\s]+/
+
 // Kinds whose renderer deals its hit unconditionally; every other scored kind
 // needs a readAloud to have any damage path at all.
 const SELF_PAYING_KINDS = new Set(['choose-sequence', 'listen-repeat', 'finale'])
@@ -315,6 +326,23 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         }
         for (const [i, line] of (beat.repeatAudio || []).entries()) {
           spoken.push([`${at} repeatAudio[${i}]`, line])
+          if (typeof line === 'string') {
+            const tokens = line.trim().split(SPEECH_TOKEN_SPLIT).filter(Boolean)
+            const distinct = new Set(tokens.map((t) => t.toLowerCase()))
+            if (tokens.length > 1 && distinct.size > 1) {
+              problems.push(
+                `${at} repeatAudio[${i}]: 한 발화에 서로 다른 토큰 ` +
+                  `[${tokens.join(' / ')}] 를 cramming -- 원소 하나 = 발화 하나. ` +
+                  `같은 소리 반복('a, a, a')만 한 원소에 넣을 수 있다`
+              )
+            }
+            if (tokens.length > 1 && !line.includes(',')) {
+              problems.push(
+                `${at} repeatAudio[${i}]: '${line}' 를 공백으로 이어붙였다 -- ` +
+                  `공백 연결은 TTS 가 압축해 더 빨라진다. 콤마로 구분해라`
+              )
+            }
+          }
         }
       }
 
