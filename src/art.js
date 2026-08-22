@@ -614,7 +614,7 @@ const HERO_PALETTES = {
   'leo': { style: 'toy-soldier', bodyColor: '#3f7d55', accent: '#f4c95d', emblem: 'L' },
   'fifi': { style: 'toy-plush', bodyColor: '#d99b5a', accent: '#8a5426', emblem: 'F' },
   'bobo': { style: 'toy-block', bodyColor: '#7fd6a3', accent: '#2f7a52', emblem: 'B' },
-  'captain-big': { style: 'toy-boss', bodyColor: '#3a5fa8', accent: '#f4c95d', panelColor: '#f5f2ea' },
+  'captain-big': { style: 'toy-boss', bodyColor: '#6b4ea8', accent: '#f4c95d', panelColor: '#f5f2ea' },
 }
 
 const VILLAIN_PALETTES = {
