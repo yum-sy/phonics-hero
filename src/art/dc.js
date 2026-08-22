@@ -42,12 +42,17 @@
 //       a. WAS "heroes live in the 200-235 degree azure band". BROKEN BY THE
 //          CAST -- Flash has to be red. Restated as PRIMARY vs SECONDARY, which
 //          is DC's own convention, and it still measures. Hero body hues:
-//          Batman 219 (s=0.27), Flash 358 (s=0.85), Cyborg 216 (s=0.16),
-//          Superman 224 (s=0.85). Villain body hues: Blackout 260, Mirage 322,
+//          Batman 219 (s=0.16), Flash 358 (s=0.73), Cyborg 216 (s=0.17),
+//          Superman 224 (s=0.75). Villain body hues: Blackout 259, Mirage 322,
 //          Gridlock 75, Floodlight 19, Joker 269 + green mane 134. NO VILLAIN
-//          SITS IN THE HERO AZURE BAND and none is within 39 degrees of
-//          Flash's red, so "no villain wears a hero body hue" survives the
-//          restatement -- it is now the measurable form of the axis.
+//          SITS IN THE HERO AZURE BAND, which is the load-bearing half.
+//          CORRECTION, MEASURED: this note used to add "and none is within 39
+//          degrees of Flash's red", and that was simply wrong -- Floodlight's
+//          rust at hue 19 is 21 degrees off Flash's 358, the tightest pair in
+//          the file. What actually separates them is saturation and value
+//          (0.66/0.33 against 0.73/0.47), so the pair reads brown-against-red
+//          rather than red-against-red, and that is a weaker guarantee than
+//          hue distance. It is the pair to re-check if either is recoloured.
 //       b. THE GOLD IS THE HEROES'. Warm gold trim appears on heroes only.
 //          Villain emission stays violet, mint, acid green, cyan-white, red.
 //       c. CREAM IS THE HERO CHEST PLATE. `CREAM` (#f7f3e6) appears nowhere on
@@ -65,16 +70,18 @@
 //     `emblemPlate` and `EMBLEM_BOX` -- and note that the minifig rewrite made
 //     the letter BIGGER, not smaller, which was the risk going in.
 //
-// KNOWN INCONSISTENCY, USER-SANCTIONED. Only the five characters the user
-// named are minifigs. Blackout / Mirage / Gridlock / Floodlight (stages 7-1 to
-// 7-4's ordinary villains) keep the earlier lean-adult build, because the user
-// scoped them out: "the villains just get roughly reused, so they matter less".
-// They are byte-identical to the previous round on purpose -- each of them
-// carries a hard-won fix (Blackout's letter-`I` cure, Gridlock's mesh draw
-// order, Mirage's two-head separation, Floodlight's hood attachment) and
-// re-proportioning them would put all four back at risk for no user-visible
-// gain. Their palettes were checked against the Joker's and need no change:
-// purple+green sits between Blackout's plum/magenta and Gridlock's olive/acid.
+// ALL NINE ARE MINIFIGS. The round that introduced this build only converted
+// the five characters the user named by name and left Blackout / Mirage /
+// Gridlock / Floodlight (stages 7-1 to 7-4) on the older lean-adult build,
+// recording "four thin grown-ups sharing a chapter card with five toys" as its
+// most visible cost. The user's ruling on that was "matching the style within
+// a chapter would be nice, but it is not a big problem", so the four were
+// converted on a low budget with a hard rule attached: NO IDENTIFIER MAY BE
+// TRADED FOR THE PROPORTION. Nothing had to be traded, because each of the
+// four identifiers is headgear or a prop and that is exactly the axis a
+// minifigure differentiates on -- see the note above the villain block. The
+// five approved figures are byte-identical, in source and in emitted SVG, for
+// every chapter-7 label.
 //
 // WHAT THIS ROUND COST -- read this before the next one.
 //  - THE MINIFIG BUILD IS INTRINSICALLY LOW-FRAGMENTATION and the index knows
@@ -96,12 +103,23 @@
 //  - THE HERO HUE AXIS IS WEAKER THAN IT WAS. It used to be a 35-degree band;
 //    it is now "no villain wears a hero body hue", which is true (measured, see
 //    axis (a)) but is a weaker claim than the old one. Flash's red did that.
-//  - THE FOUR LEAN-ADULT VILLAINS NOW LOOK LIKE A DIFFERENT FAMILY from the
-//    five minifigs they share a chapter with. This is the user's call, not an
-//    oversight, but it IS the most visible cost of the round.
-//  - `_probe.html` HAS NO `map7` SHOT, so the chapter-7 map screen is still
-//    unverified in the app. The viewBox is fixed at 0 0 120 140 so layout
-//    cannot move, but that is an argument, not a measurement.
+//  - THE MINIFIG VILLAINS COST TWO SILHOUETTE BREAKS, and both were paying for
+//    the hero/villain split rather than for the character. Blackout was
+//    LEGLESS (a flared robe), which was the sharpest anatomy break in the
+//    file; Floodlight was SHORT AND BROAD against tall lean heroes. Both are
+//    gone by design, so the split now rests entirely on the four colour and
+//    stance axes and not at all on build. Neither character's read depended on
+//    it: a streetlamp is identified by its lamp and a floodlight by its bank,
+//    and both are the head.
+//  - MEASURE THE SIZE LADDER AFTER ANY VILLAIN EDIT. The minifig build is
+//    denser than the lean one, so all four grew by 700-1500 units and
+//    Floodlight briefly passed the Joker (8709 against 8647), which breaks
+//    "the boss villain is the biggest villain". It was bought back by
+//    narrowing the lamp bank, dropping a decorative hose and leaving the
+//    jagged hem off this one figure; the margin is now 398 units and it is the
+//    tightest number in the file.
+//  - THE JAGGED HEM ONLY EXISTS IF IT LEAVES THE HIP BLOCK. Teeth drawn inside
+//    x 37..83 are invisible the moment colour is removed. See `villainHem`.
 //
 // This file must not import ../art.js (circular); it carries its own svgWrap.
 function svgWrap(inner, viewBox = '0 0 120 140') {
@@ -688,120 +706,200 @@ export function dcNightray({
 // torso, and tilted/jagged silhouettes. None of them carries an emblem --
 // the letters belong to the heroes. Each one's own name is made literal in
 // the silhouette, which is how the chapter-2 and chapter-3 villains worked.
+//
+// ALL FOUR ORDINARY VILLAINS ARE NOW MINIFIGURES TOO. The previous round left
+// them on the older lean-adult build and recorded it as that round's most
+// visible cost: four thin grown-ups sharing a chapter card with five toys.
+// The user's ruling was "matching the style within a chapter would be nice,
+// but it is not a big problem", so this round spends exactly as much as that
+// buys and no more:
+//   - The BUILD is now shared with the heroes and with the Joker: the same
+//     36x34 block head, the same 14-unit neck, the same 54-unit trapezoid
+//     torso, round-capped tube arms, C-clip hands, the hip block with its
+//     crotch notch, and two short legs with the 8-unit gap and a boot band.
+//   - EACH VILLAIN'S IDENTIFYING PART BECAME HEADGEAR OR A PROP, which is how
+//     the real toy differentiates figures and is why nothing had to be given
+//     up: Blackout's lamp cowl, Gridlock's signal gantry and Floodlight's
+//     six-lamp bank are all helmets wider than the head they sit on, exactly
+//     as Batman's ears and Flash's ear-bolts are.
+//   - THE FOUR HERO/VILLAIN AXES ARE UNCHANGED, and half of axis (d) got
+//     STRONGER: the TILT is now universal, because all four go through
+//     `villainTorso`. Gridlock and Floodlight were both perfectly symmetric
+//     trapezoids before, which was a quiet hole in the axis. The JAGGED HEM
+//     is still only on Blackout, Mirage and the Joker -- the same three as
+//     before -- and that is deliberate, not an oversight: Gridlock's hem rows
+//     are where the mesh's bottom rail runs, and Floodlight cannot afford the
+//     ~230 units of area (see its own note; the boss villain has to stay the
+//     largest villain and the margin is 280 units).
+// The five hard-won fixes carried by the old build were re-earned rather than
+// inherited, and the notes on each function say how.
 // ---------------------------------------------------------------------------
 
-// Blackout. The dead streetlamp: a wide hooded lamp cowl for a head, dead
-// cracked bulbs on both hands, and no legs at all -- a robe-like flared base
-// instead. Legless is the sharpest silhouette break from the four heroes and
-// is kept from the first version.
+// The villain torso: the hero trapezoid with the shoulder line tilted. Same
+// 54-unit shoulder span and the same taper, so a villain standing next to a
+// hero is visibly the same toy -- that is the whole point of this round --
+// while the tilt is hero/villain axis (d) and survives the hard cut-out.
+// `lift` raises the right shoulder. Drawn AFTER the arms, like every hero
+// here, so the shoulder caps become shoulders and the visible arm starts at
+// the body edge.
+function villainTorso(bodyColor, accent, lift = 5) {
+  const l = 55
+  const r = 55 - lift
+  return `
+    <path d="M 33,${l + 6} Q 33,${l} 39,${l} L 81,${r} Q 87,${r} 87,${r + 6} L 83,98 L 37,98 Z" fill="${bodyColor}"/>
+    <polygon points="34.2,${l + 3} 44,${l} 40.5,98 37,98" fill="${accent}" opacity="0.45"/>
+    <polygon points="85.8,${r + 3} 76,${r} 79.5,98 83,98" fill="${accent}" opacity="0.45"/>
+    <polygon points="37,${l + 2} 81,${r + 2} 81,${r + 6} 37,${l + 6}" fill="${accent}" opacity="0.85"/>`
+}
+
+// The villain hem, IN TWO SIDE PANELS RATHER THAN ONE BAND, squeezed between
+// two constraints that both cost a round to find:
+//  - A HEM THAT SPANS THE FRAME FILLS THE 8-UNIT LEG GAP and the figure reads
+//    "wearing a dress" -- the failure Batman's cape paid for two hundred lines
+//    up -- and the leg gap is one of only two natural holes a minifigure has.
+//    So there are no teeth over the crotch channel and it stays open to the
+//    floor.
+//  - BUT TEETH DRAWN OVER THE LEGS AND THE HIP BLOCK DO NOT EXIST IN THE
+//    CUT-OUT. The first version ran x 34..53 / 67..86 with 5-unit teeth,
+//    entirely inside the hip block's own x 37..83 and above the leg tops, so
+//    it measured as decoration and vanished the moment colour was removed --
+//    which is precisely where hero/villain axis (d) has to be readable. The
+//    panels now start 7 units outboard of the hip block and the teeth run to
+//    y=114, past the block's y=109, so on each side the outer tooth is real
+//    background against a real point.
+function villainHem(color, depth = 10) {
+  const panel = (x0, x1) =>
+    `<path d="M ${x0},92 L ${x1},92 L ${x1},104 ${jagged(x1, 104, x0, 104, 3, depth)} Z" fill="${color}"/>`
+  return panel(30, 52) + panel(68, 90)
+}
+
+// The shared hip block with its crotch notch, so all nine figures separate
+// into legs at the same row.
+function villainHip(color) {
+  return `<path d="M 37,96 L 83,96 L 83,109 L 63,109 L 60,113 L 57,109 L 37,109 Z" fill="${color}"/>`
+}
+
+// Blackout. The dead streetlamp: a wide hooded lamp cowl for headgear and a
+// dead cracked bulb gripped in each C-clip hand.
 //
-// THIS FIGURE WAS REDRAWN BECAUSE IT READ AS THE LETTER `I`.
-// The first version was a 52-unit lamp head on a 22-unit vertical post over a
-// 56-unit flared foot, perfectly symmetric: that is a serif capital I, and in
-// a hard cut-out only the two thin drooping arms argued otherwise. It cannot
-// stand in a phonics app, and least of all here -- Blackout is the stage-1
-// villain of the chapter that teaches AI, so `I` is a letter the child is
-// looking for on that very screen.
-// The letter needs three things at once and the redraw denies all three:
-//   1. A THIN STEM UNDER A WIDE BAR. The post is now a shoulder-and-torso:
-//      64 units across at the shoulders against the cowl's 70, so there is no
-//      bar-over-stem step left to read. (Profile, top to bottom: cowl 70,
-//      shoulders 64, waist 40, hips 74, hem 48.)
-//   2. THE WIDEST PART AT THE VERY BOTTOM. The robe now reaches its widest at
-//      the hips and NARROWS into the hem, so the lower serif is gone. A
-//      capital I cannot have its widest row above its last row.
-//   3. SYMMETRY ABOUT A VERTICAL AXIS. The cowl sits left of the body centre
-//      and rakes down to the right, one arm droops low-left while the other is
-//      flung up-right, and the hem is `jagged()`. That last one also repairs a
-//      quiet violation: this figure had no jagged hem at all, which is axis (d)
-//      of the hero/villain split.
-// Checked against T, L, Y, A, H as well -- see `_dc-cut.html?letters=1`.
+// THIS FIGURE ONCE READ AS THE LETTER `I` AND THAT MUST NOT COME BACK.
+// The original was a 52-unit lamp head on a 22-unit vertical post over a
+// 56-unit flared foot, perfectly symmetric: that is a serif capital I, and
+// Blackout is the stage-1 villain of the chapter that teaches AI, so `I` is a
+// letter the child is hunting for on that very screen. The cure was three
+// properties and the minifigure build keeps all three -- but it keeps them
+// for DIFFERENT reasons than the robe did, so they are restated here:
+//   1. NO THIN STEM UNDER A WIDE BAR. Brim 66 across, cowl 52 tapering to 33,
+//      shoulders 54, where a capital I's stem is about a fifth of its bar.
+//      THE COWL IS A TAPERED TRAPEZOID, NOT A BLOCK UNDER A SLAB, and that is
+//      a correction inside this round: a 34-wide block head under a 64-wide
+//      brim put a 30-unit step in the profile and the cut-out read as a mallet
+//      -- one bar over one narrow post, which is the first half of the letter
+//      the whole redraw exists to avoid. The taper is also the more literal
+//      street lamp: wide flat top, cone, lens at the bottom.
+//   2. THE WIDEST ROW IS NOT THE LAST ROW. It is the cowl, at the top. The
+//      minifigure gives this for free and gives a second reason with it: the
+//      bottom row is not a bar at all, it is TWO legs with an 8-unit gap, and
+//      a serif I's foot is solid.
+//   3. NO VERTICAL MIRROR SYMMETRY. The cowl is raked (left brim 4 units
+//      lower than the right), one bulb is held low-left and the other high
+//      above the shoulder, the shoulder line is tilted and the hem is
+//      `jagged()`.
+// Re-checked against serif I T L Y A H -- see `_dc-cut.html?letters=1`.
+//
+// WHAT THE REBUILD COST, recorded because it is real: the old figure had NO
+// LEGS, a flared robe instead, and legless was the sharpest silhouette break
+// from the heroes in the file. That break is gone by design -- matching the
+// heroes was the assignment -- and the hero/villain split now rests entirely
+// on the four axes rather than partly on anatomy. The character read does not
+// depend on it: a streetlamp is identified by the lamp, which is the head.
 export function dcBlackout({
-  bodyColor = '#241a38',
-  accent = '#120c1e',
+  bodyColor = '#2b1f45',
+  accent = '#140d24',
   lensColor = '#c99bff',
   glowColor = '#ff5cf0',
 } = {}) {
-  // `ox,oy` aims the mounting collar back up its own arm. The two arms now
-  // leave the shoulders in opposite directions, and a collar that always sits
-  // on top of the bulb reads as a little hat on the raised one.
-  const bulb = (cx, cy, ox, oy) => `
-    <polygon points="${cx + ox * 0.7 - 3.4},${cy + oy * 0.7 - 2.2} ${cx + ox * 0.7 + 3.4},${cy + oy * 0.7 + 2.2} ${cx + ox + 3},${cy + oy + 2} ${cx + ox - 3},${cy + oy - 2}" fill="${accent}"/>
-    <circle cx="${cx}" cy="${cy}" r="8.4" fill="${accent}"/>
-    <circle cx="${cx}" cy="${cy}" r="5.6" fill="${bodyColor}"/>
-    <path d="M ${cx - 3.6},${cy + 1.6} L ${cx - 3.6},${cy - 1.2} L ${cx - 1.4},${cy - 2.6}"
-      stroke="${lensColor}" stroke-width="1.6" fill="none" opacity="0.9"/>
-    <path d="M ${cx + 1.4},${cy - 2.6} L ${cx + 3.6},${cy - 1.2} L ${cx + 3.6},${cy + 1.6}"
-      stroke="${lensColor}" stroke-width="1.6" fill="none" opacity="0.9"/>`
+  // A dead bulb gripped in a C-clip hand. `hx,hy` is the HAND centre, and the
+  // collar is built along the bulb-to-hand vector, so the collar always points
+  // back down its own arm and the ring visibly holds the bulb instead of
+  // sitting beside it. The old version aimed the collar with a hand-supplied
+  // offset pair and it read as a little hat on the raised arm.
+  const bulb = (cx, cy, hx, hy) => {
+    const m = Math.hypot(hx - cx, hy - cy) || 1
+    const ux = (hx - cx) / m
+    const uy = (hy - cy) / m
+    const p = (t, s) =>
+      `${(cx + ux * t - uy * s).toFixed(1)},${(cy + uy * t + ux * s).toFixed(1)}`
+    return `
+      <polygon points="${p(2, -3.6)} ${p(2, 3.6)} ${p(9.5, 2.8)} ${p(9.5, -2.8)}" fill="${accent}"/>
+      <circle cx="${cx}" cy="${cy}" r="7" fill="${accent}"/>
+      <circle cx="${cx}" cy="${cy}" r="4.8" fill="${bodyColor}"/>
+      <path d="M ${(cx - 3.4).toFixed(1)},${(cy + 1.4).toFixed(1)} L ${(cx - 3.4).toFixed(1)},${(cy - 1).toFixed(1)} L ${(cx - 1.2).toFixed(1)},${(cy - 2.4).toFixed(1)}"
+        stroke="${lensColor}" stroke-width="1.5" fill="none" opacity="0.9"/>
+      <path d="M ${(cx + 1.2).toFixed(1)},${(cy - 2.4).toFixed(1)} L ${(cx + 3.4).toFixed(1)},${(cy - 1).toFixed(1)} L ${(cx + 3.4).toFixed(1)},${(cy + 1.4).toFixed(1)}"
+        stroke="${lensColor}" stroke-width="1.5" fill="none" opacity="0.9"/>`
+  }
 
   return svgWrap(
     `
     <g>
-      <ellipse cx="62" cy="134" rx="30" ry="4.6" fill="#000" opacity="0.14"/>
+      <ellipse cx="60" cy="136" rx="32" ry="3.4" fill="#000" opacity="0.13"/>
 
-      <path d="M 44,66 L 22,82 L 14,100" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      ${bulb(13, 102, 6, -8)}
-      <path d="M 78,64 L 96,56 L 106,44" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      ${bulb(107, 42, -8, 6)}
+      ${legoArm(31, 62, 21, 77, 18, 90, bodyColor, 11)}
+      ${legoHand(17, 94, accent, 5, -120)}
+      ${bulb(14, 101, 17, 94)}
+      ${legoArm(89, 57, 100, 45, 104, 33, bodyColor, 11)}
+      ${legoHand(106, 29, accent, 5, -50)}
+      ${bulb(108, 22, 106, 29)}
 
-      <path d="M 40,96 L 80,96 L 100,120 L 86,132 ${jagged(86, 132, 36, 132, 4, 6)} L 26,116 Z" fill="${bodyColor}"/>
-      <polygon points="40,96 52,96 44,132 36,132 26,116" fill="${accent}"/>
-      <polygon points="30,122 94,124 87,130 34,128" fill="${accent}"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, bodyColor, accent, 11)}
+      ${villainHip(accent)}
+      ${villainHem(accent)}
 
-      <polygon points="26,56 90,61 80,98 40,98" fill="${bodyColor}"/>
-      <polygon points="26,56 46,57.6 43,98 40,98" fill="${accent}"/>
-      <polygon points="35,72 84,76 84,81 35,77" fill="${accent}"/>
-      <polygon points="39,86 80,90 80,95 39,91" fill="${accent}"/>
+      <rect x="53" y="42" width="14" height="15" fill="${accent}"/>
 
-      <polygon points="35,45 76,48 74,62 34,59" fill="${accent}"/>
+      ${villainTorso(bodyColor, accent, 6)}
+      <polygon points="38,70 82,66 82,72 38,76" fill="${accent}"/>
+      <polygon points="39,81 81,77 81,83 39,87" fill="${accent}"/>
 
-      <polygon points="36,14 68,18 69,23 35,19" fill="${bodyColor}"/>
-      <polygon points="24,16 84,24 86,33 25,25" fill="${accent}"/>
-      <polygon points="29,25 79,31.5 76,50 32,43" fill="${bodyColor}"/>
-      <g transform="rotate(7.6 53 37)">${eyePlate(53, 37, 32, 12, lensColor, '#0b0512', glowColor, 2)}</g>
-      <polygon points="33,41 76,48 74,55 34,46" fill="${accent}"/>
+      <polygon points="34,18 86,14 77,47 44,48" fill="${accent}"/>
+      <polygon points="37,22 83,18 75,43 46,44" fill="${bodyColor}"/>
+      <g transform="rotate(-4 60 48)">${eyePlate(60, 32, 26, 11, lensColor, '#0b0512', glowColor, 2)}</g>
+      <polygon points="45,39 76,36 75,47 44,48" fill="${accent}"/>
+
+      <polygon points="28,15 92,9 94,20 30,26" fill="${accent}"/>
+      <polygon points="28,15 92,9 92,13 28.6,19" fill="${bodyColor}"/>
     </g>
   `
   )
 }
 
 // Mirage. Two heads on one body: the solid one plus an illusion rising from
-// the same shoulders on a visible second neck, so the cut-out itself asks
+// the same shoulders on its own visible column, so the cut-out itself asks
 // which is real. A mirror shard in the far hand carries a third, tiny face.
-// Hem is jagged (villain rule) and the body is split down the middle into two
-// tones so nothing about the figure agrees with itself.
-// The second head needs a NECK and 30-plus units of separation. The first
-// pass put it 20 units away with no neck and the cut-out read as one head
-// with two horns, which is a different villain entirely.
-//
-// THIS FIGURE HAD THE HIGHEST FRAGMENTATION INDEX IN THE FILE (96.5) AND THAT
-// WAS PARTLY A LIE. The index rewards a detached fragment whatever it is, so
-// three defects were paying into it and a viewer read them as clutter, not as
-// articulation. High fragmentation is not automatically good:
-//   - THE SHIMMER CHEVRON BROKE THE TORSO OUTLINE. It ran from x=40 to x=78
-//     while the torso edges at those rows are 42.1 and 76.2, so it poked 2-3
-//     units past the body on BOTH sides and showed up in the cut-out as two
-//     grey lumps on the hips. That is the same rule the emblem plate obeys:
-//     an internal detail must never alter the outline. It is now inset.
-//   - THE JAGGED HEM HAD FIVE TEETH AND THE LEGS COVERED THREE OF THEM, so
-//     what survived was two unexplained spikes at the hips. Three teeth on a
-//     wider tabard put every tooth in a gap between the legs instead.
-//   - THE MIRROR SHARD WAS A TRANSLUCENT PLATE BEHIND AN OPAQUE ONE, which in
-//     a cut-out is one rectangle ghosting another. The frame is opaque now, so
-//     the shard is a held object with a dark rim.
-// The ghost's diamond shoulder and stub neck are also gone, replaced by one
-// tapering column: they made an angular pile at the right shoulder where the
-// real arm, the real shoulder and the illusion all met.
-//
-// THIRD ROUND -- THE ILLUSION HAD A NECK AND THE REAL HEAD DID NOT. The head
-// circle bottomed out at y=45.5 against a torso starting at y=46, so a
-// component scan returned the head (506u2) as its own piece. Half a unit is
-// invisible at every render size the app uses, which is why nobody caught it
-// by eye, but it is the same defect class the user reported on Gridlock and it
-// is one edge-case antialiasing away from showing. The head moved up 4 units
-// and got the same tapering column the illusion has. Cost, recorded because it
-// is a real one: the gap between the two heads' outlines drops 16.5 -> 14.8
-// units, so the "which one is real" read is slightly tighter than it was.
+// On the minifigure build the two-head read got STRONGER rather than weaker,
+// because a block head is a bigger, flatter shape than the old circle and two
+// of them side by side cannot be mistaken for one head with horns -- which is
+// exactly what the first version of this character was mistaken for.
+//   - The real head sits LEFT of centre (x 28-64) and the illusion is up and
+//     RIGHT (x 80-110), 16 units of clear background between the two
+//     outlines. That is up from 14.8 on the old build.
+//   - The illusion is a SMALLER block, 30x28 against the real head's 36x34,
+//     which is the one place the two differ in build. An illusion that
+//     measures identical to the original reads as a twin, not a mirage.
+//   - THE COLUMN IS THE PART THAT MAKES IT ONE FIGURE. It runs from inside the
+//     right shoulder up to inside the illusion's jaw, overlapping both, and is
+//     drawn BEFORE the arms and the torso so it emerges from behind the
+//     shoulder. The lesson underneath it: an earlier round of this character
+//     had the real head bottoming out half a unit above the torso, and a
+//     component scan returned the head as its own piece. Half a unit is
+//     invisible at every size the app renders, so only the scan catches it.
+//   - The body is split down the middle into two tones AND the two legs are
+//     different colours, so nothing about the figure agrees with itself.
+// The mirror shard is opaque with a dark rim, not a translucent plate over an
+// opaque one: in a hard cut-out the translucent version was one rectangle
+// ghosting another.
 export function dcMirage({
   bodyColor = '#6e2352',
   accent = '#37102a',
@@ -811,88 +909,82 @@ export function dcMirage({
   return svgWrap(
     `
     <g>
-      <ellipse cx="56" cy="134" rx="26" ry="4.6" fill="#000" opacity="0.1"/>
+      <ellipse cx="58" cy="136" rx="30" ry="3.2" fill="#000" opacity="0.1"/>
 
-      <polygon points="70,52 84,50 88,26 76,24" fill="${ghostColor}"/>
-      <circle cx="84" cy="16" r="10.5" fill="${ghostColor}"/>
-      ${eyePlate(84, 18, 15, 7, '#b8f0e4', '#3a1030', null, 1.2)}
+      <polygon points="80,56 96,52 98,34 82,36" fill="${ghostColor}"/>
+      ${legoBlock(76, 6, 32, 30, ghostColor, 4)}
+      ${eyePlate(92, 18, 20, 9, '#b8f0e4', '#3a1030', null, 1.3)}
 
-      <path d="M 50,92 L 46,114 L 45,126" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 68,92 L 72,114 L 73,126" stroke="${accent}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="36,122 51,122 51,134 34,134" fill="${accent}"/>
-      <polygon points="82,122 67,122 67,134 84,134" fill="${bodyColor}"/>
+      ${legoArm(33, 58, 20, 65, 12, 74, bodyColor, 11)}
+      ${legoHand(10, 78, accent, 5, -120)}
+      <polygon points="2,49 25,41 28,69 6,77" fill="${accent}"/>
+      <polygon points="5,52 22,46 24.5,66 8,72" fill="${shimmerColor}"/>
+      ${slit(12, 56, 6, 3.2, 0.9, accent)}
+      ${slit(19.5, 53.5, 6, 3.2, -0.9, accent)}
+      <polygon points="12.5,62 20.5,59.5 20.5,61.5 12.5,64" fill="${accent}"/>
+      <polygon points="8,72 24.5,66 24,71 9,75" fill="${accent}" opacity="0.55"/>
+      ${legoArm(87, 55, 98, 67, 94, 81, accent, 11)}
+      ${legoHand(93, 85, bodyColor, 5, -60)}
 
-      <polygon points="44,37 56,37 57,50 43,50" fill="${accent}"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, ghostColor, accent, 11)}
+      ${villainHip(accent)}
+      ${villainHem(accent, 6)}
 
-      <polygon points="40,46 78,46 74,94 45,94" fill="${bodyColor}"/>
-      <polygon points="59,46 78,46 74,94 59,94" fill="${accent}"/>
-      <path d="M 44,66 L 51,60 L 60,70 L 69,62 L 75,68 L 75,76 L 69,70 L 60,78 L 51,68 L 44,74 Z" fill="${shimmerColor}" opacity="0.62"/>
+      <rect x="37" y="42" width="14" height="17" fill="${accent}"/>
 
-      <path d="M 44,52 L 30,68 L 28,84" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="28" cy="86" r="5.8" fill="${accent}"/>
-      <path d="M 74,52 L 92,60 L 100,68" stroke="${accent}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="101" cy="70" r="5.8" fill="${bodyColor}"/>
-      <polygon points="94,50 116,42 118,72 100,78" fill="${accent}"/>
-      <polygon points="97,52 112,46 114,68 101,72" fill="${shimmerColor}"/>
-      <circle cx="106" cy="57" r="5" fill="${accent}"/>
-      <polygon points="101,72 114,68 113,74 102,76" fill="${accent}" opacity="0.5"/>
+      ${villainTorso(bodyColor, accent, 5)}
+      <polygon points="60,53 80,50.5 86,57 83,98 60,98" fill="${accent}"/>
+      <path d="M 41,74 L 48,68 L 55,74 L 62,68 L 69,74 L 76,68 L 80,71 L 80,77 L 76,74 L 69,80 L 62,74 L 55,80 L 48,74 L 41,80 Z" fill="${shimmerColor}" opacity="0.62"/>
 
-      <path d="M 36,92 L 82,92 ${jagged(82, 92, 36, 92, 3, 13)} Z" fill="${accent}"/>
-
-      <circle cx="50" cy="30" r="11.5" fill="${bodyColor}"/>
-      <path d="M 38.5,28 A 11.5,11.5 0 0 1 61.5,28 Z" fill="${accent}"/>
-      ${eyePlate(50, 33, 17, 8, shimmerColor, '#25081c', '#eaffff', 1.5)}
-      <polygon points="39,22 47,24 33,7" fill="${accent}"/>
+      ${legoBlock(26, 12, 36, 34, bodyColor)}
+      <path d="M 26,26 L 26,17 Q 26,12 31,12 L 57,12 L 57,29 Z" fill="${accent}"/>
+      ${eyePlate(44, 31, 26, 11, shimmerColor, '#25081c', '#eaffff', 1.6)}
+      <polygon points="31,17 41,20 24,2" fill="${accent}"/>
+      <rect x="32" y="40" width="24" height="2.6" rx="1.2" fill="${accent}"/>
     </g>
   `
   )
 }
 
-// Gridlock. The jam: a traffic-signal box for a head and a diamond-mesh
-// barrier strung between two outstretched fists across the whole lower frame.
-// The mesh is diamonds rather than squares on purpose -- a square grid reads
-// as a hash mark, and this family already risks being misread as letters.
+// Gridlock. The jam: a traffic-signal GANTRY for headgear and a diamond-mesh
+// barrier strung between two outstretched fists across the lower frame. The
+// mesh is diamonds rather than squares on purpose -- a square grid reads as a
+// hash mark, and this family already risks being misread as letters.
 //
-// THIRD ROUND -- THE USER SAW THIS ONE AND SAID THE HEAD WAS COMING OFF, and
-// it was literally true, not a matter of taste. A 4-connected component scan
-// of the hard cut-out returned TWO PARTS: the signal box 1177u2 at y[10,50]
-// and everything else 5766u2 at y[52,137], with 2.0 units of COMPLETELY EMPTY
-// ROWS at y=50..52 running the full width of the frame. The box was not
-// resting on anything. Three things came out of that:
+// THE USER ONCE SAW THIS FIGURE AND SAID THE HEAD WAS COMING OFF, and it was
+// literally true: a component scan returned the signal box and the body as two
+// pieces with two units of completely empty rows between them. The minifigure
+// build is a rebuild, so that fix had to be re-earned, not inherited:
+//   - THE BOX SITS ON A REAL NECK. The signal box bottom runs to y=47 and the
+//     14-unit neck spans y 42..57 against a torso whose shoulder line is at
+//     y=49..55, so the neck overlaps the box by 5 units and the torso by at
+//     least 2. Overlap on both ends is what makes this ONE component; edges
+//     that merely touch are the defect.
+//   - ABOUT SEVEN UNITS OF THE NECK ARE VISIBLE, measured off the row-width
+//     profile rather than assumed. A neck that exists in code but is swallowed
+//     by the union of head and torso measures zero, which is what happened
+//     three times in the Mario family.
+//   - THE MESH TOP RAIL MOVED DOWN to y=78 so that it hangs from the fists
+//     instead of crossing the neck. The old rail was at y=54, which on this
+//     build would have covered the join the fix is about.
 //
-//  1. THE HEAD NOW HAS A MAST TO SIT ON. The signal box moved up 5 units
-//     (y 14..50 -> 8..45, contents with it) purely to buy room, because the
-//     net's top rail is at y=54 and the shoulder line at y=52, so there was
-//     nowhere else for a neck to go. The mast spans y 40..57, which puts it
-//     4 units under the box and 5 units under the torso: overlap on both
-//     ends is what makes the figure ONE component instead of two, and the
-//     overlap is deliberate margin, not a touching pair of edges.
-//  2. SEVEN UNITS OF IT SHOW, and the bolt-on bracket plate is inside those
-//     seven. A neck that exists in code but is swallowed by the union of head
-//     and torso measures zero, which is what happened three times in the Mario
-//     family; the number here is measured off the row-width profile, not
-//     assumed.
-//  3. THE ARMS WERE A HORIZONTAL BAR. Fists (x4-18) + arms + torso (x34-86) +
-//     arms + fists (x102-116) added up to a SOLID 100% run across rows
-//     y=60..74 -- the profile read fill=112u out of a 112u span, i.e. fifteen
-//     rows carrying no shape information at all. They now have a shoulder ball
-//     drawn AFTER the torso (outer arc = the shoulder, inner arc = the armhole
-//     seam: the chapter-5 fix for this exact defect), an elbow below the
-//     shoulder-to-fist line, and a taper, 11 wide on the upper arm and 9 on
-//     the forearm. The joints are bolted plates rather than organic deltoids
-//     because this figure is a traffic machine.
+// THE ARMS MUST NOT BECOME ONE HORIZONTAL BAR. On the old build, fists plus
+// arms plus torso added up to a solid full-width run for fifteen rows -- rows
+// carrying no shape information at all. Here the arms go out AND DOWN, so the
+// fists sit twenty-odd units below the shoulder line and there are fifteen
+// units of clear background between each fist and the waist.
+// The SIDE PODS are the other half of that: two small lamp pods hung off the
+// gantry crossbar, 7-9 units clear of the signal box on either side, which
+// puts real background inside the head band as well. They hang off the
+// crossbar rather than floating, so the figure stays one component.
 //
-//     DO NOT EXPECT THE FRAGMENTATION INDEX TO CONFIRM THIS -- IT GOES THE
-//     WRONG WAY, and the reason is measurable rather than mysterious. Whole
-//     figure: 37.0 -> 34.3. A per-10-unit-band census locates every unit of
-//     it: the neck band gains (y50-60: 0.0 -> 1.3, the shoulder caps flanking
-//     the mast) and the arm bands lose (y60-70: 2.0 -> 0.0, y70-80: 4.0 ->
-//     2.0). An articulated arm is BULKIER than a bar of the same reach, so it
-//     covers mesh-only air that used to count as a gap. The index rewards
-//     holes, not articulation -- the same lesson Mirage recorded one figure
-//     over. The measure that does track this is the body with the net
-//     stripped, where edge-to-edge solid rows fall 5.8 -> 2.8 and
-//     fragmentation rises 39.3 -> 41.3. Judge the arms there, or by eye.
+// DO NOT EXPECT THE FRAGMENTATION INDEX TO REWARD THE ARMS THEMSELVES -- it
+// counts holes, not articulation, and an articulated arm is bulkier than a bar
+// of the same reach. The mesh does not help it either: at 11-unit diamond
+// spacing the gaps along a row are about five units, under the index's
+// six-unit threshold, so every mesh row reads as solid to it. Judge the arms
+// by eye or with the net stripped.
 export function dcGridlock({
   bodyColor = '#4d5a25',
   accent = '#212a0d',
@@ -903,21 +995,18 @@ export function dcGridlock({
   // a <clipPath id>: the same figure can appear several times on one page
   // (gallery, battle scene, reward), and duplicate ids in a document are a
   // real bug waiting to happen.
-  // The band is CHEST HEIGHT, strung between the two fists that hold it, and
-  // it stops at y=100. The first version ran it from 78 to 126, which is
-  // exactly the rows where the legs separate: the net filled the gap and the
-  // hard cut-out came back as a slab with no legs in it (fragmentation 23.8
-  // against 61 for a figure that reads). Holding it up at the hands is also
-  // the more literal read of the character.
-  // It is drawn IN FRONT of the torso and behind the head. Behind the torso,
-  // the body hid the middle of it and the net read as two green patches at the
+  // It stops at y=104, above the row where the legs separate. The first
+  // version ran it to y=126, exactly the rows where the legs part: the net
+  // filled the gap and the cut-out came back as a slab with no legs in it.
+  // It is drawn IN FRONT of the torso and BEHIND the head. Behind the torso,
+  // the body hid the middle and the net read as two green patches at the
   // sides -- something growing out of him rather than something he is holding
   // across himself, which is the whole character.
   const mesh = (() => {
-    const X0 = 6
-    const X1 = 114
-    const Y0 = 56
-    const Y1 = 100
+    const X0 = 8
+    const X1 = 112
+    const Y0 = 70
+    const Y1 = 94
     const line = (xa, ya, xb, yb) =>
       `<path d="M ${xa.toFixed(1)},${ya.toFixed(1)} L ${xb.toFixed(1)},${yb.toFixed(1)}" stroke="${lampColor}" stroke-width="2" opacity="0.5" fill="none"/>`
     let d = ''
@@ -936,71 +1025,80 @@ export function dcGridlock({
   return svgWrap(
     `
     <g>
-      <ellipse cx="60" cy="132" rx="34" ry="5" fill="#000" opacity="0.12"/>
+      <ellipse cx="60" cy="136" rx="32" ry="3.4" fill="#000" opacity="0.12"/>
 
-      <path d="M 44,94 L 42,114 L 42,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 76,94 L 78,114 L 78,126" stroke="${bodyColor}" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="32,120 51,120 51,133 30,133" fill="${accent}"/>
-      <polygon points="88,120 69,120 69,133 90,133" fill="${accent}"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, bodyColor, accent, 11)}
+      <rect x="40" y="112" width="13" height="3" fill="${barColor}"/>
+      <rect x="67" y="112" width="13" height="3" fill="${barColor}"/>
+      ${villainHip(accent)}
 
-      <polygon points="53,40 67,40 69,57 51,57" fill="${bodyColor}"/>
-      <polygon points="60,40 67,40 69,57 60,57" fill="${accent}"/>
-      <rect x="49.5" y="45.6" width="21" height="3.2" fill="${barColor}"/>
+      <rect x="53" y="42" width="14" height="15" fill="${bodyColor}"/>
+      <rect x="51" y="46" width="18" height="3.4" fill="${barColor}"/>
 
-      <polygon points="34,52 86,52 80,96 40,96" fill="${bodyColor}"/>
-      <rect x="36" y="60" width="48" height="6" fill="${accent}"/>
-      <rect x="36" y="72" width="46" height="6" fill="${accent}"/>
-      <rect x="37" y="84" width="44" height="6" fill="${accent}"/>
-      <polygon points="34,52 86,52 84,58 36,58" fill="${barColor}"/>
+      ${villainTorso(bodyColor, accent, 6)}
+      <rect x="39" y="62" width="42" height="5" fill="${accent}"/>
 
-      <path d="M 37,59 L 25,70" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round"/>
-      <path d="M 83,59 L 95,68" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round"/>
-      <path d="M 25,70 L 14,67" stroke="${bodyColor}" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <path d="M 95,68 L 106,67" stroke="${bodyColor}" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <circle cx="25" cy="70" r="6.2" fill="${bodyColor}"/>
-      <circle cx="95" cy="68" r="6.2" fill="${bodyColor}"/>
-      <circle cx="25" cy="70" r="2.1" fill="${accent}"/>
-      <circle cx="95" cy="68" r="2.1" fill="${accent}"/>
-      <circle cx="37" cy="59" r="8.2" fill="${bodyColor}"/>
-      <circle cx="83" cy="59" r="8.2" fill="${bodyColor}"/>
-      <path d="M 39.7,53.1 A 6.5,6.5 0 0 1 39.7,64.9" stroke="${accent}" stroke-width="1.8" fill="none"/>
-      <path d="M 80.3,53.1 A 6.5,6.5 0 0 0 80.3,64.9" stroke="${accent}" stroke-width="1.8" fill="none"/>
-      <circle cx="37" cy="59" r="2.4" fill="${accent}"/>
-      <circle cx="83" cy="59" r="2.4" fill="${accent}"/>
-      <polygon points="4,60 18,60 18,74 4,74" fill="${accent}"/>
-      <polygon points="116,60 102,60 102,74 116,74" fill="${accent}"/>
+      ${legoArm(33, 59, 22, 66, 17, 75, bodyColor, 11)}
+      ${legoArm(87, 54, 98, 61, 103, 70, bodyColor, 11)}
+      <circle cx="33" cy="59" r="7.4" fill="${bodyColor}"/>
+      <circle cx="87" cy="54" r="7.4" fill="${bodyColor}"/>
+      <path d="M 35.4,53.4 A 6,6 0 0 1 35.4,64.6" stroke="${accent}" stroke-width="1.8" fill="none"/>
+      <path d="M 84.6,48.4 A 6,6 0 0 0 84.6,59.6" stroke="${accent}" stroke-width="1.8" fill="none"/>
+      ${legoHand(15, 79, accent, 5.4, -110)}
+      ${legoHand(105, 74, accent, 5.4, -60)}
 
       ${mesh}
-      <rect x="6" y="54" width="108" height="4" fill="${accent}"/>
-      <rect x="6" y="98" width="108" height="4" fill="${accent}"/>
+      <rect x="8" y="68" width="104" height="4" fill="${accent}"/>
+      <rect x="8" y="92" width="104" height="4" fill="${accent}"/>
 
-      <polygon points="46,8 74,8 74,45 46,45" fill="${accent}"/>
-      <polygon points="46,8 74,8 76,4 44,4" fill="${bodyColor}"/>
-      <polygon points="42,14 46,14 46,20 42,20" fill="${bodyColor}"/>
-      <polygon points="78,14 74,14 74,20 78,20" fill="${bodyColor}"/>
-      <circle cx="54" cy="19" r="5.2" fill="${lampColor}"/>
-      <circle cx="66" cy="19" r="5.2" fill="${lampColor}"/>
-      <circle cx="54" cy="19" r="2.2" fill="${accent}"/>
-      <circle cx="66" cy="19" r="2.2" fill="${accent}"/>
-      <circle cx="60" cy="35.5" r="5.4" fill="${bodyColor}"/>
-      <rect x="47" y="26.2" width="26" height="2.6" fill="${barColor}"/>
+      <polygon points="22,13 98,7 98,13.5 22,19.5" fill="${accent}"/>
+      <polygon points="22,13 98,7 98,10 22,16" fill="${barColor}"/>
+      <rect x="22" y="15" width="13" height="17" rx="2" fill="${accent}"/>
+      <rect x="22" y="15" width="13" height="3.4" fill="${barColor}"/>
+      <circle cx="28.5" cy="25" r="3.4" fill="${lampColor}"/>
+      <rect x="85" y="10" width="13" height="17" rx="2" fill="${accent}"/>
+      <rect x="85" y="10" width="13" height="3.4" fill="${barColor}"/>
+      <circle cx="91.5" cy="20" r="3.4" fill="${lampColor}"/>
+
+      <polygon points="45,7 76,4 78,44 47,47" fill="${accent}"/>
+      <polygon points="47.5,10.5 74,8 75.5,40.5 49.5,43" fill="${bodyColor}"/>
+      <circle cx="54" cy="21" r="5.2" fill="${lampColor}"/>
+      <circle cx="67" cy="19.8" r="5.2" fill="${lampColor}"/>
+      <circle cx="54" cy="21" r="2.2" fill="${accent}"/>
+      <circle cx="67" cy="19.8" r="2.2" fill="${accent}"/>
+      <rect x="48.5" y="31" width="26" height="2.6" fill="${barColor}"/>
+      <rect x="49" y="36" width="26" height="2.6" fill="${accent}"/>
     </g>
   `
   )
 }
 
-// Floodlight. The blinder: the head is a tilted bank of six stadium lamps in
-// a frame, its two centre lamps doubling as eyes, and a hard glare wedge
-// falls across the lower-left of the frame. Broad and short so it reads as a
-// machine on legs next to the tall lean heroes.
-// The overhanging visor hood on top of the frame is load bearing: without it
-// the cut-out reads "television head", which is a different joke. IT WAS ALSO
-// FLOATING: its bottom edge ran 2.7-3.3 units clear of the lamp frame's top
-// edge all the way across, so a component scan of the cut-out returned the
-// hood (561u2) as a separate piece -- the same defect the user reported on
-// Gridlock, one figure over. Dropped 5 units so the edges overlap by 1.7-2.3.
-// The lamps set the floor on that number: the hood's underside now clears the
-// three top lamp rims by 0.8-0.9 units and must not be dropped further.
+// Floodlight. The blinder: headgear is a tilted bank of six stadium lamps in
+// a frame, its two centre lamps doubling as eyes, and a hard glare wedge falls
+// across the lower-left of the frame. The bank is 62 units across against the
+// 54-unit shoulders, so this figure is still the broad one in the villain set
+// -- the width just moved from the body to the helmet, which is how a
+// minifigure carries bulk.
+//
+// THE OVERHANGING VISOR IS LOAD BEARING and it is the trap on this character.
+// Without it the cut-out reads "television head", which is a different joke.
+// On the old build it was also FLOATING: its underside ran 2.7-3.3 units clear
+// of the lamp frame's top edge all the way across, so a component scan
+// returned the visor as a separate 561u2 piece -- the same defect the user
+// reported on Gridlock. It is squeezed between two hard limits and both were
+// solved by arithmetic, not by eye:
+//   - it must OVERLAP the bank's top edge (that is what makes one component);
+//   - it must CLEAR the top row of lamp rims, or it covers the lamps.
+// The window between those two is about five units wide at the left end and
+// shrinks to the right because both edges are tilted. The visor's underside
+// runs (28,15) to (96,10.6) and sits 2.7-2.9 units below the bank top and
+// 1.5-1.8 units above the nearest lamp rim. DO NOT SLIDE IT EITHER WAY
+// without re-running the component scan and re-checking the lamp clearance.
+//
+// The lamp geometry that sets that floor: rims at r=6.2 on centres following
+// the bank's own -4-in-62 tilt, top row at y 21.8/20.7/19.6 and bottom row
+// 13 units under it. Six lamps, not four: four in a square reads as a die.
 export function dcFloodlight({
   bodyColor = '#8a3f1c',
   accent = '#3f1608',
@@ -1008,54 +1106,47 @@ export function dcFloodlight({
   glareColor = '#9fe8f5',
 } = {}) {
   const lamp = (cx, cy, pupil) => `
-    <circle cx="${cx}" cy="${cy}" r="6.4" fill="${accent}"/>
-    <circle cx="${cx}" cy="${cy}" r="5.1" fill="${lampColor}"/>
+    <circle cx="${cx}" cy="${cy}" r="6.2" fill="${accent}"/>
+    <circle cx="${cx}" cy="${cy}" r="5" fill="${lampColor}"/>
     ${pupil ? `<circle cx="${cx}" cy="${cy}" r="2.1" fill="${accent}"/>` : ''}`
 
   return svgWrap(
     `
     <g>
-      <ellipse cx="62" cy="134" rx="30" ry="5" fill="#000" opacity="0.12"/>
+      <ellipse cx="62" cy="136" rx="32" ry="3.4" fill="#000" opacity="0.12"/>
 
-      ${beam(52, 44, 1, 84, 5, 134, glareColor, '#2a7f96')}
+      ${beam(45, 35, 2, 86, 8, 134, glareColor, '#2a7f96')}
 
-      <path d="M 52,96 L 48,116 L 48,128" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 76,96 L 80,116 L 80,128" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="38,122 57,122 57,135 36,135" fill="${accent}"/>
-      <polygon points="92,122 73,122 73,135 94,135" fill="${accent}"/>
+      ${legoArm(33, 58, 22, 70, 18, 84, bodyColor, 11)}
+      ${legoHand(17, 88, accent, 5.4, -120)}
+      ${legoArm(87, 53, 99, 66, 103, 80, bodyColor, 11)}
+      ${legoHand(104, 84, accent, 5.4, -55)}
 
-      <polygon points="40,54 88,54 84,98 46,98" fill="${bodyColor}"/>
-      <polygon points="40,54 56,54 52,90 44,82" fill="${accent}"/>
-      <rect x="45" y="88" width="38" height="8" fill="${accent}"/>
-      <path d="M 84,60 C 100,66 102,84 92,94" stroke="${accent}" stroke-width="4" fill="none"/>
-      <path d="M 80,58 C 94,64 96,80 88,90" stroke="${accent}" stroke-width="3" fill="none"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, bodyColor, accent, 11)}
+      ${villainHip(accent)}
 
-      <path d="M 46,60 L 30,72 L 26,86" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="26" cy="88" r="6.4" fill="${accent}"/>
-      <path d="M 82,60 L 98,72 L 102,86" stroke="${bodyColor}" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="102" cy="88" r="6.4" fill="${accent}"/>
+      <rect x="53" y="42" width="14" height="15" fill="${accent}"/>
 
-      <polygon points="44,52 56,42 60,52" fill="${accent}"/>
-      <polygon points="72,50 84,40 86,50" fill="${accent}"/>
+      ${villainTorso(bodyColor, accent, 6)}
+      <rect x="42" y="84" width="36" height="7" fill="${accent}"/>
 
-      <polygon points="38,20 92,12 96,44 42,50" fill="${accent}"/>
-      <polygon points="41,23 89,16 92,41 45,47" fill="${bodyColor}"/>
-      <polygon points="30,26 38,20 42,50 32,52" fill="${accent}"/>
-      <polygon points="32,29 38,25 41,47 34,48" fill="${bodyColor}"/>
-      ${lamp(52, 27, false)}
-      ${lamp(67, 25, true)}
-      ${lamp(82, 23, false)}
-      ${lamp(54, 41, true)}
-      ${lamp(69, 39, false)}
-      ${lamp(84, 37, false)}
-      <polygon points="36,22 94,14 96,7 34,15" fill="${accent}"/>
-      <polygon points="34,15 96,7 96,11 36,19" fill="${bodyColor}"/>
-      <polygon points="20,25 34,15 36,22 24,33" fill="${accent}"/>
+      <polygon points="34,12 91,8 93,42 37,46" fill="${accent}"/>
+      <polygon points="37,15 88,11 90,39 40,43" fill="${bodyColor}"/>
+      <polygon points="37,15 44,14.5 47,43 40,43" fill="${accent}" opacity="0.5"/>
+      ${lamp(46, 21.8, true)}
+      ${lamp(61, 20.8, false)}
+      ${lamp(76, 19.8, true)}
+      <polygon points="39.5,29.2 88,25.2 88,28.4 39.5,32.4" fill="${accent}"/>
+      ${lamp(46, 34.8, false)}
+      ${lamp(61, 33.8, false)}
+      ${lamp(76, 32.8, false)}
+      <polygon points="29,6 91,2 93,10.4 31,14.6" fill="${accent}"/>
+      <polygon points="29,6 91,2 91,5.2 29.5,9.4" fill="${bodyColor}"/>
     </g>
   `
   )
 }
-
 
 // Nightfall = THE JOKER, chapter-7's boss villain and the only minifig on the
 // villain side. Read order: green mane -> white face -> the grin, then the
