@@ -1,55 +1,109 @@
-// DC-family character art (chapter 7 onward): the night-city vigilante cast.
-// This family shares a genre with the chapter-2 superhero cast in src/art.js,
-// so it is drawn to be the *opposite* of that file in every measurable way.
-// If a figure here could be dropped into chapter 2 unnoticed, it is wrong.
+// DC-family character art (chapter 7 onward). The user picked the cast from
+// four Justice League minifigure references: Batman -> Flash -> Cyborg ->
+// Superman for the heroes, the Joker for the boss villain, and asked for
+// "roughly LEGO proportions". So this file is drawn to THE TOY, not to the
+// comic, and that decision is what every number below serves.
 //
-// DESIGN GRAMMAR (every figure obeys all of it)
+// WHY THE TOY IS THE RIGHT TARGET HERE, and what it cost:
+// The pre-minifig version of this file was a lean 4.9-head-height vigilante
+// cast whose whole reason for existing was to be measurably unlike the
+// chapter-2 chibi superheroes (3.1 heads). Minifig proportions land at about
+// 3.5, so HEIGHT RATIO NO LONGER SEPARATES THE TWO SUPERHERO FAMILIES. The
+// separator is now RECTILINEARITY, and it is a stronger one: chapter 2 is
+// built from capsules and circles (`rect rx="26"`, `circle r="27"`), this file
+// is built from blocks, trapezoids, 5-unit corner radii and C-clip hands. A
+// figure from either file dropped into the other is obvious at a glance.
 //
-//  1. LEAN ADULT PROPORTIONS. Head radius 12–15 on a 120x140 box, torso
-//     44–56 wide, legs running from y≈94 to y≈136. That is roughly 4.9 head
-//     heights, against the chapter-2 chibi cast's 3.1. Small head + long legs
-//     is the single strongest tell between the two superhero families and it
-//     survives the hard cut-out test.
-//  2. LIMBS ARE ROUND-CAPPED STROKES, not stacked rounded rects. Elbows,
-//     wrists and knees exist because the caps put them there. Chapter 2 draws
-//     arms as `rect ... rx`, so this reads as a different hand at a glance.
-//  3. THE CAPE IS THE BIGGEST SHAPE. Heroes get a SCALLOPED hem (round
-//     arcs); villains that have a cape get a JAGGED hem (sharp teeth). The
-//     chapter-2 capes are narrow straight-sided triangles.
-//  4. COWL, NOT FACE. Heroes are fully masked: one dark skull shape with two
-//     pale angular lenses and no mouth. Chapter 2 shows a round face under a
-//     domino mask.
-//  5. LIGHT IS A HARD-EDGED FLAT WEDGE. Every beam is three nested polygons
-//     at fixed opacity plus a dark rim line. No gradients, no filters (project
-//     rule), and no soft glow circles either -- this family's light has an
-//     edge you could cut on, and on the app's pale cards the rim is the only
-//     reason the light is visible at all (measured: gold on cream is 1.35:1).
-//  6. HERO / VILLAIN SPLIT ON FOUR AXES, never on brightness alone (that
-//     mistake was rejected once already in the chapter-4 family):
-//       a. HUE NEIGHBOURHOOD -- heroes live in the 200-235 degree azure/teal/
-//          indigo band; villains live outside it (plum, magenta, acid olive,
-//          rust). No hero uses a villain hue and no villain uses azure.
+// DESIGN GRAMMAR
+//
+//  1. MINIFIGURE BUILD, SHARED. Block head 36x34 with softened corners, a
+//     6-unit neck, a trapezoid torso 54 wide at the shoulders, round-capped
+//     tube arms, C-clip hands, a hip block with a crotch notch, two short
+//     square legs with an 8-unit gap and a boot band. The four heroes differ
+//     by HEADGEAR, COLOUR AND PROP -- never by build. That is how the real toy
+//     works, and see `EMBLEM_BOX` for the measured payoff.
+//  2. THE FACE IS THE CHARACTER. The old rule was "cowl, not face"; it is
+//     inverted now, because a five-year-old identifies these five from the
+//     head. Batman = eared cowl + pale lenses + exposed grey jaw. Flash =
+//     all-red cowl with two big gold ear-bolts in free air outside the head.
+//     Cyborg = head split down the middle, dark human half with one pale eye
+//     against a steel half with a red optic. Superman = the family's ONLY
+//     unmasked face, black hair with a widow's peak. Joker = white greasepaint
+//     block, green mane, one huge red grin.
+//  3. ONE PROP EACH, AND IT OWNS A QUADRANT. Batman's cape, Flash's stride,
+//     Cyborg's shoulder cannon, Superman's raised cape lobes, Joker's fanned
+//     cards. The prop is what carries the read at the 96 px chapter card,
+//     where face detail is gone.
+//  4. VOLUME BY STACKED OPAQUE FACES. No gradients and no filters inside SVG
+//     (project rule). Side facets, collar strips and boot bands do the work.
+//  5. HERO / VILLAIN SPLIT ON FOUR AXES, never on brightness alone. Real
+//     characters forced one axis to be restated; that is recorded honestly
+//     rather than quietly dropped:
+//       a. WAS "heroes live in the 200-235 degree azure band". BROKEN BY THE
+//          CAST -- Flash has to be red. Restated as PRIMARY vs SECONDARY, which
+//          is DC's own convention, and it still measures. Hero body hues:
+//          Batman 219 (s=0.27), Flash 358 (s=0.85), Cyborg 216 (s=0.16),
+//          Superman 224 (s=0.85). Villain body hues: Blackout 260, Mirage 322,
+//          Gridlock 75, Floodlight 19, Joker 269 + green mane 134. NO VILLAIN
+//          SITS IN THE HERO AZURE BAND and none is within 39 degrees of
+//          Flash's red, so "no villain wears a hero body hue" survives the
+//          restatement -- it is now the measurable form of the axis.
 //       b. THE GOLD IS THE HEROES'. Warm gold trim appears on heroes only.
-//          Villain emission is violet, mint, acid green, cyan-white or red.
-//       c. CHEST TONE -- every hero carries a large cream emblem plate high
-//          on the torso. No villain has any cream on its torso at all; a
-//          villain's brights are lamps, eyes and beams, never a chest plate.
-//       d. STANCE -- heroes are upright/symmetric or flying forward; villains
-//          are tilted, asymmetric and silhouette-jagged.
-//  7. EYES ALWAYS SIT ON A PLATE THAT IS LIGHTER THAN THE BODY. The chapter-4
-//     round measured ink-dot eyes on a dark body at 2.0:1; the fix was to put
-//     them on a bright plate. The darkest figures here (Blackout, Nightfall)
-//     get the brightest eye plates in the file for exactly that reason.
-//  8. THE EMBLEM PLATE IS CURRICULUM CONTENT, not decoration. Chapter 7
-//     teaches AI / J / OA, so two of the four labels are two characters wide;
-//     the plate is a wide BORDERED rounded nameplate (not the other families'
-//     ellipse), sized to the chest rather than worn as a badge, and the font
-//     size steps down by label length so both fit one plate geometry. The
-//     border colour differs per hero. See `emblemPlate` for the A/B that
-//     settled the size and for the two limits it must not cross.
+//          Villain emission stays violet, mint, acid green, cyan-white, red.
+//       c. CREAM IS THE HERO CHEST PLATE. `CREAM` (#f7f3e6) appears nowhere on
+//          a villain. The Joker's greasepaint is deliberately a DIFFERENT
+//          white (#fbfbfb) and it is on the head, which is where every other
+//          villain's bright already lives (lamps, eyes, beams). No villain has
+//          a bright torso plate.
+//       d. STANCE. Heroes are upright and symmetric; villains are tilted and
+//          asymmetric with a `jagged()` hem. The Joker's coat shoulders are
+//          tilted, one arm is up and one down, the mane is lopsided and both
+//          coattails are jagged.
+//  6. EYES ALWAYS SIT ON A PLATE LIGHTER THAN THE BODY. Kept from the
+//     chapter-4 lesson: ink dots on a dark body measured 2.0:1 there.
+//  7. THE EMBLEM PLATE IS CURRICULUM CONTENT, not decoration. See
+//     `emblemPlate` and `EMBLEM_BOX` -- and note that the minifig rewrite made
+//     the letter BIGGER, not smaller, which was the risk going in.
+//
+// KNOWN INCONSISTENCY, USER-SANCTIONED. Only the five characters the user
+// named are minifigs. Blackout / Mirage / Gridlock / Floodlight (stages 7-1 to
+// 7-4's ordinary villains) keep the earlier lean-adult build, because the user
+// scoped them out: "the villains just get roughly reused, so they matter less".
+// They are byte-identical to the previous round on purpose -- each of them
+// carries a hard-won fix (Blackout's letter-`I` cure, Gridlock's mesh draw
+// order, Mirage's two-head separation, Floodlight's hood attachment) and
+// re-proportioning them would put all four back at risk for no user-visible
+// gain. Their palettes were checked against the Joker's and need no change:
+// purple+green sits between Blackout's plum/magenta and Gridlock's olive/acid.
+//
+// WHAT THIS ROUND COST -- read this before the next one.
+//  - THE MINIFIG BUILD IS INTRINSICALLY LOW-FRAGMENTATION and the index knows
+//    it. A minifig has exactly two natural holes: the 8-unit leg gap and the
+//    C-hand rings, and the rings are under the index's 6-unit threshold. So
+//    every figure here has to EARN its articulation from the pose or the prop,
+//    and the two that did not, measured badly at once (Batman 32.5 with the
+//    cape over both arms, Cyborg 32.8 when the new fat cannon closed the hole
+//    beside the head). Both are fixed and both fixes were pose changes, not
+//    decoration. If you add a figure to this file, check the index BEFORE
+//    calling it done -- the build will not give you a hole for free.
+//  - SUPERMAN AND THE CHAPTER-2 LEAD ARE THE CLOSEST PAIR IN THE APP: both are
+//    blue bodies with red capes, gold trim and a star plate. They separate on
+//    build (block vs capsule), on the face (this one is the app's only unmasked
+//    hero; that one wears a black domino mask on a round head) and on the cape
+//    (two lobes swept UP vs one 7-point hem hanging DOWN). Verified side by
+//    side in colour and in hard cut-out. It holds, but it is the pair to
+//    re-check if either family is ever recoloured.
+//  - THE HERO HUE AXIS IS WEAKER THAN IT WAS. It used to be a 35-degree band;
+//    it is now "no villain wears a hero body hue", which is true (measured, see
+//    axis (a)) but is a weaker claim than the old one. Flash's red did that.
+//  - THE FOUR LEAN-ADULT VILLAINS NOW LOOK LIKE A DIFFERENT FAMILY from the
+//    five minifigs they share a chapter with. This is the user's call, not an
+//    oversight, but it IS the most visible cost of the round.
+//  - `_probe.html` HAS NO `map7` SHOT, so the chapter-7 map screen is still
+//    unverified in the app. The viewBox is fixed at 0 0 120 140 so layout
+//    cannot move, but that is an argument, not a measurement.
 //
 // This file must not import ../art.js (circular); it carries its own svgWrap.
-
 function svgWrap(inner, viewBox = '0 0 120 140') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="carbot-art">${inner}</svg>`
 }
@@ -244,341 +298,390 @@ function emblemPlate(
 }
 
 // Where each hero carries the letter. Chapter 7's labels are AI / J / OA, so
-// `w` is sized for the two-glyph case and the one-glyph case just gets a
-// taller letter on the same plate; every hero is verified against all of
-// AI / OA / J / * in `_dc-scan.html` section 2.
-// Jett's box is the small one because its plate sits on a foreshortened chest
-// facet rather than a square-on torso.
+
+// ---------------------------------------------------------------------------
+// MINIFIGURE KIT. Shared build for the five characters the user named, so they
+// differ by headgear, colour and prop rather than by anatomy.
+// ---------------------------------------------------------------------------
+
+// The minifig head is a cylinder, so head-on it is a wide block with softened
+// corners -- wide enough to carry a whole face, which is the point (grammar
+// rule 2). 36x34 here, 40x36 on the boss.
+function legoBlock(x, y, w, h, color, r = 5) {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${color}"/>`
+}
+
+// A minifig arm: shoulder -> elbow -> wrist as one round-capped stroke. The
+// cap at the shoulder IS the shoulder, which is why these are drawn BEFORE the
+// torso: the torso then hides the inner half and the visible arm starts at the
+// body edge, exactly like the toy. A separately drawn shoulder ball was tried
+// and it collided with the chest plate (see EMBLEM_BOX for the clearances).
+function legoArm(sx, sy, ex, ey, wx, wy, color, w) {
+  return `<path d="M ${sx},${sy} L ${ex},${ey} L ${wx},${wy}" stroke="${color}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+}
+
+// The C-clip hand -- the most recognisable minifig part after the head. It is
+// an OPEN ring, so the hole is real background and it survives the hard
+// cut-out instead of reading as a blob on the end of the arm. `gapDeg` aims
+// the opening (SVG angles run clockwise on screen because y points down).
+function legoHand(cx, cy, color, r = 5, gapDeg = -120, w = 3.4) {
+  const p = (deg) => {
+    const a = (deg * Math.PI) / 180
+    return [(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)]
+  }
+  const [x0, y0] = p(gapDeg + 30)
+  const [x1, y1] = p(gapDeg + 330)
+  return `<path d="M ${x0},${y0} A ${r},${r} 0 1 1 ${x1},${y1}" stroke="${color}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`
+}
+
+// One leg: block plus boot band, optionally rotated about the hip pivot the
+// way the toy's leg actually rotates (Flash's stride uses it). Rotation is a
+// transform, never rewritten point lists -- `polygon points` are absolute
+// coordinates in this file and hand-flipping them is where the x-goes-negative
+// mistakes come from.
+function legoLeg(x, y, w, h, legColor, bootColor, bootH, rot = 0, px = 0, py = 0) {
+  const inner =
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.5" fill="${legColor}"/>` +
+    `<rect x="${x}" y="${(y + h - bootH).toFixed(1)}" width="${w}" height="${bootH}" rx="2.5" fill="${bootColor}"/>`
+  return rot ? `<g transform="rotate(${rot} ${px} ${py})">${inner}</g>` : inner
+}
+
+// Where each hero carries the letter -- and the answer to the biggest risk in
+// this rewrite. Minifig proportions grow the head and shorten the torso, which
+// normally means LESS chest, and chapter 7 teaches the digraphs AI and OA, so
+// two glyphs have to fit. It came out AHEAD, for a reason that belongs to the
+// toy rather than to luck: EVERY MINIFIG SHARES ONE TORSO, and the real thing
+// wears its print edge to edge across it. So the plate is sized once against
+// one 54-unit shoulder line (62 on the boss) instead of being fitted to four
+// different chests, and `w` went UP.
+// Clearances that hold it there, measured, per hero:
+//   - plate outer edge x=38.8; nearest arm ink is the shoulder cap at x=36.5,
+//     so the plate never sits on an arm (2.3 units of body between them).
+//   - torso edge at the plate's lowest row is x=35.6, so 3.2 units of body
+//     surround the plate: it cannot alter the hard-cut-out silhouette, which
+//     is the one rule an internal detail must never break.
+//   - plate bottom 84.4 against a belt at 87: the belt is not part of the
+//     plate and must not touch it.
 const EMBLEM_BOX = {
-  ray: { cx: 60, cy: 64, w: 36 },
-  jett: { cx: 66, cy: 59, w: 35 },
-  cloak: { cx: 60, cy: 64, w: 38 },
-  nightray: { cx: 60, cy: 63, w: 43 },
+  ray: { cx: 60, cy: 70, w: 38 },
+  jett: { cx: 60, cy: 70, w: 38 },
+  cloak: { cx: 60, cy: 70, w: 38 },
+  nightray: { cx: 60, cy: 74, w: 44 },
 }
 
 // ---------------------------------------------------------------------------
-// HEROES. Azure/teal/indigo bodies, gold trim, cream chest slab, scalloped
-// cape, cowl with pale lenses. Three distinct silhouettes plus the boss:
-// Ray = raised lantern arm; Jett = the only diagonal flying figure; Cloak =
-// eared cowl over the widest cape; Nightray = all three, oversized.
+// HEROES. Batman -> Flash -> Cyborg -> Superman, in the order the user gave.
+// All four share the minifig build; each owns one quadrant of the frame with
+// one prop so the four are still four silhouettes and not one figure in four
+// colour schemes.
 // ---------------------------------------------------------------------------
 
-// Ray. The light-bringer: a lantern held overhead throws a hard wedge into
-// the top-right corner, and the raised arm is the whole read at small sizes,
-// so the other arm stays down at the hip.
-// The cape is a WING SWEPT UP AND TO ONE SIDE, and its hem stays above the
-// knees. Two earlier versions failed the hard cut-out for the same reason:
-// a hem that reaches down past y=100 fills the gap between the legs and the
-// figure reads "in a dress" no matter which way it is swept. Ending the hem at
-// y<=96 and x<=32 leaves both legs and the body edge free, which is what makes
-// it read as a cape at all. Do not lengthen it without re-running the cut-out.
+// Ray = BATMAN, and the chapter's most-seen figure (stages 7-1 and 7-2).
+// The read, in the order a five-year-old gets it: (1) two pointed cowl ears
+// running to the top of the frame, (2) the biggest cape in the hero set with a
+// SCALLOPED hem -- which is Batman's actual hem, so the family's hero-cape rule
+// and the character agree for once, (3) the classic grey-suit / black-cowl-
+// cape-gloves-boots-trunks split, (4) a gold utility belt, (5) the gold-framed
+// chest plate, which is exactly where Batman's yellow oval emblem goes. That
+// last one is why this character absorbs the phonics plate with no argument.
+// The exposed grey jaw under the cowl is load bearing: without it the head is
+// one black block and the cut-out loses the chin line that says "mask".
+//
+// THE CAPE TAPERS DOWNWARD AND THE ELBOWS ARE PUSHED OUT PAST IT. This is the
+// one place where the minifig build fights the silhouette, and it measured:
+// a cape wide at the shoulders AND wide at the hem swallows both arms, and the
+// fragmentation index came back at 32.5 -- the lowest in the file, below even
+// Gridlock's 34.3, on the figure the child sees for two whole stages. A minifig
+// has only two natural holes (the 8-unit leg gap and the C-hand rings, and the
+// rings are under the index's 6-unit threshold), so a cape that covers the arms
+// leaves the leg gap as the ONLY articulation. Two changes bought it back:
+//   - the cape is 64 wide at the collar and tapers to 46 at the hem, which is
+//     the shape of the actual LEGO cape piece anyway. It still shows 5 units
+//     outboard of the torso at the top, so it reads as a cape from the front.
+//   - the elbows swing out to x=16/104, clear of the tapering cape edge, so
+//     twenty-five rows carry real background between each arm and the body.
+// The hem keeps a DEEP CENTRE NOTCH with its apex at (60,100): earlier rounds
+// of this character failed the cut-out because a hem spanning the frame below
+// y=100 fills the gap between the legs and the figure reads "in a dress". The
+// notch lines the open channel up with the leg gap for 26 rows. Do not close
+// either one, and do not widen the hem back out.
 export function dcRay({
-  bodyColor = '#2f5fb3',
-  accent = '#16233f',
-  capeColor = '#122a55',
-  liningColor = '#3b74d1',
+  bodyColor = '#4a5466',
+  accent = '#12151d',
+  capeColor = '#171b26',
+  liningColor = '#2c3444',
+  jawColor = '#7d8798',
   emblem = 'AI',
 } = {}) {
   return svgWrap(
     `
     <g>
-      <ellipse cx="58" cy="134" rx="28" ry="5" fill="#000" opacity="0.12"/>
+      <ellipse cx="60" cy="136" rx="34" ry="3.4" fill="#000" opacity="0.13"/>
 
-      ${beam(99, 22, 46, 1, 119, 60, GOLD, BEAM_RIM)}
+      <path d="M 28,48 L 34,80 L 40,118 ${scallop(40, 118, 48, 120, 1, 4)} L 60,100 L 72,120 ${scallop(72, 120, 80, 118, 1, 4)} L 86,80 L 92,48 Z" fill="${capeColor}"/>
+      <path d="M 34,51 L 39,80 L 44,112 ${scallop(44, 112, 50, 114, 1, 3)} L 60,96 L 70,114 ${scallop(70, 114, 76, 112, 1, 3)} L 81,80 L 86,51 Z" fill="${liningColor}"/>
+      ${shade(`M 34,51 L 39,80 L 44,112 ${scallop(44, 112, 50, 114, 1, 3)} L 60,96 L 70,114 ${scallop(70, 114, 76, 112, 1, 3)} L 81,80 L 86,51 Z`, 0.3)}
+      <polygon points="43,41 77,41 92,58 28,58" fill="${capeColor}"/>
 
-      <path d="M 74,44 L 2,62 ${scallop(2, 62, 26, 88, 3, 8)} L 58,52 Z" fill="${capeColor}"/>
-      <path d="M 70,48 L 18,60 ${scallop(18, 60, 30, 80, 2, 6)} L 58,54 Z" fill="${liningColor}"/>
-      ${shade(`M 70,48 L 18,60 ${scallop(18, 60, 30, 80, 2, 6)} L 58,54 Z`, 0.3)}
+      ${legoArm(31, 60, 16, 80, 24, 94, bodyColor, 11)}
+      ${legoArm(89, 60, 104, 80, 96, 94, bodyColor, 11)}
+      <polygon points="21,84 11,80 20,89" fill="${accent}"/>
+      <polygon points="23,90 14,87 22,95" fill="${accent}"/>
+      <polygon points="99,84 109,80 100,89" fill="${accent}"/>
+      <polygon points="97,90 106,87 98,95" fill="${accent}"/>
+      ${legoHand(25, 98, accent, 5, -120)}
+      ${legoHand(95, 98, accent, 5, -60)}
 
-      <path d="M 45,95 L 43,120 L 44,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 74,95 L 76,120 L 76,130" stroke="${bodyColor}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="34,124 51,124 51,136 32,136" fill="${accent}"/>
-      <polygon points="86,124 69,124 69,136 88,136" fill="${accent}"/>
-      <rect x="34" y="124" width="17" height="3.4" fill="${GOLD}"/>
-      <rect x="69" y="124" width="17" height="3.4" fill="${GOLD}"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, bodyColor, accent, 11)}
+      <path d="M 37,96 L 83,96 L 83,109 L 63,109 L 60,113 L 57,109 L 37,109 Z" fill="${accent}"/>
 
-      <rect x="53" y="36" width="14" height="13" fill="${accent}"/>
-      <polygon points="35,47 85,47 83,80 78,98 42,98 37,80" fill="${bodyColor}"/>
-      <polygon points="35,47 49,47 45,86 38,78" fill="${accent}"/>
-      <polygon points="85,47 71,47 75,86 82,78" fill="${accent}"/>
+      <path d="M 33,60 Q 33,54 39,54 L 81,54 Q 87,54 87,60 L 83,98 L 37,98 Z" fill="${bodyColor}"/>
+      <polygon points="34.2,57 44,54 40.5,98 37,98" fill="${accent}" opacity="0.4"/>
+      <polygon points="85.8,57 76,54 79.5,98 83,98" fill="${accent}" opacity="0.4"/>
+      <path d="M 36.5,57 Q 41,64 38,71" stroke="${accent}" stroke-width="1.4" fill="none" opacity="0.7"/>
+      <path d="M 83.5,57 Q 79,64 82,71" stroke="${accent}" stroke-width="1.4" fill="none" opacity="0.7"/>
 
-      <path d="M 38,55 L 30,77 L 32,91" stroke="${bodyColor}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="32" cy="94" r="6.2" fill="${accent}"/>
-      <circle cx="32" cy="94" r="2.6" fill="${GOLD}"/>
-
-      <path d="M 82,55 L 95,40 L 99,25" stroke="${bodyColor}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="99" cy="24" r="6.2" fill="${accent}"/>
-      <polygon points="93,22 105,22 108,11 90,11" fill="${GOLD}"/>
-      <polygon points="90,11 108,11 105,5 93,5" fill="${accent}"/>
-      <polygon points="95,20 103,20 104,13 94,13" fill="${CREAM}"/>
-
-      <rect x="40" y="89" width="40" height="8" fill="${accent}"/>
-      <rect x="53" y="88" width="14" height="10" fill="${GOLD}"/>
+      <rect x="37" y="87" width="46" height="9" fill="${GOLD}"/>
+      <rect x="53" y="85" width="14" height="12" rx="2" fill="${accent}"/>
+      <rect x="56" y="88" width="8" height="6" fill="${GOLD}"/>
       ${emblemPlate(EMBLEM_BOX.ray, emblem, GOLD)}
 
-      <circle cx="60" cy="27" r="12.5" fill="${accent}"/>
-      <path d="M 47.5,27 A 12.5,12.5 0 0 1 72.5,27 Z" fill="${bodyColor}"/>
-      <rect x="47.6" y="25.4" width="24.8" height="3.2" fill="${GOLD}"/>
-      ${lenses(60, 32.5)}
-      <polygon points="56,16 64,16 60,3" fill="${GOLD}"/>
-      <polygon points="58,16 62,16 60,6" fill="${accent}"/>
+      <rect x="53" y="43" width="14" height="13" fill="${accent}"/>
+
+      ${legoBlock(42, 14, 36, 34, accent)}
+      <polygon points="46,19 55,19 48,1" fill="${accent}"/>
+      <polygon points="74,19 65,19 72,1" fill="${accent}"/>
+      <rect x="45" y="17" width="30" height="4.6" rx="2.2" fill="${liningColor}"/>
+      <path d="M 49,35 L 71,35 L 71,43 Q 71,48 65,48 L 55,48 Q 49,48 49,43 Z" fill="${jawColor}"/>
+      <polygon points="54,41 66,41 65,44 55,44" fill="${accent}"/>
+      ${lenses(60, 28, CREAM, 1.3)}
     </g>
   `
   )
 }
 
-// Jett. The only diagonal figure in the app: cowl high-right, fist thrown
-// forward past the frame's shoulder, legs trailing low-left.
-// Drawn by hand rather than rotated because a rotate about the body centre
-// pushes the fist and the cape hem straight out of the viewBox.
-//
-// THE CAPE BILLOWS UP AND BACK, NOT DOWN AND BACK. Two passes drew the cape
-// trailing down-left, which is where a cape physically goes -- and both times
-// it landed on top of the trailing legs and the hard cut-out came back as one
-// featureless diagonal streak. The fragmentation index (rows whose filled runs
-// are split by >=6 units) measured 9.3 on that version, against 61 for a
-// figure that reads and 39 for the Mario lead. Lifting the cape into the band
-// above the shoulders puts a 12-30 unit hole between the cape and the cowl for
-// thirty rows, and splaying the two trailing legs adds another twenty-four.
-// Both gaps are the whole reason this figure is legible; closing either one
-// puts it straight back to a streak.
-//
-// SECOND ROUND: it passed the index at 55.0 and still read as "a flying thing",
-// never as "a strong thing". Three measurements said why, and all three are
-// fixed here without touching the up-and-back sweep:
-//   1. THE CAPE WAS AS BIG AS THE BODY. Cape 1422 square units against a torso
-//      of 1480 -- and the cape is crimson on a pale card while the torso is
-//      teal and half-covered by arms and the nameplate, so it won the look
-//      even at parity. It is now TWO STREAMERS totalling about 1030 against a
-//      torso of 1920: the body is nearly twice the cape. Splitting the cape in
-//      two also buys back, as a gap between the streamers, more articulation
-//      than the lost area cost.
-//   2. THE COWL FUSED WITH THE RAISED ARM. Head radius 11.5 at (88,36) with
-//      the arm elbow at (99,34) and a 9.5-wide stroke: centre distance 11.2
-//      against a required 16.25, i.e. a 5-unit OVERLAP. At 96 px that is one
-//      blob. The head is now r=14 at (85,27) -- 48% more area -- and it owns
-//      the top-right quadrant alone: the nearest ink is the punching arm at
-//      8.3 units of clear air, comfortably over the 6-unit gap the index
-//      counts.
-//   3. THE HEAD WAS SMALL FOR THE FAMILY. 23 units across against Cloak's 26
-//      and the boss's 30, on the figure whose head has the least support from
-//      anything around it. Now 28.
-// The punch had to come DOWN off the shoulder to buy that clearance: a fist
-// thrown up past the cowl is always within a few units of it, whatever the
-// radius. A near-level thrust at chest height still reads as a punch and it
-// leaves the head alone.
-// The two cream speed lines from the first version are gone: in a cut-out they
-// were two grey dashes floating in empty space, and the cape sweep already
-// says "moving fast".
-//
-// This is also the one figure that needs a dedicated front-facing CHEST FACET.
-// A foreshortened diagonal slab is about 18 units thick and an axis-aligned
-// nameplate is 24 tall including its border, so the plate pokes past the body
-// outline -- a cut-out pixel diff with and without it measured 382 pixels. The
-// facet is body, so it is a deliberate silhouette choice, and the plate sits
-// inside it.
+// Jett = THE FLASH. The character is speed, and the two things that carry it
+// at 96 px are not detail:
+//   1. TWO GOLD EAR-BOLTS IN FREE AIR. Flash's cowl bolts are normally a
+//      printed detail a few units across; here they are 21-unit zigzags that
+//      live OUTSIDE the head block, one per side, so they are ink against the
+//      pale card rather than ink against red. They are also the reason this
+//      figure needs no cape: head-plus-bolts is already a shape nothing else
+//      in the app has.
+//   2. THE MINIFIG STRIDE. Minifig legs rotate at the hip, so a run is drawn
+//      the way the toy does it: both legs swung out of vertical about the hip
+//      pivot (+18 and -22 degrees), one arm thrown up-forward and the other
+//      back-down. That opens a wide V between the legs and a diagonal across
+//      the whole frame, and it is why the FIRST version's two floating cream
+//      speed lines are not here -- in a hard cut-out those were two grey
+//      dashes in empty space, and the stance says "fast" without them.
+// All-red suit with gold boots, belt and gauntlet-ring hands. No cape.
 export function dcJett({
-  bodyColor = '#1a7d9e',
-  accent = '#0b3a4c',
-  capeColor = '#a8272c',
-  liningColor = '#d8443f',
+  bodyColor = '#cf2027',
+  accent = '#8b1218',
   emblem = 'J',
 } = {}) {
   return svgWrap(
     `
     <g>
-      <path d="M 66,44 L 10,10 ${scallop(10, 10, 24, 34, 2, 7)} L 56,50 Z" fill="${capeColor}"/>
-      <path d="M 62,47 L 22,23 ${scallop(22, 23, 30, 40, 1, 5)} L 54,50 Z" fill="${liningColor}"/>
-      ${shade(`M 62,47 L 22,23 ${scallop(22, 23, 30, 40, 1, 5)} L 54,50 Z`, 0.26)}
+      <ellipse cx="60" cy="136.5" rx="33" ry="3" fill="#000" opacity="0.12"/>
 
-      <path d="M 58,54 L 14,44 ${scallop(14, 44, 26, 58, 1, 6)} L 50,60 Z" fill="${capeColor}"/>
-      <path d="M 56,56 L 22,49 ${scallop(22, 49, 30,58, 1, 4)} L 50,59 Z" fill="${liningColor}"/>
-      ${shade(`M 56,56 L 22,49 ${scallop(22, 49, 30, 58, 1, 4)} L 50,59 Z`, 0.3)}
+      ${legoArm(31, 60, 21, 73, 20, 86, bodyColor, 11)}
+      ${legoHand(20, 90, GOLD, 5, -110)}
+      ${legoArm(89, 58, 99, 49, 105, 39, bodyColor, 11)}
+      ${legoHand(107, 36, GOLD, 5, -30)}
 
-      <path d="M 54,86 L 41,105 L 31,121" stroke="${bodyColor}" stroke-width="12.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="25,114 37,119 33,132 21,126" fill="${accent}"/>
-      <path d="M 66,88 L 58,110 L 55,129" stroke="${bodyColor}" stroke-width="12.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="48,123 62,125 62,137 48,136" fill="${accent}"/>
-      <rect x="48" y="123" width="14" height="3.2" fill="${GOLD}"/>
+      ${legoLeg(37, 106, 19, 28, bodyColor, GOLD, 12, 18, 46.5, 106)}
+      ${legoLeg(64, 106, 19, 28, bodyColor, GOLD, 12, -22, 73.5, 106)}
+      <path d="M 37,96 L 83,96 L 83,110 L 63,110 L 60,114 L 57,110 L 37,110 Z" fill="${accent}"/>
 
-      <polygon points="40,44 88,36 92,76 46,84" fill="${bodyColor}"/>
-      <polygon points="40,44 56,42 60,82 46,84" fill="${accent}"/>
-      <polygon points="88,36 92,76 84,78 80,38" fill="${accent}" opacity="0.5"/>
+      <path d="M 33,60 Q 33,54 39,54 L 81,54 Q 87,54 87,60 L 83,98 L 37,98 Z" fill="${bodyColor}"/>
+      <polygon points="34.2,57 44,54 40.5,98 37,98" fill="${accent}" opacity="0.45"/>
+      <polygon points="85.8,57 76,54 79.5,98 83,98" fill="${accent}" opacity="0.45"/>
+      <path d="M 36.5,57 Q 41,64 38,71" stroke="${accent}" stroke-width="1.4" fill="none" opacity="0.7"/>
+      <path d="M 83.5,57 Q 79,64 82,71" stroke="${accent}" stroke-width="1.4" fill="none" opacity="0.7"/>
 
-      <path d="M 48,56 L 36,74 L 32,88" stroke="${bodyColor}" stroke-width="9.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="32" cy="90" r="6" fill="${accent}"/>
+      <rect x="37" y="87" width="46" height="9" fill="${GOLD}"/>
+      <rect x="53" y="85" width="14" height="12" rx="2" fill="${accent}"/>
+      <polygon points="63,86 56,91.5 60,91.5 57,96 64,90 60,90" fill="${GOLD}"/>
+      ${emblemPlate(EMBLEM_BOX.jett, emblem, GOLD)}
 
-      <path d="M 86,56 L 101,50 L 111,43" stroke="${bodyColor}" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="112" cy="42" r="6.6" fill="${accent}"/>
-      <rect x="106.5" y="39.8" width="11" height="4.4" fill="${GOLD}"/>
+      <rect x="53" y="43" width="14" height="13" fill="${accent}"/>
 
-      <polygon points="46,76 90,69 89,80 46,86" fill="${accent}"/>
-      <rect x="60" y="72" width="13" height="10" fill="${GOLD}"/>
-      ${emblemPlate(EMBLEM_BOX.jett, emblem, liningColor)}
-
-      <polygon points="74,20 84,14 60,8" fill="${accent}"/>
-      <polygon points="76,23 84,18 64,13" fill="${GOLD}"/>
-      <circle cx="85" cy="27" r="14" fill="${accent}"/>
-      <path d="M 71.5,23.4 A 14,14 0 0 1 97.1,20 Z" fill="${bodyColor}"/>
-      ${lenses(85, 32, CREAM, 1.05)}
-      <polygon points="95,17 105,27 96,35" fill="${accent}"/>
+      <polygon points="45,21 31,34 38,34 24,48 31,36 24,36" fill="${GOLD}"/>
+      <polygon points="75,21 89,34 82,34 96,48 89,36 96,36" fill="${GOLD}"/>
+      ${legoBlock(42, 14, 36, 34, bodyColor)}
+      <rect x="45" y="16.5" width="30" height="5" rx="2.4" fill="#e8474b"/>
+      <polygon points="42,33 78,33 78,40 42,40" fill="${accent}" opacity="0.35"/>
+      ${lenses(60, 28, CREAM, 1.32)}
+      <rect x="53" y="41.6" width="14" height="2.4" rx="1.2" fill="${accent}"/>
     </g>
   `
   )
 }
 
-// Cloak. The detective: the family's signature figure. Two long pointed cowl
-// ears run to the very top of the viewBox and the widest cape in the hero set
-// spreads off the shoulders, so the cut-out reads "eared cowl over a
-// bat-shaped cape" with every colour thrown away.
-// The cape is TWO LOBES WITH A DEEP CENTRE NOTCH, not one hem: the notch is
-// what keeps the legs visible as legs. Cowl ears belong to Cloak and to the
-// boss that merges from him -- Ray and Jett deliberately have none, or the
-// three heroes' heads stop being distinguishable.
+// Cloak = CYBORG. Two identifiers, and both are silhouette rather than print:
+//   1. THE SHOULDER CANNON replaces the left arm outright -- a 15-unit barrel
+//      raked up to the frame edge with a ringed muzzle. It is the only arm in
+//      the app that is not an arm, so the cut-out separates this figure from
+//      the other three heroes before any colour is involved.
+//   2. THE HEAD IS SPLIT DOWN THE MIDDLE. Dark human half with one pale eye
+//      slit, steel half with a red optic ring, and a 2-unit seam between them.
+//      Half a face is the character.
+// Bulk is the third mark: chunky pauldrons over both shoulders make this the
+// widest-shouldered non-boss hero, against Batman's cape width and Flash's
+// stride width, so the three ordinary heroes are wide in three different ways.
+// No cape and no gold; the trim hue is the tech cyan, which is also the plate
+// border, and gold staying absent here is fine -- axis (b) says no VILLAIN has
+// gold, not that every hero must.
 export function dcCloak({
-  bodyColor = '#28304f',
-  accent = '#101628',
-  capeColor = '#151a2e',
-  liningColor = '#5d688f',
+  bodyColor = '#9aa6b8',
+  accent = '#242c3a',
+  skinColor = '#6d4a35',
+  techColor = '#3fc9f0',
+  opticColor = '#e83a2c',
   emblem = 'OA',
 } = {}) {
   return svgWrap(
     `
     <g>
-      <ellipse cx="60" cy="135" rx="32" ry="5" fill="#000" opacity="0.13"/>
+      <ellipse cx="60" cy="136" rx="33" ry="3.4" fill="#000" opacity="0.13"/>
 
-      <path d="M 44,44 L 4,98 ${scallop(4, 98, 42, 108, 2, 9)} L 60,80 L 78,108 ${scallop(78, 108, 116, 98, 2, 9)} L 76,44 Z" fill="${capeColor}"/>
-      <path d="M 48,47 L 20,92 ${scallop(20, 92, 46, 100, 1, 7)} L 60,84 L 74,100 ${scallop(74, 100, 100, 92, 1, 7)} L 72,47 Z" fill="${liningColor}"/>
-      ${shade(`M 48,47 L 20,92 ${scallop(20, 92, 46, 100, 1, 7)} L 60,84 L 74,100 ${scallop(74, 100, 100, 92, 1, 7)} L 72,47 Z`, 0.34)}
+      <g transform="translate(30,66) rotate(245)">
+        <rect x="-2" y="-8.5" width="24" height="17" rx="3" fill="${bodyColor}"/>
+        <rect x="-2" y="4" width="24" height="4.6" rx="2.2" fill="#c8d1dc"/>
+        <rect x="4" y="-12" width="14" height="8" rx="2" fill="${accent}"/>
+        <rect x="20" y="-10.5" width="7" height="21" rx="2" fill="${accent}"/>
+        <rect x="26" y="-7" width="3.5" height="14" rx="1.6" fill="${bodyColor}"/>
+        <circle cx="23.5" cy="0" r="5.6" fill="${accent}"/>
+        <circle cx="23.5" cy="0" r="3.4" fill="${techColor}"/>
+        <rect x="7" y="-7" width="3" height="14" fill="${accent}" opacity="0.5"/>
+      </g>
 
-      <path d="M 47,94 L 45,118 L 46,129" stroke="${bodyColor}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 73,94 L 75,118 L 74,129" stroke="${bodyColor}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="36,122 53,122 53,137 34,137" fill="${accent}"/>
-      <polygon points="84,122 67,122 67,137 86,137" fill="${accent}"/>
-      <rect x="36" y="122" width="17" height="3.6" fill="${GOLD}"/>
-      <rect x="67" y="122" width="17" height="3.6" fill="${GOLD}"/>
+      ${legoArm(89, 60, 99, 77, 93, 90, bodyColor, 11)}
+      <rect x="87" y="82" width="12" height="3.6" fill="${techColor}"/>
+      ${legoHand(92, 94, accent, 5, -60)}
 
-      <polygon points="34,45 86,45 84,80 79,97 41,97 36,80" fill="${bodyColor}"/>
-      <polygon points="34,45 48,45 44,86 37,78" fill="${accent}"/>
-      <polygon points="86,45 72,45 76,86 83,78" fill="${accent}"/>
+      ${legoLeg(37, 106, 19, 29, bodyColor, accent, 11)}
+      ${legoLeg(64, 106, 19, 29, bodyColor, accent, 11)}
+      <rect x="40" y="112" width="13" height="3.4" fill="${techColor}"/>
+      <rect x="67" y="112" width="13" height="3.4" fill="${techColor}"/>
+      <path d="M 37,96 L 83,96 L 83,109 L 63,109 L 60,113 L 57,109 L 37,109 Z" fill="${accent}"/>
 
-      <path d="M 37,53 L 26,74 L 25,90" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="20,58 33,64 29,80 17,74" fill="${capeColor}"/>
-      <circle cx="25" cy="93" r="6.4" fill="${accent}"/>
-      <path d="M 83,53 L 94,74 L 95,90" stroke="${bodyColor}" stroke-width="10.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="100,58 87,64 91,80 103,74" fill="${capeColor}"/>
-      <circle cx="95" cy="93" r="6.4" fill="${accent}"/>
+      <path d="M 33,60 Q 33,54 39,54 L 81,54 Q 87,54 87,60 L 83,98 L 37,98 Z" fill="${bodyColor}"/>
+      <polygon points="34.2,57 44,54 40.5,98 37,98" fill="${accent}" opacity="0.5"/>
+      <polygon points="85.8,57 76,54 79.5,98 83,98" fill="${accent}" opacity="0.5"/>
+      <rect x="44" y="54.5" width="32" height="3.4" fill="${techColor}"/>
 
-      <rect x="39" y="88" width="42" height="9" fill="${accent}"/>
-      <rect x="43" y="89" width="7" height="7" fill="${GOLD}"/>
-      <rect x="56" y="87" width="9" height="11" fill="${GOLD}"/>
-      <rect x="71" y="89" width="7" height="7" fill="${GOLD}"/>
-      ${emblemPlate(EMBLEM_BOX.cloak, emblem, liningColor)}
+      <polygon points="22,50 39,48 40,66 20,68" fill="${bodyColor}"/>
+      <polygon points="22,50 39,48 39,53 21,55" fill="${accent}"/>
+      <polygon points="100,50 81,48 79,64 102,66" fill="${bodyColor}"/>
+      <polygon points="100,50 81,48 81,53 101,55" fill="${accent}"/>
 
-      <circle cx="60" cy="30" r="13" fill="${accent}"/>
-      <polygon points="49,21 57,20 45,2" fill="${accent}"/>
-      <polygon points="71,21 63,20 75,2" fill="${accent}"/>
-      <path d="M 47.2,28 A 13,13 0 0 1 72.8,28 Z" fill="${bodyColor}"/>
-      ${lenses(60, 34.5, CREAM, 1.02)}
-      <polygon points="53,42 67,42 64,46 56,46" fill="${accent}"/>
+      <rect x="37" y="87" width="46" height="9" fill="${accent}"/>
+      <rect x="54" y="85" width="12" height="12" rx="2" fill="${techColor}"/>
+      ${emblemPlate(EMBLEM_BOX.cloak, emblem, techColor)}
+
+      <rect x="53" y="43" width="14" height="13" fill="${accent}"/>
+
+      <path d="M 47,14 L 60,14 L 60,48 L 47,48 Q 42,48 42,43 L 42,19 Q 42,14 47,14 Z" fill="${skinColor}"/>
+      <path d="M 60,14 L 73,14 Q 78,14 78,19 L 78,43 Q 78,48 73,48 L 60,48 Z" fill="${bodyColor}"/>
+      <rect x="62" y="15.5" width="14" height="5" rx="2" fill="#c8d1dc"/>
+      <polygon points="60,21 78,19 78,26 60,27" fill="${accent}"/>
+      <circle cx="69" cy="32" r="6.8" fill="${accent}"/>
+      <circle cx="69" cy="32" r="4.9" fill="${opticColor}"/>
+      <circle cx="69" cy="32" r="1.8" fill="#ffe9cf"/>
+      <circle cx="75.5" cy="40" r="1.9" fill="${accent}"/>
+      <polygon points="44,23 57,21 57,25 44,27" fill="#2b1a12"/>
+      ${slit(50, 32, 11, 6.4, 1.6, '#efe7dc')}
+      <circle cx="50" cy="32" r="2.1" fill="#2b1a12"/>
+      <rect x="59" y="14" width="2.2" height="34" fill="${accent}"/>
+      <rect x="49" y="41.4" width="22" height="2.6" rx="1.2" fill="${accent}"/>
     </g>
   `
   )
 }
 
-// Nightray, the chapter-7 boss and the combined form. The three earlier heroes
-// are all still visible in it -- Cloak's eared cowl, Jett's crimson cape
-// lining, Ray's lantern in BOTH fists with a beam off each -- so "the three
-// merged" reads without narration.
-//
-// SIZE IS BOUGHT IN SHAPE, NOT IN AREA. The first version was the biggest
-// figure in the file by filled area (9295 square units against Cloak's 7090)
-// and still read as "Cloak again", because the extra area went into a wider
-// cape that lay over the arms and legs. Measured: its fragmentation index was
-// 37.8, BELOW the 47.8 of the ordinary hero it merges from -- the boss was
-// less articulate than its own component. Two changes fixed that:
-//   - THE CAPE IS TWO SEPARATE SIDE LOBES that stay outboard of the legs
-//     instead of one hem that spans the frame. The centre stays open, so the
-//     legs are legs and there are three holes across the lower rows.
-//   - THE LANTERN ARMS ARE RAISED CLEAR OF THE BODY, hands up at y=26 where
-//     the torso is not, which opens a 30-unit hole on each side for fifteen
-//     rows. Lowered arms sat inside the cape and contributed nothing.
-// The third mark of rank is the crest: Cloak has two cowl ears, Nightray has
-// two ears PLUS a gold centre spike, which is the difference a five-year-old
-// reads as a crown. Do not give the other heroes a third point.
+// Nightray = SUPERMAN, the chapter-7 boss and the combined form.
+// WHAT MAKES IT READ AS THE FINAL FORM, and it is deliberately not "more
+// area": the chapter-4 family already proved that buying size with overlapping
+// mass just smears the silhouette. Four clear shapes instead:
+//   - THE ONLY UNMASKED FACE IN THE FAMILY, with black hair and a widow's
+//     peak. Every other figure here is a mask or a machine, so the face alone
+//     marks rank.
+//   - THE CHEST SHIELD. A gold pentagon behind the plate, with the plate's
+//     border switched to cape red: gold rim, red frame, cream field, letter.
+//     The pentagon's bottom point clears the plate by 5 units, which is the
+//     part that actually reads at 96 px. This is also the cleanest solution to
+//     the emblem problem in the whole file -- Superman's chest is a plate with
+//     a symbol in it by design.
+//   - TWO CAPE LOBES SWEPT UP TO THE TOP CORNERS with a deep centre notch at
+//     (60,86). Up-and-out, not down: down puts the cape over the legs and the
+//     cut-out becomes one bell. The notch keeps the centre channel open.
+//   - HANDS ON HIPS. Elbows pushed out to x=12/108 open an 11-unit hole
+//     between each arm and the torso for twenty rows, and the pose is
+//     symmetric, which is hero axis (d). Raised fists were tried first and
+//     they landed inside the up-swept cape, contributing nothing.
+// Biggest in every dimension: head 40x36, torso 66 at the shoulders, plate
+// w=44, legs 24 wide.
 export function dcNightray({
-  bodyColor = '#2b3aa0',
-  accent = '#0f1436',
-  capeColor = '#0d1024',
-  liningColor = '#c0332f',
-  panelColor = '#7c88c8',
+  bodyColor = '#1c48c0',
+  accent = '#12307f',
+  capeColor = '#c8252c',
+  liningColor = '#8f1a20',
+  hairColor = '#14161f',
+  skinColor = '#f0c49e',
   emblem = '★',
 } = {}) {
-  // Hem ends at x<=22: anything further right lands on the leg and closes the
-  // gap that makes the lower half readable.
   const capeLobe = `
-      <path d="M 42,44 L 2,88 ${scallop(2, 88, 22, 102, 2, 9)} L 52,68 Z" fill="${capeColor}"/>
-      <path d="M 44,48 L 14,84 ${scallop(14, 84, 24, 94, 1, 7)} L 50,66 Z" fill="${liningColor}"/>
-      ${shade(`M 44,48 L 14,84 ${scallop(14, 84, 24, 94, 1, 7)} L 50,66 Z`, 0.34)}`
-
-  const lanternArm = `
-      <path d="M 30,48 L 18,38 L 9,28" stroke="${bodyColor}" stroke-width="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="8" cy="26" r="7.2" fill="${accent}"/>
-      <polygon points="2,24 15,24 16,14 1,14" fill="${GOLD}"/>
-      <polygon points="4,22 13,22 14,16 3,16" fill="${CREAM}"/>`
-
-  const searchBeam = beam(8, 24, 1, 1, 36, 1, GOLD, BEAM_RIM)
+      <path d="M 38,50 L 3,12 L 11,40 L 2,50 L 8,80 ${scallop(8, 80, 32, 106, 2, 8)} L 60,86 L 58,50 Z" fill="${capeColor}"/>
+      <path d="M 43,53 L 17,30 L 21,48 L 14,55 L 20,78 ${scallop(20, 78, 36, 98, 1, 6)} L 60,84 L 57,53 Z" fill="${liningColor}"/>
+      ${shade(`M 43,53 L 17,30 L 21,48 L 14,55 L 20,78 ${scallop(20, 78, 36, 98, 1, 6)} L 60,84 L 57,53 Z`, 0.28)}`
 
   return svgWrap(
     `
     <g>
-      <ellipse cx="60" cy="135" rx="42" ry="4.6" fill="#000" opacity="0.15"/>
-
-      ${searchBeam}
-      ${mirrored(searchBeam)}
+      <ellipse cx="60" cy="137" rx="40" ry="2.6" fill="#000" opacity="0.15"/>
 
       ${capeLobe}
       ${mirrored(capeLobe)}
+      <polygon points="44,40 76,40 90,58 30,58" fill="${capeColor}"/>
 
-      <path d="M 47,98 L 42,122 L 42,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 73,98 L 78,122 L 78,132" stroke="${bodyColor}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="30,124 51,124 51,139 28,139" fill="${accent}"/>
-      <polygon points="90,124 69,124 69,139 92,139" fill="${accent}"/>
-      <rect x="30" y="124" width="21" height="4" fill="${GOLD}"/>
-      <rect x="69" y="124" width="21" height="4" fill="${GOLD}"/>
+      ${legoArm(25, 63, 12, 80, 30, 93, bodyColor, 12.5)}
+      ${legoArm(95, 63, 108, 80, 90, 93, bodyColor, 12.5)}
+      ${legoHand(31, 97, skinColor, 5.6, -150, 3.8)}
+      ${legoHand(89, 97, skinColor, 5.6, -30, 3.8)}
 
-      <polygon points="30,43 90,43 88,82 82,100 38,100 32,82" fill="${bodyColor}"/>
-      <polygon points="30,43 46,43 42,90 34,80" fill="${accent}"/>
-      <polygon points="90,43 74,43 78,90 86,80" fill="${accent}"/>
-      <polygon points="38,100 82,100 78,106 42,106" fill="${accent}"/>
+      ${legoLeg(32, 111, 24, 25, bodyColor, capeColor, 12)}
+      ${legoLeg(64, 111, 24, 25, bodyColor, capeColor, 12)}
+      <path d="M 31,98 L 89,98 L 89,114 L 64,114 L 60,119 L 56,114 L 31,114 Z" fill="${capeColor}"/>
 
-      <polygon points="24,42 48,42 44,60 20,58" fill="${bodyColor}"/>
-      <polygon points="96,42 72,42 76,60 100,58" fill="${bodyColor}"/>
-      <rect x="22" y="42" width="24" height="4.4" fill="${GOLD}"/>
-      <rect x="74" y="42" width="24" height="4.4" fill="${GOLD}"/>
+      <path d="M 27,62 Q 27,55 34,55 L 86,55 Q 93,55 93,62 L 89,100 L 31,100 Z" fill="${bodyColor}"/>
+      <polygon points="28.4,58 40,55 35.5,100 31,100" fill="${accent}" opacity="0.42"/>
+      <polygon points="91.6,58 80,55 84.5,100 89,100" fill="${accent}" opacity="0.42"/>
+      <path d="M 30.5,58 Q 35,66 32,74" stroke="${accent}" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 89.5,58 Q 85,66 88,74" stroke="${accent}" stroke-width="1.5" fill="none" opacity="0.7"/>
 
-      ${lanternArm}
-      ${mirrored(lanternArm)}
+      <polygon points="31,58 89,58 89,76 60,94 31,76" fill="${GOLD}"/>
+      ${emblemPlate(EMBLEM_BOX.nightray, emblem, capeColor)}
+      <rect x="33" y="99" width="54" height="7" fill="${GOLD}"/>
+      <rect x="53" y="97" width="14" height="11" rx="2" fill="${accent}"/>
 
-      <rect x="36" y="88" width="48" height="10" fill="${accent}"/>
-      <rect x="52" y="86" width="16" height="14" fill="${GOLD}"/>
-      <rect x="32" y="43" width="56" height="3.6" fill="${panelColor}"/>
-      ${emblemPlate(EMBLEM_BOX.nightray, emblem, GOLD)}
+      <rect x="52" y="42" width="16" height="14" fill="${skinColor}"/>
 
-      <circle cx="60" cy="27" r="15" fill="${accent}"/>
-      <polygon points="47,17 56,16 41,1" fill="${accent}"/>
-      <polygon points="73,17 64,16 79,1" fill="${accent}"/>
-      <path d="M 45.2,25 A 15,15 0 0 1 74.8,25 Z" fill="${bodyColor}"/>
-      <rect x="45.4" y="22.4" width="29.2" height="3.6" fill="${GOLD}"/>
-      ${lenses(60, 31.5, CREAM, 1.18)}
-      <polygon points="52,40 68,40 64,45 56,45" fill="${accent}"/>
-      <polygon points="54,15 66,15 60,0.6" fill="${GOLD}"/>
-      <polygon points="56.6,14 63.4,14 60,5" fill="${accent}"/>
+      ${legoBlock(40, 12, 40, 36, skinColor)}
+      <path d="M 40,32 Q 40,12 47,12 L 73,12 Q 80,12 80,32 L 71,24 L 60,34 L 49,24 Z" fill="${hairColor}"/>
+      <polygon points="60,34 66,28 62,39" fill="${hairColor}"/>
+      <polygon points="45,28 55,29.5 55,31.5 45,30.5" fill="${hairColor}"/>
+      <polygon points="75,28 65,29.5 65,31.5 75,30.5" fill="${hairColor}"/>
+      <ellipse cx="50" cy="34.5" rx="2.6" ry="3" fill="${hairColor}"/>
+      <ellipse cx="70" cy="34.5" rx="2.6" ry="3" fill="${hairColor}"/>
+      <path d="M 52,42 Q 60,46.5 68,42" stroke="#a8674a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
     </g>
   `
   )
 }
-
 // ---------------------------------------------------------------------------
 // VILLAINS. Same night-city drawing language, inverted on all four axes:
 // hues outside the heroes' azure band, no gold anywhere, no cream on the
@@ -953,88 +1056,89 @@ export function dcFloodlight({
   )
 }
 
-// Nightfall, the chapter-7 boss villain and the largest ink mass in the file.
-// Two enormous jagged wings sweep UP to the top corners; the cloak flares off
-// a wide shoulder yoke and tears into a ragged hem, so nothing touches the
-// floor.
-// The wings are chosen against a specific collision: the chapter-2 boss
-// villain (Shadow King, src/art.js) is also a big cloaked figure with a
-// spiked crown and a jagged hem that flares outward at the bottom. The first
-// pass here drew exactly that and the two were indistinguishable in cut-out
-// side by side. Raised wings invert the shape while keeping the menace, and
-// this is the only figure in the family with no ground contact at all.
-//
-// SECOND ROUND -- IT DID NOT READ AS A BOSS, ON TWO COUNTS THAT BOTH MEASURED:
-//   1. IT WAS NOT THE BIGGEST VILLAIN. 7067 filled square units against
-//      Floodlight's 8046, on the figure that is supposed to end the chapter.
-//      The yoke, the wings and the cloak are all wider now.
-//   2. IT HAD NO HEAD. The first version paired a hood tapering to a point at
-//      (60,10) with a cloak tapering to a point at (60,132): a perfect rhombus,
-//      and in a hard cut-out that is exactly what it read as -- one big
-//      diamond, no figure inside it. Both ends are broken now:
-//        - THE HEAD GETS TWO SWEPT HORNS at head height with 16 to 24 units of
-//          clear air between the horn and the shoulder yoke below it. A head is
-//          read from the hole under its jaw, not from its outline; the earlier
-//          hood had nothing but outline.
-//        - THE HEM IS `jagged()`, not a point. Quietly, this figure was the
-//          only caped villain in the file with no jagged hem at all, which is
-//          axis (d) of the hero/villain split -- so the fix that kills the
-//          rhombus is also the one the family rules already asked for.
-export function dcNightfall({
-  bodyColor = "#221436",
-  accent = "#0b0616",
-  lensColor = "#f0dcff",
-  eyeColor = "#ff2e4d",
-  glowColor = "#a45cff",
-} = {}) {
-  const shard = (x, y, s) =>
-    `<polygon points="${x},${y} ${x + 6 * s},${y + 2 * s} ${x + 2 * s},${y + 9 * s}" fill="${glowColor}" opacity="0.55"/>`
 
-  // Leading edge sweeps out to the frame corner; the trailing edge comes back
-  // in as three teeth. Sharp, never scalloped -- that hem shape is this
-  // family reserved marker for a villain.
-  const wing = `
-    <path d="M 36,54 L 2,2 L 9,22 L 3,28 L 15,44 L 8,50 L 22,64 L 18,74 L 34,82 Z" fill="${accent}"/>
-    <path d="M 34,57 L 12,23 L 16,36 L 12,40 L 21,51 L 17,56 L 26,66 L 24,72 L 32,77 Z" fill="${bodyColor}"/>`
+// Nightfall = THE JOKER, chapter-7's boss villain and the only minifig on the
+// villain side. Read order: green mane -> white face -> the grin, then the
+// purple tailcoat.
+// THE GRIN IS THE CHARACTER AND IT IS SIZED LIKE IT. 32 units wide across a
+// 36-unit head, so at the 96 px chapter card it is still 26 px of red. Every
+// other feature on this face is subordinate to it.
+// HOW THE FOUR HERO/VILLAIN AXES SURVIVE A CHARACTER WHOSE FACE IS WHITE:
+//   a. HUE. Purple 274 and green 133 -- outside every hero body hue (Batman
+//      grey, Flash red 357, Cyborg steel + cyan 194, Superman blue 222). The
+//      restated axis is primary vs secondary and the Joker is the clearest
+//      case of the secondary side in the file.
+//   b. NO GOLD anywhere on him.
+//   c. CREAM. The greasepaint is #fbfbfb, deliberately NOT `CREAM` (#f7f3e6),
+//      so the hero plate tone stays unique and greppable. More importantly the
+//      white is on the HEAD, which is where every other villain in this file
+//      already keeps its bright (Blackout's lamp cowl, Floodlight's lamp bank,
+//      Mirage's eye plates). His torso is purple, green and red with no light
+//      value on it at all, and the neck is drawn UNDER the coat so no white
+//      reaches the torso. The axis is intact as written.
+//   d. STANCE. Coat shoulders tilted (left y=55, right y=50), one arm up with
+//      fanned cards and one down, mane lopsided (left spikes stop at x=28, the
+//      right ones run to x=106), and BOTH coattails end in `jagged()` teeth.
+// The fanned cards are the prop, and they are cards rather than the cane or
+// the crowbar for a measured reason: a thin held stick reads as a pole or a
+// fishing rod, which is the exact failure the `beam` rim was invented to cure
+// one family over. Three overlapping rectangles at three angles cannot.
+// Size: this has to stay the biggest villain (the previous round's fix), so the
+// coat, tails, mane and raised arm are all sized against Floodlight's 7919.
+export function dcNightfall({
+  bodyColor = '#6d2fb0',
+  accent = '#3c1470',
+  vestColor = '#2fa84f',
+  hairColor = '#3ecf5f',
+  faceColor = '#fbfbfb',
+  grinColor = '#d8243f',
+  eyeColor = '#1b0a22',
+} = {}) {
+  const card = (rot) =>
+    `<g transform="rotate(${rot} 16 24)"><rect x="11.5" y="9" width="9" height="14" rx="1.2" fill="${faceColor}"/><polygon points="16,12.8 18.4,16 16,19.2 13.6,16" fill="${grinColor}"/></g>`
 
   return svgWrap(
     `
     <g>
-      <ellipse cx="60" cy="135" rx="22" ry="3.4" fill="#000" opacity="0.16"/>
+      <ellipse cx="60" cy="136" rx="30" ry="3.2" fill="#000" opacity="0.14"/>
 
-      ${shard(96, 66, 0.85)}
-      ${shard(16, 74, 0.7)}
-      ${shard(100, 96, 0.6)}
-      ${shard(14, 100, 0.55)}
+      <path d="M 30,82 L 52,90 L 48,120 ${jagged(48, 120, 16, 130, 2, 8)} Z" fill="${accent}"/>
+      <path d="M 92,80 L 68,89 L 72,118 ${jagged(72, 118, 104, 128, 2, 8)} Z" fill="${accent}"/>
 
-      ${wing}
-      ${mirrored(wing)}
+      ${legoArm(31, 58, 22, 44, 18, 30, bodyColor, 11)}
+      ${legoHand(17, 26, vestColor, 5, -100)}
+      ${card(-24)}${card(0)}${card(24)}
+      ${legoArm(91, 56, 104, 72, 100, 87, bodyColor, 11)}
+      ${legoHand(100, 91, vestColor, 5, -60)}
 
-      <path d="M 16,62 L 104,62 L 86,118 ${jagged(86, 118, 34, 112, 4, 16)} Z" fill="${accent}"/>
-      <path d="M 26,68 L 94,68 L 80,112 ${jagged(80, 112, 40, 108, 3, 12)} Z" fill="${bodyColor}"/>
-      <polygon points="42,80 78,80 68,110 60,122 52,108" fill="${accent}"/>
+      ${legoLeg(38, 108, 18, 26, bodyColor, eyeColor, 9)}
+      ${legoLeg(64, 108, 18, 26, bodyColor, eyeColor, 9)}
+      <path d="M 34,98 L 88,98 L 88,111 L 64,111 L 60,115 L 56,111 L 34,111 Z" fill="${accent}"/>
 
-      <path d="M 34,64 L 18,80 L 11,94" stroke="${accent}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 86,64 L 102,80 L 109,94" stroke="${accent}" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="3,92 21,92 17,106 7,106" fill="${bodyColor}"/>
-      <polygon points="117,92 99,92 103,106 113,106" fill="${bodyColor}"/>
-      <polygon points="4,105 8,119 12,105" fill="${glowColor}"/>
-      <polygon points="12,105 16,116 20,105" fill="${glowColor}"/>
-      <polygon points="100,105 104,116 108,105" fill="${glowColor}"/>
-      <polygon points="108,105 112,119 116,105" fill="${glowColor}"/>
+      <rect x="53" y="42" width="14" height="14" fill="${faceColor}"/>
 
-      <polygon points="10,66 30,36 90,36 110,66 96,60 24,60" fill="${accent}"/>
-      <polygon points="26,42 94,42 102,66 18,66" fill="${bodyColor}"/>
-      <polygon points="26,42 94,42 92,48 28,48" fill="${accent}"/>
+      <path d="M 27,60 Q 27,53 35,54 L 85,48 Q 93,47 93,55 L 90,100 L 32,100 Z" fill="${bodyColor}"/>
+      <polygon points="52,53 69,51 66,98 55,98" fill="${vestColor}"/>
+      <polygon points="50,53 60,86 39,56" fill="${accent}"/>
+      <polygon points="71,50 60,86 81,54" fill="${accent}"/>
+      <polygon points="58,53 64,52.5 62,74 59,74" fill="${grinColor}"/>
+      <polygon points="32,100 90,100 90,105 32,105" fill="${accent}"/>
 
-      <polygon points="46,30 26,4 44,20" fill="${accent}"/>
-      <polygon points="74,30 96,7 76,20" fill="${accent}"/>
-      <polygon points="44,36 60,6 76,36" fill="${accent}"/>
-
-      <polygon points="45,22 75,22 78,46 42,46" fill="${accent}"/>
-      ${eyePlate(60, 34, 26, 12, lensColor, "#1a0426", eyeColor, 2.2)}
-      <polygon points="50,44 70,44 66,52 54,52" fill="${accent}"/>
-      <polygon points="52,52 68,52 64,58 56,58" fill="${glowColor}" opacity="0.55"/>
+      <polygon points="50,18 34,7 46,25" fill="${hairColor}"/>
+      <polygon points="46,23 28,20 46,32" fill="${hairColor}"/>
+      <polygon points="46,31 32,42 50,38" fill="${hairColor}"/>
+      <polygon points="70,17 98,2 74,24" fill="${hairColor}"/>
+      <polygon points="74,22 106,20 74,32" fill="${hairColor}"/>
+      <polygon points="74,30 102,42 70,38" fill="${hairColor}"/>
+      ${legoBlock(42, 14, 36, 34, faceColor)}
+      <path d="M 42,32 Q 42,13 60,13 Q 78,13 78,30 L 70,24 L 60,30 L 50,24 Z" fill="${hairColor}"/>
+      <polygon points="44,21 58,25 58,27.5 44,24" fill="${eyeColor}"/>
+      <polygon points="76,20.5 62,24.5 62,27 76,23.5" fill="${eyeColor}"/>
+      ${slit(51, 31, 11, 5.4, 1.8, eyeColor)}
+      ${slit(69, 31, 11, 5.4, -1.8, eyeColor)}
+      ${slit(51, 31, 4, 2.4, 1.8, hairColor)}
+      ${slit(69, 31, 4, 2.4, -1.8, hairColor)}
+      <path d="M 44,34 Q 60,55 76,34 Q 60,45 44,34 Z" fill="${grinColor}"/>
     </g>
   `
   )
