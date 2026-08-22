@@ -27,9 +27,14 @@
 // 만들 수 있다(둘 다 이제 /r/ 문항이다). multiselect 는 같은 첫소리 그림이 2개
 // 이상 *정답*으로 필요한데 /r/ 은 딱 2개라 두 문항에서 같은 쌍이 반복되므로,
 // 그 슬롯은 앞 챕터 누적 복습으로 남긴다.
-// /m/ 은 `moon` 하나, /d/ 는 `dog` 하나뿐이라 여전히 그림 묶음을 만들 수 없다 --
-// M/D 본 학습은 letterTile 문항과 아이콘이 필요 없는 words[] 로 나른다.
-// TODO(icon): man/mat/map (/m/), duck/door (/d/) 가 생기면 s3·s4 그림 문항 교체.
+// /m/ 은 `moon`+`man`/`mat`/`map` 넷, /d/ 는 `dog`+`duck`/`door` 셋이 되어
+// s3·s4 의 '모두 찾기' 슬롯이 드디어 이 챕터의 소리로 성립한다 -- 그 전에는
+// 정답 그림을 2개 세울 수 없어서 /k/·/p/ 누적 복습으로 대체돼 있었다.
+// s3-r4 = /m/ 정답 3개(man/mat/map) + 오답 net, s4-r4 = /d/ 정답 2개(duck/door)
+// + 오답 2개(pig/pot). s4 의 오답을 /p/ 로 고른 것은 이 스테이지가 이미 D↔P
+// 회전 혼동을 letterTile 문항(c4s4-r5-hard)에서 다루고 있어서, 그림 문항이
+// 같은 대비를 귀로 한 번 더 확인해주기 때문이다.
+// `mat` 은 이 챕터의 보스 단어이므로 s3-r4 의 정답에 넣어 미리 붙여둔다.
 
 export const chapter4 = {
   id: 'chapter-4',
@@ -323,16 +328,17 @@ export const chapter4 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          // TODO(icon): man, mat, map, milk -- /m/ 그림이 moon 하나뿐이라
-          // "모두 찾기" 를 /m/ 로 만들 수 없다. 지금은 /k/ 복습.
-          instructionKo: '/k/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          // 오답을 net 으로 둔다 -- 이 스테이지는 M/N 을 계속 맞붙이고 있다
+          // (warmup 의 혼동 보기도 N, r6 의 오답도 net/nose). 무작위 오답이면
+          // 그림 이름 대기 문항이 되지만, /n/ 오답은 실제 소리 변별을 묻는다.
+          instructionKo: '/m/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
           options: [
-            { id: 'c4s3-cat', icon: 'cat', label: 'cat', correct: true },
-            { id: 'c4s3-egg', icon: 'egg', label: 'egg', correct: false },
-            { id: 'c4s3-key', icon: 'key', label: 'key', correct: true },
-            { id: 'c4s3-cake', icon: 'cake', label: 'cake', correct: true },
+            { id: 'c4s3-man', icon: 'man', label: 'man', correct: true },
+            { id: 'c4s3-net2', icon: 'net', label: 'net', correct: false },
+            { id: 'c4s3-mat', icon: 'mat', label: 'mat', correct: true },
+            { id: 'c4s3-map', icon: 'map', label: 'map', correct: true },
           ],
-          readAloud: { targetText: 'key' },
+          readAloud: { targetText: 'mat' },
         },
         {
           id: 'c4s3-r5-hard',
@@ -457,15 +463,18 @@ export const chapter4 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          // TODO(icon): duck, door, dad -- /d/ 그림이 dog 하나뿐이다. 지금은 /p/ 복습.
-          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          // /d/ 그림은 dog·duck·door 셋인데 dog 은 이미 r2(정답)와 r6(정답)에
+          // 쓰였다. 세 문항 모두 같은 그림이 되지 않게 여기서는 새 그림 둘만
+          // 정답으로 세우고, 오답은 /p/ 로 둔다 -- r5-hard 가 D↔P 를 letterTile
+          // 로 대비시키는 것과 같은 대비를 그림으로 한 번 더 준다.
+          instructionKo: '/d/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
           options: [
-            { id: 'c4s4-pig', icon: 'pig', label: 'pig', correct: true },
-            { id: 'c4s4-moon', icon: 'moon', label: 'moon', correct: false },
-            { id: 'c4s4-pen', icon: 'pen', label: 'pen', correct: true },
-            { id: 'c4s4-pot', icon: 'pot', label: 'pot', correct: true },
+            { id: 'c4s4-duck', icon: 'duck', label: 'duck', correct: true },
+            { id: 'c4s4-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c4s4-door', icon: 'door', label: 'door', correct: true },
+            { id: 'c4s4-pot', icon: 'pot', label: 'pot', correct: false },
           ],
-          readAloud: { targetText: 'pot' },
+          readAloud: { targetText: 'duck' },
         },
         {
           id: 'c4s4-r5-hard',

@@ -80,9 +80,30 @@
 // 이 챕터의 핵심 신개념은 AI/OA 지 J 가 아니므로, 두 다이그래프 단어를
 // 보스에서 조립시켜 새 슬롯 계약을 실제로 써먹는다.
 //
-// --- 아이콘 제약 ---
-// AI/J/OA 초성(또는 AI/OA 포함) 그림이 0개다. 나머지는 챕터 1-6
-// 아이콘 누적 복습으로 대체했다. // TODO(icon): 위치마다 표시했다.
+// --- 아이콘: 이제 이 챕터가 자기 소리를 그림으로 연습한다 ---
+// rain/train/aim(AI) · jam/jug(J) · boat/coat(OA) 가 생겼다. 그 전에는 그림
+// 문항 12개 중 **0개**가 AI/J/OA 를 다뤘다(전부 챕터 1-6 누적 복습이었다).
+//
+// 문항 형식을 결정하는 것은 **다이그래프가 어중에 온다**는 사실이다 --
+// rain 의 ai, boat 의 oa. 초성 매칭으로는 물어볼 수 없으므로 AI/OA 문항은
+// '들어있는' 형(포함)이고, J 문항만 '시작하는' 형(초성)이다. aim 은 AI 가
+// 어두에 오는 예외라 '포함' 형에 그대로 들어간다.
+// 쉬운 형에서 어려운 형으로 배치했다:
+//   s1-r2  포함 + promptAudio     소리를 듣고 하나 찾기 (가장 쉽다)
+//   s2-r2  포함 + 모두 찾기       rain/train/aim 셋 다 정답
+//   s2-r6  역방향 promptLetter AI -> 그림
+//   s3-r2  J 초성 odd-one-out     s3-r6  역방향 promptLetter J
+//   s4-r2  OA 포함 odd-one-out    s4-r6  역방향 promptLetter OA
+// 역방향 문항은 보기가 그림이므로 발화되는 건 그림 단어다 -- letterTile 음성
+// 충돌쌍 규칙과 무관하다(그래서 다이그래프를 promptLetter 로 띄울 수 있다).
+//
+// s3-r4 · s4-r4 의 '모두 찾기' 슬롯은 누적 복습으로 남겼다: multiselect 는
+// 정답이 2개 이상 필요한데 /j/ 는 jam·jug 둘, OA 는 boat·coat 둘뿐이라
+// odd-one-out 의 정답 쌍과 완전히 같아진다(챕터 4·5 에서 세운 규칙 -- 같은
+// 쌍이 두 문항에 반복되면 그 슬롯은 복습으로 돌린다). AI 만 그림이 3개라
+// 이 규칙에 걸리지 않아서 '모두 찾기' 를 만들 수 있었다.
+// TODO(icon): 세 번째 /j/ 그림(jet 등) 또는 세 번째 OA 그림(goat/road 등)이
+// 생기면 s3-r4 / s4-r4 를 각각 /j/ · OA '모두 찾기' 로 교체할 수 있다.
 
 export const chapter7 = {
   id: 'chapter-7',
@@ -125,14 +146,18 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): rain, train -- AI 그림이 생기면 이 자리를 교체.
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          // 첫 그림 문항이라 가장 쉬운 형으로 둔다: 소리를 먼저 들려주고
+          // (promptAudio, choose 렌더러는 다시 듣기 버튼까지 붙여준다) 그
+          // 소리가 들어있는 그림 하나만 고르게 한다. 오답 둘은 어중 모음이
+          // 서로도 다르고 AI 와도 다르다(bed /e/, box /o/).
+          instructionKo: '이 소리가 들어있는 그림을 찾아보세요!',
+          promptAudio: 'a',
           options: [
+            { id: 'c7s1-rain', icon: 'rain', label: 'rain', correct: true },
             { id: 'c7s1-bed', icon: 'bed', label: 'bed', correct: false },
             { id: 'c7s1-box', icon: 'box', label: 'box', correct: false },
-            { id: 'c7s1-fish', icon: 'fish', label: 'fish', correct: true },
           ],
-          readAloud: { targetText: 'bed' },
+          readAloud: { targetText: 'rain' },
         },
         {
           id: 'c7s1-r3',
@@ -219,18 +244,23 @@ export const chapter7 = {
           ],
         },
         {
-          id: 'c7s2-r2-oddoneout',
-          kind: 'choose',
+          id: 'c7s2-r2-findall',
+          kind: 'multiselect',
           scored: true,
           hits: 1,
-          // TODO(icon): rain, aim -- AI 그림이 생기면 교체.
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          // AI 는 그림이 3개라 이 챕터에서 유일하게 '모두 찾기' 가 성립한다
+          // (다른 두 소리는 그림이 2개뿐 -- 파일 헤더 참조). multiselect
+          // 렌더러는 promptAudio 를 읽지 않으므로 소리는 문장으로 지목한다.
+          // 어중(rain/train)과 어두(aim)를 한 문항에 섞어 위치가 아니라
+          // 소리로 판단하게 만든다.
+          instructionKo: 'AI 소리가 들어있는 걸 모두 찾아 탭하세요!',
           options: [
-            { id: 'c7s2-octopus', icon: 'octopus', label: 'octopus', correct: false },
-            { id: 'c7s2-orange', icon: 'orange', label: 'orange', correct: false },
-            { id: 'c7s2-umbrella', icon: 'umbrella', label: 'umbrella', correct: true },
+            { id: 'c7s2-rain', icon: 'rain', label: 'rain', correct: true },
+            { id: 'c7s2-bed2', icon: 'bed', label: 'bed', correct: false },
+            { id: 'c7s2-train', icon: 'train', label: 'train', correct: true },
+            { id: 'c7s2-aim', icon: 'aim', label: 'aim', correct: true },
           ],
-          readAloud: { targetText: 'octopus' },
+          readAloud: { targetText: 'rain' },
         },
         {
           id: 'c7s2-r3-trace',
@@ -281,16 +311,17 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): rain, aim -- promptLetter 'AI' 문항으로 교체할 자리.
-          // 지금은 R 을 누적 복습한다.
-          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'R',
+          // 역방향: 글자 -> 그림. 보기가 그림이라 발화되는 건 그림 단어이므로
+          // 두 글자 promptLetter 도 안전하다(발화 경로 없음, 표시만 된다).
+          // '시작하는' 이 아니라 '들어있는' 이다 -- train 의 ai 는 어중이다.
+          instructionKo: '이 글자가 들어있는 그림을 찾아보세요!',
+          promptLetter: 'AI',
           options: [
-            { id: 'c7s2-rat', icon: 'rat', label: 'rat', correct: true },
+            { id: 'c7s2-train2', icon: 'train', label: 'train', correct: true },
             { id: 'c7s2-gum', icon: 'gum', label: 'gum', correct: false },
             { id: 'c7s2-fish2', icon: 'fish', label: 'fish', correct: false },
           ],
-          readAloud: { targetText: 'rat' },
+          readAloud: { targetText: 'train' },
         },
         {
           id: 'c7s2-r7-listenrepeat',
@@ -353,14 +384,15 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): jam, jug -- /j/ 그림이 생기면 교체.
+          // J 는 다이그래프가 아니라 홑글자 초성이므로 이 챕터에서 유일하게
+          // '시작하는' 형이 그대로 성립한다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c7s3-lion', icon: 'lion', label: 'lion', correct: false },
-            { id: 'c7s3-leg', icon: 'leg', label: 'leg', correct: false },
+            { id: 'c7s3-jam', icon: 'jam', label: 'jam', correct: false },
+            { id: 'c7s3-jug', icon: 'jug', label: 'jug', correct: false },
             { id: 'c7s3-ball', icon: 'ball', label: 'ball', correct: true },
           ],
-          readAloud: { targetText: 'lion' },
+          readAloud: { targetText: 'jam' },
         },
         {
           id: 'c7s3-r3-trace',
@@ -411,16 +443,14 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): jam, jug -- promptLetter 'J' 문항으로 교체할 자리.
-          // 지금은 F 를 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'F',
+          promptLetter: 'J',
           options: [
-            { id: 'c7s3-fish3', icon: 'fish', label: 'fish', correct: true },
+            { id: 'c7s3-jug2', icon: 'jug', label: 'jug', correct: true },
             { id: 'c7s3-bed3', icon: 'bed', label: 'bed', correct: false },
             { id: 'c7s3-octopus2', icon: 'octopus', label: 'octopus', correct: false },
           ],
-          readAloud: { targetText: 'fish' },
+          readAloud: { targetText: 'jug' },
         },
         {
           id: 'c7s3-r7-listenrepeat',
@@ -482,14 +512,16 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): boat, coat -- OA 그림이 생기면 교체.
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          // odd-one-out 을 '포함' 형으로 쓴다 -- boat/coat 의 oa 는 어중이라
+          // 초성을 비교하면 둘도 서로 다르다(/b/ 대 /k/). 정답 key 는 어중
+          // 모음이 /ee/ 로 갈라진다.
+          instructionKo: '다른 소리가 들어있는 걸 찾아보세요!',
           options: [
-            { id: 'c7s4-ball', icon: 'ball', label: 'ball', correct: false },
-            { id: 'c7s4-box', icon: 'box', label: 'box', correct: false },
+            { id: 'c7s4-boat', icon: 'boat', label: 'boat', correct: false },
+            { id: 'c7s4-coat', icon: 'coat', label: 'coat', correct: false },
             { id: 'c7s4-key', icon: 'key', label: 'key', correct: true },
           ],
-          readAloud: { targetText: 'ball' },
+          readAloud: { targetText: 'coat' },
         },
         {
           id: 'c7s4-r3-trace',
@@ -540,16 +572,16 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): boat, coat -- promptLetter 'OA' 문항으로 교체할
-          // 자리. 지금은 G 를 누적 복습한다.
-          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'G',
+          // 보스 단어 'boat' 를 역방향 문항의 정답으로 둔다 -- 다음 스테이지가
+          // B+OA+T 를 조립하므로 여기서 글자 OA 와 그림 boat 를 붙여둔다.
+          instructionKo: '이 글자가 들어있는 그림을 찾아보세요!',
+          promptLetter: 'OA',
           options: [
-            { id: 'c7s4-gift', icon: 'gift', label: 'gift', correct: true },
+            { id: 'c7s4-boat2', icon: 'boat', label: 'boat', correct: true },
+            { id: 'c7s4-gift', icon: 'gift', label: 'gift', correct: false },
             { id: 'c7s4-fish4', icon: 'fish', label: 'fish', correct: false },
-            { id: 'c7s4-box4', icon: 'box', label: 'box', correct: false },
           ],
-          readAloud: { targetText: 'gift' },
+          readAloud: { targetText: 'boat' },
         },
         {
           id: 'c7s4-r7-listenrepeat',

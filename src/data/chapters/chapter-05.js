@@ -39,12 +39,27 @@
 // --- 아이콘 제약 ---
 // G 는 `gift`/`gum`, O 는 `octopus`/`orange` 두 개씩 생겨서 odd-one-out 과
 // promptLetter 역방향 문항이 둘 다 이 챕터의 소리로 성립한다.
-// U 는 `umbrella` 하나뿐이라 같은편 2개를 세울 수 없어서, s4 의 odd-one-out 은
-// /o/ 둘 + /u/ 하나로 짜서 **이 챕터가 가르치는 두 모음을 맞붙였다** -- 정답이
-// umbrella 이고, 모음 근접쌍이라 무작위 오답보다 나은 연습이다.
-// multiselect 슬롯은 정답이 2개 이상 필요한데 G/O 가 딱 2개라 같은 쌍이 두
-// 문항에서 반복되므로, 그 슬롯은 앞 챕터 누적 복습으로 남겼다.
-// TODO(icon): under/up (/u/) 가 생기면 s4 multiselect 도 /u/ 로 교체 가능.
+// U 는 **초성** 그림이 `umbrella` 하나뿐이라 같은편 2개를 세울 수 없어서,
+// s4 의 odd-one-out 은 /o/ 둘 + /u/ 하나로 짜서 **이 챕터가 가르치는 두 모음을
+// 맞붙였다** -- 정답이 umbrella 이고, 모음 근접쌍이라 무작위 오답보다 낫다.
+// multiselect 슬롯은 정답이 2개 이상 필요한데 G/O 초성 그림이 딱 2개라 같은
+// 쌍이 두 문항에서 반복되므로, s2·s3 의 그 슬롯은 누적 복습으로 남겼다.
+//
+// --- s4 의 '모두 찾기' 는 **어중** /u/ 다 (up/under 를 만들지 않는 이유) ---
+// 초성 단모음 /u/ 를 가진 구체 명사가 영어에 거의 없다는 것이 근본 제약이다.
+// up 은 위쪽 화살표밖에 될 수 없는데 그건 그림이 아니라 기호 관례여서 5세
+// 한국 학습자가 '위'/'화살표' 가 아니라 영어 단어 up 에 대응시킬 이유가 없고,
+// under 는 두 물체의 **관계**가 필요한데 150px 에서 아이는 관계가 아니라 물체를
+// 이름 부른다 -- 오답을 정답으로 가르치는 셈이다(아이콘 담당 판단, 승인됨).
+// 그래서 초성 대신 어중으로 물어본다: cup/nut/duck 은 모두 자음으로 시작하므로
+// **초성 매칭으로는 절대 풀 수 없고**, 그 점이 같은 스테이지의 초성 문항
+// (r2 odd-one-out, r6 promptLetter U)과 이 문항을 구조적으로 갈라준다.
+// 교육적으로도 어중이 더 강한 연습이다: 보스가 조립하는 DOG/GUM 의 모음이
+// 둘 다 어중이라 CVC 블렌딩 자체가 어중 모음 청취를 요구한다.
+// 오답 dog 은 어중이 /o/ 라 이 문항이 곧 어중 /o/ 대 /u/ 변별이 된다 -- 그래서
+// O 에 별도의 어중 슬롯을 새로 열지 않았다(O 는 초성 그림이 octopus/orange
+// 둘이라 커버리지가 막혀 있지도 않고, 보스 teach 가 duh-ough-guh 로 이미
+// 어중 /o/ 를 명시적으로 분절해준다).
 //
 // --- 보스 단어: DOG(D+O+G) · GUM(G+U+M) ---
 // 두 단어 모두 이 챕터에서 새로 배우는 글자(O 또는 U)가 완성되는 시점의
@@ -476,14 +491,17 @@ export const chapter5 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          // 어중 /u/ -- 근거는 파일 헤더에 있다. 보기 넷이 모두 자음으로
+          // 시작하므로 초성 매칭으로는 풀 수 없고, 오답 dog 은 어중이 /o/ 라
+          // 이 문항이 그대로 어중 /o/ 대 /u/ 변별이 된다.
+          instructionKo: 'uh 소리가 가운데 들어있는 걸 모두 찾아 탭하세요!',
           options: [
-            { id: 'c5s4-pig', icon: 'pig', label: 'pig', correct: true },
-            { id: 'c5s4-net', icon: 'net', label: 'net', correct: false },
-            { id: 'c5s4-pin', icon: 'pin', label: 'pin', correct: true },
-            { id: 'c5s4-cake', icon: 'cake', label: 'cake', correct: false },
+            { id: 'c5s4-cup', icon: 'cup', label: 'cup', correct: true },
+            { id: 'c5s4-dog', icon: 'dog', label: 'dog', correct: false },
+            { id: 'c5s4-nut', icon: 'nut', label: 'nut', correct: true },
+            { id: 'c5s4-duck', icon: 'duck', label: 'duck', correct: true },
           ],
-          readAloud: { targetText: 'pig' },
+          readAloud: { targetText: 'cup' },
         },
         {
           id: 'c5s4-r5-hard',
