@@ -346,6 +346,14 @@
     // equation must NOT be visible: these shots measure the intro, and if the
     // intro ever starts auto-advancing again these are the shots that have to
     // notice.
+    //
+    // Read their `bgap` as a MID-ANIMATION number, not against the 8%
+    // baseline. These shots measure at the default 260ms delay, when the
+    // third mini-bot (--slide-delay 260ms) has not arrived and the hero is
+    // still scale(0) -- portrait reports 17.3% void and `mini=2`. That is the
+    // animation, not a layout defect. The intro's RESTING state is the
+    // `invite` shot (5.3% landscape / 6.4% portrait), which is the one to
+    // compare against the baseline.
     ...Object.fromEntries(
       [1, 2, 3, 4, 5, 6, 7].map((n) => [
         `boss${n}`,
@@ -480,9 +488,20 @@
             walk(r.cssRules)
           }
           if (!r.selectorText || !r.style) continue
-          let matches = false
-          try { matches = !!document.querySelector(r.selectorText.replace(/:(active|hover|focus|disabled|empty)\b/g, '')) } catch { continue }
-          if (!matches) continue
+          // Report the selector that ACTUALLY matched, not the rule's first
+          // one. `.replay-btn, .primary-btn, .mic-btn { font-size: 50px }`
+          // matched on the reward screen -- which has a .primary-btn and no
+          // .replay-btn at all -- and the finding read `.replay-btn{...}`,
+          // sending anyone who checked it looking for an element that is not
+          // on the screen. A finding that names the wrong element is a finding
+          // that gets dismissed.
+          let hit = null
+          for (const part of r.selectorText.split(',')) {
+            const q = part.replace(/:(active|hover|focus|disabled|empty)\b/g, '').trim()
+            if (!q) continue
+            try { if (document.querySelector(q)) { hit = q; break } } catch {}
+          }
+          if (!hit) continue
           for (const [prop, floor] of Object.entries(RIGID_PROPS)) {
             const v = r.style.getPropertyValue(prop)
             if (!v) continue
@@ -490,7 +509,7 @@
             if (/svh|dvh|lvh|vh|vw|vmin|vmax|cq[whbi]|%|auto|min-content|max-content|fr/.test(v)) continue
             const px = parseFloat(v)
             if (!(px >= floor)) continue
-            out.push(`${r.selectorText.split(',')[0].trim()}{${prop}:${v.trim()}}`)
+            out.push(`${hit}{${prop}:${v.trim()}}`)
           }
         }
       }
@@ -794,6 +813,10 @@
         '.chapter-grid', '.chapter-card', '.chapter-card-art', '.chapter-card-order', '.chapter-card-title',
         '.boss-intro', '.boss-intro-label', '.boss-intro-robots', '.mini-bot', '.boss-intro-hero', '.boss-intro-skip', '.teach-content', '.beat-avatar', '.big-letter', '.replay-btn', '.primary-btn',
         '.teach-focus', '.beat-equation', '.beat-emoji', '.back-btn', '.nameplate', '.nameplate-name', '.villain-sprite', '.target-word', '.build-slots', '.tile-row', '.secondary-btn',
+        // The confirm button sits on the app's tightest portrait margin
+        // (bottom edge at 1180 of 1194), so anything that grows below the
+        // option grid has to be checked against it.
+        '.mic-btn', '#confirm-btn',
         // The reward column is where the star row's 97px went, so its own
         // boxes have to be visible here to see where the space landed.
         '.reward-title', '.reward-scene', '.reward-hero', '.reward-villain', '.reward-bolt', '.reward-line', '.recap-line']
