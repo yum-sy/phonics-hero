@@ -311,6 +311,103 @@
     },
   }
 
+  // ---- what did the shot actually draw? ----------------------------------
+  // The failure mode this exists for has now cost three misdiagnoses, and it
+  // is always the same shape: a shot stops reaching its screen, renders
+  // something else (or nothing), and reports `NOSCROLL` -- which reads as a
+  // pass. An unknown ?shot= renders nothing and reports `NOSCROLL gap=100%`.
+  // `boss1after`..`boss7after` spent a whole round measuring the 합체 intro
+  // after the auto-advance they waited on was replaced by a tap. A green HUD
+  // was the only thing anyone looked at in both cases.
+  //
+  // `on=[...]` and the census were the intended defence and they were not
+  // enough, for two reasons that are both fixed here:
+  //
+  //   1. The census counted with querySelectorAll, which counts elements
+  //      inside `display:none`. `.beat-equation` lives in `#teach-content`,
+  //      hidden while the intro plays, so all seven `*after` shots reported
+  //      `beat-equation=1` for a screen that was not showing it. The census
+  //      is VISIBILITY-FILTERED now, so that number would have been 0.
+  //   2. Reading it was left to a human. A shot now DECLARES what must be on
+  //      screen and what must not, and the verdict line carries the failure
+  //      as loudly as SCROLL does. A named shot with no declaration is itself
+  //      reported (`*** NO-EXPECT`), so the next shot added cannot inherit
+  //      the old silence.
+  //
+  // `has` is "at least one of these is visible", `not` is "none of these is
+  // visible". Both are cheap; the point is that they are mandatory.
+  const EXPECT = {
+    // Two screens share `.chapter-select-screen`, so the card's data
+    // attribute is the only thing that tells them apart.
+    world: { has: ['.chapter-card[data-world]'], not: ['.back-btn', '.chapter-card[data-chapter]'] },
+    chapters: { has: ['.chapter-card[data-chapter]', '#back-to-worlds'], not: ['.chapter-card[data-world]'] },
+    // ---- boss 합체 intro, resting on screen waiting for the tap ----------
+    // `.mini-bot` is the lineup and `#boss-intro` is the tap target. The
+    // equation must NOT be visible: these shots measure the intro, and if the
+    // intro ever starts auto-advancing again these are the shots that have to
+    // notice.
+    ...Object.fromEntries(
+      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+        `boss${n}`,
+        { has: ['#boss-intro', '.boss-intro-hero', '.mini-bot'], not: ['.beat-equation'] },
+      ])
+    ),
+    // ---- the screen after the tap: the letter equation -------------------
+    // The tallest form in the app, and these seven shots are its only
+    // coverage. `not: ['#boss-intro']` is the assertion that dismissIntro()
+    // actually did something.
+    ...Object.fromEntries(
+      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+        `boss${n}after`,
+        { has: ['.beat-equation', '#continue-btn', '.beat-instruction'], not: ['#boss-intro', '.mini-bot'] },
+      ])
+    ),
+    ...Object.fromEntries(
+      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+        `map${n}`,
+        { has: ['.map-screen', '.stage-node', '#back-to-chapters'], not: ['.beat'] },
+      ])
+    ),
+    // The star row is gone; `not` is what keeps it gone. Its height was
+    // redistributed into the sprites and into slack for the victory pose.
+    reward1: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    reward4: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    victory: { has: ['.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    // #boss-intro-hint is `visibility:hidden` until the invite timer fires,
+    // and the visibility filter is what makes requiring it meaningful: this
+    // is the shot that fails if anything ever swallows that timer again
+    // (a harness helper used to, which is why it no longer exists).
+    invite: { has: ['#boss-intro', '.boss-intro-hero.combine-invite', '#boss-intro-hint'], not: ['.beat-equation'] },
+    fxbolt: { has: ['.fx-bolt', '.options-grid'], not: [] },
+    buildwrong: { has: ['.build-slot.wrong', '.secondary-btn.hint-pulse', '.build-slots'], not: [] },
+    recovery: { has: ['.recovery-beat', '.primary-btn', '.secondary-btn'], not: ['.battle-scene'] },
+  }
+
+  // Visible means "occupies space and is not transparent or
+  // visibility:hidden" -- the same three tests the measurement pass uses, so
+  // a declaration cannot pass on an element the gap metric is ignoring.
+  function visible(el) {
+    if (!el.getClientRects().length) return false
+    const cs = getComputedStyle(el)
+    return cs.visibility !== 'hidden' && cs.opacity !== '0'
+  }
+  const seen = (q) => {
+    try { return Array.from(document.querySelectorAll(q)).filter(visible).length }
+    catch { return -1 } // malformed selector: report it rather than pass it
+  }
+
+  // Returns the list of violated clauses. `wantKind` (set by isolate()) is
+  // itself a declaration, so beat-kind shots are covered without repeating
+  // their selectors here.
+  function expectFailures(name) {
+    const e = EXPECT[name]
+    if (!e) return wantKind ? [] : ['NO-EXPECT']
+    const bad = []
+    for (const q of e.has) if (seen(q) < 1) bad.push(`-${q}`)
+    for (const q of e.not) if (seen(q) > 0) bad.push(`+${q}`)
+    return bad
+  }
+
   // ---- measurement -------------------------------------------------------
   function paints(el, cs) {
     if (el.tagName === 'svg' || el.tagName === 'IMG') return true
@@ -503,30 +600,17 @@
     }
   }
 
-  // The 합체 intro's early frames are otherwise unshootable: headless
-  // Chrome's virtual clock renders animations at their end state, so the
-  // pre-emerge frames -- where the layout is most at risk of a void, since
-  // the hero art is scale(0) until 1.02 s -- never appeared in a screenshot.
-  // ?hold=pre pins the hero art before its entrance.
-  //
-  // The 1650ms timer this drops is no longer the reveal (the intro now waits
-  // for a tap and does not time out at all); it is the timer that adds
-  // `.combine-invite` and un-hides the tap hint. So ?hold=1 on its own now
-  // means "intro, still, with no invitation to tap yet" -- which is still a
-  // real frame worth measuring, just not the one the name suggests. The flash
-  // suppression is what makes any of these frames legible.
-  function holdIntro(mode) {
-    const realTimeout = window.setTimeout
-    window.setTimeout = (fn, ms, ...rest) =>
-      ms === 1650 ? 0 : realTimeout(fn, ms, ...rest)
-    const s = document.createElement('style')
-    s.textContent =
-      '.boss-intro-flash{display:none!important}' +
-      (mode === 'pre'
-        ? '.boss-intro-hero .carbot-art{animation-delay:9999s!important}'
-        : '')
-    document.head.appendChild(s)
-  }
+  // `?hold=` and its holdIntro() are GONE, and the reason is worth keeping:
+  // the whole function existed to stop the 1650ms timer so the intro would
+  // stay on screen to be measured. The intro no longer times out at all (it
+  // waits for a tap), so the hold is what the app does by itself -- but the
+  // 1650ms interception outlived its purpose and became actively wrong,
+  // because that timer now adds `.combine-invite` and un-hides the tap hint.
+  // Swallowing it produced an intro frame with no invitation in it, i.e. a
+  // frame the child never sees, measured as if it were the resting state.
+  // The early pre-emerge frames it also offered are reachable without it:
+  // `--virtual-time-budget=700` stops the virtual clock before the hero
+  // emerges. Use the `invite` shot for the resting state.
 
   // How much bigger can the text get? The gap metric cannot answer that:
   // every screen's column is `flex: 1` with `space-evenly`, so it always
@@ -566,7 +650,6 @@
   }
 
   async function run() {
-    if (params.get('hold')) holdIntro(params.get('hold'))
     if (params.get('css')) cssOverride(params.get('css'))
     if (params.get('nat')) naturalMode()
     // ?iso=<stageId>:<kind>[:nth] isolates any beat in the curriculum without
@@ -628,9 +711,15 @@
     // `chapters` reported an identical `on=[...]` and a swapped or broken
     // shot would have looked fine. A census of the elements that actually
     // differ makes each shot's identity visible in its own verdict line.
+    //
+    // Counted with the visibility filter, not querySelectorAll: `.beat-equation`
+    // sits inside `#teach-content`, which is `display:none` for the whole 합체
+    // intro, so the raw count reported `beat-equation=1` on seven shots that
+    // had stopped rendering it. A census that counts hidden elements is a
+    // census that cannot see the screen change.
     const census = ['.chapter-card', '.stage-node', '.option-btn', '.letter-tile',
       '.beat-equation', '.mini-bot']
-      .map((q) => `${q.replace(/[.\s]|-btn|-node|-card|-tile|-bot/g, '')}=${document.querySelectorAll(q).length}`)
+      .map((q) => `${q.replace(/[.\s]|-btn|-node|-card|-tile|-bot/g, '')}=${seen(q)}`)
       .filter((s) => !s.endsWith('=0')).join(' ') || 'empty'
     // Text that is being cut off rather than overflowing. `.chapter-card-title
     // .range` sets overflow:hidden + text-overflow:ellipsis, so growing its
@@ -673,7 +762,12 @@
       .map((el) => `${el.className || el.tagName}(${Math.round(el.getBoundingClientRect().width)}>${Math.round(contentW(el.parentElement, getComputedStyle(el.parentElement)))})`)
     const bv = beatVoid()
     const rg = params.get('rigid') ? rigid() : []
-    const line = `${verdict}${kindOk ? '' : ' *** WRONG-BEAT'} shot=${params.get('iso') || shot} on=[${screenCls}|${beatCls}] ${census} ${
+    // An ad-hoc ?iso= run declares itself through wantKind; only the named
+    // suite shots are held to the EXPECT table.
+    const exp = params.get('iso') ? [] : expectFailures(shot)
+    const line = `${verdict}${kindOk ? '' : ' *** WRONG-BEAT'}${
+      exp.length ? ` *** EXPECT-FAIL[${exp.join(' ')}]` : ''
+    } shot=${params.get('iso') || shot} on=[${screenCls}|${beatCls}] ${census} ${
       clipped.length ? `CLIP=[${clipped.slice(0, 3).join(' ')}] ` : ''
     }${spill.length ? `SPILL=[${spill.slice(0, 3).join(' ')}] ` : ''}vp=${m.vw}x${m.vh} svh=${m.svh} tb=${(m.vw < m.vh ? 1194 : 834) - m.svh} ovfY=${m.overflowY} ovfX=${m.overflowX} gap=${m.gap}px(${m.pct}%)@y${m.gapAt}${
       bv ? ` bgap=${bv.gap}px(${bv.pct}%)@y${bv.at}/col${bv.h}` : ''
@@ -684,7 +778,10 @@
       hud.setAttribute('style', [
         'position:fixed', 'left:0', 'right:0', 'bottom:0', 'z-index:9999',
         'font:700 20px/1.3 ui-monospace,monospace', 'padding:6px 10px',
-        `background:${verdict === 'SCROLL' ? '#e24b4a' : '#3b9922'}`, 'color:#fff',
+        // Red for a wrong screen too, not just for scroll -- the whole reason
+        // the *after shots went unnoticed for a round is that a green bar is
+        // the only thing anyone reads off a screenshot.
+        `background:${verdict === 'SCROLL' || exp.length || !kindOk ? '#e24b4a' : '#3b9922'}`, 'color:#fff',
         'text-align:center', 'pointer-events:none',
       ].join(';'))
       hud.textContent = line
@@ -696,7 +793,10 @@
         '.option-btn', '.option-emoji', '.option-emoji svg.word-icon-art', '.option-label', '.beat-instruction', '.map-path', '.stage-node-wrap', '.stage-label', '.map-header',
         '.chapter-grid', '.chapter-card', '.chapter-card-art', '.chapter-card-order', '.chapter-card-title',
         '.boss-intro', '.boss-intro-label', '.boss-intro-robots', '.mini-bot', '.boss-intro-hero', '.boss-intro-skip', '.teach-content', '.beat-avatar', '.big-letter', '.replay-btn', '.primary-btn',
-        '.teach-focus', '.beat-equation', '.beat-emoji', '.back-btn', '.nameplate', '.nameplate-name', '.villain-sprite', '.target-word', '.build-slots', '.tile-row', '.reward-title', '.recap-line']
+        '.teach-focus', '.beat-equation', '.beat-emoji', '.back-btn', '.nameplate', '.nameplate-name', '.villain-sprite', '.target-word', '.build-slots', '.tile-row', '.secondary-btn',
+        // The reward column is where the star row's 97px went, so its own
+        // boxes have to be visible here to see where the space landed.
+        '.reward-title', '.reward-scene', '.reward-hero', '.reward-villain', '.reward-bolt', '.reward-line', '.recap-line']
       const rows = sel.map((q) => {
         const el = document.querySelector(q)
         if (!el) return `${q}: -`

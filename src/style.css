@@ -781,7 +781,18 @@ button {
 
 .secondary-btn {
   min-width: 200px;
-  height: clamp(72px, 7.7svh, 92px);
+  /* Floor is 88px, the tap-target minimum for a 5-year-old -- not 72. This
+     was the app's only control under the floor: a landscape override sized it
+     200x78, which the touch-target census caught. Raising the floor here
+     rather than retuning that override deletes the class of bug, because the
+     override existed only to lift landscape off this clamp's old 72px result
+     (7.7svh of 834 is 64px). With the floor at 88 the base rule is correct in
+     both orientations and there is one number to keep, not two:
+       portrait  1194 -> 92 (cap, unchanged)   |  toolbar 1064 -> 88
+       landscape  834 -> 88 (floor)            |  toolbar  714 -> 88
+     .back-btn is the deliberate exception to the floor and keeps its own
+     smaller size -- it is adult navigation, documented at its own rule. */
+  height: clamp(88px, 7.7svh, 92px);
   border-radius: 22px;
   border: 4px solid var(--border);
   background: var(--surface);
@@ -1345,6 +1356,25 @@ button {
   display: inline-flex;
 }
 
+/* The rest of the star row goes to the WINNER, not to both sprites.
+   Measured, not chosen: with the row gone the reward column has 1.124x
+   natural headroom in portrait and 1.208x in landscape at a 130px toolbar,
+   and the residual void was 38px portrait / 44px landscape -- distributed
+   `space-evenly` slack between the text rows rather than a hole where the
+   stars used to be. Growing both sprites would have split that slack evenly
+   between the character the child is looking at and the one being carried
+   off, which is the same "group photo" mistake the tableau above exists to
+   undo. So the hero's BOX grows and the villain's does not; the villain is
+   still scaled 0.76 on top of its own unchanged box, so the size difference
+   in the finished pose widens rather than staying at the ratio the scale
+   alone gives. The row's height is the hero's box (the villain's is smaller),
+   so this is exactly the slack being spent and nothing else moves.
+   Portrait is the tighter of the two and takes the smaller share. */
+.reward-hero {
+  width: clamp(190px, 26.1svh, 312px);
+  height: clamp(190px, 26.1svh, 312px);
+}
+
 .reward-hero .carbot-art,
 .reward-villain .carbot-art {
   width: 100%;
@@ -1661,8 +1691,9 @@ button {
     font-size: 50px;
   }
 
+  /* The landscape HEIGHT override is gone, not retuned -- see the 88px floor
+     on the base rule. Only the font-size is orientation-specific. */
   .secondary-btn {
-    height: 78px;
     font-size: 42px;
   }
 
@@ -1740,6 +1771,14 @@ button {
   .reward-villain {
     width: clamp(150px, 28.3svh, 236px);
     height: clamp(150px, 28.3svh, 236px);
+  }
+
+  /* Landscape's larger share of the residual slack, matching the portrait
+     split above: 1.208x headroom here against portrait's 1.124x, so the
+     winner takes 268 of the 236 rather than portrait's 312 of 288. */
+  .reward-hero {
+    width: clamp(168px, 32.1svh, 268px);
+    height: clamp(168px, 32.1svh, 268px);
   }
 
   .reward-title {
