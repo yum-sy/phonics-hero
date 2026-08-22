@@ -45,6 +45,36 @@ function sleep(ms) {
 // now queued and awaited instead of interrupted.
 const MIN_GAP_MS = 500
 
+// Silence reserved before a TAP utterance, instead of MIN_GAP_MS.
+//
+// The gap exists so a *model* sound the child is meant to copy lands as its
+// own event. A tap sound is not that: it is the app answering the child's own
+// finger, and the child has already supplied the event boundary by pressing.
+// QA measured what the full gap costs there -- a second option tap could not
+// be heard until ~860ms after the first (the floor below plus MIN_GAP_MS),
+// which is how "tapped dog, heard sock" happened and why the buttons felt
+// unresponsive to a 5-year-old.
+//
+// 120ms rather than 0 because even a trusted onend can be a few frames
+// optimistic, and 120ms is the residual this project already treats as an
+// inaudible consonant tail (the regression harness calls it
+// TOLERATED_TAIL_MS and budgets exactly that). It gives back 380ms of the
+// 500 without spending the guarantee.
+//
+// It is NOT applied unconditionally: pump() uses it only when the previous
+// utterance's own onend arrived at or after its floor, i.e. when the engine
+// itself said the audio was over at a time that could actually be true (see
+// lastEndTrusted). Against a lying onend the gap stays at MIN_GAP_MS, which
+// costs nothing real: if the sound is still playing, starting the next one
+// 380ms sooner does not make anything audible sooner, it only stacks two
+// sounds.
+//
+// With a trusted onend this is as fast as tap feedback can be: what remains
+// is the previous sound's own audio, and the only API that cuts that short is
+// speechSynthesis.cancel(), which kills the whole queue on iOS and is never
+// called from this module.
+const TAP_GAP_MS = 120
+
 // Playback rate for every English utterance the child is meant to hear as a
 // model and copy -- which is all of them: letter sounds, words, teach
 // sequences, tap feedback. Lowered from 0.85 after a real-iPad report that the
@@ -125,9 +155,30 @@ const EN_RATE = 0.5
 //                                          per UTF-8 byte)
 //
 // Commas are the primary discriminator, not length: a comma is a deliberate
-// pause inside one utterance (the tutorials say a sound three times as
+// pause inside one utterance (the tutorials said a sound three times as
 // "lll, lll, lll"), which roughly doubles the per-character cost versus a
 // plain word of the same length.
+//
+// THE COMMA TIER IS NO LONGER REACHED FROM CHAPTER DATA, and it stays anyway.
+// The user rejected repeated sounds on the real device, so every bundle was
+// deleted; validateChapters() now REJECTS any English speech field holding
+// more than one token, so no future chapter can reintroduce one either. What
+// is left is not "defensive in case the data comes back" -- it cannot come
+// back through that door:
+//   1. it is a live regression test, not dead code. The onend-early harness
+//      case drives audio.js with "lll, lll, lll" / "guh, guh, guh" fixtures
+//      (public/_probe-fs.html, REAL_MS) and asserts the worst tail stays
+//      within 120ms. Delete the tier and that case fails at ~1300ms -- and it
+//      would be failing on a *fixture*, which is the most expensive kind of
+//      false alarm to debug.
+//   2. `say` is the only other caller shape that matters, and any string with
+//      an internal pause behaves this way regardless of who wrote it. The
+//      tier is a property of the engine, not of the current curriculum.
+// It is genuinely dead for Korean, though, and the handoff note claiming
+// otherwise ("the 2 recapAudio.ko lines with commas keep it alive") is wrong:
+// minSpeechMs returns on the ko branch before commas are ever looked at, and
+// stretch() is never called for Korean at all (speakKO's rate is 1). Those two
+// lines are measured and safe under the flat 115/char either way.
 //
 // The comma slope is 115, not the 105 this was first committed with, because
 // re-measuring at the *new* EN_RATE showed 105 no longer held. Two things have
@@ -141,25 +192,60 @@ const EN_RATE = 0.5
 // tail. 115 is the smallest slope that closes it (109ms residual), and it is
 // the only coefficient that moved.
 //
-// Verified at EN_RATE = 0.5 against every string this app actually speaks
-// (157 English + 31 Korean), scored two ways: dead air = floor - real, and
-// collision = real - floor - (that string's real gap). Fitted to Samantha,
-// because Samantha is the iOS en-US default and iPadOS Safari is the only
-// engine whose onend lies -- a floor calibrated to a voice the target device
-// does not use protects nothing:
-//   dead air    worst +124ms, and only on "zzz" (see below); next worst +12ms
-//   collision   worst +126ms, on "cta" -- a scramble tile that is only ever
-//               spoken by tapping it; worst on any auto-played string is
-//               +109ms ("lll, lll, lll")
-//   Korean      dead air <= +77ms, collision negative on all 31 lines; the
-//               tightest is -26ms, so the reward screen's Korean-then-English
-//               handoff has no overlap left in it
-// Alex is the loose end, by up to +719ms ("zzz") -- it is a macOS voice, not an
-// iOS default, and no single length model can serve both when the two disagree
-// 7x on the same string ("zzz": Samantha 212ms, Alex 1555ms). Raising the comma
-// slope costs Alex 279ms of dead air on "kuh, kuh, kuh"/"guh, guh, guh", which
-// is the trade this file already declared: unnoticed silence on a voice the
-// child will not hear, against an audible collision on the voice they will.
+// Verified at EN_RATE = 0.5 against every string this app actually speaks,
+// scored two ways: dead air = floor - real, and collision = real - floor -
+// (that string's real gap). Fitted to Samantha, because Samantha is the iOS
+// en-US default and iPadOS Safari is the only engine whose onend is suspected
+// of lying -- a floor calibrated to a voice the target device does not use
+// protects nothing.
+//
+// RE-MEASURED after the round that deleted every comma bundle from the
+// chapter data (128 unique English strings, Samantha -r 88; 31 recapAudio.ko
+// lines, Yuna unflagged; extraction + `say`/`afinfo` sweep, 2026-08-23):
+//   dead air    worst +12ms ("elephant" 712ms vs 724ms floor), +10ms
+//               ("umbrella"); negative on all 126 others. So the floor is
+//               still a real lower bound -- it costs the honest engine
+//               nothing, which is the property this whole mechanism rests on.
+//   collision   worst +492ms ("awh" 1328ms real, 336ms floor, 500ms gap),
+//               then "ihh" +212, "cta" +125, "sss" +85, "rrr" +38,
+//               "lll"/"fff"/"mta" +27, "aaa" +5; every other string negative.
+//   Korean      dead air <= +78ms, collision negative on all 31 lines,
+//               tightest -26ms. 115/char per Hangul block still holds exactly.
+//
+// Chapter 8 landed while this was being measured, and its 16 new strings were
+// measured too: every English one is safely under (worst collision +38ms,
+// "iet"; worst dead air -27ms, "bee") and so is its Korean, but its longest
+// recap line is now the tightest row in the whole corpus -- 4142ms real
+// against a 4140ms floor. 115/char per Hangul block is exact at that length,
+// so a longer Korean line than that one is the first place this floor would
+// start costing dead air. Measure it if one appears.
+//
+// The collision end got WORSE without a line of this file changing, and the
+// reason is worth writing down: deleting the comma bundles turned the app's
+// longest sounds into its shortest strings. "awh, awh, awh" was 13 characters
+// and drew a 1624ms floor; "awh" is 3 characters and draws 336ms -- while the
+// audio is still 1328ms, because a drawn-out vowel's duration has nothing to
+// do with how many letters spell it.
+//
+// It cannot be fixed by a smarter length model, and that is measured, not
+// assumed. Same shape, same length, Samantha -r 88:
+//   ihh 1048   awh 1328   owh 1324   ehh  841
+//   ahh  480   ohh  418   uhh  387   eeh  342   aih 399
+// A 3.4x spread with no structural feature to key on -- the engine is
+// consulting a lexicon of interjections, not a phonology. "Contains a doubled
+// letter" fails too ("egg" 354ms). The only model that could hold these is a
+// per-string table of measured durations, i.e. exactly the thing that rotted
+// silently in the harness (its REAL_MS was a whole rate change out of date and
+// passed a real regression). So the floor stays as fitted, and the exposure is
+// handled where it can be handled honestly instead: TAP_GAP_MS is only spent
+// when the engine's own onend says the audio is over (see lastEndTrusted), so
+// nothing above got closer to colliding than it already was.
+//
+// Alex is the loose end throughout -- it is a macOS voice, not an iOS default,
+// and no length model can serve both when the two disagree 2x on the same
+// string ("fff": Samantha 863ms, Alex 1306ms). That is the trade this file
+// already declared: unnoticed silence on a voice the child will not hear,
+// against an audible collision on the voice they will.
 //
 // UNVERIFIED ON THE REAL DEVICE, and honestly so. Everything above is fitted
 // to macOS `say` Samantha on the assumption that the iPad also spoke as
@@ -189,6 +275,10 @@ const EN_RATE = 0.5
 // deserves is safe by construction. Plain speech stretches at least 1.16x from
 // rate 1.0 to 0.5, comma bundles at least 1.19x (they stretch more because the
 // engine's comma pause scales too).
+//
+// 1.16 re-checked against the notations introduced after the fit (16 strings x
+// {Samantha, Alex}, each at -r 88 and unflagged): the measured ratio runs
+// 1.17-1.21, "uhh" 1.17 being the tightest. Still a lower bound.
 function stretch(rate, commas) {
   if (rate <= 0.5) return commas ? 1.19 : 1.16
   if (rate <= 0.85) return commas ? 1.08 : 1.05
@@ -392,22 +482,148 @@ function voiceFor(lang) {
   return lang.startsWith('ko') ? chosenVoice.ko : chosenVoice.en
 }
 
-let queueTail = Promise.resolve()
+// The queue is an explicit list with one pump, not a promise chain.
+//
+// It was a chain (`queueTail = queueTail.then(...)`), and the chain could not
+// express the one thing tap latency needs: how much silence a boundary needs
+// depends on WHICH kind of utterance is about to speak, and that is not known
+// when the utterance before it is scheduled -- the child may not have tapped
+// yet. In a chain the gap is a `.then(() => sleep(MIN_GAP_MS))` appended by
+// the *previous* item, so it is already committed by then. Here the gap is
+// decided when an item reaches the front of the queue, where its kind is
+// known (see pump()).
+//
+// A list also replaces the generation counter the chain needed: a dropped
+// item is removed outright instead of being left in the chain to check a
+// counter and no-op. Whatever is already mid-speech when a clear happens is
+// still left alone -- it finishes naturally (it's always short), which is
+// simpler and safer than calling speechSynthesis.cancel() (that abrupt
+// cancel-and-restart is exactly what caused the original overlap artifacts,
+// so this module never calls it).
+//
+// Invariant, unchanged: exactly one utterance is ever handed to the engine at
+// a time, and the next one is not handed over until the previous one has
+// finished (per its `onend`, floored by minSpeechMs).
+const queue = []
+let pumping = false
 
-// Bumped whenever clearAudioQueue() is called. Anything already chained
-// onto the *old* queueTail but not yet actually speaking checks this and
-// silently no-ops instead of speaking late over a screen the child has
-// already left. Whatever utterance is already mid-speech when a clear
-// happens is left alone -- it finishes naturally (it's always short),
-// which is simpler and safer than calling speechSynthesis.cancel() (that
-// abrupt cancel-and-restart is exactly what caused the original overlap
-// artifacts, so this module never calls it).
-let generation = 0
+// Conservative estimate of the moment the last utterance stopped being
+// audible: max(its real onend, its minSpeechMs floor). Every gap is measured
+// from this rather than from "when we resolved", so a gap is never eaten by
+// bookkeeping that happened to run late.
+let audibleUntil = 0
 
+// Did the engine's own onend for the last utterance arrive at or after that
+// utterance's floor? If it did, `audibleUntil` is a real end-of-audio, not an
+// estimate, and the fast tap gap can be spent against it. If it did not (the
+// floor had to hold the queue, or only the safety timer ever fired), the
+// engine has told us nothing we can trust and every gap stays MIN_GAP_MS --
+// which is exactly today's behaviour, so a lying engine loses nothing.
+//
+// Starts true: nothing has been spoken, so nothing can be overlapped, and the
+// very first tap of a screen should be as immediate as possible.
+//
+// What this bit proves is exactly "onend >= floor", not "onend >= real audio",
+// and those differ by however much the floor undershoots -- up to 992ms on
+// "awh" (see minSpeechMs). So an engine that lies by a *little* can still be
+// trusted here, and on those few strings a tap can start inside the tail.
+// That exposure is not new (the same undershoot is what MIN_GAP_MS was
+// absorbing) and it shrinks, not grows, with a better floor -- but it is the
+// honest limit of this signal, and the reason the fast gap is 120ms and not 0.
+let lastEndTrusted = true
+
+// Set by clearAudioQueue(): the next utterance to speak takes no gap at all,
+// because the silence that was reserved belonged to the screen the child just
+// left. Consumed by the first item that speaks after it (see pump()).
+let gapWaived = false
+
+// The most recently queued item, whatever its state. whenAudioIdle() takes a
+// snapshot of this so it means "everything queued UP TO THIS POINT", exactly
+// as the old `return queueTail` did. Waiting for the queue to be *empty*
+// instead would let a child who keeps tapping starve a beat transition
+// forever.
+let lastEnqueued = null
+
+// The one tap utterance allowed to sit in the queue unspoken (see speakTap).
+// Declared here rather than next to speakTap because pump() releases it.
+let pendingTap = null
+
+function makeItem(text, lang, rate, tap) {
+  const item = { text, lang, rate, tap, resolve: null, done: null }
+  item.done = new Promise((r) => {
+    item.resolve = r
+  })
+  return item
+}
+
+function push(item) {
+  queue.push(item)
+  lastEnqueued = item
+  pump()
+  return item.done
+}
+
+async function pump() {
+  if (pumping) return
+  pumping = true
+  try {
+    while (queue.length) {
+      const item = queue[0]
+      // The fast tap gap is spent only against evidence that the previous
+      // sound really is over (see lastEndTrusted). With no such evidence the
+      // previous utterance may still be audible well past `audibleUntil`, and
+      // shortening the gap there would not even feel faster -- the engine is
+      // still busy -- it would just stack two sounds.
+      const need = gapWaived
+        ? 0
+        : item.tap && lastEndTrusted
+        ? TAP_GAP_MS
+        : MIN_GAP_MS
+      const wait = need - (Date.now() - audibleUntil)
+      if (wait > 0) await sleep(wait)
+      // clearAudioQueue() can empty the list while we sit in that gap, and a
+      // tap item's text can be replaced in place by a newer tap (both are
+      // the point). Re-check identity rather than trusting the index.
+      if (queue[0] !== item) continue
+      queue.shift()
+      // Free the coalescing slot at the moment this item starts speaking, so
+      // the next tap gets a slot of its own instead of overwriting a word the
+      // child is already hearing.
+      if (item === pendingTap) pendingTap = null
+      gapWaived = false
+      // speakNow() never rejects, so one bad utterance cannot stall the pump
+      // -- but await it defensively anyway: a throw here would leave
+      // `pumping` true (the finally clears it) with items still queued and
+      // nothing to restart them, i.e. silence until reload.
+      let trusted = false
+      try {
+        trusted = await speakNow(item.text, item.lang, item.rate)
+      } catch (e) {
+        // ignore -- treat as spoken, and as untrustworthy
+      }
+      // speakNow() already holds its resolve until max(onend, floor), so "now"
+      // IS the conservative end-of-audio -- no separate arithmetic needed.
+      audibleUntil = Date.now()
+      lastEndTrusted = trusted
+      item.resolve()
+    }
+  } finally {
+    pumping = false
+  }
+}
+
+// Resolves with `true` when the engine's own onend arrived at or after the
+// floor below -- i.e. this engine reported completion no earlier than the
+// audio can possibly have finished, so its report is trustworthy for this
+// utterance. `false` means the floor had to hold the queue open (the engine
+// claimed to be finished early), or nothing ever reported at all and the
+// safety timer fired. pump() spends that one bit: it is the only evidence
+// this module has about whether the sound is really over, and the fast tap
+// gap is only safe when it says yes.
 function speakNow(text, lang, rate) {
   return new Promise((resolve) => {
     if (!('speechSynthesis' in window)) {
-      resolve()
+      resolve(true)
       return
     }
     // Never let a bad argument reject: this promise is a link in the shared
@@ -417,10 +633,11 @@ function speakNow(text, lang, rate) {
     // missing/empty string is a content bug worth surviving, not crashing on.
     const raw = text == null ? '' : String(text)
     if (!raw.trim()) {
-      resolve()
+      resolve(true) // nothing is playing, so nothing can be landed on
       return
     }
     let done = false
+    let reported = false // did onend/onerror fire, or only the safety timer?
     const startedAt = Date.now()
     const finish = () => {
       if (done) return
@@ -441,10 +658,10 @@ function speakNow(text, lang, rate) {
       // that estimate is ~3x larger for every input.
       const remaining = minSpeechMs(raw, lang, rate) - (Date.now() - startedAt)
       if (remaining > 0) {
-        setTimeout(resolve, remaining)
+        setTimeout(() => resolve(false), remaining)
         return
       }
-      resolve()
+      resolve(reported)
     }
     // English TTS engines read an all-caps single letter as "Capital S"
     // and an all-caps short non-word (like "SAT") as a spelled-out
@@ -477,8 +694,12 @@ function speakNow(text, lang, rate) {
       }
     }
     utter.rate = rate
-    utter.onend = finish
-    utter.onerror = finish
+    const reportedFinish = () => {
+      reported = true
+      finish()
+    }
+    utter.onend = reportedFinish
+    utter.onerror = reportedFinish
     // Safety net: speechSynthesis is known to occasionally never fire
     // onend/onerror at all (a real, documented flakiness, worse when a
     // tab is backgrounded/throttled) -- without this, one stuck
@@ -498,29 +719,14 @@ function speakNow(text, lang, rate) {
   })
 }
 
-// Appends one utterance to the shared queue. Resolves once that
-// utterance has actually finished playing (so callers can chain their
-// own extra pacing on top if they want), while the queue itself also
-// reserves MIN_GAP_MS of silence afterward before the *next* queued
-// utterance is allowed to start.
-// `onStart` fires when this item actually reaches the front of the queue and
-// begins speaking (never, if it gets dropped by clearAudioQueue first).
-function enqueueSpeak(text, lang, rate, onStart) {
-  const myGeneration = generation
-  // The rejection handler on `queueTail` is load-bearing, not decoration:
-  // every future utterance and every whenAudioIdle()-gated transition chains
-  // onto this same promise, so a single rejected link anywhere would kill all
-  // audio and freeze all beat transitions app-wide until reload.
-  const spoken = queueTail.then(
-    () => {
-      if (myGeneration !== generation) return undefined // dropped by clearAudioQueue()
-      if (onStart) onStart()
-      return speakNow(text, lang, rate)
-    },
-    () => undefined
-  )
-  queueTail = spoken.then(() => sleep(MIN_GAP_MS))
-  return spoken
+// Appends one utterance to the shared queue. Resolves once that utterance has
+// actually finished playing (so callers can chain their own extra pacing on
+// top if they want) -- or immediately, if it gets dropped by
+// clearAudioQueue() before it ever speaks. It never rejects: every beat
+// transition in the app is gated on one of these promises, so a rejection
+// would freeze the screen.
+function enqueueSpeak(text, lang, rate) {
+  return push(makeItem(text, lang, rate, false))
 }
 
 // Resolves once every utterance queued *up to this point* has actually
@@ -530,8 +736,17 @@ function enqueueSpeak(text, lang, rate, onStart) {
 // this instead of a fixed setTimeout, so the visual never moves on while
 // speech is still in flight, and a newly-rendered beat's own auto-played
 // audio never lands on top of the previous beat's tail end.
+//
+// The trailing silence is measured from `audibleUntil`, so if the child got a
+// tap sound in after the snapshot, this waits out that sound too rather than
+// transitioning across it -- bounded by one utterance, because the snapshot
+// is what it waits *for*.
 export function whenAudioIdle() {
-  return queueTail
+  const target = lastEnqueued
+  return (target ? target.done : Promise.resolve()).then(() => {
+    const rest = MIN_GAP_MS - (Date.now() - audibleUntil)
+    return rest > 0 ? sleep(rest) : undefined
+  })
 }
 
 // Drops everything still *waiting* in the queue (not yet actually
@@ -541,11 +756,27 @@ export function whenAudioIdle() {
 // leftover queued speech doesn't keep talking over a screen the child
 // has already moved away from.
 export function clearAudioQueue() {
-  generation += 1
-  queueTail = Promise.resolve()
-  // A dropped item never reaches its onStart, so release the coalescing slot
-  // by hand or all later tap feedback would be swallowed for good.
+  // Resolve as we drop: a dropped item's promise is awaited by whatever queued
+  // it (and possibly by whenAudioIdle), and leaving it pending forever is the
+  // frozen-screen failure this module is built to avoid.
+  for (const item of queue) item.resolve()
+  queue.length = 0
   pendingTap = null
+  // Waive the gap in front of whatever speaks next. The reserved silence
+  // belonged to a screen the child has left, and making the new screen's
+  // first sound sit behind it is the "nothing happens when I press it"
+  // complaint in miniature. The old promise chain did this implicitly -- it
+  // reset queueTail, discarding the pending sleep -- and a regression case
+  // pins the behaviour (a tapped option has to speak within 300ms of
+  // entering a freshly-navigated stage, and the utterance from the screen
+  // before it is often still finishing at that moment).
+  //
+  // Waiving only the gap is strictly tighter than what the chain did: the
+  // chain also discarded the *ordering*, so the new screen's first utterance
+  // could be handed to the engine while the outgoing one was still speaking.
+  // Here it still waits for the in-flight utterance to finish -- it just
+  // doesn't wait an extra MIN_GAP_MS after it.
+  gapWaived = true
 }
 
 export function speakEN(text, rate = EN_RATE) {
@@ -566,15 +797,33 @@ export function speakEN(text, rate = EN_RATE) {
 // speaking plus one waiting, no matter how fast the child taps. Deliberate
 // content playback (a beat's own auto-played prompt, teach sequences) keeps
 // using speakEN/speakSequence and is never droppable.
-let pendingTap = null
-
+//
+// (`pendingTap` itself is declared with the queue -- pump() releases it.)
+//
+// Coalescing used to mean "the first tap wins and later ones are thrown
+// away", and that was the wrong end to keep. QA hit it directly: tapping
+// `sock` and then `dog` played "sock" -- the word the child had already moved
+// off -- and silently dropped `dog`, the one they were asking about. The slot
+// is now LATEST-WINS: the waiting item's text is replaced, so what the child
+// hears next is always the last thing they touched. Same bound of two
+// utterances, opposite (and correct) choice of which one to keep.
+//
+// This also fixes drag-build, where each placed tile speaks its own letter:
+// three quick placements used to be heard as tile 1 then tile 2, with the
+// tile the child had just landed dropped. Now it is tile 1 then tile 3 -- the
+// letter that is actually under their finger.
+//
+// Tap items also take TAP_GAP_MS instead of MIN_GAP_MS in front of them (see
+// pump()), which is where the ~380ms of the reported lag went.
 export function speakTap(text, rate = EN_RATE) {
-  if (pendingTap) return pendingTap
-  const p = enqueueSpeak(text, 'en-US', rate, () => {
-    if (pendingTap === p) pendingTap = null
-  })
-  pendingTap = p
-  return p
+  if (pendingTap) {
+    pendingTap.text = text
+    pendingTap.rate = rate
+    return pendingTap.done
+  }
+  const item = makeItem(text, 'en-US', rate, true)
+  pendingTap = item
+  return push(item)
 }
 
 export function speakKO(text, rate = 1) {
