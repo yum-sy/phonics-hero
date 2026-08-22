@@ -23,11 +23,13 @@
 // 안전하고, validateChapters 도 match-shape 를 충돌쌍 검사에서 스킵한다.
 //
 // --- 아이콘 제약 (이 챕터에서 가장 큰 제약) ---
-// R/M/D 세 소리 모두 그림 묶음을 만들 수 없다: /r/ 은 아이콘이 0개, /m/ 은 `moon`
-// 하나, /d/ 는 `dog` 하나뿐이다. odd-one-out 과 multiselect 는 같은 첫소리 그림이
-// 2개 이상 필요하므로, 이 챕터의 그림 문항은 전부 챕터 1-3 의 누적 복습이 된다.
-// R/M/D 본 학습은 letterTile 문항과 아이콘이 필요 없는 words[] 로 나른다.
-// // TODO(icon): 위치마다 표시했다.
+// /r/ 은 `rat`/`ring` 두 개가 생겨서 odd-one-out 과 promptLetter 역방향 문항을
+// 만들 수 있다(둘 다 이제 /r/ 문항이다). multiselect 는 같은 첫소리 그림이 2개
+// 이상 *정답*으로 필요한데 /r/ 은 딱 2개라 두 문항에서 같은 쌍이 반복되므로,
+// 그 슬롯은 앞 챕터 누적 복습으로 남긴다.
+// /m/ 은 `moon` 하나, /d/ 는 `dog` 하나뿐이라 여전히 그림 묶음을 만들 수 없다 --
+// M/D 본 학습은 letterTile 문항과 아이콘이 필요 없는 words[] 로 나른다.
+// TODO(icon): man/mat/map (/m/), duck/door (/d/) 가 생기면 s3·s4 그림 문항 교체.
 
 export const chapter4 = {
   id: 'chapter-4',
@@ -70,15 +72,13 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): rat, ring -- /r/ 그림이 생기면 /r/ 문항으로 교체.
-          // 지금은 챕터 3 의 /h/ 복습 + /d/ 소리 미리듣기로 쓴다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c4s1-hat', icon: 'hat', label: 'hat', correct: false },
-            { id: 'c4s1-hen', icon: 'hen', label: 'hen', correct: false },
+            { id: 'c4s1-rat', icon: 'rat', label: 'rat', correct: false },
+            { id: 'c4s1-ring', icon: 'ring', label: 'ring', correct: false },
             { id: 'c4s1-dog', icon: 'dog', label: 'dog', correct: true },
           ],
-          readAloud: { targetText: 'hat' },
+          readAloud: { targetText: 'rat' },
         },
         {
           id: 'c4s1-r3',
@@ -165,14 +165,13 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): rat, ring -- /r/ 문항으로 교체할 자리. 지금은 /n/ 복습.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c4s2-net', icon: 'net', label: 'net', correct: false },
-            { id: 'c4s2-nose', icon: 'nose', label: 'nose', correct: false },
-            { id: 'c4s2-cat', icon: 'cat', label: 'cat', correct: true },
+            { id: 'c4s2-ring', icon: 'ring', label: 'ring', correct: false },
+            { id: 'c4s2-rat', icon: 'rat', label: 'rat', correct: false },
+            { id: 'c4s2-net', icon: 'net', label: 'net', correct: true },
           ],
-          readAloud: { targetText: 'net' },
+          readAloud: { targetText: 'ring' },
         },
         {
           id: 'c4s2-r3-trace',
@@ -226,15 +225,14 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): rat -- promptLetter 'R' 문항으로 교체할 자리.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'H',
+          promptLetter: 'R',
           options: [
-            { id: 'c4s2-hand', icon: 'hand', label: 'hand', correct: true },
+            { id: 'c4s2-rat2', icon: 'rat', label: 'rat', correct: true },
             { id: 'c4s2-moon', icon: 'moon', label: 'moon', correct: false },
             { id: 'c4s2-pot', icon: 'pot', label: 'pot', correct: false },
           ],
-          readAloud: { targetText: 'hand' },
+          readAloud: { targetText: 'rat' },
         },
         {
           id: 'c4s2-r7-listenrepeat',
@@ -356,12 +354,15 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
+          // 오답을 /n/ 으로 둔다 -- /m/ 과 /n/ 은 둘 다 비음이라 진짜 근접쌍이고,
+          // N 은 챕터 2 에서 이미 배운 글자다. 무작위 오답(hat/ten)이면 이 문항은
+          // "moon 을 아는가" 만 묻지만, 이렇게 하면 실제 소리 변별을 묻는다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'M',
           options: [
             { id: 'c4s3-moon2', icon: 'moon', label: 'moon', correct: true },
-            { id: 'c4s3-hat', icon: 'hat', label: 'hat', correct: false },
-            { id: 'c4s3-ten', icon: 'ten', label: 'ten', correct: false },
+            { id: 'c4s3-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c4s3-nose', icon: 'nose', label: 'nose', correct: false },
           ],
           readAloud: { targetText: 'moon' },
         },

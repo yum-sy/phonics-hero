@@ -36,12 +36,15 @@
 // G↔C/K(유무성 대비, 유용함) · O↔A · O↔U · U↔A -- 전부 위와 같은 방식으로
 // 대형 배수 재확인했고 격차가 초 단위로 벌어진다(수백~수천 ms). 충돌 아님.
 //
-// --- 아이콘 제약 (이 챕터가 가장 심하다) ---
-// G/O/U 세 소리 모두 초성 그림이 **0개**다(챕터 4 의 /r/ 과 같은 상황이 세
-// 글자 전부에 적용된다). odd-one-out/multiselect 는 전부 기존 아이콘의
-// 누적 복습으로 대체했고, G/O/U 본 학습은 letterTile 소리 문항 + 아이콘이
-//필요 없는 words[](listen-repeat/finale) + 보스의 drag-build 로 나른다.
-// // TODO(icon): 위치마다 표시했다.
+// --- 아이콘 제약 ---
+// G 는 `gift`/`gum`, O 는 `octopus`/`orange` 두 개씩 생겨서 odd-one-out 과
+// promptLetter 역방향 문항이 둘 다 이 챕터의 소리로 성립한다.
+// U 는 `umbrella` 하나뿐이라 같은편 2개를 세울 수 없어서, s4 의 odd-one-out 은
+// /o/ 둘 + /u/ 하나로 짜서 **이 챕터가 가르치는 두 모음을 맞붙였다** -- 정답이
+// umbrella 이고, 모음 근접쌍이라 무작위 오답보다 나은 연습이다.
+// multiselect 슬롯은 정답이 2개 이상 필요한데 G/O 가 딱 2개라 같은 쌍이 두
+// 문항에서 반복되므로, 그 슬롯은 앞 챕터 누적 복습으로 남겼다.
+// TODO(icon): under/up (/u/) 가 생기면 s4 multiselect 도 /u/ 로 교체 가능.
 //
 // --- 보스 단어: DOG(D+O+G) · GUM(G+U+M) ---
 // 두 단어 모두 이 챕터에서 새로 배우는 글자(O 또는 U)가 완성되는 시점의
@@ -93,14 +96,13 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): gift, gum -- /g/ 그림이 생기면 이 자리를 /g/ 문항으로.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c5s1-hat', icon: 'hat', label: 'hat', correct: false },
-            { id: 'c5s1-hen', icon: 'hen', label: 'hen', correct: false },
+            { id: 'c5s1-gift', icon: 'gift', label: 'gift', correct: false },
+            { id: 'c5s1-gum', icon: 'gum', label: 'gum', correct: false },
             { id: 'c5s1-dog', icon: 'dog', label: 'dog', correct: true },
           ],
-          readAloud: { targetText: 'hat' },
+          readAloud: { targetText: 'gift' },
         },
         {
           id: 'c5s1-r3',
@@ -188,14 +190,13 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): gift, gum -- /g/ 그림이 생기면 교체.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c5s2-hen', icon: 'hen', label: 'hen', correct: false },
-            { id: 'c5s2-horse', icon: 'horse', label: 'horse', correct: false },
-            { id: 'c5s2-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c5s2-gum', icon: 'gum', label: 'gum', correct: false },
+            { id: 'c5s2-gift', icon: 'gift', label: 'gift', correct: false },
+            { id: 'c5s2-hen', icon: 'hen', label: 'hen', correct: true },
           ],
-          readAloud: { targetText: 'hen' },
+          readAloud: { targetText: 'gum' },
         },
         {
           id: 'c5s2-r3-trace',
@@ -248,16 +249,14 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): gum, gift -- promptLetter 'G' 문항으로 교체할 자리.
-          // 지금은 D 를 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'D',
+          promptLetter: 'G',
           options: [
-            { id: 'c5s2-dog2', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c5s2-gum2', icon: 'gum', label: 'gum', correct: true },
             { id: 'c5s2-egg', icon: 'egg', label: 'egg', correct: false },
             { id: 'c5s2-pot', icon: 'pot', label: 'pot', correct: false },
           ],
-          readAloud: { targetText: 'dog' },
+          readAloud: { targetText: 'gum' },
         },
         {
           id: 'c5s2-r7-listenrepeat',
@@ -319,14 +318,13 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): octopus, orange -- /o/ 그림이 생기면 교체.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c5s3-pig', icon: 'pig', label: 'pig', correct: false },
-            { id: 'c5s3-pin', icon: 'pin', label: 'pin', correct: false },
+            { id: 'c5s3-octopus', icon: 'octopus', label: 'octopus', correct: false },
+            { id: 'c5s3-orange', icon: 'orange', label: 'orange', correct: false },
             { id: 'c5s3-net', icon: 'net', label: 'net', correct: true },
           ],
-          readAloud: { targetText: 'pig' },
+          readAloud: { targetText: 'octopus' },
         },
         {
           id: 'c5s3-r3-trace',
@@ -377,16 +375,14 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): octopus, orange -- promptLetter 'O' 문항으로 교체할 자리.
-          // 지금은 P 를 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'P',
+          promptLetter: 'O',
           options: [
-            { id: 'c5s3-pig2', icon: 'pig', label: 'pig', correct: true },
+            { id: 'c5s3-orange2', icon: 'orange', label: 'orange', correct: true },
             { id: 'c5s3-hen', icon: 'hen', label: 'hen', correct: false },
             { id: 'c5s3-cake', icon: 'cake', label: 'cake', correct: false },
           ],
-          readAloud: { targetText: 'pig' },
+          readAloud: { targetText: 'orange' },
         },
         {
           id: 'c5s3-r7-listenrepeat',
@@ -448,14 +444,16 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): umbrella, under -- /u/ 그림이 생기면 교체.
+          // /u/ 그림은 umbrella 하나뿐이라 /u/ 를 같은편 2개로 세울 수 없다.
+          // 대신 이 챕터의 두 모음을 맞붙인다 -- /o/ 둘 + /u/ 하나라서 정답이
+          // umbrella 이고, 모음 근접쌍이라 그냥 무작위 오답보다 훨씬 좋은 연습이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c5s4-hat', icon: 'hat', label: 'hat', correct: false },
-            { id: 'c5s4-horse', icon: 'horse', label: 'horse', correct: false },
-            { id: 'c5s4-moon', icon: 'moon', label: 'moon', correct: true },
+            { id: 'c5s4-orange', icon: 'orange', label: 'orange', correct: false },
+            { id: 'c5s4-octopus', icon: 'octopus', label: 'octopus', correct: false },
+            { id: 'c5s4-umbrella', icon: 'umbrella', label: 'umbrella', correct: true },
           ],
-          readAloud: { targetText: 'hat' },
+          readAloud: { targetText: 'orange' },
         },
         {
           id: 'c5s4-r3-trace',
@@ -508,16 +506,14 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): umbrella, under -- promptLetter 'U' 문항으로 교체할 자리.
-          // 지금은 N 을 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'N',
+          promptLetter: 'U',
           options: [
-            { id: 'c5s4-net2', icon: 'net', label: 'net', correct: true },
+            { id: 'c5s4-umbrella2', icon: 'umbrella', label: 'umbrella', correct: true },
             { id: 'c5s4-cat', icon: 'cat', label: 'cat', correct: false },
             { id: 'c5s4-key', icon: 'key', label: 'key', correct: false },
           ],
-          readAloud: { targetText: 'net' },
+          readAloud: { targetText: 'umbrella' },
         },
         {
           id: 'c5s4-r7-listenrepeat',

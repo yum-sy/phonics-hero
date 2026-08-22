@@ -143,7 +143,7 @@ export const chapter3 = {
         {
           id: 'c3s2-teach',
           kind: 'teach',
-          instructionKo: 'C는 케이라의 발톱처럼 k-k-k 소리를 내요!',
+          instructionKo: 'C는 케이라의 발톱처럼 kuh 소리를 내요!',
           art: 'hero',
           letter: 'C',
           repeatAudio: ['C', 'kuh', 'C', 'kuh'],
@@ -152,7 +152,7 @@ export const chapter3 = {
           id: 'c3s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'k-k-k 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'kuh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'kuh',
           // K 는 여기 절대 넣지 않는다 -- C 와 K 는 같은 소리라 정답이 둘이 된다.
           options: [
@@ -179,7 +179,7 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 C를 따라 그리면서 k-k-k 소리를 내보세요!',
+          instructionKo: '손가락으로 C를 따라 그리면서 kuh 소리를 내보세요!',
           words: [{ text: 'C', say: 'kuh' }],
         },
         {
@@ -187,7 +187,7 @@ export const chapter3 = {
           kind: 'break',
           // 쌍둥이 사실을 "틀릴 수 없는" 비채점 자리에서 먼저 제시한다.
           // 큰 글자를 C 하나만 띄우면 K 발화와 어긋나 보이므로 letter 를 뺐다.
-          instructionKo: 'C와 K는 쌍둥이예요! 글자는 다른데 소리는 똑같이 k-k-k 예요.',
+          instructionKo: 'C와 K는 쌍둥이예요! 글자는 다른데 소리는 똑같이 kuh 예요.',
           art: 'hero',
           repeatAudio: ['C', 'kuh', 'K', 'kuh'],
         },
@@ -197,7 +197,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이를 "모두 찾기" 로 물어 다대일 대응을 수업으로 만든다.
-          instructionKo: 'k-k-k 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
+          instructionKo: 'kuh 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
           options: [
             { id: 'c3s2-C2', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-S2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
@@ -211,7 +211,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'k-k-k 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'kuh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'kuh',
           // 혼동 보기는 S 하나 -- c 가 /s/ 로도 읽히는 실제 함정이다.
           options: [
@@ -324,7 +324,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이 개념 2회차 간격 복습 -- 이 챕터에서 가장 어려운 개념이다.
-          instructionKo: 'k-k-k 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
+          instructionKo: 'kuh 소리를 내는 글자를 모두 찾아 탭하세요! (두 개예요)',
           options: [
             { id: 'c3s3-K2', icon: 'letterTile', label: 'K', say: 'kuh', correct: true },
             { id: 'c3s3-E2', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
@@ -398,7 +398,7 @@ export const chapter3 = {
         {
           id: 'c3s4-teach',
           kind: 'teach',
-          instructionKo: 'H는 허비가 숨을 헉헉 내쉬듯 h-h-h 소리를 내요!',
+          instructionKo: 'H는 허비가 숨을 헉헉 내쉬듯 huh 소리를 내요!',
           art: 'hero',
           letter: 'H',
           repeatAudio: ['H', 'huh', 'H', 'huh'],
@@ -407,7 +407,7 @@ export const chapter3 = {
           id: 'c3s4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'h-h-h 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'huh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'huh',
           options: [
             { id: 'c3s4-H1', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
@@ -433,7 +433,7 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 H를 따라 그리면서 h-h-h 소리를 내보세요!',
+          instructionKo: '손가락으로 H를 따라 그리면서 huh 소리를 내보세요!',
           words: [{ text: 'H', say: 'huh' }],
         },
         {
@@ -463,12 +463,13 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'h-h-h 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'huh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'huh',
-          // 혼동 보기는 M 하나 (N 은 warmup 에서 이미 썼다).
+          // 혼동 보기는 S 하나 -- /h/ 와 /s/ 는 둘 다 무성 마찰음이라 진짜 근접쌍이고,
+          // S 는 챕터 1 에서 이미 배운 글자다 (N 은 warmup 에서 이미 썼다).
           options: [
             { id: 'c3s4-H3', icon: 'letterTile', label: 'H', say: 'huh', correct: true },
-            { id: 'c3s4-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+            { id: 'c3s4-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
             { id: 'c3s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
           ],
           readAloud: { targetText: 'H', say: 'huh' },

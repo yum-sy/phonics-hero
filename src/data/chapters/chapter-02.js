@@ -147,7 +147,7 @@ export const chapter2 = {
           promptAudio: 'iii',
           options: [
             { id: 'c2s2-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
-            { id: 'c2s2-O1', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+            { id: 'c2s2-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
         },
@@ -203,7 +203,7 @@ export const chapter2 = {
           promptAudio: 'iii',
           options: [
             { id: 'c2s2-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
-            { id: 'c2s2-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+            { id: 'c2s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s2-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
           readAloud: { targetText: 'I', say: 'iii' },
@@ -258,7 +258,7 @@ export const chapter2 = {
         {
           id: 'c2s3-teach',
           kind: 'teach',
-          instructionKo: 'P는 파워피가 힘을 쏠 때처럼 p-p-p 소리를 내요!',
+          instructionKo: 'P는 파워피가 힘을 쏠 때처럼 puh 소리를 내요!',
           art: 'hero',
           letter: 'P',
           repeatAudio: ['P', 'puh', 'P', 'puh'],
@@ -267,11 +267,11 @@ export const chapter2 = {
           id: 'c2s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'p-p-p 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'puh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'puh',
           options: [
             { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
-            { id: 'c2s3-B1', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+            { id: 'c2s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s3-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -293,7 +293,7 @@ export const chapter2 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 P를 따라 그리면서 p-p-p 소리를 내보세요!',
+          instructionKo: '손가락으로 P를 따라 그리면서 puh 소리를 내보세요!',
           words: [{ text: 'P', say: 'puh' }],
         },
         {
@@ -323,11 +323,11 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'p-p-p 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'puh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'puh',
           options: [
             { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
-            { id: 'c2s3-D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
+            { id: 'c2s3-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'c2s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
           ],
           readAloud: { targetText: 'P', say: 'puh' },
@@ -395,7 +395,7 @@ export const chapter2 = {
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-            { id: 'c2s4-U1', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+            { id: 'c2s4-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
             { id: 'c2s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
         },
@@ -451,7 +451,7 @@ export const chapter2 = {
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-            { id: 'c2s4-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+            { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
           ],
           readAloud: { targetText: 'N', say: 'nnn' },

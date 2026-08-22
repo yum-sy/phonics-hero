@@ -380,7 +380,7 @@ export const chapter1 = {
         {
           id: 's4-teach',
           kind: 'teach',
-          instructionKo: 'T는 터보의 엔진처럼 t-t-t 소리를 내요!',
+          instructionKo: 'T는 터보의 엔진처럼 tuh 소리를 내요!',
           art: 'hero',
           letter: 'T',
           repeatAudio: ['T', 'tuh', 'T', 'tuh'],
@@ -389,7 +389,7 @@ export const chapter1 = {
           id: 's4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 't-t-t 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'tuh 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'tuh',
           options: [
             { id: 'T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
@@ -415,7 +415,7 @@ export const chapter1 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 T를 따라 그리면서 t-t-t 소리를 내보세요!',
+          instructionKo: '손가락으로 T를 따라 그리면서 tuh 소리를 내보세요!',
           words: [{ text: 'T', say: 'tuh' }],
         },
         {
@@ -445,7 +445,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 't-t-t 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          instructionKo: 'tuh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
           promptAudio: 'tuh',
           options: [
             { id: 'T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },

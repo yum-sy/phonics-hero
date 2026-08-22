@@ -35,12 +35,15 @@
 // 순수 시각 변별시킨다 -- 챕터4의 c4s4-r5b-shape 와 동일 패턴, 대상만
 // D 에서 B 로 바뀐 것.
 //
-// --- 아이콘 제약 ---
-// L 은 초성 그림 0개, F 도 0개, B 는 `bed` 하나뿐이다(odd-one-out/multiselect
-// 는 같은 소리 그림 2개 이상 필요해서 B 도 그림 문항을 만들 수 없다 -- 단
-// bed 하나는 역방향(promptLetter) 문항에 쓸 수 있어 이 챕터에서 유일하게
-// 그림-글자 매칭이 실제로 성립한다). 나머지는 챕터 1-5 아이콘 누적 복습으로
-// 대체했다. // TODO(icon): 위치마다 표시했다.
+// --- 아이콘 사정 (이 챕터는 세 소리 다 그림이 있다) ---
+// L=`lion`/`leg`, F=`fish`/`fan`, B=`ball`/`bed`/`box`/`bus`. B 가 4개라
+// multiselect(정답 2개 이상)까지 이 챕터 소리로 성립하는 유일한 챕터다.
+//
+// **오답을 무작위로 고르지 않는다** -- 세 소리 모두 한국어 화자의 실제 오류에
+// 맞춰 근접쌍을 붙였다: /l/↔/r/(R 은 챕터 4 기지), /f/↔/p/(한국어에 /f/ 가
+// 없어 ㅍ 로 대치하는 대표 오류, P 는 챕터 2 기지), /b/↔/p/(유무성 짝).
+// 그림 문항이라 발화되는 건 단어이므로 buh/duh 충돌쌍 규칙과 무관하다.
+// multiselect 한 슬롯씩은 앞 챕터 누적 복습으로 남겨뒀다.
 //
 // --- 보스 단어: FIT(F+I+T) · BIG(B+I+G) ---
 // 챕터 3-5 에서 확립한 구조: 각 단어를 자기 스테이지 finale 에서 미리
@@ -91,14 +94,13 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): lion, leg -- /l/ 그림이 생기면 이 자리를 /l/ 문항으로.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c6s1-cat', icon: 'cat', label: 'cat', correct: false },
-            { id: 'c6s1-key', icon: 'key', label: 'key', correct: false },
+            { id: 'c6s1-lion', icon: 'lion', label: 'lion', correct: false },
+            { id: 'c6s1-leg', icon: 'leg', label: 'leg', correct: false },
             { id: 'c6s1-dog', icon: 'dog', label: 'dog', correct: true },
           ],
-          readAloud: { targetText: 'cat' },
+          readAloud: { targetText: 'lion' },
         },
         {
           id: 'c6s1-r3',
@@ -187,14 +189,15 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): lion, leg -- /l/ 그림이 생기면 교체.
+          // 오답이 /r/ 이다 -- 한국어 화자에게 /l/ 대 /r/ 이 최대 난점이고
+          // R 은 챕터 4 에서 이미 배웠으므로 여기가 이 대비를 넣을 첫 지점이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c6s2-cake', icon: 'cake', label: 'cake', correct: false },
-            { id: 'c6s2-key', icon: 'key', label: 'key', correct: false },
-            { id: 'c6s2-dog', icon: 'dog', label: 'dog', correct: true },
+            { id: 'c6s2-lion', icon: 'lion', label: 'lion', correct: false },
+            { id: 'c6s2-leg', icon: 'leg', label: 'leg', correct: false },
+            { id: 'c6s2-rat', icon: 'rat', label: 'rat', correct: true },
           ],
-          readAloud: { targetText: 'cake' },
+          readAloud: { targetText: 'lion' },
         },
         {
           id: 'c6s2-r3-trace',
@@ -245,16 +248,14 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): lion, leg -- promptLetter 'L' 문항으로 교체할 자리.
-          // 지금은 C 를 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'C',
+          promptLetter: 'L',
           options: [
-            { id: 'c6s2-cat2', icon: 'cat', label: 'cat', correct: true },
+            { id: 'c6s2-leg2', icon: 'leg', label: 'leg', correct: true },
             { id: 'c6s2-dog2', icon: 'dog', label: 'dog', correct: false },
             { id: 'c6s2-egg', icon: 'egg', label: 'egg', correct: false },
           ],
-          readAloud: { targetText: 'cat' },
+          readAloud: { targetText: 'leg' },
         },
         {
           id: 'c6s2-r7-listenrepeat',
@@ -316,14 +317,15 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): fish, fan -- /f/ 그림이 생기면 교체.
+          // 오답이 /p/ 다 -- 한국어에 /f/ 가 없어 ㅍ 로 대치하는 게 대표 오류이고
+          // P 는 챕터 2 에서 이미 배웠다. 무작위 오답보다 훨씬 나은 연습이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c6s3-pig', icon: 'pig', label: 'pig', correct: false },
-            { id: 'c6s3-pot', icon: 'pot', label: 'pot', correct: false },
-            { id: 'c6s3-key', icon: 'key', label: 'key', correct: true },
+            { id: 'c6s3-fish', icon: 'fish', label: 'fish', correct: false },
+            { id: 'c6s3-fan', icon: 'fan', label: 'fan', correct: false },
+            { id: 'c6s3-pig', icon: 'pig', label: 'pig', correct: true },
           ],
-          readAloud: { targetText: 'pig' },
+          readAloud: { targetText: 'fish' },
         },
         {
           id: 'c6s3-r3-trace',
@@ -374,16 +376,14 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // TODO(icon): fish, fan -- promptLetter 'F' 문항으로 교체할 자리.
-          // 지금은 E 를 누적 복습한다.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'E',
+          promptLetter: 'F',
           options: [
-            { id: 'c6s3-egg2', icon: 'egg', label: 'egg', correct: true },
+            { id: 'c6s3-fan2', icon: 'fan', label: 'fan', correct: true },
             { id: 'c6s3-hat2', icon: 'hat', label: 'hat', correct: false },
             { id: 'c6s3-net', icon: 'net', label: 'net', correct: false },
           ],
-          readAloud: { targetText: 'egg' },
+          readAloud: { targetText: 'fan' },
         },
         {
           id: 'c6s3-r7-listenrepeat',
@@ -448,13 +448,16 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
+          // 오답이 /p/ 다 -- /b/ 와 /p/ 는 같은 자리 유무성 짝이라 진짜 근접쌍이다.
+          // 그림 문항이므로 발화되는 건 단어이고, buh/duh 충돌쌍 규칙은
+          // letterTile 보기에만 적용된다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'c6s4-egg', icon: 'egg', label: 'egg', correct: false },
-            { id: 'c6s4-elephant', icon: 'elephant', label: 'elephant', correct: false },
-            { id: 'c6s4-cat', icon: 'cat', label: 'cat', correct: true },
+            { id: 'c6s4-ball', icon: 'ball', label: 'ball', correct: false },
+            { id: 'c6s4-bed2', icon: 'bed', label: 'bed', correct: false },
+            { id: 'c6s4-pot', icon: 'pot', label: 'pot', correct: true },
           ],
-          readAloud: { targetText: 'egg' },
+          readAloud: { targetText: 'ball' },
         },
         {
           id: 'c6s4-r3-trace',
@@ -477,16 +480,16 @@ export const chapter6 = {
           kind: 'multiselect',
           scored: true,
           hits: 1,
-          // /b/ 그림이 bed 하나뿐이라 multiselect(2개 이상 정답 필요)는
-          // 여전히 안 되고 /p/ 복습으로 대체한다.
-          instructionKo: '/p/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
+          // /b/ 그림이 ball/bed/box/bus 네 개라 정답 2개를 세울 수 있다.
+          // 오답 하나는 /p/ 로 두어 유무성 짝을 계속 맞붙인다.
+          instructionKo: '/b/ 소리로 시작하는 걸 모두 찾아 탭하세요!',
           options: [
-            { id: 'c6s4-pig', icon: 'pig', label: 'pig', correct: true },
-            { id: 'c6s4-dog', icon: 'dog', label: 'dog', correct: false },
-            { id: 'c6s4-pen', icon: 'pen', label: 'pen', correct: true },
+            { id: 'c6s4-box', icon: 'box', label: 'box', correct: true },
+            { id: 'c6s4-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c6s4-bus', icon: 'bus', label: 'bus', correct: true },
             { id: 'c6s4-moon', icon: 'moon', label: 'moon', correct: false },
           ],
-          readAloud: { targetText: 'pig' },
+          readAloud: { targetText: 'box' },
         },
         {
           id: 'c6s4-r5-hard',
