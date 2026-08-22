@@ -1,7 +1,21 @@
 // Original flat-color SVG word/picture icons used on choice buttons in
 // place of plain Unicode emoji. Kept in the same geometric-primitive style
 // as the character art in art.js (circles/rects/polygons, 2-3 flat colors,
-// no gradients/photorealism), sized to read clearly at ~60px on a button.
+// no gradients/photorealism).
+//
+// SIZE: these render at 200-261px on an option button (the exact figure is
+// set by the option count and the device orientation, since the option grid
+// became elastic) and at 150px in _art.html's gallery. This header used to
+// say "~60px", which was true before the grid change and is what made
+// earlier rounds draw detail too coarse. Judge every icon at 150px+.
+//
+// Two things decide whether an icon works, and neither is visible in the
+// source. Its HARD CUTOUT (`filter: brightness(0)`) must not match another
+// icon's -- greyscale is too forgiving, it leaves the internal linework in.
+// And its own opaque area must not sink into the button: the metric is the
+// share of the icon's opaque pixels within dE 12 of the background
+// (`#fffdf4` normal, `#c8f5a8` selected). `sock` measured 72% once and was
+// effectively invisible. Pale fills therefore always carry a dark contour.
 
 function wrap(inner, viewBox = '0 0 64 64') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="word-icon-art">${inner}</svg>`
@@ -1142,6 +1156,282 @@ const ICONS = {
       </g>
       <path d="M25 11 H39 L32 24 Z" fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2" stroke-linejoin="round"/>
     `),
+
+  // -- Chapter 8: IE (tie, pie, fries), EE (bee, tree, feet), OR (fork, corn) --
+
+  // A necktie: knot plus blade, and nothing else. A first draft added an open
+  // shirt collar behind the knot and the hard cutout was a wide flat-topped
+  // bar over a narrow tapering stem -- a letter T, on the icon for the word
+  // TIE. The collar is gone and the reading is carried instead by the sharp
+  // step from the 20-wide knot to the 11-wide blade neck: `top` is the other
+  // narrow shape that tapers to a point, and its outline narrows
+  // monotonically with no such shoulder, while `leg` and `sock` both end in
+  // a foot jutting sideways where this ends in a centred V. Navy with gold
+  // stripes stays clear of the red `coat` and of `man`'s red tie.
+  tie: () => {
+    const clipId = nextId('tie-clip')
+    const knot = 'M24 8 Q32 5.5 40 8 L42 25 L22 25 Z'
+    const blade = 'M26.5 25 L37.5 25 L42 48 L32 60.5 L22 48 Z'
+    return wrap(`
+      <path d="${blade}" fill="#0c447c"/>
+      <path d="${knot}" fill="#0c447c"/>
+      <clipPath id="${clipId}"><path d="${knot}"/><path d="${blade}"/></clipPath>
+      <g clip-path="url(#${clipId})" stroke="#f4c95d" stroke-width="4.6">
+        <line x1="12" y1="22" x2="44" y2="6"/>
+        <line x1="12" y1="34" x2="44" y2="18"/>
+        <line x1="12" y1="46" x2="44" y2="30"/>
+        <line x1="14" y1="58" x2="46" y2="42"/>
+        <line x1="20" y1="70" x2="52" y2="54"/>
+      </g>
+      <path d="${blade}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="${knot}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+    `)
+  },
+
+  // A whole lattice pie in its dish, seen from just above the rim. Two
+  // decisions carry it, and both exist to keep it away from `cake`, which is
+  // the nearest icon in the set. Proportion: the pie is wide and shallow
+  // (about 55x38) where the cake is tall with candle spikes over it and a
+  // plate under it. And the outline is deliberately bumpy -- sixteen crimp
+  // bumps ring the crust, so the hard-cutout shape is a scalloped flower
+  // rather than the smooth disc that would put it next to `ball`, `orange`
+  // and `ten`. The pastry lattice over dark filling is also what stops a
+  // 5-year-old naming it pizza: pizza has neither a lattice nor a dish.
+  pie: () => {
+    const clipId = nextId('pie-clip')
+    let crimp = ''
+    const bumps = 16
+    for (let i = 0; i < bumps; i++) {
+      const a = (i / bumps) * Math.PI * 2
+      const x = (32 + Math.cos(a) * 24).toFixed(1)
+      const y = (33 + Math.sin(a) * 10.5).toFixed(1)
+      crimp += `<circle cx="${x}" cy="${y}" r="3.6" fill="#d9a96b"/>`
+    }
+    const bands = a => `
+      <g transform="rotate(${a} 32 33)">
+        <rect x="10" y="24.6" width="44" height="3.8" fill="#d9a96b"/>
+        <rect x="10" y="31.1" width="44" height="3.8" fill="#d9a96b"/>
+        <rect x="10" y="37.6" width="44" height="3.8" fill="#d9a96b"/>
+      </g>`
+    return wrap(`
+      <ellipse cx="32" cy="38" rx="27" ry="12" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="2.2"/>
+      ${crimp}
+      <ellipse cx="32" cy="33" rx="24" ry="10.5" fill="#d9a96b"/>
+      <ellipse cx="32" cy="33" rx="17.5" ry="7" fill="#791f1f"/>
+      <clipPath id="${clipId}"><ellipse cx="32" cy="33" rx="17.5" ry="7"/></clipPath>
+      <g clip-path="url(#${clipId})">
+        ${bands(22)}
+        ${bands(-22)}
+      </g>
+      <ellipse cx="32" cy="33" rx="17.5" ry="7" fill="none" stroke="#a87a45" stroke-width="1.6"/>
+    `)
+  },
+
+  // The third IE picture. `lie` was the obvious candidate and was rejected --
+  // see the report: it is a verb, and a figure lying down reads as "sleep",
+  // which lands on `bed`. Fries are a concrete object a Korean 5-year-old
+  // names instantly, and `ie` is both the spelling and the /ai/ sound. The
+  // carton is red on purpose: the only other yellow food in the set is
+  // `corn`, which this can share a board with (IE answer vs OR distractor),
+  // so the two must not both read as "yellow lump". Two details are there to
+  // keep the cutout away from `hand`, which is also a splayed set of digits
+  // over a body: the tips are square-cut (rx 0.8, not `hand`'s fully rounded
+  // rx 3.1) and the lengths are deliberately uneven, so the top edge is a
+  // jagged skyline instead of the smooth fingertip arch a hand makes.
+  fries: () => {
+    const angles = [-22, -13, -4, 5, 14, 23]
+    const lens = [24, 31, 22, 33, 26, 26]
+    let sticks = ''
+    angles.forEach((a, i) => {
+      const x = 20 + i * 4.4
+      const len = lens[i]
+      sticks +=
+        `<rect x="${x.toFixed(1)}" y="${(39 - len).toFixed(1)}" width="5.2" height="${len}" rx="0.8" ` +
+        `fill="#ffd43b" stroke="#ef9f27" stroke-width="1.4" transform="rotate(${a} ${(x + 2.6).toFixed(1)} 39)"/>`
+    })
+    return wrap(`
+      ${sticks}
+      <polygon points="15,33 49,33 45,60 19,60" fill="#e24b4a"/>
+      <polygon points="15,33 49,33 48,39.5 16,39.5" fill="#d1332f"/>
+      <polygon points="30,33 34,33 33,60 31,60" fill="#f5f2ea"/>
+      <path d="M19 60 H45 L44.4 63 H19.6 Z" fill="#791f1f"/>
+    `)
+  },
+
+  // A flying bee. The set already has two insects, so the split is by build:
+  // `ant` is all-black in three blobs seen side on, `insect` is a red
+  // top-down ladybug. This one is gold banded with black, with two pale
+  // wings above the body. The bands cover about half the body on purpose --
+  // `duck` is also a big yellow oval with a round head, and a plain yellow
+  // bee would have been its twin. The three short legs are the second half
+  // of that split: the duck comment says it has no legs at all.
+  bee: () => {
+    const clipId = nextId('bee-clip')
+    return wrap(`
+      <ellipse cx="32" cy="20" rx="13" ry="7" transform="rotate(-24 32 20)"
+        fill="#eafcff" stroke="#b8b8b8" stroke-width="1.8"/>
+      <ellipse cx="44" cy="23" rx="11" ry="6" transform="rotate(16 44 23)"
+        fill="#eafcff" stroke="#b8b8b8" stroke-width="1.8"/>
+      <g stroke="#2c2c2a" stroke-width="2.6" stroke-linecap="round">
+        <path d="M25 48 L21 57"/>
+        <path d="M35 50 L34 59"/>
+        <path d="M44 48 L47 56"/>
+        <path d="M14 25 Q9 16 4 14"/>
+        <path d="M21 25 Q22 15 27 12"/>
+      </g>
+      <circle cx="4" cy="14" r="2.4" fill="#2c2c2a"/>
+      <circle cx="27" cy="12" r="2.4" fill="#2c2c2a"/>
+      <polygon points="52,41 61,44.5 52,48" fill="#2c2c2a"/>
+      <ellipse cx="35" cy="39" rx="18" ry="12.5" fill="#ffd43b"/>
+      <clipPath id="${clipId}"><ellipse cx="35" cy="39" rx="18" ry="12.5"/></clipPath>
+      <g clip-path="url(#${clipId})" fill="#2c2c2a">
+        <g transform="rotate(-12 35 39)">
+          <rect x="27" y="18" width="6.4" height="42"/>
+          <rect x="38" y="18" width="6.4" height="42"/>
+          <rect x="49" y="18" width="6.4" height="42"/>
+        </g>
+      </g>
+      <ellipse cx="35" cy="39" rx="18" ry="12.5" fill="none" stroke="#2c2c2a" stroke-width="2"/>
+      <circle cx="16" cy="33" r="9.5" fill="#2c2c2a"/>
+      <circle cx="13" cy="31" r="3.4" fill="#f5f2ea"/>
+      <circle cx="12.4" cy="31.6" r="1.6" fill="#2c2c2a"/>
+    `)
+  },
+
+  // Three overlapping canopy lobes plus a trunk with root flare. The lobes
+  // matter: a single dome on a stick is `umbrella`'s silhouette, and a ring
+  // of small round tufts is `lion`'s mane. Three big lobes leave two notches
+  // in the outline that neither of those has, and the bare branch poking out
+  // to the left breaks the symmetry an umbrella canopy always has. No fruit
+  // on it -- red dots would name it as `apple`.
+  tree: () =>
+    wrap(`
+      <path d="M26 37 L7 44" fill="none" stroke="#8a5a33" stroke-width="4" stroke-linecap="round"/>
+      <path d="M38 36 L52 42" fill="none" stroke="#8a5a33" stroke-width="3.4" stroke-linecap="round"/>
+      <path d="M22 61 Q27 55 27 36 H37 Q37 55 42 61 Z" fill="#8a5a33"/>
+      <rect x="30.4" y="38" width="3" height="20" fill="#712b13"/>
+      <circle cx="13" cy="32" r="11.5" fill="#3b9922"/>
+      <circle cx="51" cy="31" r="11.5" fill="#3b9922"/>
+      <circle cx="32" cy="20" r="16" fill="#3b9922"/>
+      <path d="M4 34 Q13 45 22 34 Q13 40 4 34 Z" fill="#256614"/>
+      <path d="M42 33 Q51 44 60 33 Q51 39 42 33 Z" fill="#256614"/>
+      <path d="M18 24 Q32 40 46 24 Q32 34 18 24 Z" fill="#256614"/>
+    `),
+
+  // A pair of soles seen from below, toes up. The empty arch between ball
+  // pad and heel pad is the whole reason for the build: it is a bite out of
+  // the middle of the silhouette that no other icon here has. `hand` is a
+  // single connected palm with five long staggered digits and a green cuff,
+  // `leg` is a single limb the user already rejected once for looking
+  // broken, `sock` is a single garment. There is no ankle on purpose -- an
+  // ankle turns this back into a leg -- and every gap is background rather
+  // than a stroke, the failure mode `hand`'s fingers were built around.
+  // Two drafts failed before this one, both on the toes. One foot as a
+  // single blob read as a bread roll; toes as a floating row of circles
+  // above the pad read as a frill or a crown, because there was a 2-unit
+  // gap between the toe bottoms and the pad. The toes now overlap the pad
+  // and are drawn ON TOP of it, so each toe's own arc becomes the crease
+  // where it joins the foot and the union silhouette is one wedge with a
+  // scalloped top.
+  feet: () => {
+    // One foot, mirrored by dir: the big toe sits on the inner side, so the
+    // toe row steps down and outward and the pad is a wedge, widest at the
+    // toes. dx/y/r are tuned so every toe overlaps the pad's top edge.
+    const foot = (cx, dir) => {
+      const s = n => (cx + dir * n).toFixed(1)
+      const toes = [
+        [5.0, 19.0, 4.0],
+        [1.0, 18.3, 3.4],
+        [-2.8, 18.9, 2.9],
+        [-6.0, 21.0, 2.5],
+        [-8.6, 25.5, 2.1],
+      ]
+        .map(
+          ([dx, y, r]) =>
+            `<circle cx="${s(dx)}" cy="${y}" r="${r}" fill="#f5d6b0" ` +
+            `stroke="#c98f4e" stroke-width="2"/>`
+        )
+        .join('')
+      return `
+        <path d="M${s(-9)} 30 Q${s(-9)} 21 ${s(0)} 21 Q${s(9)} 21 ${s(9)} 30
+                 Q${s(9)} 38.5 ${s(4.5)} 41 Q${s(0)} 43 ${s(-4.5)} 41 Q${s(-9)} 38.5 ${s(-9)} 30 Z"
+          fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.2" stroke-linejoin="round"/>
+        <ellipse cx="${s(0)}" cy="52.5" rx="6.8" ry="5.8"
+          fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.2"/>
+        ${toes}
+        <ellipse cx="${s(4.6)}" cy="18.4" rx="2.2" ry="1.8" fill="#fff6e8"
+          stroke="#c98f4e" stroke-width="1.1"/>`
+    }
+    return wrap(`
+      ${foot(19.5, 1)}${foot(44.5, -1)}
+      <g fill="#e0a273">
+        <path d="M11.5 31 Q11 38.5 15 41.2 Q12.6 36.5 13.1 31 Z"/>
+        <path d="M52.5 31 Q53 38.5 49 41.2 Q51.4 36.5 50.9 31 Z"/>
+      </g>
+    `)
+  },
+
+  // A table fork, tilted so no axis-aligned symmetry invites a letter
+  // reading. Drawn as ONE path with the tine gaps cut out of the outline,
+  // never as four stroked bars: at this size two strokes facing each other
+  // across a 2-unit gap close it up and the tines fuse into a paddle.
+  // The proportions are the whole fight. A first draft had short blunt tines
+  // on a wide shoulder and the hard cutout was `hand` -- four round-tipped
+  // digits over a mass -- with the colour version reading as a garden rake.
+  // So the tines are long (24 of the 53 units of height), pointed rather
+  // than round-tipped, and the shoulder necks down to a 7-wide handle.
+  // `net` and `aim` are a disc on a thin diagonal handle; `hand` has five
+  // staggered digits, a wide palm and a cuff.
+  fork: () =>
+    wrap(`
+      <g transform="rotate(-10 32 32)">
+        <path d="M19.8 11 L22 7 L24.2 11 L24.2 31 Q25.33 33 26.47 31 L26.47 11
+                 L28.67 7 L30.87 11 L30.87 31 Q32 33 33.13 31 L33.13 11
+                 L35.33 7 L37.53 11 L37.53 31 Q38.67 33 39.8 31 L39.8 11
+                 L42 7 L44.2 11 L44.2 31 C44.2 35 36.6 35.5 35.6 39
+                 L34.6 56 Q34.6 59.5 32 59.5 Q29.4 59.5 29.4 56 L28.4 39
+                 C27.4 35.5 19.8 35 19.8 31 Z"
+          fill="#b8b8b8" stroke="#2c2c2a" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M32 42 L31.7 55" fill="none" stroke="#8e8e96" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M22 13 L22 28" fill="none" stroke="#f5f2ea" stroke-width="1.4" stroke-linecap="round"/>
+      </g>
+    `),
+
+  // An ear of corn: a kernel grid in two golds inside the cob outline, with
+  // two husk leaves peeled forward from the base and a short silk tuft. The
+  // grid is what names it -- a plain yellow capsule would be a lump, and
+  // `gum` is already the "yellowish slab" shape in the set (pink, rotated,
+  // in a torn wrapper). Spelling and sound both carry /or/ here, which is
+  // the bar `orange` and `door` fail (see chapter-08.js's header).
+  corn: () => {
+    const clipId = nextId('corn-clip')
+    const cob =
+      'M32 8 Q44 12 44 27 L44 44 Q44 57 32 57 Q20 57 20 44 L20 27 Q20 12 32 8 Z'
+    let kernels = ''
+    for (let r = 0; r < 10; r++) {
+      const y = 8 + r * 5.2
+      const off = r % 2 === 0 ? 0 : 3.2
+      for (let c = 0; c < 6; c++) {
+        const x = 16 + off + c * 6.4
+        kernels += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="5.2" height="4.2" rx="2.1" fill="#ffd43b"/>`
+      }
+    }
+    return wrap(`
+      <g stroke="#c98f4e" stroke-width="2.4" stroke-linecap="round" fill="none">
+        <path d="M30 11 Q26 6 26 4"/>
+        <path d="M32 10 Q33 5 33.5 3"/>
+        <path d="M34 11 Q38 7 39.5 5"/>
+      </g>
+      <path d="${cob}" fill="#ef9f27"/>
+      <clipPath id="${clipId}"><path d="${cob}"/></clipPath>
+      <g clip-path="url(#${clipId})">${kernels}</g>
+      <path d="${cob}" fill="none" stroke="#c98f4e" stroke-width="2.2"/>
+      <path d="M28 52 Q10 50 4 26 Q8 42 24 56 Z" fill="#3b9922"/>
+      <path d="M28 52 Q14 46 7 31" fill="none" stroke="#256614" stroke-width="1.8"/>
+      <path d="M36 54 Q52 50 58 30 Q54 44 40 57 Z" fill="#256614"/>
+      <path d="M36 54 Q49 47 55 34" fill="none" stroke="#3b9922" stroke-width="1.8"/>
+    `)
+  },
 
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.
