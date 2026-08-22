@@ -40,6 +40,34 @@ function sleep(ms) {
 // now queued and awaited instead of interrupted.
 const MIN_GAP_MS = 500
 
+// Conservative lower bound on how long an utterance's audio really lasts,
+// used to defend against an `onend` that fires early (see speakNow). Every
+// number below sits *under* the measured duration of the shortest real string
+// of that shape, so an honest onend is never delayed:
+//
+// Measured over this project's entire actual content (macOS `say`, at the
+// rates this module uses): 129 English strings, 30 Korean recap lines.
+//
+//   plain English:  82-127 ms/char, and short ones are articulation-bound,
+//                   not length-bound  (1ch 308ms · 5ch 408 · "elephant" 656)
+//   comma English:  132-220 ms/char  ("lll, lll, lll" 2745ms, "a, a, a" 1504)
+//   Korean:         112-136 ms/char  (String.length, i.e. per Hangul syllable
+//                                     block -- NOT per UTF-8 byte)
+//
+// Commas are the discriminator, not length: a comma is a deliberate pause
+// inside one utterance (the tutorials say a sound three times as
+// "lll, lll, lll"), which roughly doubles the per-character cost versus a
+// plain word of the same length. Each coefficient below is the largest that
+// still lands under every measured string in its class, so the bound stays
+// strict while leaving at most ~115ms of tail in the worst case -- instead of
+// the 2.3 seconds an unguarded early onend produced.
+function minSpeechMs(text, lang) {
+  const len = text.length
+  if (lang.startsWith('ko')) return 110 * len
+  if (text.includes(',')) return 120 * len
+  return Math.max(240, 55 * len)
+}
+
 let queueTail = Promise.resolve()
 
 // Bumped whenever clearAudioQueue() is called. Anything already chained
@@ -69,10 +97,29 @@ function speakNow(text, lang, rate) {
       return
     }
     let done = false
+    const startedAt = Date.now()
     const finish = () => {
       if (done) return
       done = true
       clearTimeout(safetyTimer)
+      // iPadOS Safari fires `onend` before playback has actually finished
+      // (measured: an instantly-resolving onend lets a following utterance
+      // start 2.3s into a still-playing Korean recap line). The queue's whole
+      // job is that no sound ever lands on another, and it decides that from
+      // onend -- so a lying onend breaks the guarantee outright. Hold the
+      // resolve until at least a conservative *lower bound* on the real audio
+      // duration has passed.
+      //
+      // Deliberately a lower bound, not an estimate: it is below the measured
+      // duration of every string this app speaks, so on a browser whose onend
+      // is honest this branch never waits at all and no transition gets one
+      // millisecond slower. It cannot outlive the safety timeout either --
+      // that estimate is ~3x larger for every input.
+      const remaining = minSpeechMs(raw, lang) - (Date.now() - startedAt)
+      if (remaining > 0) {
+        setTimeout(resolve, remaining)
+        return
+      }
       resolve()
     }
     // English TTS engines read an all-caps single letter as "Capital S"
@@ -195,10 +242,16 @@ export function speakKO(text, rate = 1) {
 // rather than rushed. Each item still goes through the shared queue
 // above, so even if a given utterance runs long, this gap is timed from
 // its *actual* completion, not a fixed guess.
+// The gap belongs BETWEEN items, so the last item doesn't get one: a trailing
+// gap is not pacing, it is dead air the child has to sit through before the
+// "Next" button (which awaits this promise) will respond -- 1.1s of nothing
+// on every teach and break beat in the app. Removing it changes no gap that
+// is actually heard, and whenAudioIdle() still reserves MIN_GAP_MS after the
+// final utterance, so nothing else can crowd it either.
 export async function speakSequence(texts, lang = 'en-US', gapMs = 1100) {
-  for (const t of texts) {
-    await enqueueSpeak(t, lang, 0.85)
-    await sleep(gapMs)
+  for (let i = 0; i < texts.length; i++) {
+    await enqueueSpeak(texts[i], lang, 0.85)
+    if (i < texts.length - 1) await sleep(gapMs)
   }
 }
 

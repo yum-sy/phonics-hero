@@ -95,6 +95,19 @@
   const slotsOf = (target) =>
     typeof target === 'string' ? target.split('') : target
 
+  // Wait until the transcript satisfies a predicate. Fixed sleeps are wrong
+  // here: audio.js holds every utterance for a measured minimum duration
+  // (its defence against a lying onend), so total sequence time depends on
+  // content length, not on how fast this harness's stub fires onend.
+  async function waitForSpeech(pred, maxMs = 20000) {
+    const step = 100
+    for (let waited = 0; waited < maxMs; waited += step) {
+      if (pred(spoken)) return true
+      await wait(step)
+    }
+    return pred(spoken)
+  }
+
   async function clickWhenEnabled(sel, tries = 200) {
     for (let i = 0; i < tries; i++) {
       const el = document.querySelector(sel)
@@ -507,12 +520,11 @@
     await playThroughStage(stage)
     const reached = await until('.reward-screen', 30)
     // whenAudioIdle() only reflects the queue as constructed *so far* --
-    // speakSequence() enqueues its items one at a time across ticks, each
-    // gated on its own 1100ms gap, so reading whenAudioIdle() right away can
-    // resolve after just ko + en[0] and miss the rest entirely (the same
-    // pitfall wireTeachButtons()'s comment calls out for teach beats). Wait
-    // out worst-case total sequence time first, then confirm idle.
-    await wait(1500 + stage.recapAudio.en.length * 1300)
+    // speakSequence() enqueues its items one at a time across ticks, so
+    // reading it right away can resolve after just ko + en[0]. Poll for the
+    // last English item instead, then confirm idle.
+    const lastEn = stage.recapAudio.en[stage.recapAudio.en.length - 1]
+    await waitForSpeech((sp) => sp.lastIndexOf(lastEn) > sp.lastIndexOf(stage.recapAudio.ko))
     await audio.whenAudioIdle()
     const ko = stage.recapAudio.ko
     const en = stage.recapAudio.en
@@ -557,13 +569,14 @@
     try {
       await enterStage('chapter-1', 0)
       await until('.options-grid')
+      await audio.whenAudioIdle() // don't measure behind an earlier case's queue
       spoken = []
       document.querySelector('[data-id="d"]').click()
-      await wait(300)
+      await waitForSpeech((sp) => sp.length > 0, 4000)
       const wrongTapSpoke = [...spoken]
       spoken = []
       document.querySelector('[data-id="b"]').click()
-      await wait(2000)
+      await waitForSpeech((sp) => sp.includes('b'), 6000)
       const correctTapSpoke = [...spoken]
       check(
         'match-shape-never-speaks-say-field',
@@ -641,7 +654,13 @@
         let recapOk = false
         let recapDetail = ''
         if (reached) {
-          await wait(1500 + (stage.recapAudio ? stage.recapAudio.en.length : 0) * 1300)
+          const en0 = stage.recapAudio ? stage.recapAudio.en : []
+          const lastEn = en0[en0.length - 1]
+          if (lastEn) {
+            await waitForSpeech(
+              (sp) => sp.lastIndexOf(lastEn) > sp.lastIndexOf(stage.recapAudio.ko)
+            )
+          }
           await audio.whenAudioIdle()
           const ko = stage.recapAudio && stage.recapAudio.ko
           const en = (stage.recapAudio && stage.recapAudio.en) || []
@@ -1147,6 +1166,253 @@
     )
   }
 
+  // --- early-onend hypothesis -------------------------------------------
+  // iPadOS Safari is known to fire an utterance's `onend` before (or
+  // immediately after) playback actually finishes. The queue trusts onend to
+  // decide when the next utterance may start, so if onend lies, we start
+  // speaking over audio that is still playing -- which a listener hears as
+  // "repeated too fast / slurred together", exactly the reported symptom.
+  // Simulate it: fire onend after `onendDelay` while tracking each
+  // utterance's REAL duration (measured on this machine with say/afinfo at
+  // the app's own rate), then check whether the next speak() call lands
+  // before the previous utterance's real audio would have finished.
+  const REAL_MS = {
+    // measured with say/afinfo at this app's own rates
+    lll: 784, sss: 854, a: 366, oh: 386, Leo: 490, lap: 419, rain: 476,
+    sun: 449, sock: 486, star: 490, elephant: 656,
+    // the tutorials' comma-repeat form -- one utterance, internal pauses
+    'lll, lll, lll': 2745, 'guh, guh, guh': 1718, 'a, a, a': 1504,
+    'oh, oh, oh': 1535, 'iii, iii': 1159,
+    // Korean recap lines, measured at speakKO's rate 1.0
+    '에스 소리를 찾았어요! 잘 들어보세요.': 2796,
+  }
+  const realMsOf = (t) => REAL_MS[t] || Math.max(300, 60 * String(t).length)
+
+  async function measureTimeline(onendDelayFn, run) {
+    const origSpeak = window.speechSynthesis.speak
+    const events = []
+    const t0 = performance.now()
+    window.speechSynthesis.speak = (u) => {
+      const at = performance.now() - t0
+      const real = realMsOf(u.text)
+      events.push({ text: u.text, at, real })
+      const d = onendDelayFn(real)
+      setTimeout(() => u.onend && u.onend(), d)
+    }
+    try {
+      await run()
+    } finally {
+      window.speechSynthesis.speak = origSpeak
+    }
+    // Positive overlap = next utterance started while this one was still
+    // audibly playing.
+    let worst = 0
+    const pairs = []
+    for (let i = 0; i + 1 < events.length; i++) {
+      const ov = Math.round(events[i].at + events[i].real - events[i + 1].at)
+      pairs.push(`${events[i].text}->${events[i + 1].text}:${ov > 0 ? '+' + ov : ov}`)
+      if (ov > worst) worst = ov
+    }
+    return { events, worst, pairs, total: Math.round(performance.now() - t0) }
+  }
+
+  async function onendEarlyHypothesis() {
+    audio.clearAudioQueue()
+    // 1) teach sequence, the reported case: three identical short sounds
+    // the real current tutorial shape: comma-repeat utterances, not 3 blips
+    const teachSeq = ['lll, lll, lll', 'lap', 'lll, lll, lll']
+    const teachHonest = await measureTimeline(
+      (real) => real,
+      () => audio.speakSequence(teachSeq, 'en-US')
+    )
+    audio.clearAudioQueue()
+    const teachEarly = await measureTimeline(
+      () => 0,
+      () => audio.speakSequence(teachSeq, 'en-US')
+    )
+    // 2) reward screen, the MIN_GAP_MS path: a long Korean line immediately
+    //    followed by an English sequence (renderReward does exactly this).
+    audio.clearAudioQueue()
+    const ko = '에스 소리를 찾았어요! 잘 들어보세요.'
+    const rewardHonest = await measureTimeline(
+      (real) => real,
+      async () => {
+        audio.speakKO(ko)
+        await audio.speakSequence(['sss', 'sun'], 'en-US')
+      }
+    )
+    audio.clearAudioQueue()
+    const rewardEarly = await measureTimeline(
+      () => 0,
+      async () => {
+        audio.speakKO(ko)
+        await audio.speakSequence(['sss', 'sun'], 'en-US')
+      }
+    )
+    audio.clearAudioQueue()
+    const detail = {
+      teachHonest: { worst: teachHonest.worst, total: teachHonest.total, pairs: teachHonest.pairs },
+      teachEarly: { worst: teachEarly.worst, total: teachEarly.total, pairs: teachEarly.pairs },
+      rewardHonest: { worst: rewardHonest.worst, total: rewardHonest.total, pairs: rewardHonest.pairs },
+      rewardEarly: { worst: rewardEarly.worst, total: rewardEarly.total, pairs: rewardEarly.pairs },
+    }
+    document.documentElement.setAttribute('data-onend-detail', JSON.stringify(detail))
+    // A strict lower bound cannot reach exactly zero: the bound must stay
+    // under the *shortest* real string of each class, so the longest string in
+    // that class keeps some slack. Measured worst residuals are 85ms (the
+    // comma-repeat tutorial form) and 114ms (a long word on the 500ms
+    // single-utterance path) -- a consonant tail, not an audible collision.
+    // Closing it further would mean overshooting real durations, which would
+    // add dead air on every browser whose onend is honest.
+    const TOLERATED_TAIL_MS = 120
+    check(
+      'onend-early-overlap-within-tail-tolerance',
+      teachEarly.worst <= TOLERATED_TAIL_MS && rewardEarly.worst <= TOLERATED_TAIL_MS,
+      `tolerance=${TOLERATED_TAIL_MS}ms ` + JSON.stringify(detail)
+    )
+  }
+
+  // Which existing class can hold a boss equation without overflowing? No new
+  // CSS is allowed here, so measure the candidates against the real cascade
+  // inside a real stage screen, in both orientations.
+  async function equationFit() {
+    state.clearCheckpoint()
+    await enterStage('chapter-1', 4)
+    await until('.beat')
+    const host = document.querySelector('.beat')
+    const longest = 'R + AI + N = RAIN'
+    const candidates = ['big-letter', 'target-word', 'beat-instruction', 'beat-equation']
+    const out = {}
+    for (const cls of candidates) {
+      const d = document.createElement('div')
+      d.className = cls
+      d.textContent = longest
+      d.style.whiteSpace = 'nowrap'
+      host.appendChild(d)
+      const r = d.getBoundingClientRect()
+      out[cls] = {
+        fontPx: Math.round(parseFloat(getComputedStyle(d).fontSize)),
+        textW: Math.round(r.width),
+        viewportW: window.innerWidth,
+        fitsOnOneLine: r.width <= window.innerWidth,
+      }
+      d.remove()
+    }
+    check('equation-class-fit', true, `vw=${window.innerWidth} ${JSON.stringify(out)}`)
+    document.documentElement.setAttribute('data-eqfit', JSON.stringify(out))
+    state.clearCheckpoint()
+  }
+
+  // Every chapter's boss teach beat: correct equations, and no overflow in
+  // whichever orientation the window is set to.
+  async function bossEquations() {
+    const rows = []
+    for (let ci = 0; ci < chapters.length; ci++) {
+      const chapter = chapters[ci]
+      const si = chapter.stages.findIndex((s) => s.chapterBoss)
+      const stage = chapter.stages[si]
+      errors = 0
+      state.clearCheckpoint()
+      let threw = null
+      let info = {}
+      try {
+        await enterStage(chapter.id, si)
+        // The intro overlays the teach content; tap to skip straight to it.
+        const intro = document.getElementById('boss-intro')
+        if (intro) intro.click()
+        await until('.beat-equation', 60)
+        const eqs = [...document.querySelectorAll('.beat-equation')]
+        const de = document.documentElement
+        info = {
+          lines: eqs.map((e) => e.textContent),
+          widest: Math.max(...eqs.map((e) => Math.round(e.getBoundingClientRect().width))),
+          // an equation must never wrap: scrollWidth > clientWidth means the
+          // single line did not fit its own box
+          anyWrapped: eqs.some((e) => e.scrollWidth > e.clientWidth + 1),
+          emojiStillShown: !!document.querySelector('.beat-emoji'),
+          vw: window.innerWidth,
+          vh: window.innerHeight,
+          ovfX: Math.max(de.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+          ovfY: Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight,
+        }
+      } catch (e) {
+        threw = e.message || String(e)
+      }
+      rows.push({ chapter: chapter.id, stage: stage.id, threw, ...info })
+      state.clearCheckpoint()
+    }
+    const bad = rows.filter(
+      (r) => r.threw || !r.lines || !r.lines.length || r.anyWrapped || r.ovfX > 0 || r.ovfY > 0 || r.emojiStillShown
+    )
+    check(
+      'boss-equations-fit',
+      bad.length === 0,
+      `${window.innerWidth}x${window.innerHeight} :: ` +
+        rows
+          .map(
+            (r) =>
+              `${r.chapter}[${(r.lines || []).join(' / ')}|w=${r.widest}|ovfX=${r.ovfX}|ovfY=${r.ovfY}${r.anyWrapped ? '|WRAPPED' : ''}${r.emojiStillShown ? '|EMOJI-LEFT' : ''}${r.threw ? '|threw=' + r.threw : ''}]`
+          )
+          .join(' ')
+    )
+  }
+
+  // Attribute chapter-4's portrait overflow: how tall is the equation block
+  // versus the emoji block it replaced?
+  async function eqHeightDelta() {
+    state.clearCheckpoint()
+    const ci = 3 // chapter-4
+    const si = chapters[ci].stages.findIndex((s) => s.chapterBoss)
+    await enterStage(chapters[ci].id, si)
+    const intro = document.getElementById('boss-intro')
+    if (intro) intro.click()
+    await until('.beat-equation', 60)
+    const de = document.documentElement
+    const eqs = [...document.querySelectorAll('.beat-equation')]
+    const eqH = eqs.reduce((a, e) => a + e.getBoundingClientRect().height, 0)
+    const instr = document.querySelector('.beat-instruction:not(.beat-equation)')
+    const instrRect = instr.getBoundingClientRect()
+    const ovfNow = Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight
+    // Swap the equations for the emoji markup this beat used to render.
+    const parent = eqs[0].parentNode
+    const probe = document.createElement('div')
+    probe.className = 'beat-emoji'
+    probe.textContent = chapters[ci].stages[si].beats[0].emoji
+    parent.insertBefore(probe, eqs[0])
+    for (const e of eqs) e.style.display = 'none'
+    await wait(120)
+    const emojiH = probe.getBoundingClientRect().height
+    const ovfEmoji = Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight
+    check(
+      'eq-height-attribution',
+      true,
+      JSON.stringify({
+        vw: window.innerWidth, vh: window.innerHeight,
+        instructionH: Math.round(instrRect.height),
+        instructionLines: Math.round(instrRect.height / (parseFloat(getComputedStyle(instr).lineHeight) || 1)),
+        equationBlockH: Math.round(eqH),
+        emojiBlockH: Math.round(emojiH),
+        delta: Math.round(eqH - emojiH),
+        overflowWithEquations: ovfNow,
+        overflowWithEmoji: ovfEmoji,
+      })
+    )
+    state.clearCheckpoint()
+  }
+
+  // Screenshot: boss teach beat with equations, ?bosschapter=N picks which.
+  async function bossEqShot() {
+    const n = Number(params.get('bosschapter') || 1)
+    const chapter = chapters[n - 1]
+    const si = chapter.stages.findIndex((s) => s.chapterBoss)
+    state.clearCheckpoint()
+    await enterStage(chapter.id, si)
+    const intro = document.getElementById('boss-intro')
+    if (intro) intro.click()
+    await until('.beat-equation', 60)
+    check('bosseqshot-rendered', !!document.querySelector('.beat-equation'))
+  }
+
   const CASES = {
     tap: tapBacklog,
     poison: queuePoison,
@@ -1177,6 +1443,11 @@
     allbuilds: allBuildBeats,
     buildmismatch: buildMismatchGuard,
     artscan: artCrashScan,
+    onendearly: onendEarlyHypothesis,
+    eqfit: equationFit,
+    bosseq: bossEquations,
+    eqdelta: eqHeightDelta,
+    bosseqshot: bossEqShot,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

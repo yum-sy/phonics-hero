@@ -18,7 +18,6 @@ import {
   isWorldCleared,
   isWorldUnlocked,
   markStageCleared,
-  progress,
   saveCheckpoint,
 } from './state.js'
 import {
@@ -204,7 +203,7 @@ function worldSelectScreen() {
       }>
           <div class="chapter-card-art">${inner}</div>
           <div class="chapter-card-order">${world.title}</div>
-          <div class="chapter-card-title">Chapters ${start}-${end}</div>
+          <div class="chapter-card-title range">Chapters ${start}-${end}</div>
           ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
         </button>`
     })
@@ -285,6 +284,19 @@ function chapterSelectScreen(worldId) {
 
 // ---------- MAP SCREEN ----------
 
+// Stage titles are authored content ("Power of I", "Power of AI", "A Strange
+// Sound", "Boss: SAT Combine!"). Only the "Power of X" form names exactly one
+// phonics target, so only that form gets its target tinted -- in every other
+// shape guessing which word is the target would mis-highlight. A digraph
+// ("AI", "OA") is one sound, so the whole trailing run is highlighted.
+const POWER_OF_TITLE = /^(Power of )([A-Za-z]+)$/
+
+function stageTitleHtml(title) {
+  const m = POWER_OF_TITLE.exec(title)
+  if (!m) return title
+  return `${m[1]}<span class="stage-label-target">${m[2]}</span>`
+}
+
 function mapScreen(chapterId) {
   beginScreen()
   clearAudioQueue()
@@ -294,7 +306,6 @@ function mapScreen(chapterId) {
     .map((stage) => {
       const cleared = isStageCleared(stage.id)
       const unlocked = isStageUnlocked(chapterStages, stage.id)
-      const stars = progress.stars[stage.id] || 0
       let cls = 'stage-node'
       if (stage.chapterBoss) cls += ' boss'
       if (cleared) cls += ' cleared'
@@ -304,18 +315,14 @@ function mapScreen(chapterId) {
           ? villainArt(stage.villain)
           : String(stage.order)
         : '<i class="lock">🔒</i>'
-      const starRow = unlocked
-        ? `<div class="stars">${[1, 2, 3]
-            .map((n) => `<span class="${n <= stars ? 'star on' : 'star'}">★</span>`)
-            .join('')}</div>`
-        : ''
       return `
         <div class="stage-node-wrap">
           <button class="${cls}" data-stage="${stage.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked stage"'
       }>${inner}</button>
-          <div class="stage-label">${unlocked ? stage.title : ''}</div>
-          ${starRow}
+          <div class="stage-label">${
+            unlocked ? stageTitleHtml(stage.title) : ''
+          }</div>
         </div>`
     })
     .join('')
@@ -657,12 +664,48 @@ function wireTeachButtons(beat, runtime) {
     }))
 }
 
+// The boss stage's whole point is that the sounds learned in the chapter
+// combine into one word, so the intro shows that as an equation built from
+// the stage's own drag-build targets -- the very words the child is about to
+// assemble, so the two can never drift apart. Going through targetSlots()
+// means a digraph stays one term ("R + AI + N", never "R + A + I + N", which
+// would teach exactly the wrong thing). Repeated targets collapse: chapter 3
+// builds CAT twice and HEN once, so it shows two equations, not three.
+function buildEquationsHtml(stage) {
+  const seen = new Set()
+  const rows = []
+  for (const b of stage.beats) {
+    if (b.kind !== 'drag-build' || !b.target) continue
+    const slots = targetSlots(b.target)
+    const word = slots.join('')
+    if (seen.has(word)) continue
+    seen.add(word)
+    // Styled by .beat-instruction (the only existing text class a 17-char
+    // equation fits in: measured 491px of 834px in portrait, where
+    // .big-letter would need 1253px and .target-word 1185px). .beat-equation
+    // carries no rules today -- it is a hook so the design owner can give the
+    // equation its own size later without this file changing.
+    rows.push(
+      `<div class="beat-instruction beat-equation">${slots.join(
+        ' + '
+      )} = <b>${word}</b></div>`
+    )
+  }
+  return rows.join('')
+}
+
 function renderNonScoredBeat(runtime, beat) {
   const area = beatArea()
-  const visual =
-    beat.art === 'hero'
-      ? `<div class="beat-avatar">${heroArt(runtime.stage.hero)}</div>`
-      : `<div class="beat-emoji">${beat.emoji || ''}</div>`
+  const isBossIntro =
+    runtime.stage.chapterBoss && beat.kind === 'teach' && runtime.beatIndex === 0
+  // The boss teach beat's `beat.emoji` was a rebus ("🐍🐜🚙➡️🤖") that reads as
+  // nothing in particular and carries no phonics -- so on that one beat the
+  // letter equation wins instead. Everywhere else `emoji` is untouched.
+  const visual = isBossIntro
+    ? buildEquationsHtml(runtime.stage)
+    : beat.art === 'hero'
+    ? `<div class="beat-avatar">${heroArt(runtime.stage.hero)}</div>`
+    : `<div class="beat-emoji">${beat.emoji || ''}</div>`
 
   const teachInner = `
     <div class="beat-instruction">${beat.instructionKo}</div>
