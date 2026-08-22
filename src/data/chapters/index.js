@@ -171,24 +171,110 @@ const SPEECH_COLLISION_PAIRS = [
 // 패턴만 잡는다 -- 'C-A-T는 CAT' 같은 대문자 낱자 나열은 정상 표기다.
 const HYPHENED_IN_TEXT = /\b([a-z])(-\1)+\b/
 
-// "repeatAudio 원소 하나 = 발화 하나" 규칙의 **취지**는 서로 다른 단어를 한
-// 문자열에 cramming 하지 말라는 것이다(그러면 TTS 가 이어 읽어 아이가 개별
-// 단어를 못 잡는다). 반면 **같은 소리를 콤마로 반복**하는 건 측정 결과 정반대
-// 효과다: 'a' 단일 발화는 두 음성 모두 0.33s 짜리 블립이고 1.1s 침묵 사이에
-// 3번 떨어지면 붙잡을 수 없는데, 'a, a, a' 한 발화는 토큰당 ~510ms(콤마가
-// 만드는 운율 휴지 포함)로 **또박또박 끊어** 읽힌다 -- N=2..5 에서 증분이
-// 일정해 실제로 N개 토큰이 나오는 것을 확인했다. 공백 연결('a a a')은 반대로
-// 압축돼(0.50s) 더 나빠지므로 반드시 콤마여야 한다.
-// 그래서 규칙을 "여러 토큰이면 전부 같은 토큰이어야 한다" 로 정밀화한다.
+// ---------- 오독 표기 블랙리스트 (say + cmp, `-r 88` = EN_RATE 0.5) ----------
+//
+// 사용자가 실기기에서 신고했다: "심지어 iii 같은건 3 로 읽어 버리더라?"
+// 재현됐고 원인이 확정됐다 -- 엔진이 `iii` 를 **로마 숫자 III** 로 파싱한다.
+//   say -v Samantha -o a.aiff "iii"; say -v Samantha -o b.aiff "three"
+//   cmp a.aiff b.aiff  ->  0 differing bytes (둘 다 0.511701s)
+// `say` 는 결정적이므로 cmp 가 길이 비교보다 강한 판정이다. 같은 방식으로
+// `ii` == "two" 다. 즉 소리 표기가 **어휘 항목으로 렌더되는** 실패 모드가 있고,
+// 이건 길이 계급(가청 하한)과는 완전히 다른 축이다 -- 그동안 아무도 이 축을
+// 검사하지 않았다.
+//
+// 표기 38종 x 2음성을, 낱자 이름 26종 · 숫자 12종 · 흔한 약어/어휘 30종과
+// 전수 cmp 한 결과다. 값은 (Samantha / Alex) ms.
+//
+//   금지 -- 다른 어휘 항목으로 렌더된다
+//     ii    == "two"                      (453/340, 두 음성 모두 바이트 동일)
+//     iii   == "three"                    (512; Alex 는 1004 로 정상 지속음)
+//     iiii  == "eye eye eye eye"          (Alex 1248 바이트 동일. Samantha 는
+//                                          iiiii 와 동일 = 4에서 포화)
+//     ih    == "i"/"eye"/"ay"/"igh"       (445/412 -- 글자 이름 I)
+//     ihhh  == 위와 동일                   (h 홀수개는 무시된다)
+//     ough  == "oof" (Samantha 474)  ==  "ow" (Alex 435)
+//                                          -> /f/ 나 /au/ 가 섞여 들린다
+//     ogh   == "o"/"oh"/"oah"             (419/355 -- 글자 이름 O)
+//     zzz   == 212ms "잠자기" 어휘 항목      (Samantha) -> 이미 `zz` 로 대체됨
+//     sssss == "ss" (Samantha 689)         s 는 2개에서 포화하므로 `sssss` 는
+//                                          `sss`(922) 보다 오히려 **짧다**
+//     ssss/aaaa/mmmm/llll == ss/aa/mm/ll   (같은 포화)
+//     단일 문자는 전부 글자 이름이다:
+//       s==ess n==en m==em l==el r==ar f==ef z==zee u=="you" o=="oh"/"owe" i=="eye"
+//
+//   통과 -- 지속음 3자 반복은 안전하다 (어떤 이름·숫자·어휘와도 다르다)
+//     sss 922/1179 · aaa 841/1075 · nnn 747/610 · mmm 736/633
+//     lll 863/587 · rrr 875/749 · fff 864/1307 · zz 759/1068
+//     (mmm 은 MMM=2000 이, lll 은 LLL=150 이 걱정거리였지만 각각
+//      "two thousand" 945 · "one hundred fifty" 1472 와 다르다 --
+//      엔진의 로마 숫자 파서는 I 계열에만 걸린다. aaa 는 "triple A" 829 와도 다르다)
+//
+//   이 라운드에 확정한 대체 표기
+//     I: iii -> `ihh`   1049/1504.  낱자 이름 I(i/eye/ay/aye/igh/ih/ihhh),
+//        숫자 one~five, "i aitch"/"eye aitch"(700/1004), hi/high/inn/ihn/
+//        ick/itt/ig/ie/iee/ee/eeh, "eye eye eye eye" 전부와 다르다(두 음성).
+//        `iiii` 는 Alex 에서 글자 이름 4연발이라 탈락했다.
+//     O: ough -> `awh`  1329/1620.  "aw aitch"(684/889) · "a double u aitch"
+//        (1259/1632) · aw/awe/augh/awww · o/oh/oah/ogh(글자 이름 O) ·
+//        ar/ah · all/awl · oof/ow 전부와 다르다(두 음성).
+//        차점자는 `ahh`(481/1504)이고 이것도 두 음성에서 깨끗하다 -- 음성 간
+//        3배 차이가 나서 구조적으로 덜 예측 가능해 탈락시켰다. **`awh` 와
+//        `ahh` 둘 다 실기기 청취로 최종 확인이 필요하다** (표기 하나를 sed
+//        한 번으로 바꿀 수 있게 여기 남겨둔다).
+//
+// 새 표기를 쓸 때는 반드시 이 방식으로 재측정해라 -- 후보를 글자 이름 · 숫자
+// 읽기 · 흔한 약어와 각각 cmp 하고, 0 바이트 차이면 그 표기는 쓸 수 없다.
+const MISREAD_NOTATIONS = new Map([
+  ['ii', '로마 숫자 II 로 파싱되어 "two" 와 바이트 동일하게 렌더된다'],
+  ['iii', '로마 숫자 III 로 파싱되어 "three" 와 바이트 동일하게 렌더된다 (사용자가 실기기에서 신고한 결함이다). /i/ 는 `ihh` 를 써라'],
+  ['iiii', 'Alex 에서 글자 이름 4연발("eye eye eye eye")과 바이트 동일하다. /i/ 는 `ihh` 를 써라'],
+  ['ih', '글자 이름 I("i"/"eye"/"ay"/"igh")와 바이트 동일하다. /i/ 는 `ihh` 를 써라'],
+  ['ihhh', '글자 이름 I 와 바이트 동일하다(h 홀수개는 무시된다). /i/ 는 `ihh` 를 써라'],
+  ['ough', 'Samantha 에서 "oof", Alex 에서 "ow" 와 바이트 동일하다 -- 없는 /f/ 와 /au/ 를 가르친다. /o/ 는 `awh` 를 써라'],
+  ['ogh', '글자 이름 O("o"/"oh"/"oah")와 바이트 동일하다. /o/ 는 `awh` 를 써라'],
+  ['zzz', 'Samantha 에서 212ms "잠자기" 어휘 항목으로 렌더된다. /z/ 는 `zz` 를 써라'],
+  ['sssss', 's 는 2개에서 포화하므로 "ss"(689ms)와 바이트 동일 -- `sss`(922ms)보다 짧다. `sss` 를 써라'],
+  ['ssss', '"ss" 와 바이트 동일(포화). `sss` 를 써라'],
+  ['aaaa', '"aa" 와 바이트 동일(포화). `aaa` 를 써라'],
+  ['mmmm', '"mm" 와 바이트 동일(포화). `mmm` 을 써라'],
+  ['llll', '"ll" 와 바이트 동일(포화). `lll` 을 써라'],
+])
+
+// 단일 소문자 한 글자는 예외 없이 글자 **이름**으로 읽힌다(s==ess, n==en,
+// m==em, l==el, r==ar, f==ef, z==zee, u=="you", o=="oh", i=="eye"). 즉 소리를
+// 가르치려는 자리에서 정확히 반대의 것을 들려준다. 유일한 예외는 `a` 인데,
+// 그건 AI 계열의 /ei/ 를 **의도적으로** 글자 이름으로 내는 자리다
+// (그래서 확정 충돌쌍 a==eh 가 존재한다 -- 위 SPEECH_COLLISION_PAIRS 참조).
+const LETTER_NAME_ONLY = /^[b-z]$/
+
+// ---------- 한 발화 = 한 소리 (반복 금지) ----------
+// 사용자가 실기기 QA 2차에서 반복 형식 전체를 반려했다. 원문:
+// "sss 이거 영 별로야. s 소리가 나고 나서 쉬었다가 s 소리가 나야 할 것 같아.
+//  ... 파닉스에서 sss를 빠르고 연속적으로 가르치는건 없을 것 같은데? 확인하고
+//  전체적으로 3번 2번 빠르게 반복하는건 다 지우자 한번만 똑바로 읽어 주는게
+//  좋겠어, 어짜피 반복해서 들을 수 있는 버튼도 만들어 놨잖아."
+// 그리고 보스 블렌드의 이질감: "sss aaa tuh tuh tuh 이러더라구... tuh 만
+// 이질적이라서 반응이 '이거 대체 왜이래'였어. 그냥 똑같이 /s/ /a/ /t/ 이렇게
+// 한번 똑바로 발음 해주는게 좋을 것 같아."
+//
+// 이건 이전 라운드(`f41e5e8` 콤마 삼중)의 **의도적 되돌림**이다. 그 라운드의
+// 측정은 맞았다(파열음 단일 렌더가 445~534ms 로 지속음의 절반이다). 처방이
+// 틀렸다 -- 반복은 "또박또박" 이 아니라 "빠르게 연속" 으로 들렸고, 슬롯마다
+// 형태가 달라져 블렌드가 비균질해졌다. 반복이 필요한 아이에게는 **다시듣기
+// 버튼**이 이미 있다(wireTeachButtons). 그게 사용자의 판단이다.
+//
+// 그래서 규칙을 뒤집는다: **모든 발화 필드는 토큰 하나여야 한다.**
+// 콤마 묶음('tuh, tuh, tuh')도, 공백 연결('a a a' -- 엔진이 압축해 더 나쁘다)도,
+// 서로 다른 단어의 cramming('ss sun ss')도 전부 같은 검사에 걸린다.
+// 반복이 필요하면 배열 **원소**를 늘리는 것이지 한 발화 안에서 반복하지 않는다
+// -- 원소 사이에는 speakSequence 의 1100ms 침묵이 들어간다.
 const SPEECH_TOKEN_SPLIT = /[,\s]+/
 
-// 콤마 묶음을 **그 안의 소리 하나**로 되돌린다. 한 발화의 토큰이 전부 같아야
-// 한다는 것은 위 검사가 이미 강제하므로 이 축약은 항상 잘 정의된다.
-//
-// 이게 없으면 검사가 조용히 죽는다: 아래 충돌 검사들이 `t.say === promptAudio`
-// 처럼 **원문 문자열**을 비교하는데, promptAudio 가 'tuh, tuh, tuh' 가 되는
-// 순간 'tuh' 타일과 절대 같아지지 않는다. 콤마 도입 시점에 이 앱에서 그 형태가
-// 55개 프롬프트 그룹이었다 -- 즉 실패가 아니라 **통과**로 사라진다.
+// 발화 필드를 **그 안의 소리 하나**로 정규화한다. 위 규칙이 토큰 하나를
+// 강제하므로 지금은 사실상 항등함수지만, 아래 충돌 검사들이 원문 문자열을
+// 비교하기 때문에 남겨둔다 -- 누군가 다시 콤마를 넣으면 반복 금지 검사가
+// 잡아내기 **전에** 충돌 검사가 조용히 통과해버린다(콤마 도입 시점에 이 앱에서
+// 그 형태가 55개 프롬프트 그룹이었고, 실패가 아니라 통과로 사라졌다).
 // 충돌은 표기가 아니라 소리의 속성이므로 비교는 언제나 소리로 한다.
 function soundOf(text) {
   if (typeof text !== 'string') return text
@@ -196,46 +282,49 @@ function soundOf(text) {
   return tokens.length ? tokens[0] : text
 }
 
-// ---------- 소리 표기의 길이 계급 (say + afinfo, `-r 88` = EN_RATE 0.5) ----------
-//
-// 단일 발화가 아이 귀에 붙잡히는 하한은 ~780ms 다(기준선: `lll` 863/586,
-// `sss` 921/1178 -- Samantha/Alex ms). 그 아래로 렌더되는 표기는 rate 로도
-// 철자로도 늘릴 수 없다: rate 0.10 에서도 `tuh` 는 684ms 고, `tuhh`/`tuhhh`/
-// `ttuh` 는 `tuh` 와 **바이트 단위로 동일**하게 렌더된다(엔진이 정규화한다).
-// 유일하게 작동하는 처방이 **콤마 반복**이고, 토큰당 실효 길이가 Samantha
-// 813ms -- 정확히 가청 대역이다.
-//
-// 콤마가 필요한 13종 (단일 렌더 Samantha < 550ms AND Alex < 440ms):
-//   파열음 8종  tuh 534/328 · puh 491/362 · kuh 499/363 · buh 480/324
-//               duh 446/326 · guh 446/329 · huh 489/363 · juh 505/359
-//   짧은 모음 5종  a 399/413 · eh 399/413 · uh 419/354 · ough 474/435 · oh 419/355
-// 파열음은 물리적으로 지속 불가하고, 짧은 모음은 두 엔진이 블립으로 정규화한다.
-const COMMA_REQUIRED_SOUNDS = new Set([
-  'tuh', 'puh', 'kuh', 'buh', 'duh', 'guh', 'huh', 'juh',
-  'a', 'eh', 'uh', 'ough', 'oh',
-])
-
-// 콤마를 걸면 **역효과**인 지속음. 단일이 이미 가청 대역이고, 콤마 삼중은
-// 한 발화가 2~4초가 된다:
-//   sss 922/1179 -> 삼중 3185/4011 · aaa 841/1075 · fff 864/1307
-//   rrr 875/749 · nnn 747/610 · mmm 736/633 · lll 863/587 · iii 512/1004
-// 게다가 audio.js 의 minSpeechMs 바닥(콤마 115ms/char)을 넘겨버린다:
-// 'lll, lll, lll' 는 Samantha 2988ms vs 바닥 1495 = **1100ms 시퀀스 갭을
-// 393ms 초과**하고, 'iii, iii, iii' 는 Alex 3408ms 로 1913ms 초과다. 즉
-// 지속음 콤마는 바닥이 막으려던 바로 그 뭉개짐을 스스로 만든다.
-const SINGLE_ONLY_SOUNDS = new Set(['sss', 'sssss', 'aaa', 'iii', 'nnn', 'mmm', 'lll', 'rrr', 'fff', 'zz'])
-
-// 발화 사이트의 두 역할. **처방이 다르다.**
-//   MODEL - 아이가 모델로 듣고 따라하는 소리(자동재생 프롬프트, 읽어보기 대상,
-//           listen-repeat/finale 의 words, 리워드 recap, 보스 블렌딩 슬롯).
-//           사용자 불만("5세 아이가 듣고 따라하기엔 너무 너무 너무 빨라")이
-//           가리키는 자리가 정확히 이것이다 -> 콤마 계급을 적용한다.
-//   TAP   - 아이가 타일을 **탭했을 때** 나오는 확인 피드백(options[].say,
-//           letters[].say). 모델이 아니라 응답이고, speakTap 이 큐를 타므로
-//           탭 하나가 곧 다음 화면까지의 지연이다. 콤마 삼중을 걸면 3글자
-//           drag-build 한 번에 ~8초가 붙는다 -> 단일을 유지한다.
-const MODEL_ROLE = 'model'
-const TAP_ROLE = 'tap'
+// 발화 필드 하나에 대한 표기 검사. **두 자리에서 같은 함수를 불러야 한다** --
+// recapAudio.en 은 spoken[] 을 타지 않아서 규칙이 갈라지면 리워드 화면만 낡은
+// 형식으로 남는다(실제로 콤마 계급이 그렇게 두 벌로 갈려 있었다).
+function checkSpeechNotation(problems, field, text) {
+  if (typeof text !== 'string' || !text.trim()) return
+  const raw = text.trim()
+  const tokens = raw.split(SPEECH_TOKEN_SPLIT).filter(Boolean)
+  if (tokens.length > 1) {
+    const distinct = new Set(tokens.map((t) => t.toLowerCase()))
+    problems.push(
+      `${field}: 한 발화에 토큰 ${tokens.length}개 ('${raw}') -- 발화 하나 = 소리 하나다. ` +
+        (distinct.size === 1
+          ? `같은 소리를 콤마나 공백으로 반복하지 마라. 사용자가 실기기에서 반려했다: ` +
+            `"전체적으로 3번 2번 빠르게 반복하는건 다 지우자 한번만 똑바로 읽어 주는게 ` +
+            `좋겠어, 어짜피 반복해서 들을 수 있는 버튼도 만들어 놨잖아." 반복은 ` +
+            `다시듣기 버튼이 담당한다`
+          : `서로 다른 것을 한 문자열에 cramming 하면 TTS 가 이어 읽어 아이가 개별 ` +
+            `소리를 못 잡는다 (사용자가 'ss sun ss' 를 듣고 반려한 지점이다). ` +
+            `나눠 담을 자리는 배열 원소이고, 원소 사이에 1100ms 침묵이 들어간다`) +
+        `. '${tokens[0]}' 하나만 남겨라`
+    )
+    return
+  }
+  // 글자꼴(대문자 1~2자)은 TTS 가 글자 **이름**으로 읽는 것이 의도인 유일한 자리다.
+  if (LETTERFORM.test(tokens[0])) return
+  const sound = tokens[0].toLowerCase()
+  const misread = MISREAD_NOTATIONS.get(sound)
+  if (misread) {
+    problems.push(
+      `${field}: 소리 표기 '${sound}' 는 오독된다 -- ${misread}. ` +
+        `(재현: say -v Samantha -o a.aiff "${sound}" 로 합성해 비교 대상과 cmp 해라 ` +
+        `-- say 는 결정적이라 0 바이트 차이면 같은 발화다)`
+    )
+  } else if (LETTER_NAME_ONLY.test(sound)) {
+    problems.push(
+      `${field}: 소리 표기 '${sound}' 는 소문자 한 글자라 TTS 가 글자 **이름**으로 ` +
+        `읽는다 (s=="ess" n=="en" m=="em" l=="el" r=="ar" f=="ef" z=="zee" ` +
+        `u=="you" o=="oh" i=="eye", 두 음성 모두 바이트 동일) -- 소리를 가르치려는 ` +
+        `자리에서 정반대다. 지속음은 3자 반복(sss/nnn/lll), 파열음은 ` +
+        `'<자음>uh'(tuh/puh/kuh) 형을 써라`
+    )
+  }
+}
 
 // ---------- 정답 위치 편향 ----------
 // 사용자가 실기기에서 신고했다: "해당 문제들의 정답이 모두 첫번째네.. 이건
@@ -393,10 +482,14 @@ const MISPLACED_KEY_HINTS = {
 // TTS 가 글자 **이름**("에스")으로 읽는 것이 의도인 유일한 자리다 --
 // 글자꼴 스테이지의 teach/break 는 화면에 그 글자를 띄우고 있다.
 const LETTERFORM = /^[A-Z]{1,2}$/
-// 소리 토큰 하한. 1개면 모델이 한 번뿐이라 아이가 비교할 대상이 없다
-// (실제로 ['tuh','Turbo','go!'] 에서 단어를 빼면 0.27초 블립 하나만 남았다).
-// 2개가 "듣고 따라하고 다시 듣기" 가 성립하는 최소치다.
-const MIN_DRILL_SOUND_TOKENS = 2
+// 소리 토큰 **상한**. 직전 라운드는 이걸 하한 2개로 두고 있었는데, 사용자가
+// 실기기 QA 2차에서 반복 형식 전체를 반려했다 -- "전체적으로 3번 2번 빠르게
+// 반복하는건 다 지우자 한번만 똑바로 읽어 주는게 좋겠어, 어짜피 반복해서 들을
+// 수 있는 버튼도 만들어 놨잖아." 하한을 그대로 두면 **검증기가 사용자가 반려한
+// 형식을 강제한다.** 그래서 방향을 뒤집는다: 소리는 정확히 한 번, 글자꼴 이름도
+// 최대 한 번. 반복은 배열 원소가 아니라 다시듣기 버튼(wireTeachButtons)이 담당한다.
+const MAX_DRILL_SOUND_TOKENS = 1
+const MAX_DRILL_LETTERFORM_TOKENS = 1
 
 function checkKeys(problems, where, obj, allowed, label, hints = null) {
   for (const key of Object.keys(obj)) {
@@ -610,7 +703,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             }
             displayed.push([`${at}/${option.id} label`, option.label])
             if (option.say !== undefined)
-              spoken.push([`${at}/${option.id} say`, option.say, TAP_ROLE])
+              spoken.push([`${at}/${option.id} say`, option.say])
           }
         }
 
@@ -635,7 +728,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
                 checkKeys(problems, `${at} words[${i}]`, word, SPOKEN_PAIR_KEYS, 'word')
                 displayed.push([`${at} words[${i}].text`, word.text])
                 if (word.say !== undefined)
-                  spoken.push([`${at} words[${i}].say`, word.say, MODEL_ROLE])
+                  spoken.push([`${at} words[${i}].say`, word.say])
               } else {
                 problems.push(`${at}: words[${i}] 가 문자열도 { text } 객체도 아님`)
               }
@@ -669,7 +762,7 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             if (l && typeof l === 'object') {
               checkKeys(problems, `${at} letters[${i}]`, l, SPOKEN_PAIR_KEYS, 'letter')
             }
-            if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say, TAP_ROLE])
+            if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say])
           }
           slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
           buildTargets.push({ at, word: slots.join(''), slots })
@@ -679,16 +772,16 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           checkKeys(problems, at, beat.readAloud, READ_ALOUD_KEYS, 'readAloud')
           displayed.push([`${at} readAloud.targetText`, beat.readAloud.targetText])
           if (beat.readAloud.say !== undefined)
-            spoken.push([`${at} readAloud.say`, beat.readAloud.say, MODEL_ROLE])
+            spoken.push([`${at} readAloud.say`, beat.readAloud.say])
         }
         if (beat.letter) displayed.push([`${at} letter`, beat.letter])
         if (beat.promptLetter) displayed.push([`${at} promptLetter`, beat.promptLetter])
         if (beat.promptAudio !== undefined)
-          spoken.push([`${at} promptAudio`, beat.promptAudio, MODEL_ROLE])
+          spoken.push([`${at} promptAudio`, beat.promptAudio])
         for (const [i, step] of (beat.steps || []).entries()) {
           checkKeys(problems, `${at} steps[${i}]`, step, STEP_KEYS, 'step')
           if (step.promptAudio !== undefined)
-            spoken.push([`${at} steps[${i}].promptAudio`, step.promptAudio, MODEL_ROLE])
+            spoken.push([`${at} steps[${i}].promptAudio`, step.promptAudio])
         }
 
         // 보스 인트로(= 보스 스테이지의 첫 teach beat)는 renderNonScoredBeat 이
@@ -727,42 +820,36 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
                 `소리를 단어에 붙여 들려줄 자리는 listen-repeat/finale 의 words[] 다`
             )
           }
-          if (sounds.length < MIN_DRILL_SOUND_TOKENS) {
+          if (!sounds.length) {
+            problems.push(
+              `${at}: 소리 드릴 repeatAudio 에 소리 토큰이 없다 -- 글자꼴 이름만 ` +
+                `남으면 아이는 글자 이름("에스")만 듣고 소리를 한 번도 못 듣는다`
+            )
+          }
+          if (sounds.length > MAX_DRILL_SOUND_TOKENS) {
             problems.push(
               `${at}: 소리 드릴 repeatAudio 의 소리 토큰이 ${sounds.length}개 ` +
-                `(최소 ${MIN_DRILL_SOUND_TOKENS}개) -- 모델이 한 번뿐이면 아이가 ` +
-                `따라할 대상을 비교할 수 없다`
+                `(최대 ${MAX_DRILL_SOUND_TOKENS}개) -- 소리는 한 번만 또박또박 ` +
+                `들려준다. 사용자가 실기기에서 반복 형식 전체를 반려했고, 반복이 ` +
+                `필요한 아이에게는 다시듣기 버튼이 이미 있다`
+            )
+          }
+          const letterforms = tokens.filter((t) => LETTERFORM.test(t))
+          if (letterforms.length > MAX_DRILL_LETTERFORM_TOKENS) {
+            problems.push(
+              `${at}: 소리 드릴 repeatAudio 에 글자꼴 이름이 ${letterforms.length}번 ` +
+                `[${letterforms.join(' / ')}] -- 글자 이름도 한 번이면 충분하다. ` +
+                `['${beat.letter || 'X'}', '<소리>'] 두 원소가 이 beat 의 표준 형태다`
             )
           }
         }
 
         for (const [i, line] of (beat.repeatAudio || []).entries()) {
           // 보스 teach/break 은 낱소리 -> 단어 **블렌딩 시연**이고 각 슬롯이
-          // 화면의 글자 등식과 1:1 이다 -- 아이가 모델로 듣는 자리(MODEL).
-          // 비보스는 한 소리 드릴이고 원소가 1100ms 갭으로 이미 또박또박
-          // 떨어지므로 콤마 계급을 강제하지 않는다(둘 다 허용).
-          spoken.push([
-            `${at} repeatAudio[${i}]`,
-            line,
-            stage.chapterBoss ? MODEL_ROLE : 'drill',
-          ])
-          if (typeof line === 'string') {
-            const tokens = line.trim().split(SPEECH_TOKEN_SPLIT).filter(Boolean)
-            const distinct = new Set(tokens.map((t) => t.toLowerCase()))
-            if (tokens.length > 1 && distinct.size > 1) {
-              problems.push(
-                `${at} repeatAudio[${i}]: 한 발화에 서로 다른 토큰 ` +
-                  `[${tokens.join(' / ')}] 를 cramming -- 원소 하나 = 발화 하나. ` +
-                  `같은 소리 반복('a, a, a')만 한 원소에 넣을 수 있다`
-              )
-            }
-            if (tokens.length > 1 && !line.includes(',')) {
-              problems.push(
-                `${at} repeatAudio[${i}]: '${line}' 를 공백으로 이어붙였다 -- ` +
-                  `공백 연결은 TTS 가 압축해 더 빨라진다. 콤마로 구분해라`
-              )
-            }
-          }
+          // 화면의 글자 등식과 1:1 이다. 비보스는 한 소리 드릴이다. 두 경우 모두
+          // 원소 하나 = 발화 하나 = 소리 하나이고, 원소 사이 1100ms 침묵이
+          // 아이가 따라할 시간이다 -- 아래 단일 토큰 검사가 전부 강제한다.
+          spoken.push([`${at} repeatAudio[${i}]`, line])
         }
       }
 
@@ -812,22 +899,8 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             } else if (HYPHENED_SPEECH.test(line)) {
               problems.push(`${where}: recapAudio.en[${i}] 가 하이픈 절단형 '${line}'`)
             } else {
-              // recapAudio.en 은 spoken[] 을 타지 않으므로 콤마 계급을 여기서 본다.
-              // 리워드 화면에서 speakSequence 로 읽히는 **모델**이다.
-              const sound = soundOf(line)
-              const hasComma = line.includes(',')
-              if (COMMA_REQUIRED_SOUNDS.has(sound) && !hasComma) {
-                problems.push(
-                  `${where}: recapAudio.en[${i}] 의 '${sound}' 가 단일이다 -- 가청 하한 ` +
-                    `아래로 렌더된다. '${sound}, ${sound}, ${sound}' 로 써라`
-                )
-              }
-              if (SINGLE_ONLY_SOUNDS.has(sound) && hasComma) {
-                problems.push(
-                  `${where}: recapAudio.en[${i}] 가 지속음 '${sound}' 를 콤마로 묶었다 ` +
-                    `('${line}') -- 한 발화가 2~4초가 된다. 단일로 써라`
-                )
-              }
+              // recapAudio.en 은 spoken[] 을 타지 않으므로 같은 검사를 여기서 부른다.
+              checkSpeechNotation(problems, `${where}: recapAudio.en[${i}]`, line)
             }
           })
         }
@@ -842,43 +915,14 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         }
       }
 
-      // ---------- 콤마 계급 (COMMA_REQUIRED_SOUNDS / SINGLE_ONLY_SOUNDS) ----------
-      // 사용자가 실기기에서 신고한 결함 두 개가 정확히 이 계약의 부재였다:
-      // "1-7 ... SAT 이라고 하네 TTT 발음이 없어"(블렌딩 슬롯의 /t/ 가 안 들린다)
-      // 와 "반복 음성이 너무 빨라. 5세 아이가 듣고 따라하기엔 너무 너무 너무 빨라".
-      // 산문 규칙만 있던 동안 같은 소리가 사이트마다 다른 표기를 갖고 있었다
-      // (`kuh`/`guh` 는 일부 챕터에서만 콤마, `iii`/`lll` 은 콤마여선 안 되는데
-      // 콤마). 챕터 8-33 에서 다시 갈리지 않도록 표로 강제한다.
-      for (const [field, text, role] of spoken) {
-        if (typeof text !== 'string' || !text.trim()) continue
-        const sound = soundOf(text)
-        const hasComma = text.includes(',')
-        if (SINGLE_ONLY_SOUNDS.has(sound) && hasComma) {
-          problems.push(
-            `${field}: 지속음 '${sound}' 를 콤마로 묶었다 ('${text}') -- 역효과다. ` +
-              `단일이 이미 가청 대역(${sound} 단일 >=500ms)인데 콤마 삼중은 한 발화가 ` +
-              `2~4초가 되고(예: 'sss, sss, sss' = Alex 4011ms), audio.js 의 ` +
-              `minSpeechMs 바닥도 넘겨 뭉개진다. 단일로 쓰고 반복이 필요하면 ` +
-              `배열 원소를 늘려라 -- 원소 사이 1100ms 갭이 아이의 실제 따라할 시간이다`
-          )
-        }
-        if (role === MODEL_ROLE && COMMA_REQUIRED_SOUNDS.has(sound) && !hasComma) {
-          problems.push(
-            `${field}: '${sound}' 를 단일로 발화한다 -- 두 음성 모두에서 가청 하한 ` +
-              `(~780ms) 아래로 렌더되어 아이 귀에 잡히지 않는다(사용자가 실기기에서 ` +
-              `'TTT 발음이 없어' 로 신고한 결함이다). rate 도 철자도 이걸 못 고친다 ` +
-              `(rate 0.10 에서도 tuh 684ms, 'tuhh'/'ttuh' 는 'tuh' 와 바이트 동일). ` +
-              `'${sound}, ${sound}, ${sound}' 로 써라`
-          )
-        }
-        if (role === TAP_ROLE && COMMA_REQUIRED_SOUNDS.has(sound) && hasComma) {
-          problems.push(
-            `${field}: 탭 확인 피드백에 콤마 묶음 ('${text}') -- 여기는 아이가 모델로 ` +
-              `듣는 자리가 아니라 **탭에 대한 응답**이고, speakTap 이 큐를 타므로 ` +
-              `탭 하나가 곧 다음 화면까지의 지연이다(3글자 drag-build 한 번에 ~8초). ` +
-              `단일로 유지하고, 모델이 필요하면 같은 beat 의 promptAudio 를 콤마로 써라`
-          )
-        }
+      // ---------- 표기 검사: 오독 · 한 발화 = 한 소리 ----------
+      // 직전 라운드는 여기서 **콤마 삼중을 강제**하고 있었다(f41e5e8). 사용자가
+      // 실기기 QA 2차에서 그 형식을 반려했으므로 규칙을 뒤집는다 -- 검증기가
+      // 사용자가 반려한 형식을 강제하는 상태를 남겨둘 수 없다. 대신 그 라운드가
+      // 검사하지 않던 축(표기가 다른 어휘 항목으로 렌더되는 오독)을 넣는다.
+      // 그게 실제 결함이었다: 아이가 'iii' 자리에서 "three" 를 들었다.
+      for (const [field, text] of spoken) {
+        checkSpeechNotation(problems, field, text)
       }
 
       for (const [field, text] of displayed) {

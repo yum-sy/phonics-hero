@@ -14,9 +14,9 @@
 // 'nose' appears only as /n/ onset practice, never as a vowel example.
 //
 // 표시/발화 규칙 (챕터 3+ 작성자용 계약): 화면에는 항상 실제 글자·단어를,
-// 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'I', say: 'iii' },
-// readAloud는 { targetText: 'I', say: 'iii' }. 화면에 안 나오는
-// repeatAudio/promptAudio는 소리 표기('iii','puh')를 그대로 쓴다.
+// 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'I', say: 'ihh' },
+// readAloud는 { targetText: 'I', say: 'ihh' }. 화면에 안 나오는
+// repeatAudio/promptAudio는 소리 표기('ihh','puh')를 그대로 쓴다.
 
 export const chapter2 = {
   id: 'chapter-2',
@@ -36,7 +36,7 @@ export const chapter2 = {
           kind: 'teach',
           instructionKo: '잉키가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['iii', 'iii', 'iii'],
+          repeatAudio: ['ihh'],
         },
         {
           id: 'c2s1-r1',
@@ -56,7 +56,7 @@ export const chapter2 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['iii', 'iii', 'iii', 'iii'],
+          repeatAudio: ['ihh'],
         },
         {
           id: 'c2s1-r2',
@@ -116,10 +116,10 @@ export const chapter2 = {
           words: ['ink'],
         },
       ],
-      recapKo: '/i/ 소리를 찾았어요! Ink, igloo, insect — 모두 iii로 시작해요!',
+      recapKo: '/i/ 소리를 찾았어요! Ink, igloo, insect — 모두 ihh로 시작해요!',
       recapAudio: {
         ko: '아이 소리를 찾았어요! 잘 들어보세요.',
-        en: ['iii', 'ink', 'igloo', 'insect'],
+        en: ['ihh', 'ink', 'igloo', 'insect'],
       },
     },
 
@@ -134,19 +134,19 @@ export const chapter2 = {
         {
           id: 'c2s2-teach',
           kind: 'teach',
-          instructionKo: 'I는 잉키처럼 iii 소리를 내요!',
+          instructionKo: 'I는 잉키처럼 ihh 소리를 내요!',
           art: 'hero',
           letter: 'I',
-          repeatAudio: ['I', 'iii', 'I', 'iii'],
+          repeatAudio: ['I', 'ihh'],
         },
         {
           id: 'c2s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'iii 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'iii',
+          instructionKo: 'ihh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          promptAudio: 'ihh',
           options: [
-            { id: 'c2s2-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
+            { id: 'c2s2-I1', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
             { id: 'c2s2-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
@@ -169,8 +169,8 @@ export const chapter2 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 I를 따라 그리면서 iii 소리를 내보세요!',
-          words: [{ text: 'I', say: 'iii' }],
+          instructionKo: '손가락으로 I를 따라 그리면서 ihh 소리를 내보세요!',
+          words: [{ text: 'I', say: 'ihh' }],
         },
         {
           id: 'c2s2-break',
@@ -178,7 +178,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 I를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'I',
-          repeatAudio: ['I', 'iii', 'iii', 'iii'],
+          repeatAudio: ['I', 'ihh'],
         },
         {
           id: 'c2s2-r4-multiselect',
@@ -199,14 +199,14 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'iii 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'iii',
+          instructionKo: 'ihh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
+          promptAudio: 'ihh',
           options: [
-            { id: 'c2s2-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
+            { id: 'c2s2-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
             { id: 'c2s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s2-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
-          readAloud: { targetText: 'I', say: 'iii' },
+          readAloud: { targetText: 'I', say: 'ihh' },
         },
         {
           id: 'c2s2-r6-reversed',
@@ -236,13 +236,13 @@ export const chapter2 = {
           scored: true,
           hits: 2,
           instructionKo: '마지막 공격! I 소리로 크게 외쳐보세요!',
-          words: [{ text: 'I', say: 'iii' }, 'ink'],
+          words: [{ text: 'I', say: 'ihh' }, 'ink'],
         },
       ],
-      recapKo: 'I는 iii 소리를 내요 — ink, igloo, insect도 모두 기억해요!',
+      recapKo: 'I는 ihh 소리를 내요 — ink, igloo, insect도 모두 기억해요!',
       recapAudio: {
         ko: '아이는 이런 소리를 내요. 따라 말해볼까요?',
-        en: ['iii', 'ink', 'igloo', 'insect'],
+        en: ['ihh', 'ink', 'igloo', 'insect'],
       },
     },
 
@@ -261,14 +261,14 @@ export const chapter2 = {
           instructionKo: 'P는 파워피가 힘을 쏠 때처럼 puh 소리를 내요!',
           art: 'hero',
           letter: 'P',
-          repeatAudio: ['P', 'puh', 'P', 'puh'],
+          repeatAudio: ['P', 'puh'],
         },
         {
           id: 'c2s3-r1-warmup',
           kind: 'choose',
           scored: false,
           instructionKo: 'puh 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'puh, puh, puh',
+          promptAudio: 'puh',
           options: [
             { id: 'c2s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
@@ -294,7 +294,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 P를 따라 그리면서 puh 소리를 내보세요!',
-          words: [{ text: 'P', say: 'puh, puh, puh' }],
+          words: [{ text: 'P', say: 'puh' }],
         },
         {
           id: 'c2s3-break',
@@ -302,7 +302,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 P를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'P',
-          repeatAudio: ['puh', 'puh', 'puh'],
+          repeatAudio: ['puh'],
         },
         {
           id: 'c2s3-r4-multiselect',
@@ -324,13 +324,13 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: 'puh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'puh, puh, puh',
+          promptAudio: 'puh',
           options: [
             { id: 'c2s3-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
             { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
             { id: 'c2s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
           ],
-          readAloud: { targetText: 'P', say: 'puh, puh, puh' },
+          readAloud: { targetText: 'P', say: 'puh' },
         },
         {
           id: 'c2s3-r6-reversed',
@@ -360,13 +360,13 @@ export const chapter2 = {
           scored: true,
           hits: 2,
           instructionKo: '마지막 공격! P 소리로 크게 외쳐보세요!',
-          words: [{ text: 'P', say: 'puh, puh, puh' }, 'pig'],
+          words: [{ text: 'P', say: 'puh' }, 'pig'],
         },
       ],
-      recapKo: 'P는 puh 소리를 내요 — 그리고 I의 iii 소리도 아직 기억하고 있어요!',
+      recapKo: 'P는 puh 소리를 내요 — 그리고 I의 ihh 소리도 아직 기억하고 있어요!',
       recapAudio: {
         ko: '피는 이런 소리를 내요. 아이 소리도 기억하고 있어요.',
-        en: ['puh, puh, puh', 'pig', 'pen', 'iii'],
+        en: ['puh', 'pig', 'pen', 'ihh'],
       },
     },
 
@@ -385,7 +385,7 @@ export const chapter2 = {
           instructionKo: 'N은 나이토의 그물처럼 nnn 소리를 내요!',
           art: 'hero',
           letter: 'N',
-          repeatAudio: ['N', 'nnn', 'N', 'nnn'],
+          repeatAudio: ['N', 'nnn'],
         },
         {
           id: 'c2s4-r1-warmup',
@@ -394,7 +394,7 @@ export const chapter2 = {
           instructionKo: 'nnn 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'nnn',
           options: [
-            { id: 'c2s4-I1', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+            { id: 'c2s4-I1', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
             { id: 'c2s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
             { id: 'c2s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
@@ -426,7 +426,7 @@ export const chapter2 = {
           instructionKo: '손가락으로 N을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'N',
-          repeatAudio: ['N', 'nnn', 'nnn', 'nnn'],
+          repeatAudio: ['N', 'nnn'],
         },
         {
           id: 'c2s4-r4-multiselect',
@@ -451,7 +451,7 @@ export const chapter2 = {
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
-            { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+            { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
             { id: 'c2s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
           ],
           readAloud: { targetText: 'N', say: 'nnn' },
@@ -486,26 +486,26 @@ export const chapter2 = {
           instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
-              promptAudio: 'iii',
+              promptAudio: 'ihh',
               options: [
                 { id: 'c2s4-cP', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
                 { id: 'c2s4-cN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
-                { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
+                { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
               ],
             },
             {
-              promptAudio: 'puh, puh, puh',
+              promptAudio: 'puh',
               options: [
                 { id: 'c2s4-cN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
                 { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
-                { id: 'c2s4-cI2', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+                { id: 'c2s4-cI2', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
               ],
             },
             {
               promptAudio: 'nnn',
               options: [
                 { id: 'c2s4-cN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-                { id: 'c2s4-cI3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+                { id: 'c2s4-cI3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
                 { id: 'c2s4-cP3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
               ],
             },
@@ -540,7 +540,7 @@ export const chapter2 = {
           id: 'c2s5-teach',
           kind: 'teach',
           instructionKo: '파워피 + 잉키 + 나이토가 합체해요! 천천히 들어보세요.',
-          repeatAudio: ['puh, puh, puh', 'iii', 'nnn', 'pin', 'pin'],
+          repeatAudio: ['puh', 'ihh', 'nnn', 'pin'],
         },
         {
           id: 'c2s5-r1-warmup',
@@ -549,7 +549,7 @@ export const chapter2 = {
           instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
           letters: [
             { text: 'P', say: 'puh' },
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
             { text: 'N', say: 'nnn' },
           ],
           target: 'PIN',
@@ -561,8 +561,8 @@ export const chapter2 = {
           hits: 1,
           instructionKo: '천천히 따라 말해보세요.',
           words: [
-            { text: 'P', say: 'puh, puh, puh' },
-            { text: 'I', say: 'iii' },
+            { text: 'P', say: 'puh' },
+            { text: 'I', say: 'ihh' },
             { text: 'N', say: 'nnn' },
             'pin',
           ],
@@ -572,7 +572,7 @@ export const chapter2 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['puh, puh, puh', 'iii', 'nnn', 'pin'],
+          repeatAudio: ['puh', 'ihh', 'nnn', 'pin'],
         },
         {
           id: 'c2s5-r3-quickfire',
@@ -582,19 +582,19 @@ export const chapter2 = {
           instructionKo: '소리를 듣고 맞는 글자를 탭하세요!',
           steps: [
             {
-              promptAudio: 'puh, puh, puh',
+              promptAudio: 'puh',
               options: [
-                { id: 'c2s5-qI', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+                { id: 'c2s5-qI', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
                 { id: 'c2s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s5-qN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
               ],
             },
             {
-              promptAudio: 'iii',
+              promptAudio: 'ihh',
               options: [
                 { id: 'c2s5-qN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
                 { id: 'c2s5-qP2', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
-                { id: 'c2s5-qI2', icon: 'letterTile', label: 'I', say: 'iii', correct: true },
+                { id: 'c2s5-qI2', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
               ],
             },
             {
@@ -602,7 +602,7 @@ export const chapter2 = {
               options: [
                 { id: 'c2s5-qP3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
                 { id: 'c2s5-qN3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-                { id: 'c2s5-qI3', icon: 'letterTile', label: 'I', say: 'iii', correct: false },
+                { id: 'c2s5-qI3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
               ],
             },
           ],
@@ -616,7 +616,7 @@ export const chapter2 = {
           letters: [
             { text: 'N', say: 'nnn' },
             { text: 'P', say: 'puh' },
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
           ],
           target: 'PIN',
           readAloud: { targetText: 'pin' },
@@ -641,7 +641,7 @@ export const chapter2 = {
           hits: 1,
           instructionKo: '단어를 만들고, 큰 소리로 읽어보세요!',
           letters: [
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
             { text: 'N', say: 'nnn' },
             { text: 'P', say: 'puh' },
           ],
@@ -668,7 +668,7 @@ export const chapter2 = {
       recapKo: 'P-I-N은 PIN! 두 번째 진짜 단어를 만들었어요! 챕터 2 클리어!',
       recapAudio: {
         ko: '세 소리를 합쳐서 두 번째 단어를 만들었어요!',
-        en: ['puh, puh, puh', 'iii', 'nnn', 'pin'],
+        en: ['puh', 'ihh', 'nnn', 'pin'],
       },
     },
   ],

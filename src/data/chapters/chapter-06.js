@@ -71,7 +71,7 @@ export const chapter6 = {
           kind: 'teach',
           instructionKo: 'Leo가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
-          repeatAudio: ['lll', 'lll', 'lll'],
+          repeatAudio: ['lll'],
         },
         {
           id: 'c6s1-r1',
@@ -87,7 +87,7 @@ export const chapter6 = {
           kind: 'break',
           instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['lll', 'lll', 'lll', 'lll'],
+          repeatAudio: ['lll'],
         },
         {
           id: 'c6s1-r2',
@@ -168,7 +168,7 @@ export const chapter6 = {
           instructionKo: 'L은 Leo가 씩씩하게 행진할 때처럼 lll 소리를 내요!',
           art: 'hero',
           letter: 'L',
-          repeatAudio: ['L', 'lll', 'L', 'lll'],
+          repeatAudio: ['L', 'lll'],
         },
         {
           id: 'c6s2-r1-warmup',
@@ -213,7 +213,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 L을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'L',
-          repeatAudio: ['L', 'lll', 'lll', 'lll'],
+          repeatAudio: ['L', 'lll'],
         },
         {
           id: 'c6s2-r4-multiselect',
@@ -300,7 +300,7 @@ export const chapter6 = {
           instructionKo: 'F는 Fifi가 바람을 내뿜을 때처럼 fff 소리를 내요!',
           art: 'hero',
           letter: 'F',
-          repeatAudio: ['F', 'fff', 'F', 'fff'],
+          repeatAudio: ['F', 'fff'],
         },
         {
           id: 'c6s3-r1-warmup',
@@ -344,7 +344,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 F를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'F',
-          repeatAudio: ['F', 'fff', 'fff', 'fff'],
+          repeatAudio: ['F', 'fff'],
         },
         {
           id: 'c6s3-r4-multiselect',
@@ -431,14 +431,14 @@ export const chapter6 = {
           instructionKo: 'B는 Bobo가 블록을 쌓을 때처럼 buh 소리를 내요!',
           art: 'hero',
           letter: 'B',
-          repeatAudio: ['B', 'buh', 'B', 'buh'],
+          repeatAudio: ['B', 'buh'],
         },
         {
           id: 'c6s4-r1-warmup',
           kind: 'choose',
           scored: false,
           instructionKo: 'buh 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'buh, buh, buh',
+          promptAudio: 'buh',
           // 혼동 보기는 P 하나 -- buh/puh 는 합성기에서 명백히 다른 음소로
           // 측정됐다(회전 혼동이지만 소리는 다르다, 챕터4가 D 의 소리 변별
           // 상대로 P 를 쓴 것과 같은 논리). D 는 여기 절대 넣지 않는다
@@ -471,7 +471,7 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 B를 따라 그리면서 buh 소리를 내보세요!',
-          words: [{ text: 'B', say: 'buh, buh, buh' }],
+          words: [{ text: 'B', say: 'buh' }],
         },
         {
           id: 'c6s4-break',
@@ -479,7 +479,7 @@ export const chapter6 = {
           instructionKo: '손가락으로 B를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'B',
-          repeatAudio: ['B', 'buh', 'buh', 'buh'],
+          repeatAudio: ['B', 'buh'],
         },
         {
           id: 'c6s4-r4-multiselect',
@@ -503,13 +503,13 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: 'buh 소리를 내는 글자를 찾아 탭하세요! (조금 어려워요)',
-          promptAudio: 'buh, buh, buh',
+          promptAudio: 'buh',
           options: [
             { id: 'c6s4-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
             { id: 'c6s4-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
             { id: 'c6s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
           ],
-          readAloud: { targetText: 'B', say: 'buh, buh, buh' },
+          readAloud: { targetText: 'B', say: 'buh' },
         },
         {
           id: 'c6s4-r5b-shape',
@@ -575,7 +575,7 @@ export const chapter6 = {
               ],
             },
             {
-              promptAudio: 'buh, buh, buh',
+              promptAudio: 'buh',
               options: [
                 { id: 'c6s4-qB3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s4-qL3', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
@@ -604,13 +604,13 @@ export const chapter6 = {
           hits: 1,
           // 보스 단어 'big' 사전 노출 (B 로 완성, I·G 는 이미 기지).
           instructionKo: '마지막 공격! B 소리로 크게 외쳐보세요!',
-          words: [{ text: 'B', say: 'buh, buh, buh' }, 'big'],
+          words: [{ text: 'B', say: 'buh' }, 'big'],
         },
       ],
       recapKo: '이제 L, F, B를 모두 알아요! Leo, Fifi, Bobo가 합체할 준비를 해요!',
       recapAudio: {
         ko: '비는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['buh, buh, buh', 'bag', 'bed'],
+        en: ['buh', 'bag', 'bed'],
       },
     },
 
@@ -630,7 +630,7 @@ export const chapter6 = {
           id: 'c6s5-teach',
           kind: 'teach',
           instructionKo: 'Leo + Fifi + Bobo가 합체해요! 먼저 fit을 만들어요.',
-          repeatAudio: ['fff', 'iii', 'tuh, tuh, tuh', 'fit', 'fit'],
+          repeatAudio: ['fff', 'ihh', 'tuh', 'fit'],
         },
         {
           id: 'c6s5-r1-warmup',
@@ -639,7 +639,7 @@ export const chapter6 = {
           instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
           letters: [
             { text: 'F', say: 'fff' },
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
             { text: 'T', say: 'tuh' },
           ],
           target: 'FIT',
@@ -652,8 +652,8 @@ export const chapter6 = {
           instructionKo: '천천히 따라 말해보세요.',
           words: [
             { text: 'F', say: 'fff' },
-            { text: 'I', say: 'iii' },
-            { text: 'T', say: 'tuh, tuh, tuh' },
+            { text: 'I', say: 'ihh' },
+            { text: 'T', say: 'tuh' },
             'fit',
           ],
         },
@@ -662,7 +662,7 @@ export const chapter6 = {
           kind: 'break',
           instructionKo: '이번엔 big이에요! 함께 외쳐볼까요?',
           art: 'hero',
-          repeatAudio: ['buh, buh, buh', 'iii', 'guh, guh, guh', 'big', 'big'],
+          repeatAudio: ['buh', 'ihh', 'guh', 'big'],
         },
         {
           id: 'c6s5-r3-quickfire',
@@ -680,7 +680,7 @@ export const chapter6 = {
               ],
             },
             {
-              promptAudio: 'buh, buh, buh',
+              promptAudio: 'buh',
               options: [
                 { id: 'c6s5-qL2', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s5-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
@@ -701,7 +701,7 @@ export const chapter6 = {
             // puh 대 buh 는 두 음성 3x 에서 1071~1799ms 차이다 -- 확정 충돌쌍
             // buh/duh 가 모든 배수에서 정확히 0.0ms 였던 것과 정반대다.
             {
-              promptAudio: 'puh, puh, puh',
+              promptAudio: 'puh',
               options: [
                 { id: 'c6s5-qF4', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s5-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
@@ -719,7 +719,7 @@ export const chapter6 = {
           letters: [
             { text: 'T', say: 'tuh' },
             { text: 'F', say: 'fff' },
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
           ],
           target: 'FIT',
           readAloud: { targetText: 'fit' },
@@ -746,7 +746,7 @@ export const chapter6 = {
           letters: [
             { text: 'G', say: 'guh' },
             { text: 'B', say: 'buh' },
-            { text: 'I', say: 'iii' },
+            { text: 'I', say: 'ihh' },
           ],
           target: 'BIG',
           readAloud: { targetText: 'big' },
@@ -758,9 +758,9 @@ export const chapter6 = {
           hits: 1,
           instructionKo: 'big도 천천히 따라 말해보세요.',
           words: [
-            { text: 'B', say: 'buh, buh, buh' },
-            { text: 'I', say: 'iii' },
-            { text: 'G', say: 'guh, guh, guh' },
+            { text: 'B', say: 'buh' },
+            { text: 'I', say: 'ihh' },
+            { text: 'G', say: 'guh' },
             'big',
           ],
         },
