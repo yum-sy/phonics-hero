@@ -528,7 +528,7 @@ export const chapter5 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'G, O, U를 빠르게 찾아볼까요?',
+          instructionKo: 'G, O, U와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'guh',
@@ -552,6 +552,19 @@ export const chapter5 = {
                 { id: 'c5s4-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
                 { id: 'c5s4-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
                 { id: 'c5s4-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 3 의 C). G 를 배우면서 가장 위험해지는 앞 글자가 C 다
+            // -- /k/ 와 /g/ 는 같은 자리 유무성 짝이라 새 글자가 옛 글자를 덮어쓴다.
+            // 오답을 이 챕터의 새 글자(G/O)로 둬서 최신 기억이 방해하게 만든다.
+            // kuh 대 guh 는 두 음성 20x 에서 13.4~16.1초 벌어진다(별개 음소).
+            // K 는 C 와 같은 표기(kuh)이므로 같은 스텝에 둘 수 없다.
+            {
+              promptAudio: 'kuh',
+              options: [
+                { id: 'c5s4-qC', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
+                { id: 'c5s4-qG4', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+                { id: 'c5s4-qO4', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
               ],
             },
           ],
@@ -626,7 +639,7 @@ export const chapter5 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'G, O, U를 빠르게 찾아볼까요?',
+          instructionKo: 'G, O, U와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'guh',
@@ -650,6 +663,17 @@ export const chapter5 = {
                 { id: 'c5s5-qU3', icon: 'letterTile', label: 'U', say: 'uh', correct: true },
                 { id: 'c5s5-qO3', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
                 { id: 'c5s5-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 1 의 A). 이 챕터가 모음 두 개(O/U)를 새로 넣으므로
+            // 가장 오래 인출되지 않은 모음 A 가 그 둘에 밀린다. 오답이 O/U 라
+            // 세 모음을 한 문항에서 갈라야 한다.
+            {
+              promptAudio: 'aaa',
+              options: [
+                { id: 'c5s5-qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
+                { id: 'c5s5-qO4', icon: 'letterTile', label: 'O', say: 'ough', correct: false },
+                { id: 'c5s5-qU4', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
           ],

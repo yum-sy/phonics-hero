@@ -564,7 +564,7 @@ export const chapter7 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'AI, J, OA를 빠르게 찾아볼까요?',
+          instructionKo: 'AI, J, OA와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'a',
@@ -588,6 +588,19 @@ export const chapter7 = {
                 { id: 'c7s4-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
                 { id: 'c7s4-qAI3', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
                 { id: 'c7s4-qJ3', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 1 의 A). 이 챕터의 AI 는 A 와 글자를 공유하므로
+            // 다이그래프를 배우는 순간 짧은 /a/ 가 가장 위험하다 -- 아이가
+            // A 를 보고 AI 소리를 내기 시작하는 것이 전형적 붕괴다.
+            // 오답 AI 를 나란히 둬서 홑글자와 다이그래프를 갈라야 하게 만든다.
+            // aaa 대 a 는 두 음성 20x 에서 7.2~11.2초 벌어진다(별개 음소).
+            {
+              promptAudio: 'aaa',
+              options: [
+                { id: 'c7s4-qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
+                { id: 'c7s4-qAI4', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
+                { id: 'c7s4-qJ4', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
               ],
             },
           ],
@@ -665,7 +678,7 @@ export const chapter7 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'AI, J, OA를 빠르게 찾아볼까요?',
+          instructionKo: 'AI, J, OA와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'oh',
@@ -689,6 +702,18 @@ export const chapter7 = {
                 { id: 'c7s5-qJ3', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
                 { id: 'c7s5-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s5-qAI3', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 5 의 O). AI/A 와 같은 구조로 OA 가 홑글자 O 를
+            // 덮어쓴다. 오답 OA 를 나란히 둔다 -- ough 대 oh 는 배수를 올릴 때
+            // 차이가 토큰당 ~50ms(Samantha)/~70ms(Alex)로 비례 증가하므로
+            // 0 수렴이 아니라 별개 음소다(20x 에서 996~1393ms).
+            {
+              promptAudio: 'ough',
+              options: [
+                { id: 'c7s5-qO', icon: 'letterTile', label: 'O', say: 'ough', correct: true },
+                { id: 'c7s5-qOA4', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
+                { id: 'c7s5-qAI4', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
               ],
             },
           ],

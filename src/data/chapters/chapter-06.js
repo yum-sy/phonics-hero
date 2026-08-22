@@ -550,7 +550,7 @@ export const chapter6 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'L, F, B를 빠르게 찾아볼까요?',
+          instructionKo: 'L, F, B와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'lll',
@@ -574,6 +574,19 @@ export const chapter6 = {
                 { id: 'c6s4-qB3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s4-qL3', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s4-qF3', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 4 의 R). L 을 배우는 순간 가장 위험해지는 앞 글자가
+            // R 이다 -- 한국어 화자에게 /l/ 대 /r/ 이 최대 난점이라 새로 배운 L 이
+            // R 을 덮어쓴다. 오답이 L 이라 이 스텝이 곧 그 변별 시험이다.
+            // rrr 대 lll 은 두 음성 20x 에서 23.1~27.9초 벌어진다(별개 음소).
+            // D(duh)는 이 스텝에 절대 넣지 않는다 -- B(buh)와 확정 충돌쌍이다.
+            {
+              promptAudio: 'rrr',
+              options: [
+                { id: 'c6s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
+                { id: 'c6s4-qL4', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+                { id: 'c6s4-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
               ],
             },
           ],
@@ -648,7 +661,7 @@ export const chapter6 = {
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'L, F, B를 빠르게 찾아볼까요?',
+          instructionKo: 'L, F, B와 지난 소리까지 빠르게 찾아볼까요?',
           steps: [
             {
               promptAudio: 'fff',
@@ -672,6 +685,19 @@ export const chapter6 = {
                 { id: 'c6s5-qL3', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
                 { id: 'c6s5-qF3', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s5-qB3', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+              ],
+            },
+            // 누적 복습(챕터 2 의 P). 한국어에 /f/ 가 없어 ㅍ 로 대치하는 것이
+            // 대표 오류이므로, F 를 새로 배우는 이 챕터에서 P 가 가장 위험하다.
+            // 오답 F(대치 오류) + B(같은 자리 유무성 짝) 둘 다 근접쌍이다.
+            // puh 대 buh 는 두 음성 3x 에서 1071~1799ms 차이다 -- 확정 충돌쌍
+            // buh/duh 가 모든 배수에서 정확히 0.0ms 였던 것과 정반대다.
+            {
+              promptAudio: 'puh',
+              options: [
+                { id: 'c6s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+                { id: 'c6s5-qF4', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
+                { id: 'c6s5-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
               ],
             },
           ],
