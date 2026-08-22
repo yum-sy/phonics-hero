@@ -228,7 +228,11 @@ function feet(fill, cy, rx = 12, ry = 7) {
 // Long ear with a ROUNDED tip: the tip's two control handles meet at (0,-h)
 // pulled sideways, so the apex is a dome. This is the shape the previous
 // spiky pass got wrong.
-function softEar(cx, cy, w, h, rot, fill, innerFill) {
+// `tipFill` caps the dome in a contrasting tone. It is a value contrast, not
+// a point: the ear stays rounded, but a long pastel ear with no tip marking
+// loses its end against the background at map-node size, and the species cue
+// is the ear LENGTH, which you cannot read if the end is invisible.
+function softEar(cx, cy, w, h, rot, fill, innerFill, tipFill) {
   return `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
       <path d="M ${-w},${h * 0.4} C ${-w * 1.05},${-h * 0.45} ${-w * 0.85},${-h} 0,${-h}
@@ -237,6 +241,12 @@ function softEar(cx, cy, w, h, rot, fill, innerFill) {
       <path d="M ${-w * 0.46},${h * 0.2} C ${-w * 0.5},${-h * 0.4} ${-w * 0.42},${-h * 0.74} 0,${-h * 0.74}
                C ${w * 0.42},${-h * 0.74} ${w * 0.5},${-h * 0.4} ${w * 0.46},${h * 0.2} Z"
         fill="${innerFill}" ${ol(SW_IN)}/>
+      ${tipFill
+        ? `<path d="M ${-w * 0.78},${-h * 0.58} C ${-w * 0.86},${-h * 0.86} ${-w * 0.52},${-h} 0,${-h}
+                    C ${w * 0.52},${-h} ${w * 0.86},${-h * 0.86} ${w * 0.78},${-h * 0.58}
+                    C ${w * 0.42},${-h * 0.7} ${-w * 0.42},${-h * 0.7} ${-w * 0.78},${-h * 0.58} Z"
+             fill="${tipFill}" ${ol(SW_IN)}/>`
+        : ''}
     </g>`
 }
 
@@ -263,58 +273,72 @@ function archShape(fill, poleA, poleB) {
 // HEROES
 // ---------------------------------------------------------------------------
 
-// Rocket (R): electric mouse/rabbit. Two long rounded ears, two ROUND cheek
-// dots (the earlier diamond was a trade-dress dodge that also read spiky; a
-// plain circle in a non-franchise colour and placement does the same job),
-// and a zigzag tail whose corners are round joins on a thick stroke, so it
-// reads as soft lightning rather than cut glass.
+// Rocket (R): electric mouse/rabbit. Three cues, all of them deliberately
+// oversized (v8): long tipped ears, big saturated cheek discs, and a zigzag
+// bolt tail that leaves the silhouette. The v7 pass had all three at "tasteful"
+// scale and the figure read as a plain pink rabbit -- the electric motif was
+// technically present and practically invisible. Nothing here got sharper; the
+// soft shapes just got bigger.
 export function creatureRocket({
   bodyColor = '#f6a893',
   accent = '#e2846c',
   emblem = 'R',
   visorColor = BADGE,
 } = {}) {
+  // The one place in this family where saturation is allowed to spike (see
+  // the palette rule in the header): the cheek disc is Rocket's signature and
+  // has to win the face at 66 px. It also carries the limb-weight outline
+  // (2.0) instead of a seam weight, so it reads as a feature rather than a
+  // shading patch.
+  const CHEEK = '#f4664c'
   return svgWrap(
     fig(`
-      ${shadow(60, 132, 28)}
+      ${shadow(60, 132, 30)}
 
-      <!-- tail: one thick round-jointed stroke, so every zigzag corner is a
-           curve. Rooted at (87,92), inside the rx=34 body silhouette (edge
-           x=93.5 at that height) so the join hides, then up and out to the
-           right: max x 111 + half stroke 4 + outline 2.2 = 117.2, min y
-           50 - 6.2 = 43.8. Held above the right paw (88.5..107.5 x
-           89..111, drawn later) rather than through it -- an earlier version
-           ran the tail lower and the paw swallowed all but a stub of it. -->
-      ${tube('M 87,92 L 106,79 L 97,68 L 111,50', 8, accent)}
+      ${softEar(42, 52, 12, 40, -14, bodyColor, BELLY, accent)}
+      ${softEar(78, 52, 12, 40, 14, bodyColor, BELLY, accent)}
 
-      <!-- ears before the body so their roots vanish under it. Apexes land at
-           (33.8,17) and (86.2,17) -- computed through the rotate, not
-           eyeballed; ~15 units of headroom above the box. -->
-      ${softEar(42, 50, 11, 34, -14, bodyColor, BELLY)}
-      ${softEar(78, 50, 11, 34, 14, bodyColor, BELLY)}
-
-      ${paws(accent, 100)}
+      <!-- paws dropped to cy=104 for the tail's sake: at cy=100 they spanned
+           y 89..111 and swallowed the lower half of the bolt. -->
+      ${paws(accent, 104)}
       ${feet(accent, 126)}
-      ${blob(bodyColor, 60, 88, 34, 36)}
 
-      <!-- soft volume tint: one same-hue lobe at low opacity, no facets. -->
-      ${shadeCrescent(60, 88, 34, 36)}
+      <!-- tail: rooted at (84,94), inside the rx=36 body silhouette (edge
+           x=94.6 there) so the join hides, then out to (110,56) -- 26 units
+           of travel past the body edge, where v7's version cleared it by 12.
+           Width 10 (was 8): outer width 14, half 7, so max x 110+7=117 and
+           min y 56-7=49. Lowest tail point y=94 sits 1 unit above the paw
+           top (95), so nothing eats it. Round caps and joins keep every
+           corner of the zigzag curved. -->
+      ${tube('M 84,94 L 108,84 L 96,72 L 110,56', 10, accent)}
 
-      <circle cx="34" cy="90" r="6.5" fill="${accent}" ${ol(SW_IN)}/>
-      <circle cx="86" cy="90" r="6.5" fill="${accent}" ${ol(SW_IN)}/>
+      ${blob(bodyColor, 60, 88, 36, 36)}
+      ${shadeCrescent(60, 88, 36, 36)}
 
-      ${dotEyes(47, 73, 78, 4.8)}
-      ${mouth(60, 88, 5)}
+      <!-- cheek radius 10.5, from v7's 6.5 -- 2.6x the area. This is the
+           largest disc the body can hold on that centre: at y=93 the rx=36
+           body's left edge is x=24.35, and 36.5-10.5 = 26 clears it by 1.65
+           with the outline's half-width inside that margin. -->
+      <circle cx="36.5" cy="93" r="10.5" fill="${CHEEK}" ${ol(SW_MID)}/>
+      <circle cx="83.5" cy="93" r="10.5" fill="${CHEEK}" ${ol(SW_MID)}/>
+
+      ${dotEyes(47, 73, 76, 5)}
+      ${mouth(60, 86, 5)}
 
       ${emblemBadge(60, 107, 14, visorColor, emblem, 20)}
     `)
   )
 }
 
-// Magno (M): the big sleepy one. Widest, lowest-sitting body of the three
-// small heroes, half-lidded eyes, limbs pulled in short. The magnet survives
-// only as the ARCH SHAPE of the ears, body-coloured with no pole caps --
-// legible as a horseshoe if you look for it, reading as ears if you do not.
+// Magno (M): the big sleepy one, and BULK IS THE SPECIES CUE (v8). At v7's
+// 80x72 body it was within a few units of its castmates and read as "another
+// round creature that happens to be sleepy"; the archetype only works if the
+// size difference is unmissable, so the body is now 92x80 -- the widest in the
+// file, filling the viewBox nearly edge to edge -- while the limbs got SHORTER
+// and stubbier. The contrast between a huge mass and small limbs is what reads
+// as heavy; a big figure with proportionate limbs just reads as a big figure.
+// The magnet survives only as the ARCH SHAPE of the ears, body-coloured with
+// no pole caps: legible as a horseshoe if you look, ears if you do not.
 export function creatureMagno({
   bodyColor = '#a9c9ea',
   accent = '#82a9d2',
@@ -323,17 +347,23 @@ export function creatureMagno({
 } = {}) {
   return svgWrap(
     fig(`
-      ${shadow(60, 134, 34)}
+      ${shadow(60, 136, 40)}
 
-      <g transform="translate(40,52) rotate(-12) scale(1.15)">${archShape(bodyColor)}</g>
-      <g transform="translate(80,52) rotate(12) scale(-1.15,1.15)">${archShape(bodyColor)}</g>
+      <g transform="translate(36,48) rotate(-12) scale(1.25)">${archShape(bodyColor)}</g>
+      <g transform="translate(84,48) rotate(12) scale(-1.25,1.25)">${archShape(bodyColor)}</g>
 
-      ${paws(accent, 100, 10, 11)}
-      ${feet(accent, 128, 13, 7)}
-      ${blob(bodyColor, 60, 90, 40, 36)}
-      ${shadeCrescent(60, 90, 40, 36)}
+      <!-- limbs placed by hand, not through paws()/feet(): those helpers put
+           paws at x=22/98, which the rx=46 body swallows whole (its edge is
+           at x=16.1 that low). Stubbier than any other figure's, on purpose. -->
+      ${stub(15, 102, 10.5, 9.5, accent)}
+      ${stub(105, 102, 10.5, 9.5, accent)}
+      ${stub(42, 128, 15, 7, accent)}
+      ${stub(78, 128, 15, 7, accent)}
 
-      ${sleepyEyes(45, 75, 78, 6)}
+      ${blob(bodyColor, 60, 90, 46, 40)}
+      ${shadeCrescent(60, 90, 46, 40)}
+
+      ${sleepyEyes(43, 77, 78, 6.5)}
       ${mouth(60, 90, 4.5)}
 
       ${emblemBadge(60, 108, 14, visorColor, emblem, 20)}
@@ -341,53 +371,78 @@ export function creatureMagno({
   )
 }
 
-// Drillo (D): burrowing mole. The drill is the SNOUT and only the snout -- a
-// round muzzle carrying a soft two-turn spiral, seen head-on, which is how a
-// front-facing figure can own a drill without holding one. Small round ears
-// and short round feet finish the mole read.
+// Drillo (D): burrowing mole. The drill is the SNOUT, and as of v8 it is a
+// real PROTRUDING cone rather than a spiral engraved on a flat muzzle -- at
+// v7 the groove sat on the muzzle's surface and the figure read as a bear
+// with a swirl on its nose. The cone leaves the face down-and-left and its
+// rounded tip crosses the body outline, so the snout is part of the
+// silhouette. It also carries its own dark ochre tone, well away from both
+// bodyColor and accent (which are both pale warm sand and washed the old
+// spiral out at small sizes).
 export function creatureDrillo({
   bodyColor = '#e6c894',
   accent = '#c9a56e',
   emblem = 'D',
   visorColor = BADGE,
 } = {}) {
-  // Spiral as a bezier chain, kept inside r=6 of its own origin so it sits in
-  // the muzzle's upper half and leaves room for the mouth below. Drawn in the
-  // outline colour, not the softer seam colour: at 66 px a 1.9-wide seam-tone
-  // spiral greyed out into a smudge and the drill read vanished.
-  const spiral = `
-    <path d="M 0,-6 C 4.8,-6 6.3,-2 6.3,0.5 C 6.3,4 3.2,6 0,6
-             C -3.9,6 -6.3,3 -6.3,0 C -6.3,-2.6 -4.4,-4 -2.4,-4
-             C -0.5,-4 0.9,-2.6 0.9,-0.9 C 0.9,0.6 -0.3,1.7 -1.5,1.7"
-      fill="none" stroke="${LINE}" stroke-width="2"/>`
+  const DRILL = '#8f7350' // dark warm ochre: separates from the body at 66 px
+  const DRILL_DK = '#6d5738'
+  // Local space: the cone's mouth is the +-9.5 wide arc at y~0, the tip is at
+  // y=52. Four curved bands cross it, each bowing the same way, which is what
+  // makes a smooth taper read as a drill flute without a single straight edge
+  // or corner anywhere in the shape. Band half-widths (8.6/7.2/4.4/2.6) were
+  // taken off the cubic's actual width at each height, not guessed, so no band
+  // pokes through the cone's edge.
+  const drill = `
+    <path d="M -9.5,-2 C -9.5,-8.5 9.5,-8.5 9.5,-2 C 9.5,16 5.5,38 0,52
+             C -5.5,38 -9.5,16 -9.5,-2 Z"
+      fill="${DRILL}" ${ol(SW_MID)}/>
+    <path d="M -8.6,9 C -3,13.5 3,13.5 8.6,9" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
+    <path d="M -7.2,22 C -2.6,26.5 2.6,26.5 7.2,22" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
+    <path d="M -4.4,35 C -1.6,38.5 1.6,38.5 4.4,35" fill="none" stroke="${DRILL_DK}" stroke-width="2.1"/>
+    <path d="M -2.6,44 C -1,46.5 1,46.5 2.6,44" fill="none" stroke="${DRILL_DK}" stroke-width="1.8"/>
+    <path d="M -6.5,-1 C -3.5,6 -1.5,18 -0.8,32" fill="none" stroke="${BELLY}" stroke-width="1.8" opacity="0.45"/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 30)}
+      ${shadow(60, 136, 32)}
 
-      ${roundEar(34, 64, 10, bodyColor, BELLY)}
-      ${roundEar(86, 64, 10, bodyColor, BELLY)}
+      ${roundEar(33, 62, 10.5, bodyColor, BELLY)}
+      ${roundEar(87, 62, 10.5, bodyColor, BELLY)}
 
-      ${paws(accent, 102)}
+      <!-- front paws raised to shoulder height (cy=78) so the snout's whole
+           travel has clear air: at cy=102 they occupied y 91..113 and at 88
+           they still crossed the cone. High front paws suit a digging animal
+           anyway. -->
+      ${paws(accent, 78)}
       ${feet(accent, 128, 12, 7)}
       ${blob(bodyColor, 60, 92, 37, 38)}
       ${shadeCrescent(60, 92, 37, 38)}
 
-      <!-- eyes flank the snout rather than sitting above it: at y=64 they
-           landed near the crown and the muzzle read as a forehead spot with
-           a snail shell on it. -->
-      ${dotEyes(42, 78, 70, 4.8)}
+      ${dotEyes(42, 78, 64, 4.8)}
 
-      <!-- muzzle held clear of the belly patch (top y=90.5): both are cream,
-           so an overlap fuses them into one shapeless pale mass and the snout
-           stops reading as a snout. Sized as large as that clearance allows,
-           because the spiral is the entire species cue and a small one read
-           as a snail shell stuck on the forehead. -->
-      <ellipse cx="60" cy="80" rx="14" ry="10" fill="${BADGE}" ${ol(SW_MID)}/>
-      <g transform="translate(60,76) scale(0.75)">${spiral}</g>
-      ${mouth(60, 85, 4)}
+      <!-- snout: a small round muzzle collar for the cone to grow out of, then
+           the cone at 62 deg. Composed numerically, not eyeballed: the tip
+           (0,52) lands at (54 - 52*sin62, 80 + 52*cos62) = (8.1, 104.4),
+           while the rx=37 body's left edge at that height is x=24.9 -- so
+           ~17 units of cone sit OUTSIDE the silhouette, which is what finally
+           made Drillo nameable in a hard cutout (the first v8 attempt cleared
+           the outline by 1.6 units and still read as a plain round bear).
+           The angle matters as much as the length: at 40-52 deg the cone
+           crossed the middle of the face and buried the muzzle; at 62 it
+           leaves the head low and left, clearing the left eye's box
+           (37..47 x 59..69) and passing left of the badge (x 46..74) at every
+           height, so neither the face nor the letter is ever crossed. -->
+      <circle cx="58" cy="78" r="9.5" fill="${BADGE}" ${ol(SW_MID)}/>
+      <!-- scale 0.9 on top of the rotate: at full length the measured inked
+           extent reached x=2.3, i.e. 2.3 units from the frame. Not clipping,
+           but this file has a history of clipping accidents and a margin that
+           thin is not worth the two units of cone. Tip now lands at (12.6,
+           101.9), still ~12 units outside the body edge (x=24.4 there). -->
+      <g transform="translate(54,80) rotate(62) scale(0.9)">${drill}</g>
+      ${mouth(60, 88, 4)}
 
-      ${emblemBadge(60, 106, 14, visorColor, emblem, 20)}
+      ${emblemBadge(60, 108, 14, visorColor, emblem, 20)}
     `)
   )
 }
@@ -403,27 +458,29 @@ export function creatureCaptainRed({
   accent = '#d4796e',
   visorColor = BADGE,
 } = {}) {
-  // Every wing point is an absolute viewBox coordinate in [4,50]; mirrored()
-  // maps x -> 120-x, so the mirror lands in [70,116]. With the 2.2 stroke's
-  // 1.1 half-width that leaves ~2.9 units of clearance at both edges -- the
+  // Every wing point is an absolute viewBox coordinate in [5,52]; mirrored()
+  // maps x -> 120-x, so the mirror lands in [68,115]. With the 2.6 stroke's
+  // 1.3 half-width that leaves ~3.7 units of clearance at both edges -- the
   // failure an earlier pass hit (a polygon scaled to x=-54, then mirrored to
   // x=174) cannot recur from a shape written this way.
-  // Reach raised to y=34 (from 42): at the smaller span the lobes sat beside
-  // the body and read as fish fins rather than as wings above the shoulder.
+  // v8 reach: the leading edge now climbs to y=20 (v7: 34, the original: 42)
+  // and the span runs x=5..115, i.e. 110 of the 120-unit box. The point of a
+  // final evolved form is that the wings dominate the silhouette, and at v7's
+  // span they were merely present. Every lobe still ends in a curve.
   const wing = `
-    <path d="M 50,70 C 34,50 20,32 8,37 C 13,45 11,51 4,55
-             C 12,59 12,67 5,73 C 15,77 17,85 12,93
-             C 30,95 44,86 48,76 Z"
+    <path d="M 52,72 C 38,48 22,20 8,26 C 14,36 12,44 5,48
+             C 14,53 14,62 6,69 C 16,74 18,84 11,94
+             C 30,98 46,86 50,76 Z"
       fill="${panelColor}" ${ol(SW)}/>
-    <path d="M 45,71 C 33,56 22,42 12,40 M 43,77 C 31,70 20,64 11,63" fill="none"
+    <path d="M 47,72 C 35,50 22,28 11,28 M 45,79 C 32,70 20,62 9,60" fill="none"
       stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
   const horn = `
-    <path d="M -4,7 C -5,-1 -3,-9 0,-12 C 3,-9 5,-1 4,7 Z"
+    <path d="M -4.5,8 C -5.5,-2 -3.5,-11 0,-15 C 3.5,-11 5.5,-2 4.5,8 Z"
       fill="${accent}" ${ol(SW_MID)}/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 40)}
+      ${shadow(60, 136, 42)}
 
       ${wing}
       ${mirrored(wing)}
@@ -433,21 +490,24 @@ export function creatureCaptainRed({
 
       <!-- tail and flame in absolute coordinates, no rotate wrapper (a local-
            space curve carried through one is what pushed an earlier version
-           32 units off the bottom edge). Tail half-width 6 plus outline 2.2
-           is budgeted into every point: max x 106+8.2=114.2, max y
-           120+8.2=128.2. The flame teardrop peaks at (112,133) -> 113.1 and
-           134.1 with its outline. Both clear the right foot (x 62..90). -->
+           32 units off the bottom edge). Tail half-width 6 plus outline 2 is
+           budgeted into every point: max x 106+8=114, max y 120+8=128.
+           The flame is three nested teardrops now instead of two, and half
+           again as big (28x24 against v7's 20x17), peaking at (116,136) ->
+           117.3 and 137.3 inked. All of it clears the right foot (x 62..90). -->
       ${tube('M 88,100 C 102,104 106,112 102,120', 12, accent)}
-      <path d="M 102,116 C 112,122 110,130 102,133 C 94,130 92,122 102,116 Z"
+      <path d="M 102,110 C 116,119 114,132 102,136 C 90,132 88,119 102,110 Z"
         fill="${FLAME}" ${ol(SW_MID)}/>
-      <path d="M 102,121 C 107,125 106,129 102,131 C 98,129 97,124 102,121 Z"
+      <path d="M 102,117 C 110,123 109,130 102,133 C 95,130 94,123 102,117 Z"
         fill="${FLAME_CORE}"/>
+      <path d="M 102,123 C 106,126 105,130 102,131 C 99,130 98,126 102,123 Z"
+        fill="${BADGE}" opacity="0.8"/>
 
-      ${blob(bodyColor, 60, 92, 40, 38)}
-      ${shadeCrescent(60, 92, 40, 38)}
+      ${blob(bodyColor, 60, 92, 42, 39)}
+      ${shadeCrescent(60, 92, 42, 39)}
 
-      <g transform="translate(48,62) rotate(-16)">${horn}</g>
-      <g transform="translate(72,62) rotate(16)">${horn}</g>
+      <g transform="translate(47,61) rotate(-16)">${horn}</g>
+      <g transform="translate(73,61) rotate(16)">${horn}</g>
 
       ${dotEyes(46, 74, 72, 5.2)}
       ${mouth(60, 85, 6)}
