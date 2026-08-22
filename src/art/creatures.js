@@ -7,57 +7,62 @@
 // "catch." It deliberately borrows none of a real creature-collecting
 // franchise's specific silhouettes, colours, or ball/badge trade dress.
 //
-// REVISION NOTE (v2): the first draft gave each hero a round animal body and
-// then hung a gadget on it (a rocket pod, a horseshoe magnet, a drill bit) --
-// it read as "blob wearing a tool," not as an animal. This version rebuilds
-// every hero around an animal archetype first; the phonics gimmick survives
-// only as a body part that animal would plausibly have (an ear shape, a
-// tail shape, a horn, a cheek mark). If a feature could be unscrewed and
-// handed to a different character, it does not belong in this file.
+// DESIGN GRAMMAR (v7 -- SOFT LINE-ART CEL STYLE). This replaced an earlier
+// "angular and spiky" pass outright: the reference the client picked is a
+// hand-drawn creature chart whose whole appeal is softness, so spiky crests,
+// triangle claws, diamond cheek marks and hard facet shading are gone. Every
+// figure in this file follows all of the following.
 //
-// DESIGN GRAMMAR -- every figure in this file follows all of it.
+//  1. WARM SEPIA OUTLINE ON EVERYTHING, IN WEIGHT TIERS. `ol(w)` puts
+//     stroke=LINE (#7a5c48, never black) on the shape, and the weight carries
+//     depth the way it does in src/art/toys.js -- only thinner throughout,
+//     because this family's reference is a soft pencil-and-wash chart rather
+//     than a bold inked cartoon: 2.6 for the silhouette masses (body, wing,
+//     shell, puddle), 2.0 for limbs / ears / props / muzzles, 1.4 for
+//     interior seams, and 3.0 -- the heaviest line in the file -- for the
+//     emblem plate, which has to survive being the smallest thing that still
+//     must be read. A uniform weight looked flat and traced; the tiers are
+//     what make it look drawn.
+//     A limb drawn as a thick stroke gets its outline the only way a stroke
+//     can: the same path painted twice, wider in LINE underneath (`tube`).
+//  2. PASTEL, LOW-SATURATION FILLS. Bodies sit in the pale coral / pale sky /
+//     warm sand / soft lavender band -- high value, low chroma. Villains use
+//     the same band one step duller and darker, never a saturated "evil"
+//     colour. The outline and the eyes are the only dark values on the page.
+//  3. LIMBS BEHIND THE BODY, ONE CLEAN SILHOUETTE. Stub paws and feet are
+//     outlined and emitted BEFORE the body ellipse, so the body's opaque fill
+//     eats their inner strokes and the figure reads as one continuous outline
+//     with limbs poking out -- the way an inked drawing works.
+//  4. DOT EYES, TINY MOUTH, NOTHING ELSE. Two small dark ellipses and one
+//     short mouth stroke carry the whole face: no sclera, no highlight dot,
+//     no brows on heroes. Expression lives in the lid alone -- heroes plain
+//     dots, Magno a half-lid, villains a lid drooping toward the OUTSIDE
+//     corner (sulky/sly, never angry; an inward-up brow is the angry read).
+//  5. ONE OR TWO SPECIES CUES, RADICALLY SIMPLIFIED. Each figure keeps only
+//     the marks that name its animal -- long rounded ears + round cheek dots
+//     + a zigzag tail, a horseshoe-arch ear, a spiral snout, wings + a flame
+//     tail -- and nothing else. Anything that could be unscrewed and handed
+//     to another character does not belong on a hero.
+//  6. ROUND ENDS EVERYWHERE. Round caps and joins are set once on each
+//     figure's root group and inherited, and every "pointed" feature -- ear
+//     tips, horns, wingtips, zigzag corners, flame, drips -- terminates in a
+//     curve instead of a corner.
+//  7. THE EMBLEM IS A CHEST BADGE, sized past good taste: it is the phonics
+//     letter. Pastel bodies make a tinted badge disappear, so the badge plate
+//     is the lightest value in the figure, ringed in the sepia outline, with
+//     the letter in the darkest ink -- the contrast is structural rather than
+//     a colour choice a palette override could weaken. Badges are positioned
+//     to land wholly inside the belly patch, checked per figure.
+//  8. NO GRADIENTS, NO FILTERS. Volume is a belly patch plus one HARD-EDGED
+//     shade crescent per figure, cut on the body's own ellipse arc
+//     (`shadeCrescent`) so its outer edge is flush with the silhouette. A
+//     floating soft blob of tint, which is what this file used before, reads
+//     as a smudge; a shadow that follows the form reads as cel shading even
+//     in pastel.
 //
-//  1. ONE ROUND MASS, HEAD FUSED TO BODY. No neck, no torso/head seam, no
-//     articulated limb joints -- a single big ellipse "blob" is the whole
-//     figure. This is the loudest signal that separates the family from the
-//     three human-shaped casts: nothing here has a human proportion to
-//     compare against.
-//  2. TINY STUB LIMBS FLOATING OFF THE BLOB. Paws and feet are small
-//     separate ellipses with a gap of visible background between them and
-//     the body -- never a jointed arm/leg shape. They read as "a round
-//     animal standing" rather than "a person."
-//  3. GIANT EYES, NO OTHER FACE DETAIL BUDGET. Two big white-sclera eyes
-//     with a round pupil + highlight dot (heroes) or one-sided squint +
-//     tiny fang (villains) carry the entire expression. A single short
-//     mouth stroke is the only other face mark.
-//  4. AN ANIMAL ARCHETYPE FIRST, A GIMMICK SECOND. Each hero reads as a
-//     familiar small-animal silhouette -- an electric-mouse ear/tail shape,
-//     a sleepy round bear/seal shape, a fluffy fox/badger shape -- and the
-//     phonics gimmick is demoted to one plausible body part on that animal
-//     (a zigzag tail tip, a horseshoe-shaped ear, a single forehead horn).
-//     If the gimmick were removed the figure must still read as its animal;
-//     if the animal reading were removed the gimmick must still be a body
-//     part, never a held or worn object.
-//  5. ELEMENTAL COLOUR, NEVER THE FRANCHISE PALETTE. Each hero reads as a
-//     "type" through a warm/cool colour choice (ember red, static blue,
-//     earth amber), but none of them use the red/white two-tone or a
-//     circular midline seam -- that specific two-tone + seam combination is
-//     the one thing this family must never draw. Cheek marks are a diamond,
-//     not a circle, for the same trade-dress reason.
-//  6. THE EMBLEM IS A CHEST BADGE, sized past good taste (same rule as
-//     every other family): it is the phonics letter, so it has to survive a
-//     66 px box, where this 120x140 viewBox letterboxes to 57x66 -- under
-//     half a pixel per viewBox unit, so any detail thinner than ~3 units
-//     disappears. Villains carry no badge; the letters belong to the heroes.
-//  7. FLAT FILLS ONLY. Ellipses, circles and a handful of paths/polygons for
-//     the pointed species features (ears, tails, horns, wings). No
-//     gradients, no filters, no `rx` needed since almost nothing here is a
-//     rectangle.
-//
-// `visorColor` names the EMBLEM BADGE fill here (the family has no visor
-// either) -- report this at integration time the way dinosaurs.js and
-// platformer.js did, so the palette table omits it from anywhere a real
-// visor is expected.
+// `visorColor` names the EMBLEM BADGE fill here (the family has no visor) --
+// report this at integration time the way dinosaurs.js and platformer.js
+// did, so the palette table omits it from anywhere a real visor is expected.
 //
 // This file must not import ../art.js (circular); it carries its own svgWrap.
 
@@ -69,728 +74,594 @@ function svgWrap(inner, viewBox = '0 0 120 140') {
 // the creature parts are ellipses/paths, not polygon point lists, so the
 // robots' point-rewrite trick does not apply (dinosaurs.js and
 // platformer.js hit the same constraint and solved it the same way).
+// x -> 120-x maps the box onto itself, so a mirrored in-range shape stays in
+// range: every two-sided feature here is written once, on the left.
 function mirrored(inner) {
   return `<g transform="translate(120,0) scale(-1,1)">${inner}</g>`
 }
 
-const BELLY = '#faeecb' // warm underside patch shared by the whole cast, like dinosaurs' BELLY
-const PUPIL = '#2b2118' // warm dark, never the robots' cold grey
-const INK = '#2b2118' // mouth / villain brow strokes, same warm dark as PUPIL
-const FLAME = '#ffb020' // fixed spark/fire colour, independent of body palette
+const LINE = '#7a5c48' // warm sepia outline -- the whole style rests on this
+const LINE_SOFT = '#a98b72' // interior seams, one step lighter than LINE
+const INK = '#3f2d22' // eyes and mouth, the darkest value in the figure
+const BADGE = '#fffaf0' // emblem plate: lightest value, for letter contrast
+const BELLY = '#fdf1e0' // shared warm cream underside
+const FLAME = '#f7b96b' // soft ember, the one place any chroma is allowed
+const FLAME_CORE = '#fdeec4'
 const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
 
-// Big friendly eye: white sclera, round pupil, one highlight dot. Shared so
-// all four heroes read as the same cast, the same role dinosaurs.js' eye()
-// and platformer.js' face() play for their families.
-function eye(cx, cy, r) {
-  return `
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff"/>
-    <circle cx="${cx + r * 0.28}" cy="${cy + r * 0.1}" r="${r * 0.52}" fill="${PUPIL}"/>
-    <circle cx="${cx + r * 0.5}" cy="${cy - r * 0.28}" r="${r * 0.2}" fill="#fff"/>`
+// Outline weight tiers (grammar rule 1). Anything structural takes SW; a
+// limb, ear, prop or muzzle takes SW_MID; an interior seam takes SW_IN; the
+// emblem plate alone takes SW_BADGE.
+const SW = 2.6
+const SW_MID = 2
+const SW_IN = 1.4
+const SW_BADGE = 3
+
+const ol = (w = SW) => `stroke="${LINE}" stroke-width="${w}"`
+
+// Each figure's root group sets the round-end defaults once and children
+// inherit them -- that is how grammar rule 6 holds without repeating two
+// attributes on forty paths.
+function fig(inner) {
+  return `<g stroke-linecap="round" stroke-linejoin="round">${inner}</g>`
 }
 
-// Sleepy eye: a heavy lid mass covers the top of the white, leaving only a
-// low crescent with the pupil peeking through. Magno's whole "large and
-// lazy" read leans on this one shape being unmistakably different from the
-// alert round eye() every other hero uses.
-//
-// Lid reworked from a single smooth round arc to a two-facet roof (v5): a
-// perfectly round droop read as soft/melting, which is the opposite of the
-// "big, heavy, solid" reinterpretation Magno needed once "round == babyish"
-// became the note -- a sleepy eye is still the archetype's one non-
-// negotiable trait, so the fix is to keep the crescent but give its lid a
-// hard crease instead of a bow, the same way a visor slit reads as tough
-// where a droopy curve reads as drowsy-soft.
-function sleepyEye(cx, cy, r, lidColor) {
-  return `
-    <ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r * 0.72}" fill="#fff"/>
-    <circle cx="${cx}" cy="${cy + r * 0.3}" r="${r * 0.36}" fill="${PUPIL}"/>
-    <path d="M ${cx - r * 1.08},${cy - r * 0.08}
-             L ${cx - r * 0.32},${cy - r * 0.92}
-             L ${cx + r * 0.32},${cy - r * 0.92}
-             L ${cx + r * 1.08},${cy - r * 0.08}
-             Q ${cx},${cy - r * 0.26} ${cx - r * 1.08},${cy - r * 0.08} Z" fill="${lidColor}"/>`
+// Hard-edged cel shade: a crescent whose outer edge IS the body ellipse's own
+// arc (from -50 deg to 72 deg, i.e. upper-right around to lower-right), closed
+// by one curve back through the body's interior. Emitted after the belly patch
+// and before the badge, so the shadow crosses the belly the way a real one
+// would but never dims the letter plate.
+function shadeCrescent(cx, cy, rx, ry, op = 0.13) {
+  const rad = (d) => (d * Math.PI) / 180
+  const p = (deg) => [cx + rx * Math.cos(rad(deg)), cy + ry * Math.sin(rad(deg))]
+  const [x1, y1] = p(-50)
+  const [x2, y2] = p(72)
+  return `<path d="M ${x1.toFixed(1)},${y1.toFixed(1)} A ${rx},${ry} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)}
+    Q ${(cx + rx * 0.3).toFixed(1)},${cy} ${x1.toFixed(1)},${y1.toFixed(1)} Z"
+    fill="${LINE}" opacity="${op}"/>`
 }
 
-// Villain eye: one relaxed round eye plus one squint-and-brow, so the face
-// reads as sly/mischievous rather than frightened symmetry -- kept
-// friendly-not-scary per the 5-year-old audience rule that every other
-// family's villains already follow.
-function wildEyes(cx1, cx2, cy, r) {
-  return `
-    ${eye(cx1, cy, r)}
-    <ellipse cx="${cx2}" cy="${cy + r * 0.3}" rx="${r}" ry="${r * 0.42}" fill="#fff"/>
-    <ellipse cx="${cx2 + r * 0.15}" cy="${cy + r * 0.3}" rx="${r * 0.46}" ry="${r * 0.3}" fill="${PUPIL}"/>
-    <path d="M ${cx2 - r * 1.1},${cy - r * 0.9} L ${cx2 + r * 0.6},${cy - r * 0.3}"
-      stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`
+// Ground shadow. `cy` is clamped so the ellipse's own bottom (cy + rx*0.16)
+// stays inside the 140-tall box: the first version of this pass let the four
+// widest figures' shadows run to y=142.4, which reads as a shadow sliced flat
+// against the frame -- the one clipping bug that survived every hand check
+// because a 13%-opacity shape is easy to look past.
+function shadow(cx, cy, rx) {
+  const ry = rx * 0.16
+  return `<ellipse cx="${cx}" cy="${Math.min(cy, 138.5 - ry)}" rx="${rx}" ry="${ry}" fill="${LINE}" opacity="0.13"/>`
 }
 
-// Small mouth: a closed smile for heroes, an open-corner smirk with one
-// fang for villains. Kept on the same one-stroke-plus-a-triangle budget so
-// both survive 66 px.
-function smile(cx, cy, w) {
-  return `<path d="M ${cx - w},${cy} Q ${cx},${cy + w * 0.7} ${cx + w},${cy}"
-    fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`
+// A limb drawn as a thick stroke cannot take a stroke of its own, so it is
+// painted twice: LINE first at width+2*SW, the fill on top at width.
+function tube(d, width, fill) {
+  return `
+    <path d="${d}" fill="none" stroke="${LINE}" stroke-width="${width + SW_MID * 2}"/>
+    <path d="${d}" fill="none" stroke="${fill}" stroke-width="${width}"/>`
+}
+
+// Plain dot eye. No sclera, no glint -- grammar rule 4.
+function dot(cx, cy, r) {
+  return `<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r * 1.08}" fill="${INK}"/>`
+}
+function dotEyes(cx1, cx2, cy, r) {
+  return `${dot(cx1, cy, r)}${dot(cx2, cy, r)}`
+}
+
+// Half-lidded pair: a flattened dot with the upper lid arcing OVER it, bowing
+// upward. The direction matters more than anything else in this function -- a
+// lid that dips down in the middle is a frown and reads angry (the first
+// version of this pass did exactly that and Magno came out scowling); bowing
+// up over a squashed pupil is the drowsy read.
+function sleepyEyes(cx1, cx2, cy, r) {
+  const one = (cx) => `
+    <ellipse cx="${cx}" cy="${cy + r * 0.55}" rx="${r * 0.92}" ry="${r * 0.45}" fill="${INK}"/>
+    <path d="M ${cx - r * 1.3},${cy + r * 0.1} Q ${cx},${cy - r * 1.15} ${cx + r * 1.3},${cy + r * 0.1}"
+      fill="none" stroke="${INK}" stroke-width="2.3"/>`
+  return `${one(cx1)}${one(cx2)}`
+}
+
+// Villain pair: dot plus a lid sitting LOW on the outside corner. Kept thin
+// (1.8) and shallow (0.5r of rise across 2.4r of width): the first version was
+// 2.1 wide with twice the rise and, even though inner-high/outer-low is
+// geometrically the sulky shape rather than the angry one, at that weight it
+// read as a heavy scowl. Villains here are meant to look put-upon, not fierce.
+function droopyEyes(cx1, cx2, cy, r) {
+  return `
+    ${dot(cx1, cy, r)}
+    ${dot(cx2, cy, r)}
+    <path d="M ${cx1 - r * 1.3},${cy - r * 1.15} Q ${cx1 - r * 0.1},${cy - r * 1.8} ${cx1 + r * 1.1},${cy - r * 1.65}"
+      fill="none" stroke="${INK}" stroke-width="1.8"/>
+    <path d="M ${cx2 + r * 1.3},${cy - r * 1.15} Q ${cx2 + r * 0.1},${cy - r * 1.8} ${cx2 - r * 1.1},${cy - r * 1.65}"
+      fill="none" stroke="${INK}" stroke-width="1.8"/>`
+}
+
+// Tiny mouths. Hero: a short symmetric curve. Villain: the same curve with
+// one corner lifted, which is all a smirk needs at this line weight.
+function mouth(cx, cy, w) {
+  return `<path d="M ${cx - w},${cy} Q ${cx},${cy + w * 0.8} ${cx + w},${cy}"
+    fill="none" stroke="${INK}" stroke-width="2.1"/>`
 }
 function smirk(cx, cy, w) {
-  return `
-    <path d="M ${cx - w},${cy - w * 0.2} Q ${cx},${cy + w * 0.55} ${cx + w},${cy}"
-      fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M ${cx - w * 0.3},${cy + w * 0.2} L ${cx - w * 0.15},${cy + w * 0.75} L ${cx},${cy + w * 0.25} Z" fill="#fff"/>`
+  return `<path d="M ${cx - w},${cy + w * 0.3} Q ${cx},${cy + w * 0.85} ${cx + w},${cy - w * 0.35}"
+    fill="none" stroke="${INK}" stroke-width="2.1"/>`
 }
 
-// Chest badge: the phonics letter, oversized on purpose (see file header).
-function emblemBadge(cx, cy, r, plateColor, textColor, label, size) {
+// Chest badge: lightest plate + sepia ring + darkest ink letter (rule 7).
+function emblemBadge(cx, cy, r, plateColor, label, size) {
   return `
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}" ${ol(SW_BADGE)}/>
     <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
-      font-size="${size}" font-weight="800" fill="${textColor}">${label}</text>`
+      font-size="${size}" font-weight="800" fill="${INK}">${label}</text>`
 }
 
-// Diamond cheek mark -- an elemental "type" flourish shaped as a rhombus,
-// never a circle, so it cannot read as the one franchise's trademark cheek
-// dot no matter the colour.
-function cheekMark(cx, cy, s, fill) {
-  return `<polygon points="${cx},${cy - s} ${cx + s * 0.78},${cy} ${cx},${cy + s} ${cx - s * 0.78},${cy}" fill="${fill}"/>`
-}
-
-// The shared blob: one big body ellipse + a lighter belly patch. Every hero
-// and villain in the file paints this first and then adds its own species
-// feature and limbs on top, the same layering dinosaurs.js' farLimb()/eye()
-// helpers support without dictating the whole figure.
-function blob(bodyColor, cx = 60, cy = 90, rx = 36, ry = 42) {
+// The shared mass: one outlined body ellipse plus an outlined belly patch.
+// Corky and Flippy pass withBelly=false (see their own notes).
+//
+// The belly is deliberately much WIDER than it is tall. A near-circular patch
+// with the round badge centred in it reads as a dartboard -- two concentric
+// cream rings -- and swallows so much of the figure that the pastel body
+// barely shows, which was the loudest complaint about the first version of
+// this pass. A shallow wide oval behind a round badge reads as a bib with a
+// name tag instead, and leaves the body colour dominant. The badge still has
+// to sit inside the patch: there is no room to put it above one, because the
+// face already owns the top half of a 72-unit-tall body.
+function blob(fill, cx, cy, rx, ry, withBelly = true) {
   return `
-    <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${bodyColor}"/>
-    <ellipse cx="${cx}" cy="${cy + ry * 0.24}" rx="${rx * 0.62}" ry="${ry * 0.62}" fill="${BELLY}"/>`
+    <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" ${ol(SW)}/>
+    ${withBelly
+      ? `<ellipse cx="${cx}" cy="${cy + ry * 0.4}" rx="${rx * 0.8}" ry="${ry * 0.44}"
+           fill="${BELLY}" ${ol(SW_IN)}/>`
+      : ''}`
 }
 
-// Stub paws + stub feet -- kept as separate floating ellipses (see grammar
-// rule 2) so nothing here reads as a jointed human arm or leg.
-function paws(accent, cy = 92, rx = 11, ry = 13) {
-  return `
-    <ellipse cx="21" cy="${cy}" rx="${rx}" ry="${ry}" fill="${accent}"/>
-    <ellipse cx="99" cy="${cy}" rx="${rx}" ry="${ry}" fill="${accent}"/>`
+// Stub limbs -- outlined, and always emitted BEFORE the body (rule 3).
+function stub(cx, cy, rx, ry, fill) {
+  return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" ${ol(SW_MID)}/>`
 }
-function feet(accent, rx = 13, ry = 8) {
-  return `
-    <ellipse cx="41" cy="128" rx="${rx}" ry="${ry}" fill="${accent}"/>
-    <ellipse cx="79" cy="128" rx="${rx}" ry="${ry}" fill="${accent}"/>`
+function paws(fill, cy, rx = 9.5, ry = 11) {
+  return `${stub(22, cy, rx, ry, fill)}${stub(98, cy, rx, ry, fill)}`
+}
+function feet(fill, cy, rx = 12, ry = 7) {
+  return `${stub(44, cy, rx, ry, fill)}${stub(76, cy, rx, ry, fill)}`
 }
 
-// Default rounded ear nub, used by any hero/villain whose species feature
-// is not on the head.
-function roundEars(bodyColor) {
-  return `
-    <ellipse cx="39" cy="45" rx="9" ry="13" fill="${bodyColor}"/>
-    <ellipse cx="81" cy="45" rx="9" ry="13" fill="${bodyColor}"/>`
-}
-
-// Tall pointed ear with an inner-ear patch, canted outward from the crown --
-// the mouse/rabbit silhouette Rocket and Captain Red's ear-traces both
-// build on. Optional `tipColor` caps the point in a colour that contrasts
-// with both `bodyColor` and `innerColor`, so the ear reads as sharp even in
-// a flattened grey silhouette (a same-value inner patch alone is not enough
-// once the ear gets long -- v3 exaggeration pass).
-function pointedEar(cx, cy, w, h, rot, bodyColor, innerColor, tipColor) {
+// Long ear with a ROUNDED tip: the tip's two control handles meet at (0,-h)
+// pulled sideways, so the apex is a dome. This is the shape the previous
+// spiky pass got wrong.
+function softEar(cx, cy, w, h, rot, fill, innerFill) {
   return `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
-      <path d="M ${-w},${h * 0.35} C ${-w * 1.15},${-h * 0.5} ${-w * 0.25},${-h} 0,${-h}
-               C ${w * 0.25},${-h} ${w * 1.15},${-h * 0.5} ${w},${h * 0.35}
-               C ${w * 0.6},${h * 0.55} ${-w * 0.6},${h * 0.55} ${-w},${h * 0.35} Z" fill="${bodyColor}"/>
-      <path d="M ${-w * 0.5},${h * 0.2} C ${-w * 0.55},${-h * 0.3} ${-w * 0.12},${-h * 0.62} 0,${-h * 0.58}
-               C ${w * 0.12},${-h * 0.62} ${w * 0.55},${-h * 0.3} ${w * 0.5},${h * 0.2} Z" fill="${innerColor}"/>
-      ${tipColor ? `<path d="M ${-w * 0.34},${-h * 0.62} C ${-w * 0.3},${-h * 0.88} ${-w * 0.08},${-h} 0,${-h}
-               C ${w * 0.08},${-h} ${w * 0.3},${-h * 0.88} ${w * 0.34},${-h * 0.62}
-               C ${w * 0.2},${-h * 0.72} ${-w * 0.2},${-h * 0.72} ${-w * 0.34},${-h * 0.62} Z" fill="${tipColor}"/>` : ''}
+      <path d="M ${-w},${h * 0.4} C ${-w * 1.05},${-h * 0.45} ${-w * 0.85},${-h} 0,${-h}
+               C ${w * 0.85},${-h} ${w * 1.05},${-h * 0.45} ${w},${h * 0.4} Z"
+        fill="${fill}" ${ol(SW_MID)}/>
+      <path d="M ${-w * 0.46},${h * 0.2} C ${-w * 0.5},${-h * 0.4} ${-w * 0.42},${-h * 0.74} 0,${-h * 0.74}
+               C ${w * 0.42},${-h * 0.74} ${w * 0.5},${-h * 0.4} ${w * 0.46},${h * 0.2} Z"
+        fill="${innerFill}" ${ol(SW_IN)}/>
     </g>`
+}
+
+// Round ear nub, for the species whose ears are small.
+function roundEar(cx, cy, r, fill, innerFill) {
+  return `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${ol(SW_MID)}/>
+    <circle cx="${cx}" cy="${cy}" r="${r * 0.5}" fill="${innerFill}" ${ol(SW_IN)}/>`
+}
+
+// Horseshoe arch, one closed path with round joins so both legs end soft.
+// Magno wears it as an EAR (body-coloured, no pole caps, so it reads as an
+// ear first and a magnet second); Grabby wears the stolen one as an actual
+// object, pole caps and all, which is what makes the theft legible.
+function archShape(fill, poleA, poleB) {
+  return `
+    <path d="M -9,11 C -9,-11 9,-11 9,11 L 3,11 C 3,-3 -3,-3 -3,11 Z"
+      fill="${fill}" ${ol(SW_MID)}/>
+    ${poleA ? `<rect x="-9.2" y="6.6" width="6.4" height="5.8" rx="2.2" fill="${poleA}" ${ol(SW_IN)}/>` : ''}
+    ${poleB ? `<rect x="2.8" y="6.6" width="6.4" height="5.8" rx="2.2" fill="${poleB}" ${ol(SW_IN)}/>` : ''}`
 }
 
 // ---------------------------------------------------------------------------
 // HEROES
 // ---------------------------------------------------------------------------
 
-// Rocket (R): an electric-mouse archetype. Tall pointed ears, a diamond
-// cheek mark by each eye, and a zigzag tail peeking past the body edge --
-// the tail is the gimmick's new home, a lightning-bolt shape that is also
-// legible as "leaves a rocket-trail," so the name still makes sense without
-// a rocket ever appearing as an object.
+// Rocket (R): electric mouse/rabbit. Two long rounded ears, two ROUND cheek
+// dots (the earlier diamond was a trade-dress dodge that also read spiky; a
+// plain circle in a non-franchise colour and placement does the same job),
+// and a zigzag tail whose corners are round joins on a thick stroke, so it
+// reads as soft lightning rather than cut glass.
 export function creatureRocket({
-  bodyColor = '#ef5b3c',
-  accent = '#9c2e1d',
+  bodyColor = '#f6a893',
+  accent = '#e2846c',
   emblem = 'R',
-  visorColor = '#fff3c4',
+  visorColor = BADGE,
 } = {}) {
   return svgWrap(
-    `
-    <g transform="rotate(-6 60 92)">
-      <ellipse cx="58" cy="134" rx="30" ry="5" fill="#000" opacity="0.12"/>
+    fig(`
+      ${shadow(60, 132, 28)}
 
-      <path d="M 4,72 L 20,80 M 0,88 L 18,94" stroke="${accent}" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+      <!-- tail: one thick round-jointed stroke, so every zigzag corner is a
+           curve. Rooted at (87,92), inside the rx=34 body silhouette (edge
+           x=93.5 at that height) so the join hides, then up and out to the
+           right: max x 111 + half stroke 4 + outline 2.2 = 117.2, min y
+           50 - 6.2 = 43.8. Held above the right paw (88.5..107.5 x
+           89..111, drawn later) rather than through it -- an earlier version
+           ran the tail lower and the paw swallowed all but a stub of it. -->
+      ${tube('M 87,92 L 106,79 L 97,68 L 111,50', 8, accent)}
 
-      <!-- zigzag tail, scaled and pushed past the body's right edge
-           (silhouette bounding box: cx=60 rx=36 -> edge at x=96) so it reads
-           as a lightning bolt breaking the outline, not a shape tucked
-           behind it (v3: was translate(92,80) with no scale, mostly hidden
-           behind the blob). scale/translate tuned down from an earlier pass
-           (1.6/99) to 1.5/97 -- the tip at local (6,-32) landed at abs
-           x=119.0 with the larger numbers, a hair inside the 120-wide
-           viewBox but with no margin for rounding; this keeps the same
-           "breaking the outline" read with a few units of clearance. -->
-      <g transform="translate(97,64) rotate(12) scale(1.5)">
-        <polygon points="6,-32 -8,0 2,0 -10,32 12,-4 3,-4" fill="${accent}"/>
-        <polygon points="4,-25 -3,-2 2,-2 -5,16" fill="${FLAME}"/>
-        <polygon points="3,-19 -1,-3 1.5,-3 -2,10" fill="#fff6c2" opacity="0.9"/>
-      </g>
-      <!-- two loose spark particles trailing the bolt (v6), the same
-           "detail budget is open now" pass that added the mitt highlight
-           and wing scales -- cheap to add, sells "electric" at a glance. -->
-      <polygon points="106,90 110,84 108,92 113,88" fill="${FLAME}" opacity="0.85"/>
-      <polygon points="100,104 104,99 102,106 107,102" fill="${FLAME}" opacity="0.7"/>
+      <!-- ears before the body so their roots vanish under it. Apexes land at
+           (33.8,17) and (86.2,17) -- computed through the rotate, not
+           eyeballed; ~15 units of headroom above the box. -->
+      ${softEar(42, 50, 11, 34, -14, bodyColor, BELLY)}
+      ${softEar(78, 50, 11, 34, 14, bodyColor, BELLY)}
 
-      ${blob(bodyColor)}
-      <!-- core-shadow lobe (v6): a soft second tone along the lower-right
-           flank, the flat-shading trick every character in this pass now
-           uses for volume -- two solid fills instead of one, no gradients.
-           Sized/offset to stay inside the body ellipse's silhouette. -->
-      <ellipse cx="74" cy="100" rx="17" ry="23" fill="${accent}" opacity="0.25"/>
-      ${paws(accent)}
-      ${feet(accent)}
-      <!-- small filled claw points on both paws, replacing bare ellipse
-           tips -- three per paw, sharp rather than a stroke tick. -->
-      <polygon points="13,100 10,108 16,104" fill="${accent}"/>
-      <polygon points="21,104 19,113 25,109" fill="${accent}"/>
-      <polygon points="29,100 31,108 25,104" fill="${accent}"/>
-      <polygon points="107,100 104,108 110,104" fill="${accent}"/>
-      <polygon points="99,104 97,113 103,109" fill="${accent}"/>
-      <polygon points="91,100 93,108 87,104" fill="${accent}"/>
+      ${paws(accent, 100)}
+      ${feet(accent, 126)}
+      ${blob(bodyColor, 60, 88, 34, 36)}
 
-      <!-- static-fur spike crown (v5, widened to 5 in v6): sharp triangles
-           fanning up from the crown between the ears. This is the direct
-           answer to "too round/babyish" for Rocket specifically -- the
-           ear/tail/cheek marks were already pointed, but the head's TOP
-           ARC (the part that reads first in silhouette) was still a plain
-           round dome. Alternating accent/bodyColor so no two adjacent
-           spikes fuse into one shape. Checked through the outer
-           rotate(-6 60 92) body tilt numerically -- worst point lands at
-           abs y=6.5, still inside the viewBox; the two new outer spikes
-           land at (41,28) and (65,25), same margin. -->
-      <polygon points="46,46 48,26 50,46" fill="${bodyColor}"/>
-      <polygon points="52,46 55,14 58,46" fill="${accent}"/>
-      <polygon points="58,46 60,6 62,46" fill="${bodyColor}"/>
-      <polygon points="62,46 65,14 68,46" fill="${accent}"/>
-      <polygon points="70,46 72,26 74,46" fill="${bodyColor}"/>
+      <!-- soft volume tint: one same-hue lobe at low opacity, no facets. -->
+      ${shadeCrescent(60, 88, 34, 36)}
 
-      <!-- ears lengthened (w 10->13, h 30->40) and canted wider (14deg->20deg)
-           with a dark tip cap so the point reads even value-flattened.
-           cy moved down 22->45 from the first exaggeration pass: at h=40
-           the apex of a -20deg-canted ear lands at cy - h*cos(20deg), and
-           cy=22 put that at y=-15.6 -- 15+ units above the viewBox top,
-           clipped outright. cy=40 alone still isn't enough: this whole
-           figure sits inside an outer rotate(-6 60 92) body tilt, which
-           is not symmetric on the two ears -- it pushed the right ear's
-           apex to y=-1.24 even after the cy=40 fix (the left ear, tilted
-           the other way by the same wrapper, landed at a comfortable
-           y=+7.05). cy=45 clears the tilted right ear by a ~3.7 unit
-           margin (checked by composing both transforms numerically, not
-           by eyeballing the render) and, as a side effect, sinks the ear
-           root a few units into the head silhouette instead of floating
-           above it. -->
-      ${pointedEar(34, 45, 13, 40, -20, bodyColor, visorColor, accent)}
-      ${pointedEar(86, 45, 13, 40, 20, bodyColor, visorColor, accent)}
+      <circle cx="34" cy="90" r="6.5" fill="${accent}" ${ol(SW_IN)}/>
+      <circle cx="86" cy="90" r="6.5" fill="${accent}" ${ol(SW_IN)}/>
 
-      <!-- cheek diamonds enlarged (8.5->13) and pushed to a hotter, more
-           saturated red so the "electric type" cheek mark reads at a
-           glance instead of blending into bodyColor at small sizes. -->
-      ${cheekMark(35, 94, 13, '#ff2a1a')}
-      ${cheekMark(85, 94, 13, '#ff2a1a')}
+      ${dotEyes(47, 73, 78, 4.8)}
+      ${mouth(60, 88, 5)}
 
-      ${eye(45, 76, 12)}
-      ${eye(75, 76, 12)}
-      ${smile(60, 92, 8)}
-
-      ${emblemBadge(60, 108, 18, visorColor, accent, emblem, 24)}
-    </g>
-  `
+      ${emblemBadge(60, 107, 14, visorColor, emblem, 20)}
+    `)
   )
 }
 
-// Magno (M): a big, round, sleepy archetype -- half-lidded eyes, a rounder
-// heavier body than its castmates, and short stubby limbs pulled in close.
-// The horseshoe magnet survives only as the ear shape, with its two poles
-// reduced to two small dots instead of a held prop's coloured blocks.
+// Magno (M): the big sleepy one. Widest, lowest-sitting body of the three
+// small heroes, half-lidded eyes, limbs pulled in short. The magnet survives
+// only as the ARCH SHAPE of the ears, body-coloured with no pole caps --
+// legible as a horseshoe if you look for it, reading as ears if you do not.
 export function creatureMagno({
-  bodyColor = '#3f7ad1',
-  accent = '#1d3f7a',
+  bodyColor = '#a9c9ea',
+  accent = '#82a9d2',
   emblem = 'M',
-  visorColor = '#fff3c4',
+  visorColor = BADGE,
 } = {}) {
-  // Magnet-pole dots enlarged (r 2.6->4) for stronger colour contrast at
-  // the ear tips, each now ringed in white so the red/blue pop reads as a
-  // hard enamel cap rather than a tinted patch; the ear path itself is
-  // scaled up 1.2x at the call site rather than rewritten by hand, so the
-  // horseshoe stays proportioned.
-  // Rivet bands added across each leg (v6, detail budget now open) so the
-  // horseshoe reads as a riveted metal casting rather than a flat outline.
-  const sleepyEar = `
-    <path d="M -9,-14 C -9,-26 9,-26 9,-14 L 9,4 C 9,8 3,8 3,4 L 3,-13
-             C 3,-18 -3,-18 -3,-13 L -3,4 C -3,8 -9,8 -9,4 Z" fill="${accent}"/>
-    <rect x="-8.4" y="-10" width="4.4" height="2" fill="#0f2454" opacity="0.6"/>
-    <rect x="4" y="-10" width="4.4" height="2" fill="#0f2454" opacity="0.6"/>
-    <rect x="-8.4" y="-2" width="4.4" height="2" fill="#0f2454" opacity="0.6"/>
-    <rect x="4" y="-2" width="4.4" height="2" fill="#0f2454" opacity="0.6"/>
-    <circle cx="-5.5" cy="-1" r="5" fill="#fff"/>
-    <circle cx="5.5" cy="-1" r="5" fill="#fff"/>
-    <circle cx="-5.5" cy="-1" r="4" fill="#d1332f"/>
-    <circle cx="5.5" cy="-1" r="4" fill="#2f5fb0"/>`
-
-  // Blocky mitt (v5): an octagon, not an ellipse, standing in for the
-  // shared paws() helper on Magno only -- "heavy and solid" needed a hard-
-  // edged fist instead of a soft round paw, but paws() is shared with two
-  // villains (Grabby, Corky) that were reviewed as already-good and are
-  // meant to stay untouched, so this is a Magno-local replacement rather
-  // than an edit to the shared helper. A small light facet in the top-left
-  // corner (v6) is the same flat two-tone-shading trick as the body shadow
-  // lobe -- a hard highlight where light would catch a solid edge.
-  const blockyMitt = (cx, cy, s) => `
-    <polygon points="${cx - s * 0.5},${cy - s} ${cx + s * 0.5},${cy - s} ${cx + s},${cy - s * 0.3}
-      ${cx + s},${cy + s * 0.6} ${cx + s * 0.5},${cy + s} ${cx - s * 0.5},${cy + s}
-      ${cx - s},${cy + s * 0.6} ${cx - s},${cy - s * 0.3} Z" fill="${accent}"/>
-    <polygon points="${cx - s * 0.5},${cy - s} ${cx + s * 0.15},${cy - s} ${cx - s * 0.55},${cy - s * 0.15} ${cx - s},${cy - s * 0.3}"
-      fill="#fff" opacity="0.18"/>`
-
   return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="136" rx="34" ry="5" fill="#000" opacity="0.14"/>
+    fig(`
+      ${shadow(60, 134, 34)}
 
-      <g transform="translate(34,38) rotate(-10) scale(1.2)">${sleepyEar}</g>
-      <g transform="translate(86,38) rotate(10) scale(-1.2,1.2)">${sleepyEar}</g>
+      <g transform="translate(40,52) rotate(-12) scale(1.15)">${archShape(bodyColor)}</g>
+      <g transform="translate(80,52) rotate(12) scale(-1.15,1.15)">${archShape(bodyColor)}</g>
 
-      <!-- IMPORTANT: the sleepy-lid eye shape is a same-colour overlay on
-           the sclera, so it vanishes entirely once colour is stripped for
-           the grey-silhouette read test -- it cannot carry "sagging" on
-           its own. This extra "haunches" ellipse fused under the main
-           blob is what does: it is wider (rx 48) and lower (cy 114) than
-           the main body (rx 40, cy 88), so the outline itself flares out
-           toward the floor -- a pear/teardrop silhouette instead of a
-           plain circle, reading as heavy-and-sitting with the colour
-           removed. Same fill as the main blob, so no seam shows through. -->
-      <ellipse cx="60" cy="112" rx="50" ry="22" fill="${bodyColor}"/>
-      ${blob(bodyColor, 60, 88, 40, 38)}
-      <!-- core-shadow lobe (v6), same two-tone volume trick as Rocket's --
-           kept low and to one side so it reads as underside shading rather
-           than a stray patch. -->
-      <ellipse cx="82" cy="100" rx="18" ry="24" fill="${accent}" opacity="0.2"/>
-      ${blockyMitt(19, 98, 15)}
-      ${blockyMitt(101, 98, 15)}
-      ${feet(accent, 17, 8)}
+      ${paws(accent, 100, 10, 11)}
+      ${feet(accent, 128, 13, 7)}
+      ${blob(bodyColor, 60, 90, 40, 36)}
+      ${shadeCrescent(60, 90, 40, 36)}
 
-      <!-- half-lidded eyes enlarged (r 12->17) -- Magno's whole "sleepy"
-           read leans on this crescent being unmissable, not just present. -->
-      ${sleepyEye(44, 82, 17, bodyColor)}
-      ${sleepyEye(76, 82, 17, bodyColor)}
-      ${smile(60, 100, 7)}
+      ${sleepyEyes(45, 75, 78, 6)}
+      ${mouth(60, 90, 4.5)}
 
-      ${emblemBadge(60, 114, 18, visorColor, accent, emblem, 24)}
-    </g>
-  `
+      ${emblemBadge(60, 108, 14, visorColor, emblem, 20)}
+    `)
   )
 }
 
-// Drillo (D): a burrowing mole archetype. Small tucked ears, small eyes and
-// small clawed paws carry the animal read; the drill sits where a real
-// burrowing animal's digging feature would be -- the snout -- as one small
-// twisted horn, not the oversized threaded cone the first draft wore on
-// its forehead like a tool.
+// Drillo (D): burrowing mole. The drill is the SNOUT and only the snout -- a
+// round muzzle carrying a soft two-turn spiral, seen head-on, which is how a
+// front-facing figure can own a drill without holding one. Small round ears
+// and short round feet finish the mole read.
 export function creatureDrillo({
-  bodyColor = '#c98a2e',
-  accent = '#6b4310',
+  bodyColor = '#e6c894',
+  accent = '#c9a56e',
   emblem = 'D',
-  visorColor = '#fff3c4',
+  visorColor = BADGE,
 } = {}) {
-  // Dark metallic tone, deliberately independent of bodyColor/accent (both
-  // sit in the same warm amber/brown family and were washing the drill into
-  // the snout at small sizes -- v3 fix). A cool near-black steel reads as
-  // "hard tool" against a warm animal body at every size the sheet renders.
-  const DRILL_METAL = '#38352f'
-  // Thread ticks added (v5): short diagonal marks crossing the shaft at
-  // three points so it reads as a threaded drill bit rather than a smooth
-  // twisted horn -- a lighter metal tone catches these as highlights
-  // against the near-black shaft.
-  // Highlight rail added (v6) along one edge of the shaft -- a lighter
-  // metal streak parallel to the dark stroke reads as a cylindrical drill
-  // catching light on one face, not a flat brown stripe.
-  const snoutDrill = `
-    <path d="M 0,10 C 5,2 -6,-6 0,-16 C 5,-24 -4,-31 0,-40"
-      fill="none" stroke="${DRILL_METAL}" stroke-width="9" stroke-linecap="round"/>
-    <path d="M -4,3 L 4,-1 M -4,-9 L 4,-13 M -4,-21 L 4,-25 M -4,-33 L 4,-37"
-      stroke="#8a8378" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
-    <path d="M 2.6,6 C 6,0 -2,-8 2,-17 C 6,-25 -1,-30 2,-38"
-      fill="none" stroke="#b8ac93" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
-    <circle cx="0" cy="-40" r="4.4" fill="${DRILL_METAL}"/>`
-  // Claws rebuilt as filled triangles (v6, replacing the v5 stroke fan) --
-  // bigger and sharper now that 66px is no longer the binding constraint;
-  // the centre claw stays longest so the fan still reads as three curved
-  // points rather than a comb.
-  const clawTick = (cx, cy) => `
-    <polygon points="${cx - 11},${cy + 4} ${cx - 15},${cy + 18} ${cx - 6},${cy + 8}" fill="${accent}"/>
-    <polygon points="${cx - 3},${cy + 6} ${cx},${cy + 22} ${cx + 3},${cy + 6}" fill="${accent}"/>
-    <polygon points="${cx + 11},${cy + 4} ${cx + 15},${cy + 18} ${cx + 6},${cy + 8}" fill="${accent}"/>`
+  // Spiral as a bezier chain, kept inside r=6 of its own origin so it sits in
+  // the muzzle's upper half and leaves room for the mouth below. Drawn in the
+  // outline colour, not the softer seam colour: at 66 px a 1.9-wide seam-tone
+  // spiral greyed out into a smudge and the drill read vanished.
+  const spiral = `
+    <path d="M 0,-6 C 4.8,-6 6.3,-2 6.3,0.5 C 6.3,4 3.2,6 0,6
+             C -3.9,6 -6.3,3 -6.3,0 C -6.3,-2.6 -4.4,-4 -2.4,-4
+             C -0.5,-4 0.9,-2.6 0.9,-0.9 C 0.9,0.6 -0.3,1.7 -1.5,1.7"
+      fill="none" stroke="${LINE}" stroke-width="2"/>`
 
-  // Small pointed ear (v5), replacing the shared roundEars() -- roundEars()
-  // is also Grabby's (villain) ear, and the note asks for hero silhouettes
-  // to read sharper without touching villains the reviewer already signed
-  // off on, so Drillo gets its own small tipped ear off the existing
-  // pointedEar() helper instead of a shared-shape edit.
   return svgWrap(
-    `
-    <g>
-      <ellipse cx="58" cy="134" rx="30" ry="5" fill="#000" opacity="0.12"/>
+    fig(`
+      ${shadow(60, 136, 30)}
 
-      ${pointedEar(39, 50, 7, 18, -12, bodyColor, visorColor, accent)}
-      ${pointedEar(81, 50, 7, 18, 12, bodyColor, visorColor, accent)}
+      ${roundEar(34, 64, 10, bodyColor, BELLY)}
+      ${roundEar(86, 64, 10, bodyColor, BELLY)}
 
-      ${blob(bodyColor)}
-      <!-- core-shadow lobe (v6), same flat two-tone volume trick as the
-           other three heroes. -->
-      <ellipse cx="76" cy="98" rx="16" ry="22" fill="${accent}" opacity="0.22"/>
-      <!-- badger-style fur stripes (v6): two soft bands running from the
-           crown down past the eyes, a texture pass the "open detail
-           budget" note explicitly invited and the mole archetype easily
-           supports. -->
-      <path d="M 46,50 C 43,64 44,78 48,90" fill="none" stroke="${accent}" stroke-width="6" stroke-linecap="round" opacity="0.28"/>
-      <path d="M 74,50 C 77,64 76,78 72,90" fill="none" stroke="${accent}" stroke-width="6" stroke-linecap="round" opacity="0.28"/>
-      ${paws(accent, 92, 13, 15)}
-      ${feet(accent, 15, 9)}
-      ${clawTick(21, 92)}
-      ${clawTick(99, 92)}
+      ${paws(accent, 102)}
+      ${feet(accent, 128, 12, 7)}
+      ${blob(bodyColor, 60, 92, 37, 38)}
+      ${shadeCrescent(60, 92, 37, 38)}
 
-      <!-- snout lengthened (drop from y=9..-30 to y=10..-40) and thickened
-           (stroke 6.5->9) in the new metal tone so it clears the head
-           silhouette by a wide margin instead of reading as a nose wrinkle. -->
-      <g transform="translate(60,92) rotate(4)">${snoutDrill}</g>
+      <!-- eyes flank the snout rather than sitting above it: at y=64 they
+           landed near the crown and the muzzle read as a forehead spot with
+           a snail shell on it. -->
+      ${dotEyes(42, 78, 70, 4.8)}
 
-      ${eye(43, 74, 9.5)}
-      ${eye(77, 74, 9.5)}
-      ${smile(60, 90, 7)}
+      <!-- muzzle held clear of the belly patch (top y=90.5): both are cream,
+           so an overlap fuses them into one shapeless pale mass and the snout
+           stops reading as a snout. Sized as large as that clearance allows,
+           because the spiral is the entire species cue and a small one read
+           as a snail shell stuck on the forehead. -->
+      <ellipse cx="60" cy="80" rx="14" ry="10" fill="${BADGE}" ${ol(SW_MID)}/>
+      <g transform="translate(60,76) scale(0.75)">${spiral}</g>
+      ${mouth(60, 85, 4)}
 
-      ${emblemBadge(60, 112, 18, visorColor, accent, emblem, 24)}
-    </g>
-  `
+      ${emblemBadge(60, 106, 14, visorColor, emblem, 20)}
+    `)
   )
 }
 
-// Captain Red, the evolved/merged boss form: a winged flame-dragon archetype
-// deliberately the biggest silhouette in the family. Broad pointed wings
-// and a curling flame-tipped tail are the dominant read; the three earlier
-// heroes only leave small traces -- a tiny ear nub, a tiny forehead horn --
-// the same "one visible trace of each ancestor, but never louder than the
-// evolved form" rule dinoHorned, heroDeluxeRobot and platPowerup all follow.
+// Captain Red, the evolved boss form: a flame dragon, the biggest silhouette
+// in the family but drawn dependable rather than menacing -- same pastel
+// band, same dot eyes, same closed smile as the three small heroes. Rounded
+// wing lobes, a teardrop flame at the tail tip and two short blunt horns are
+// the only things the smaller heroes do not have.
 export function creatureCaptainRed({
-  bodyColor = '#d1332f',
-  panelColor = '#fff6df',
-  accent = '#8a1f1f',
-  visorColor = '#5dd6e0',
+  bodyColor = '#f0a196',
+  panelColor = '#fbe6c8',
+  accent = '#d4796e',
+  visorColor = BADGE,
 } = {}) {
-  // Wing silhouette redrawn from scratch (v4). The v3 pass scaled the old
-  // wing ~1.7x from its pivot and pushed it to x=-54 -- since these points
-  // are absolute viewBox coordinates (only mirrored() adds a transform, for
-  // the *other* wing), anything past x=0 was clipped outright, and the
-  // mirror (translate(120,0) scale(-1,1), i.e. x -> 120-x) carried that
-  // same overshoot to x=174 on the other side. Fix: keep every point inside
-  // [0,120] with a margin, which -- because the mirror of an in-range x is
-  // always in-range too -- fixes both wings from one shape. Shoulder anchor
-  // sits inside the body (45,58); a 4-point scalloped trailing edge sweeps
-  // up to a wingtip 2px from the canvas edge near (2,6), so mirrored the two
-  // wingtips land near x=2 and x=118 -- almost the full 120-wide canvas --
-  // for the "wings dominate the silhouette" read without leaving the box.
-  // Valleys pulled in a few units (v5, was 22/18/20) so each wingtip reads
-  // as a thinner, sharper point instead of a wide scallop -- still well
-  // clear of the viewBox edges since this moves points toward the centre.
-  // Three small scale facets added along the membrane (v6, detail budget
-  // now open) -- flat darker triangles layered on top of the wing fill, the
-  // same two-tone shading move as every other hero's shadow lobe, here read
-  // as scale/joint texture instead of volume.
+  // Every wing point is an absolute viewBox coordinate in [4,50]; mirrored()
+  // maps x -> 120-x, so the mirror lands in [70,116]. With the 2.2 stroke's
+  // 1.1 half-width that leaves ~2.9 units of clearance at both edges -- the
+  // failure an earlier pass hit (a polygon scaled to x=-54, then mirrored to
+  // x=174) cannot recur from a shape written this way.
+  // Reach raised to y=34 (from 42): at the smaller span the lobes sat beside
+  // the body and read as fish fins rather than as wings above the shoulder.
   const wing = `
-    <polygon points="45,58 8,6 26,26 2,40 22,54 4,66 24,80 10,96 36,104" fill="${accent}"/>
-    <polygon points="42,56 18,24 28,38 14,50 32,86" fill="${panelColor}" opacity="0.5"/>
-    <polygon points="30,50 20,38 26,52" fill="${bodyColor}" opacity="0.3"/>
-    <polygon points="26,68 16,60 22,74" fill="${bodyColor}" opacity="0.3"/>
-    <polygon points="22,86 12,80 18,92" fill="${bodyColor}" opacity="0.3"/>`
-  const earTrace = `
-    <path d="M -6,-10 C -6,-18 6,-18 6,-10 L 6,3 C 6,6 2,6 2,3 L 2,-9
-             C 2,-13 -2,-13 -2,-9 L -2,3 C -2,6 -6,6 -6,3 Z" fill="${accent}"/>
-    <circle cx="-3.5" cy="-1" r="1.8" fill="#d1332f"/>
-    <circle cx="3.5" cy="-1" r="1.8" fill="#2f5fb0"/>`
-  // Widened into a filled, longer horn (v5, was a 4px stroke line ending at
-  // local y=-20) -- a thin stroke read as a scratch, not a horn; a filled
-  // taper to a real point breaks the head's round crown the way the
-  // problem note asked for, sharp without reading as a weapon. Drawn as a
-  // symmetric pair (v6, was a single centre horn) for a proper dragon
-  // crown -- twice the crown silhouette for one extra translate/mirror.
-  const hornTrace = `
-    <path d="M -4,8 C -5,-3 -3,-15 0,-26 C 3,-15 5,-3 4,8 Z" fill="${accent}"/>`
+    <path d="M 50,70 C 34,50 20,32 8,37 C 13,45 11,51 4,55
+             C 12,59 12,67 5,73 C 15,77 17,85 12,93
+             C 30,95 44,86 48,76 Z"
+      fill="${panelColor}" ${ol(SW)}/>
+    <path d="M 45,71 C 33,56 22,42 12,40 M 43,77 C 31,70 20,64 11,63" fill="none"
+      stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
+  const horn = `
+    <path d="M -4,7 C -5,-1 -3,-9 0,-12 C 3,-9 5,-1 4,7 Z"
+      fill="${accent}" ${ol(SW_MID)}/>`
 
   return svgWrap(
-    `
-    <g>
-      <ellipse cx="60" cy="136" rx="42" ry="6" fill="#000" opacity="0.16"/>
+    fig(`
+      ${shadow(60, 136, 40)}
 
       ${wing}
       ${mirrored(wing)}
 
-      <!-- tail thickened (stroke 13->17) and the single flame polygon
-           replaced with three overlapping tiers (outer/bright-core/ember)
-           so it reads as layered fire instead of one flat triangle.
-           Redrawn in absolute coordinates (v4, dropped the rotate wrapper):
-           the old local-space curve, once carried through
-           translate(96,94) rotate(16deg), put points like (-16,86) out at
-           abs y=172 -- 32 units past the 140-tall viewBox, clipped off the
-           bottom entirely. This curls from the body's back (94,86, hidden
-           under the blob drawn after it) down-right and back in to
-           (76,125), with the stroke's 8.5px half-width budgeted into every
-           coordinate's margin from the 120x140 edges. -->
-      <path d="M 94,86 C 104,92 106,108 96,120 C 91,126 84,129 76,125" fill="none"
-        stroke="${accent}" stroke-width="17" stroke-linecap="round"/>
-      <polygon points="68,112 88,100 82,130 60,120" fill="${FLAME}" opacity="0.65"/>
-      <polygon points="71,108 92,94 85,126 63,114" fill="${FLAME}"/>
-      <polygon points="74,104 86,97 82,116 70,110" fill="#fff6c2" opacity="0.9"/>
+      ${paws(accent, 92, 11, 12)}
+      ${feet(accent, 128, 14, 7)}
 
-      ${blob(bodyColor, 60, 90, 42, 44)}
+      <!-- tail and flame in absolute coordinates, no rotate wrapper (a local-
+           space curve carried through one is what pushed an earlier version
+           32 units off the bottom edge). Tail half-width 6 plus outline 2.2
+           is budgeted into every point: max x 106+8.2=114.2, max y
+           120+8.2=128.2. The flame teardrop peaks at (112,133) -> 113.1 and
+           134.1 with its outline. Both clear the right foot (x 62..90). -->
+      ${tube('M 88,100 C 102,104 106,112 102,120', 12, accent)}
+      <path d="M 102,116 C 112,122 110,130 102,133 C 94,130 92,122 102,116 Z"
+        fill="${FLAME}" ${ol(SW_MID)}/>
+      <path d="M 102,121 C 107,125 106,129 102,131 C 98,129 97,124 102,121 Z"
+        fill="${FLAME_CORE}"/>
 
-      <!-- two loose embers off the flame tip (v6), the same cheap sparkle
-           addition Rocket's tail got -- drawn after the body (unlike the
-           tail itself) so they sit in front and stay visible instead of
-           being painted over where they'd otherwise fall under the body's
-           silhouette. -->
-      <polygon points="52,124 56,118 54,127 60,122" fill="${FLAME}" opacity="0.85"/>
-      <polygon points="46,133 50,128 48,136 53,132" fill="${FLAME}" opacity="0.65"/>
+      ${blob(bodyColor, 60, 92, 40, 38)}
+      ${shadeCrescent(60, 92, 40, 38)}
 
-      <!-- underbelly scale hints (v6): small dark facets on the flanks (kept
-           off the chest badge, which paints over this area last), the same
-           flat-shading language as the wing scales, so the body reads as
-           scaled hide rather than a bare fill. -->
-      <polygon points="28,82 36,76 36,88" fill="${accent}" opacity="0.22"/>
-      <polygon points="30,96 38,91 38,102" fill="${accent}" opacity="0.22"/>
-      <polygon points="92,82 84,76 84,88" fill="${accent}" opacity="0.22"/>
-      <polygon points="90,96 82,91 82,102" fill="${accent}" opacity="0.22"/>
-      <ellipse cx="21" cy="92" rx="13" ry="15" fill="${accent}"/>
-      <ellipse cx="99" cy="92" rx="13" ry="15" fill="${accent}"/>
-      <ellipse cx="39" cy="128" rx="16" ry="9" fill="${accent}"/>
-      <ellipse cx="81" cy="128" rx="16" ry="9" fill="${accent}"/>
+      <g transform="translate(48,62) rotate(-16)">${horn}</g>
+      <g transform="translate(72,62) rotate(16)">${horn}</g>
 
-      <g transform="translate(28,42) rotate(-12)">${earTrace}</g>
-      <g transform="translate(52,66) rotate(-8)">${hornTrace}</g>
-      <g transform="translate(68,66) rotate(8)">${hornTrace}</g>
+      ${dotEyes(46, 74, 72, 5.2)}
+      ${mouth(60, 85, 6)}
 
-      ${eye(42, 72, 13)}
-      ${eye(78, 72, 13)}
-      ${smile(60, 90, 9)}
-
-      ${emblemBadge(60, 109, 21, panelColor, bodyColor, '★', 27)}
-    </g>
-  `
+      ${emblemBadge(60, 107, 16, visorColor, '★', 23)}
+    `)
   )
 }
 
 // ---------------------------------------------------------------------------
-// VILLAINS. Same round-blob, big-eyed language as the heroes so the two
-// belong in one battle scene, but wild/feral instead of tame: tilted
-// postures, a mischievous squint-and-fang face instead of the heroes'
-// friendly symmetric eyes, and no chest badge (the letters belong to the
-// heroes). Each one's silhouette is its gameplay gimmick made literal, the
-// way the chapter 2/3 villains worked -- these four already read as animal
-// archetypes (bat, slime, thief, armadillo) and were kept as-is in the v2
-// revision. Villains take only { bodyColor, accent }.
+// VILLAINS. Same sepia-outline pastel language as the heroes -- an inked
+// pastel hero next to a saturated flat-colour villain was exactly the "these
+// do not belong together" complaint that produced this revision -- but one
+// step duller and darker in value, with the droopy outside-corner lid and a
+// lopsided smirk instead of the heroes' plain dots and level smile. No chest
+// badge: the letters belong to the heroes.
+// Villains take only { bodyColor, accent }.
 // ---------------------------------------------------------------------------
 
-// Flippy: inverts the child's jump. Drawn as an ordinary standing creature
-// with small bat wings instead of paws, then flipped vertically -- the same
-// trick dinoUpside and platFlip used -- so it hangs feet-up, head-down.
-export function creatureFlippy({ bodyColor = '#8a5fd1', accent = '#4a3480' } = {}) {
-  // Wide membrane wing, notched trailing edge (the same "wide mass plus
-  // notches" fix platPowerup's wing needed once smooth lobes read as rabbit
-  // ears): it has to be the dominant silhouette so the figure reads as a
-  // bat even before anyone notices it is upside down.
+// Flippy: inverts the child's jump, so it hangs upside down. Built upright
+// and flipped with y -> 140-y, which is also why nothing here can leave the
+// box: that map sends [0,140] onto itself. The face is drawn AFTER the flip,
+// upright, so the droopy lids still droop.
+export function creatureFlippy({ bodyColor = '#b2a2d0', accent = '#8d7cb0' } = {}) {
   const wing = `
-    <polygon points="30,70 4,46 -8,50 -2,58 -14,58 -4,66 -16,68 -4,76 22,90" fill="${accent}"/>
-    <polygon points="24,70 6,52 -4,56 16,80" fill="${bodyColor}" opacity="0.4"/>`
+    <path d="M 45,74 C 30,56 14,46 5,52 C 11,58 10,63 4,67
+             C 12,71 12,78 5,84 C 15,88 17,95 12,102
+             C 28,102 40,92 44,84 Z"
+      fill="${accent}" ${ol(SW)}/>
+    <path d="M 41,77 C 30,64 19,55 11,55" fill="none" stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
   const clawFoot = (cx) => `
-    <ellipse cx="${cx}" cy="126" rx="11" ry="7" fill="${accent}"/>
-    <path d="M ${cx - 8},129 L ${cx - 12},137 M ${cx},131 L ${cx},139 M ${cx + 8},129 L ${cx + 12},137"
-      stroke="${accent}" stroke-width="2.8" stroke-linecap="round"/>`
+    <ellipse cx="${cx}" cy="124" rx="10" ry="7" fill="${accent}" ${ol(SW_MID)}/>
+    <path d="M ${cx - 6},128 C ${cx - 8},131 ${cx - 8},133 ${cx - 6},134
+             M ${cx + 6},128 C ${cx + 8},131 ${cx + 8},133 ${cx + 6},134"
+      fill="none" stroke="${LINE}" stroke-width="2.4"/>`
 
   const upright = `
     ${wing}
     ${mirrored(wing)}
-    ${blob(bodyColor)}
-    ${clawFoot(41)}
-    ${clawFoot(79)}
-
-    <path d="M 33,42 C 29,30 34,20 40,24 C 44,32 42,42 38,48 Z" fill="${bodyColor}"/>
-    <path d="M 87,42 C 91,30 86,20 80,24 C 76,32 78,42 82,48 Z" fill="${bodyColor}"/>
-
-    ${wildEyes(45, 76, 76, 12)}
-    ${smirk(60, 94, 8)}
+    ${clawFoot(45)}
+    ${clawFoot(75)}
+    <path d="M 38,52 C 32,42 34,32 41,34 C 45,40 44,48 42,54 Z"
+      fill="${bodyColor}" ${ol(SW_MID)}/>
+    <path d="M 82,52 C 88,42 86,32 79,34 C 75,40 76,48 78,54 Z"
+      fill="${bodyColor}" ${ol(SW_MID)}/>
+    <!-- no belly patch: the flip puts it at the TOP of the finished figure,
+         where a big pale disc above the face reads as the head and turns the
+         real face into a mark on the chest. One clean mass is correct here. -->
+    ${blob(bodyColor, 60, 88, 33, 34, false)}
+    <ellipse cx="60" cy="68" rx="20" ry="12" fill="${BELLY}" opacity="0.5"/>
   `
 
   return svgWrap(
-    `
-    <g transform="rotate(6 60 78)">
-      <ellipse cx="63" cy="132" rx="26" ry="4.6" fill="#000" opacity="0.12"/>
+    fig(`
+      ${shadow(60, 132, 24)}
       <g transform="translate(0,140) scale(1,-1)">${upright}</g>
-    </g>
-  `
+      ${droopyEyes(46, 74, 64, 5)}
+      ${smirk(60, 78, 6)}
+    `)
   )
 }
 
-// Slippy: melts the floor so nothing can grip it. No feet at all -- the
-// lower half of the blob dissolves into a puddle with drips, one paw droops
-// lower than the other so the melt reads as ongoing, the same language
-// platSlime and dinoSwamp use for their own "no legs" villains.
-export function creatureSlippy({ bodyColor = '#4fb08f', accent = '#1f5c48' } = {}) {
+// Slippy: melts the floor. No feet -- the lower body dissolves into a puddle
+// with round drips, the same "no legs" language platSlime and dinoSwamp use
+// for their own gripless villains.
+export function creatureSlippy({ bodyColor = '#a8c9a5', accent = '#7fa37e' } = {}) {
   return svgWrap(
-    `
-    <g transform="rotate(-5 60 100)">
-      <path d="M 14,118 C 28,112 36,122 50,116 C 64,110 74,120 88,114 C 100,110 108,116 108,120
-               C 104,128 86,132 60,132 C 34,132 16,127 14,118 Z" fill="${accent}" opacity="0.55"/>
+    fig(`
+      <path d="M 16,120 C 26,113 34,122 46,116 C 60,109 70,120 84,114
+               C 98,109 106,115 105,121 C 100,130 84,134 60,134
+               C 36,134 18,129 16,120 Z"
+        fill="${accent}" ${ol(SW)} opacity="0.9"/>
 
-      <path d="M 30,62 C 22,70 20,80 26,86 C 20,92 22,100 30,102 L 25,111" fill="none"
-        stroke="${bodyColor}" stroke-width="13" stroke-linecap="round"/>
-      <path d="M 88,64 C 96,70 98,76 94,80 L 98,88" fill="none"
-        stroke="${bodyColor}" stroke-width="13" stroke-linecap="round"/>
+      <!-- arms hang from the flank, not from beside the head: at their first
+           y=76 start they flanked the skull and read as two drooping EARS,
+           which is the one thing a slime is not supposed to have. Ending
+           inside the puddle also sells the melt. -->
+      ${tube('M 31,88 C 22,94 22,102 29,106 C 23,110 25,116 31,118', 10, bodyColor)}
+      ${tube('M 89,90 C 98,96 98,103 92,107', 10, bodyColor)}
 
-      <path d="M 60,50 C 84,50 96,68 92,94 C 89,112 76,122 60,122 C 44,122 31,112 28,94
-               C 24,68 36,50 60,50 Z" fill="${bodyColor}"/>
-      <ellipse cx="60" cy="98" rx="21" ry="20" fill="${BELLY}"/>
-      <path d="M 40,102 C 50,112 70,112 80,102 C 82,112 68,120 58,120 C 46,120 38,110 40,102 Z"
-        fill="#fff" opacity="0.22"/>
+      <path d="M 60,54 C 84,54 94,72 92,94 C 90,112 78,122 60,122
+               C 42,122 30,112 28,94 C 26,72 36,54 60,54 Z"
+        fill="${bodyColor}" ${ol(SW)}/>
+      <ellipse cx="60" cy="100" rx="21" ry="17" fill="${BELLY}" ${ol(SW_IN)}/>
+      ${shadeCrescent(60, 88, 31, 33)}
 
-      <path d="M 44,108 C 42,116 43,122 47,124 C 51,122 51,114 48,107 Z" fill="${bodyColor}"/>
-      <path d="M 68,110 C 67,115 68,119 71,120 C 74,118 73,113 71,109 Z" fill="${bodyColor}"/>
+      <!-- drips: rounded teardrops hanging off the belly edge, never a
+           pointed spike -- the melt reads as ongoing without going sharp. -->
+      <path d="M 45,110 C 42,118 43,124 47,124 C 51,123 50,116 48,109 Z"
+        fill="${bodyColor}" ${ol(SW_IN)}/>
+      <path d="M 72,112 C 70,118 71,122 74,122 C 77,121 76,116 74,111 Z"
+        fill="${bodyColor}" ${ol(SW_IN)}/>
 
-      ${wildEyes(46, 72, 72, 12)}
-      ${smirk(60, 90, 8)}
-    </g>
-  `
+      ${droopyEyes(47, 73, 80, 5)}
+      ${smirk(60, 94, 6)}
+    `)
   )
 }
 
-// Grabby: stole Magno's horseshoe magnet and wears it slung on its back with
-// the poles swapped -- red sits where Magno's blue leg sits, and blue where
-// Magno's red leg sits -- so the theft reads as a colour inversion, not just
-// a relocated prop. The magnet's weight is what tips the whole figure off
-// balance, the same tilt logic platMagnetjack uses.
-export function creatureGrabby({ bodyColor = '#c9622f', accent = '#6b3013' } = {}) {
+// Grabby: stole Magno's horseshoe and wears it slung on its back with the
+// pole caps swapped. Grabby is the only figure in the file carrying a real
+// object, which is the point -- on a hero a detachable prop is a design
+// failure, on this one it is the crime.
+export function creatureGrabby({ bodyColor = '#d5a184', accent = '#ac7c60' } = {}) {
   return svgWrap(
-    `
-    <g transform="rotate(-10 60 90)">
-      <ellipse cx="58" cy="132" rx="28" ry="4.6" fill="#000" opacity="0.12"/>
+    fig(`
+      ${shadow(60, 134, 28)}
 
-      <g transform="translate(94,58) rotate(18)">
-        <path d="M -9,-15 C -9,-27 9,-27 9,-15 L 9,5 C 9,9 3,9 3,5 L 3,-14
-                 C 3,-19 -3,-19 -3,-14 L -3,5 C -3,9 -9,9 -9,5 Z" fill="${accent}"/>
-        <rect x="-8.5" y="1" width="6.5" height="6.5" rx="1.4" fill="#2f5fb0"/>
-        <rect x="2.5" y="1" width="6.5" height="6.5" rx="1.4" fill="#d1332f"/>
-      </g>
+      <!-- scale 1.5, not 1.1: at the smaller size the stolen magnet read as a
+           hair clip behind one ear instead of as loot. At 1.5 the rotated
+           extents reach x=110.3 and y=37.9, both clear of the box. Painted in
+           pale steel rather than the body's accent for the same reason -- an
+           accent-coloured prop on an accent-trimmed animal disappears into
+           the character, and this one has to look like it belongs to someone
+           else. Pushed out to (98,50) as well: at (92,58) the body ellipse
+           (rx 35) and the right ear covered everything but one thin sliver of
+           a leg. From here only the arch's inner leg tucks behind the
+           shoulder, and the rotated extents (x 120.3-6 = clear at 116.3
+           inked, y from 29.9) still sit inside the box. -->
+      <g transform="translate(98,50) rotate(20) scale(1.4)">${archShape('#c2c7cf', '#8fa8c4', '#c98f88')}</g>
 
-      ${blob(bodyColor)}
-      ${roundEars(bodyColor)}
-      ${paws(accent)}
-      ${feet(accent)}
+      ${roundEar(36, 62, 9, bodyColor, BELLY)}
+      ${roundEar(84, 62, 9, bodyColor, BELLY)}
+      ${paws(accent, 100)}
+      ${feet(accent, 128)}
+      ${blob(bodyColor, 60, 92, 35, 36)}
+      ${shadeCrescent(60, 92, 35, 36)}
 
-      ${wildEyes(45, 76, 76, 12)}
-      ${smirk(60, 94, 8)}
-    </g>
-  `
+      ${droopyEyes(47, 73, 80, 5)}
+      ${smirk(60, 94, 6)}
+    `)
   )
 }
 
-// Corky: wears a cork/brick-textured armadillo shell across its back -- a
-// row of rounded plates with a plank-grain stripe on each, the same seam
-// language platBrick's cork-plug hero used for its shoulder loads -- and
-// curls slightly forward like it is already bracing to block a hole.
-export function creatureCorky({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
-  // A single shell cap fused over the top third of the body, divided into
-  // segments by grain seams -- a row of separate bumps read as ear tufts
-  // (an early draft's mistake), so the shell has to be one continuous mass
-  // that overlaps the blob outline before it reads as armour on the back.
-  const seam = (x) => `<path d="M ${x},46 C ${x - 2},56 ${x - 2},70 ${x},80"
-    stroke="${bodyColor}" stroke-width="2.2" stroke-linecap="round" opacity="0.6" fill="none"/>`
+// Corky: plugs holes with the plated shell across its back. The shell is one
+// continuous cap fused over the top of the body (a row of separate bumps read
+// as ear tufts in an early draft) with soft seams and rounded plate edges, so
+// the face sits low, under its brim.
+export function creatureCorky({ bodyColor = '#cbb389', accent = '#9d8563' } = {}) {
+  const seam = (x) => `<path d="M ${x},48 C ${x - 2},58 ${x - 2},70 ${x},80" fill="none"
+    stroke="${LINE_SOFT}" stroke-width="${SW_IN}"/>`
 
   return svgWrap(
-    `
-    <g transform="rotate(5 60 92)">
-      <ellipse cx="60" cy="132" rx="32" ry="5" fill="#000" opacity="0.12"/>
+    fig(`
+      ${shadow(60, 134, 31)}
 
-      ${blob(bodyColor, 60, 90, 38, 40)}
+      ${paws(accent, 100)}
+      ${feet(accent, 128)}
+      ${blob(bodyColor, 60, 92, 36, 37, false)}
+      ${shadeCrescent(60, 92, 35, 36)}
 
-      <path d="M 25,64 C 27,38 38,26 60,26 C 82,26 93,38 95,64
-               C 96,76 88,82 60,82 C 32,82 24,76 25,64 Z" fill="${accent}"/>
-      <path d="M 32,58 C 36,40 46,32 60,32 C 74,32 84,40 88,58
-               C 82,52 72,48 60,48 C 48,48 38,52 32,58 Z" fill="#fff" opacity="0.14"/>
+      <path d="M 27,66 C 28,42 40,30 60,30 C 80,30 92,42 93,66
+               C 94,77 86,83 60,83 C 34,83 26,77 27,66 Z"
+        fill="${accent}" ${ol(SW)}/>
+      <!-- crown highlight: without it the smooth cap read as an acorn shell
+           rather than a plated back. -->
+      <path d="M 36,54 C 39,40 48,34 60,34 C 72,34 81,40 84,54
+               C 77,47 69,44 60,44 C 51,44 43,47 36,54 Z"
+        fill="${BELLY}" opacity="0.35"/>
       ${seam(42)}
       ${seam(60)}
       ${seam(78)}
 
-      ${paws(accent)}
-      ${feet(accent)}
-
-      ${wildEyes(45, 76, 76, 12)}
-      ${smirk(60, 92, 8)}
-    </g>
-  `
+      ${droopyEyes(47, 73, 94, 5)}
+      ${smirk(60, 108, 6)}
+    `)
   )
 }
 
-// Pixel Muncher, the chapter boss: a toad/frog archetype (revised from a
-// generic "big mouth blob" -- reviewers could not name an animal for it).
-// Bulging domed eyes sit half above the head silhouette, the way a real
-// toad's do, and the mouth becomes a wide froggy maw instead of a floating
-// void. It is still deliberately the biggest and heaviest figure in the
-// family, and it still sheds itself along one flank as scattered
-// checkerboard squares at mixed sizes and opacities, never two in a row on
-// the same edge, so the erosion cannot settle into a straight line or right
-// angle that would read as a letterform -- the same constraint platGlitch's
-// shedding villain had to satisfy for the same reason.
-export function creatureMuncher({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
-  const bit = (x, y, s, fill, op) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" opacity="${op}"/>`
-  const frogEye = (cx, cy, r) => `
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${bodyColor}"/>
-    <circle cx="${cx}" cy="${cy}" r="${r * 0.68}" fill="${accent}"/>
-    <circle cx="${cx + r * 0.12}" cy="${cy + r * 0.12}" r="${r * 0.32}" fill="${PUPIL}"/>`
+// Pixel Muncher, the chapter boss: a toad with the family's biggest, heaviest
+// body and one gimmick -- the wide mouth. The earlier version shed sharp
+// checkerboard squares along one flank; those went with the rest of the
+// angular pass, replaced by three round crumbs, which also removes any chance
+// of the erosion settling into a right angle that reads as a letterform.
+export function creatureMuncher({ bodyColor = '#a49bb4', accent = '#7e7492' } = {}) {
+  // Domed toad eyes: the shells go in before the body so the body's outline
+  // cuts across them (they bulge half above the head, the way a real toad's
+  // do), but the pupils and lids go in after, or the body would clip the
+  // bottom of each pupil.
+  const domeShell = (cx) => `
+    <circle cx="${cx}" cy="56" r="13" fill="${bodyColor}" ${ol(SW_MID)}/>`
+  const domeFace = (cx) => `
+    <ellipse cx="${cx}" cy="55" rx="5" ry="5.4" fill="${INK}"/>
+    <path d="M ${cx - 8},48 C ${cx - 4},43.5 ${cx + 4},43.5 ${cx + 8},48" fill="none"
+      stroke="${INK}" stroke-width="2.1" opacity="0.75"/>`
 
   return svgWrap(
-    `
-    <g transform="rotate(-4 60 84)">
-      <ellipse cx="60" cy="136" rx="42" ry="6" fill="#000" opacity="0.15"/>
+    fig(`
+      ${shadow(60, 136, 40)}
 
-      ${bit(6, 66, 6, accent, 0.35)}
-      ${bit(16, 84, 4, bodyColor, 0.5)}
-      ${bit(3, 92, 5, accent, 0.6)}
-      ${bit(20, 102, 7, bodyColor, 0.4)}
-      ${bit(98, 46, 5, accent, 0.45)}
-      ${bit(108, 62, 4, bodyColor, 0.6)}
-      ${bit(101, 100, 6, accent, 0.3)}
-      ${bit(90, 116, 4, bodyColor, 0.55)}
+      ${paws(accent, 100, 11, 12)}
+      ${feet(accent, 128, 14, 8)}
+      ${domeShell(42)}
+      ${domeShell(78)}
+      ${blob(bodyColor, 60, 94, 40, 36)}
+      ${domeFace(42)}
+      ${domeFace(78)}
+      ${shadeCrescent(60, 94, 40, 36)}
 
-      ${blob(bodyColor, 60, 92, 42, 42)}
-      <ellipse cx="21" cy="92" rx="13" ry="15" fill="${accent}"/>
-      <ellipse cx="99" cy="92" rx="13" ry="15" fill="${accent}"/>
-      <ellipse cx="39" cy="128" rx="15" ry="9" fill="${accent}"/>
-      <ellipse cx="81" cy="128" rx="15" ry="9" fill="${accent}"/>
-      <path d="M 30,132 L 30,137 M 39,133 L 39,138 M 48,132 L 48,137" stroke="${INK}" stroke-width="2" opacity="0.4"/>
-      <path d="M 72,132 L 72,137 M 81,133 L 81,138 M 90,132 L 90,137" stroke="${INK}" stroke-width="2" opacity="0.4"/>
+      <!-- the maw, sitting on the belly patch. Teeth are a ROW of four small
+           blunt nubs along the upper lip: the first version had two big round
+           teeth centred in the dark oval and they read unmistakably as a
+           second pair of eyes, which made the real domed eyes above read as
+           ears. A row cannot be misread that way. -->
+      <path d="M 34,98 C 40,116 80,116 86,98 C 76,92 44,92 34,98 Z"
+        fill="${INK}" ${ol(SW_MID)}/>
+      <circle cx="45" cy="98" r="2.7" fill="${BELLY}"/>
+      <circle cx="55" cy="96" r="2.7" fill="${BELLY}"/>
+      <circle cx="65" cy="96" r="2.7" fill="${BELLY}"/>
+      <circle cx="75" cy="98" r="2.7" fill="${BELLY}"/>
 
-      ${frogEye(42, 46, 15)}
-      ${frogEye(78, 46, 15)}
-      <path d="M 30,44 L 45,50" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
-      <path d="M 90,44 L 75,50" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
-
-      <ellipse cx="60" cy="100" rx="28" ry="18" fill="#17151c"/>
-      <path d="M 39,92 L 47,100 L 39,108 M 51,92 L 59,100 L 51,108 M 63,92 L 71,100 L 63,108 M 75,92 L 83,100 L 75,108"
-        stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
-    </g>
-  `
+      <circle cx="16" cy="80" r="3.4" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <circle cx="104" cy="72" r="3" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <circle cx="100" cy="110" r="3.8" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+    `)
   )
 }

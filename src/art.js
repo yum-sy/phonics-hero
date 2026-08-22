@@ -603,10 +603,14 @@ const HERO_PALETTES = {
   'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
   'huey': { style: 'dino-flyer', bodyColor: '#e0803a', accent: '#8a4213', emblem: 'H' },
   'trike': { style: 'dino-horned', bodyColor: '#c8452f', panelColor: '#f7ead2', accent: '#f0b429', visorColor: '#5dd6e0' },
-  'rocket': { style: 'creature-rocket', bodyColor: '#ef5b3c', accent: '#9c2e1d', emblem: 'R', visorColor: '#fff3c4' },
-  'magno': { style: 'creature-magno', bodyColor: '#3f7ad1', accent: '#1d3f7a', emblem: 'M', visorColor: '#fff3c4' },
-  'drillo': { style: 'creature-drillo', bodyColor: '#c98a2e', accent: '#6b4310', emblem: 'D', visorColor: '#fff3c4' },
-  'captain-red': { style: 'creature-boss', bodyColor: '#d1332f', accent: '#8a1f1f', panelColor: '#fff6df', visorColor: '#5dd6e0' },
+  // Chapter 4's creature cast carries no colours here on purpose: the pastel
+  // line-art palette is the whole point of that family's look, and a palette
+  // entry outranks an art function's defaults, so colours listed here would
+  // silently drag the cast back to its old saturated fills.
+  'rocket': { style: 'creature-rocket', emblem: 'R' },
+  'magno': { style: 'creature-magno', emblem: 'M' },
+  'drillo': { style: 'creature-drillo', emblem: 'D' },
+  'captain-red': { style: 'creature-boss' },
   'gogo': { style: 'plat-jumper', bodyColor: '#d1332f', accent: '#7a1a18', emblem: 'G' },
   'ollie': { style: 'plat-spring', bodyColor: '#e8732a', accent: '#8a3d10', emblem: 'O' },
   'umo': { style: 'plat-block', bodyColor: '#3aa15a', accent: '#1c5c30', emblem: 'U' },
@@ -633,11 +637,12 @@ const VILLAIN_PALETTES = {
   'upsy': { style: 'dino-upside', bodyColor: '#c96a9b', accent: '#6b2f4c' },
   'muddy': { style: 'dino-swamp', bodyColor: '#7d9b3a', accent: '#3c4d18' },
   'shadow-rex': { style: 'dino-shadow-rex', bodyColor: '#4a4a52', accent: '#22222a' },
-  'flippy': { style: 'creature-flippy', bodyColor: '#7a5fd1', accent: '#3d2f80' },
-  'slippy': { style: 'creature-slippy', bodyColor: '#4aa87a', accent: '#1e5c3f' },
-  'grabby': { style: 'creature-grabby', bodyColor: '#c9542f', accent: '#6b2814' },
-  'corky': { style: 'creature-corky', bodyColor: '#a67c52', accent: '#5a4126' },
-  'pixel-muncher': { style: 'creature-glitch', bodyColor: '#3a3a42', accent: '#e0455a' },
+  // Colourless for the same reason as the chapter 4 heroes above.
+  'flippy': { style: 'creature-flippy' },
+  'slippy': { style: 'creature-slippy' },
+  'grabby': { style: 'creature-grabby' },
+  'corky': { style: 'creature-corky' },
+  'pixel-muncher': { style: 'creature-glitch' },
   'topsy': { style: 'plat-flip', bodyColor: '#6a4fb0', accent: '#332570' },
   'gloop': { style: 'plat-slime', bodyColor: '#4fb08f', accent: '#1f5c48' },
   'snatchy': { style: 'plat-magnetjack', bodyColor: '#d1662f', accent: '#6b2f14' },
