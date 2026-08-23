@@ -1,7 +1,29 @@
 // Original flat-color SVG word/picture icons used on choice buttons in
-// place of plain Unicode emoji. Kept in the same geometric-primitive style
-// as the character art in art.js (circles/rects/polygons, 2-3 flat colors,
-// no gradients/photorealism).
+// place of plain Unicode emoji. Historically kept in the same
+// geometric-primitive style as the character art in art.js (circles/rects/
+// polygons, 2-3 flat colors, no gradients/photorealism).
+//
+// 2026-08 PROTOTYPE ROUND: the user asked for a move away from that
+// abstract-icon look toward picture-book/word-card flashcard illustrations
+// -- natural object silhouettes (a real key shape, a real leg with a knee)
+// with mid-level detail and soft layered shading, not geometric shorthand.
+// Ten icons (ant, corn, feet, fish, jug, mat, nose, sock, tap, top) were
+// redrawn this round as a sample before committing the other ~60. Gradients
+// and SVG filters stay banned either way; shading is faked the same way the
+// character art fakes it -- overlapping flat-color fills (a darker patch
+// clipped over a lighter body) rather than a `<linearGradient>`.
+//
+// ROUND 2 (same 2026-08 pass): of those ten, only `mat` and `sock` passed
+// user review. The other eight (ant, corn, feet, fish, jug, nose, tap, top)
+// were rejected as "silhouette barely changed, just shading added on top of
+// the same shape" -- true of most of them on inspection. This round redrew
+// those eight with the silhouette itself changed (new poses/proportions,
+// not recolors), using web-searched reference for real-object proportions
+// (ant's wasp-waist, corn's vertical kernel columns vs. a grid, a jug's
+// bulbous belly, a faucet's thick gooseneck, a spinning top's disc-over-cone
+// profile) -- see each icon's own comment for what specifically changed and
+// why. Each was checked against a hard-cutout render and the same
+// background-proximity metric described below before being kept.
 //
 // SIZE: these render at 200-261px on an option button (the exact figure is
 // set by the option count and the device orientation, since the option grid
@@ -64,16 +86,35 @@ const ICONS = {
       <ellipse cx="32" cy="40" rx="3.4" ry="2.6" fill="#161615"/>
     `),
 
-  // The body fill is off-white on a near-white button, so without the contour
-  // 72% of the drawing measures as background and only the cuff and sole are
-  // left to read -- the same contour every other off-white icon here carries.
-  sock: () =>
-    wrap(`
-      <path d="M24 6 H38 V32 Q38 36 44 38 L56 44 Q58 48 54 50 H26 Q20 50 20 44 V6 Z"
-        fill="#f5f2ea" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
-      <rect x="24" y="6" width="14" height="9" fill="#378add"/>
-      <path d="M20 44 H54 Q54 48 50 48 H24 Q20 48 20 44 Z" fill="#d1332f"/>
-    `),
+  // Flashcard-style redraw (2026-08 icon prototype round): a real tube sock
+  // silhouette -- straight back edge, ankle bend, rounded toe -- carrying
+  // classic sport-sock stripes and reinforced heel/toe patches as the two
+  // cues a 5-year-old already knows from real socks. The patches double as
+  // the "layered solid fills" shading technique: a warm-gray overlay clipped
+  // to the body reads as fabric shadow without any gradient. Off-white body
+  // still keeps the dark contour the header requires for pale fills.
+  sock: () => {
+    const clipId = nextId('sock-clip')
+    const body =
+      'M20 6 H40 V26 Q40 32 45 35 L55 41 Q60 44 60 49 Q60 55 53 55 L26 55 Q20 55 20 48 Z'
+    return wrap(`
+      <clipPath id="${clipId}"><path d="${body}"/></clipPath>
+      <path d="${body}" fill="#f5f2ea"/>
+      <g clip-path="url(#${clipId})">
+        <rect x="14" y="9" width="32" height="6" fill="#e24b4a"/>
+        <rect x="14" y="16" width="32" height="6" fill="#378add"/>
+        <ellipse cx="26" cy="49" rx="11" ry="9" fill="#d8d2c4"/>
+        <ellipse cx="51" cy="46" rx="11" ry="9" fill="#d8d2c4"/>
+      </g>
+      <path d="${body}" fill="none" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M20 6 H40" fill="none" stroke="#2c2c2a" stroke-width="3.2" stroke-linecap="round"/>
+      <g stroke="#c9c2b0" stroke-width="1.6" stroke-linecap="round">
+        <line x1="24" y1="6" x2="24" y2="8.5"/>
+        <line x1="30" y1="6" x2="30" y2="8.5"/>
+        <line x1="36" y1="6" x2="36" y2="8.5"/>
+      </g>
+    `)
+  },
 
   star: () =>
     wrap(`
@@ -131,24 +172,38 @@ const ICONS = {
   // paints over their anchor points -- anchored on the outline they read as
   // detached at 60px. The three body blobs keep visible pinch gaps between
   // them, which is what separates an ant from a two-part spider.
+  // Round 2 redraw (round 1's shading-only pass was rejected -- silhouette
+  // barely moved). Reference: kids'-illustration ant clipart consistently
+  // exaggerates the "wasp waist" -- head/thorax/abdomen as three lobes
+  // linked by a visibly THIN stalk with background showing on both sides,
+  // not just a gap between circles (which reads as one blob at this size).
+  // This version draws those stalks as short, deliberately narrow bars, and
+  // switches the pose from the old diagonal climb to a horizontal "walking
+  // on the ground" stance -- a different silhouette outline, not a recolor
+  // of the same one. Antennae stay a single smooth curve (elbowed antennae
+  // were tried and read as a second pair of legs at this size); three
+  // elbowed legs per side (not six radiating in a star) keep it from
+  // converging on the top-down `insect` ladybug silhouette.
   ant: () =>
     wrap(`
-      <g stroke="#2c2c2a" stroke-width="4" stroke-linecap="round" fill="none">
-        <path d="M30 27 L38 21 L46 21"/>
-        <path d="M32 30 L45 28 L55 32"/>
-        <path d="M28 26 L21 21 L13 23"/>
-        <path d="M28 31 L19 35 L11 43"/>
-        <path d="M31 34 L28 46 L20 53"/>
-        <path d="M34 35 L38 48 L33 57"/>
-      </g>
       <g stroke="#2c2c2a" stroke-width="3" stroke-linecap="round" fill="none">
-        <path d="M16 12 Q11 5 5 4"/>
-        <path d="M21 10 Q22 4 28 2.5"/>
+        <path d="M9 18 L4 9 L1 3"/>
+        <path d="M14 17 L19 9 L22 4"/>
       </g>
-      <circle cx="18" cy="15" r="7.5" fill="#2c2c2a"/>
-      <circle cx="31" cy="29" r="8.5" fill="#2c2c2a"/>
-      <ellipse cx="49" cy="43" rx="12.5" ry="10.5" fill="#2c2c2a"/>
-      <circle cx="20" cy="13" r="2.2" fill="#f5f2ea"/>
+      <g stroke="#2c2c2a" stroke-width="5" stroke-linecap="round" fill="none">
+        <path d="M20 31 L14 42 L11 55"/>
+        <path d="M34 34 L32 46 L34 58"/>
+        <path d="M50 36 L54 47 L58 57"/>
+      </g>
+      <line x1="15" y1="24" x2="20" y2="26" stroke="#2c2c2a" stroke-width="4.4" stroke-linecap="round"/>
+      <line x1="33" y1="30" x2="38" y2="33" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="10" cy="22" r="6.4" fill="#2c2c2a"/>
+      <circle cx="26" cy="27" r="7.6" fill="#2c2c2a"/>
+      <ellipse cx="47" cy="35" rx="15.5" ry="12.5" fill="#2c2c2a"/>
+      <path d="M15 19 Q11 23 7 20 Q10 15 15 16 Z" fill="#4a4a52" opacity="0.7"/>
+      <path d="M31 23 Q27 27 22 24 Q25 19 31 20 Z" fill="#4a4a52" opacity="0.7"/>
+      <path d="M56 32 Q47 38 38 33 Q43 24 56 27 Z" fill="#4a4a52" opacity="0.7"/>
+      <circle cx="8" cy="20" r="1.8" fill="#f5f2ea"/>
     `),
 
   apple: () =>
@@ -160,6 +215,9 @@ const ICONS = {
       <path d="M22 26 Q26 22 30 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
     `),
 
+  // User: "top은 그냥 원래 이미지로 돌아가자" -- round 2's disc-over-cone
+  // redesign read as a mushroom/umbrella, not a spinning top. Reverted to
+  // the original triangle-body top verbatim.
   top: () =>
     wrap(`
       <polygon points="16,12 48,12 40,46 24,46" fill="#534ab7"/>
@@ -169,12 +227,28 @@ const ICONS = {
       <rect x="28" y="4" width="8" height="10" rx="2" fill="#26215c"/>
     `),
 
+  // Round 2 redraw. Round 1 kept the same "handle block + spout block"
+  // skeleton and was rejected as unclear. This one leads with a much
+  // thicker, larger-radius gooseneck pipe (kitchen-faucet clipart reads
+  // overwhelmingly as one bold curved tube, not a thin elbow), mounted flush
+  // to a wall tile so the pipe visibly emerges FROM something instead of
+  // floating, with a single fat lever handle -- not rotated at an odd
+  // angle -- perpendicular off the base, and an oversized water drop.
   tap: () =>
     wrap(`
-      <rect x="12" y="6" width="10" height="24" rx="2" fill="#b8b8b8"/>
-      <circle cx="17" cy="6" r="6" fill="#e24b4a"/>
-      <rect x="12" y="24" width="30" height="9" rx="4" fill="#b8b8b8"/>
-      <path d="M40 33 Q47 42 47 48 A7 7 0 1 1 33 48 Q33 42 40 33 Z" fill="#5dd6e0"/>
+      <rect x="6" y="16" width="15" height="30" rx="2.4" fill="#dfe4e8"/>
+      <line x1="6" y1="24" x2="21" y2="24" stroke="#c3cad0" stroke-width="1.6"/>
+      <line x1="6" y1="34" x2="21" y2="34" stroke="#c3cad0" stroke-width="1.6"/>
+      <path d="M17 22 Q17 12 28 12 Q46 12 46 26 L46 38"
+        fill="none" stroke="#9aa0a6" stroke-width="13" stroke-linecap="round"/>
+      <path d="M17 22 Q17 12 28 12 Q46 12 46 26 L46 38"
+        fill="none" stroke="#e3e8ec" stroke-width="5.5" stroke-linecap="round"/>
+      <g transform="rotate(6 14 24)">
+        <rect x="1" y="20" width="22" height="8.5" rx="4.2" fill="#5dd6e0" stroke="#378add" stroke-width="1.8"/>
+        <circle cx="21" cy="24.2" r="5.4" fill="#5dd6e0" stroke="#378add" stroke-width="1.8"/>
+      </g>
+      <path d="M44 42 Q52 50 48 58 A6.5 6.5 0 0 1 36 58 Q32 50 44 42 Z" fill="#5dd6e0" stroke="#0c447c" stroke-width="2.2"/>
+      <path d="M44 46 Q47 51 45 55" fill="none" stroke="#eafcff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
     `),
 
   // -- Group 1 remainder: I / P / N (chapter 2) --
@@ -349,25 +423,29 @@ const ICONS = {
       </g>
     `),
 
-  // A nose alone is unreadable, so it sits in a human face -- hair and mouth
-  // keep it from reading as the `pig` snout, and the nose is the only
-  // outlined, darker feature.
-  nose: () => {
-    const clipId = nextId('nose-clip')
-    return wrap(`
-      <clipPath id="${clipId}"><circle cx="32" cy="32" r="25"/></clipPath>
-      <circle cx="32" cy="32" r="25" fill="#f5d6b0"/>
-      <path d="M4 32 Q4 4 32 4 Q60 4 60 32 Q48 20 32 20 Q16 20 4 32 Z"
-        fill="#2c2c2a" clip-path="url(#${clipId})"/>
-      <circle cx="21" cy="30" r="3" fill="#2c2c2a"/>
-      <circle cx="43" cy="30" r="3" fill="#2c2c2a"/>
-      <path d="M32 27 Q29 37 26 42 Q26 48 32 48 Q38 48 38 42 Q35 37 32 27 Z"
-        fill="#e0a273" stroke="#a06e33" stroke-width="2.5" stroke-linejoin="round"/>
-      <circle cx="29" cy="44" r="1.8" fill="#2c2c2a"/>
-      <circle cx="35" cy="44" r="1.8" fill="#2c2c2a"/>
-      <path d="M25 53 Q32 57 39 53" fill="none" stroke="#b5573c" stroke-width="3" stroke-linecap="round"/>
-    `)
-  },
+  // Round 2 redraw. Round 1's standalone symmetric front-on nose was
+  // rejected -- reviewed as unreadable alone, echoing this file's own
+  // pre-round-1 note that a bare nose is unclear (which is why that version
+  // had put it inside a whole face, and that in turn was rejected too for
+  // reading as "face"/"boy" rather than the single feature being taught).
+  // This is a full side-profile silhouette instead of a front-on one --
+  // the classic bridge-to-tip curve down to a flared nostril wing with the
+  // nostril hole cut into it, closer to how word-card illustrations and the
+  // universal "nose" pictogram draw it, and a shape no other icon in this
+  // set has. A single faint closed-lip line below (not a mouth, not a chin,
+  // not eyes) is the minimal face anchor: enough to say "this sits on a
+  // face" without pulling the read back to "face".
+  nose: () =>
+    wrap(`
+      <path d="M27 5 Q22 16 18 24 Q14 30 12 38 Q10 46 14 51 Q18 55 25 55.5
+               Q30 56.5 33 54 Q35 52 34.5 48.5
+               Q39 47 41 42 Q43 37 39 32 Q35 22 32 12 Q30 6 27 5 Z"
+        fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M27 8 Q22 20 18 28" fill="none" stroke="#fbe8cf" stroke-width="3.2" stroke-linecap="round" opacity="0.85"/>
+      <path d="M12 40 Q10 46 15 50 Q11 45 13 39 Z" fill="#dba165" opacity="0.75"/>
+      <ellipse cx="19" cy="44" rx="4.6" ry="3.2" fill="#7a5230" transform="rotate(-18 19 44)"/>
+      <path d="M23 57 Q28 60.5 34 58" fill="none" stroke="#c98f4e" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+    `),
 
   // -- Group 2: C/K, E, H (chapter 3) --
 
@@ -779,15 +857,26 @@ const ICONS = {
       <rect x="27" y="57" width="29" height="3.4" rx="1.7" fill="#b8b8b8"/>
     `),
 
-  // Oval body + triangular tail fin + dorsal spike carry the silhouette
-  // instead of scale texture (which dies at 60px); a lighter belly band
-  // splits the body into back/belly so it reads as fish, not a plain blob.
+  // Round 2 redraw. Round 1 kept an ellipse-body-plus-triangle-tail skeleton
+  // and only added surface texture, which read as the same silhouette.
+  // This one changes the outline itself: a streamlined torpedo body (single
+  // curved path, pointed at the mouth, tapering to a narrow peduncle before
+  // the tail) instead of a plain oval, a large forked tail with a concave
+  // notch, a pectoral side fin plus gill lines near the head, and scale
+  // arcs covering a visibly larger share of the body -- the fins/scales/
+  // streamlined-taper combination clipart references consistently lead
+  // with, which a bare ellipse body doesn't carry on its own.
+  // User: "fish는 상어 지느러미 같이 생긴 등 지느러미만 빼면 첫 번째
+  // 이미지(원본)로 해도 될 것 같아" -- reverted to the original body
+  // verbatim, only the dorsal fin changed: was a sharp straight-edged
+  // triangle (read as a shark fin), now a soft curved fin (rounded
+  // sides meeting at a blunt tip, no straight shark-tooth edges).
   fish: () =>
     wrap(`
       <polygon points="46,32 62,18 62,46" fill="#0c447c"/>
       <ellipse cx="28" cy="32" rx="24" ry="15" fill="#378add"/>
       <path d="M6 38 Q28 50 50 38 Q28 46 6 38 Z" fill="#5dd6e0"/>
-      <polygon points="22,17 32,17 27,5" fill="#0c447c"/>
+      <path d="M22,17 Q24,8 27,6 Q30,8 32,17 Z" fill="#0c447c"/>
       <circle cx="16" cy="28" r="3.6" fill="#f5f2ea"/>
       <circle cx="15" cy="28" r="1.9" fill="#2c2c2a"/>
     `),
@@ -883,27 +972,42 @@ const ICONS = {
       </g>
     `),
 
-  // A rug seen flat on the floor: the fringe tassels on both long edges are
-  // the cue that says "textile lying down", which is what keeps it away from
-  // `box` (a 3D carton with flaps). Deliberately cool indigo/cyan while `map`
-  // is warm gold parchment -- the two /m/ pictures can appear in the same
-  // multiselect, so they are separated by hue as well as by outline.
-  mat: () =>
-    wrap(`
-      <g stroke="#26215c" stroke-width="2.8" stroke-linecap="round">
-        <line x1="9" y1="49" x2="9" y2="56"/><line x1="17" y1="49" x2="17" y2="56"/>
-        <line x1="25" y1="49" x2="25" y2="56"/><line x1="32" y1="49" x2="32" y2="56"/>
-        <line x1="39" y1="49" x2="39" y2="56"/><line x1="47" y1="49" x2="47" y2="56"/>
-        <line x1="55" y1="49" x2="55" y2="56"/>
+  // Flashcard-style redraw, take two: a straight-on top-down rug instead of
+  // the old diamond-perspective outline (the earlier isometric angle was
+  // one of the harder-to-identify icons). The first redraw of this attempt
+  // used straight evenly-spaced pin-like fringe lines around a nested
+  // rectangle-in-rectangle border, and on-screen review caught that the
+  // whole silhouette read as a DIP computer chip, not a rug -- exactly the
+  // failure mode this round is supposed to fix. The rebuild replaces the
+  // straight pins with a scalloped/looped fringe (an arc-based path, the
+  // shape a tassel actually makes) and swaps the nested-box border for a
+  // single frame plus a row of diamond motifs, which is a real woven-rug
+  // pattern with no chip-package reading. Rounded corners also work against
+  // the chip silhouette, which is always square. Deliberately cool
+  // indigo/cyan while `map` is warm gold parchment -- the two /m/ pictures
+  // can appear in the same multiselect.
+  mat: () => {
+    const fringe = (y, dir) => {
+      let d = `M8 ${y}`
+      for (let i = 0; i < 10; i++) {
+        const x2 = (8 + (i + 1) * 4.8).toFixed(1)
+        d += ` A2.4 2.4 0 0 ${dir} ${x2} ${y}`
+      }
+      return d
+    }
+    return wrap(`
+      <path d="${fringe(16, 0)}" fill="none" stroke="#26215c" stroke-width="2.2"/>
+      <path d="${fringe(48, 1)}" fill="none" stroke="#26215c" stroke-width="2.2"/>
+      <rect x="8" y="16" width="48" height="32" rx="4" fill="#534ab7"/>
+      <rect x="8" y="16" width="48" height="32" rx="4" fill="none" stroke="#26215c" stroke-width="2.6"/>
+      <rect x="13" y="21" width="38" height="22" rx="2" fill="none" stroke="#5dd6e0" stroke-width="2"/>
+      <g fill="#5dd6e0">
+        <polygon points="20,26 25,32 20,38 15,32"/>
+        <polygon points="32,26 37,32 32,38 27,32"/>
+        <polygon points="44,26 49,32 44,38 39,32"/>
       </g>
-      <polygon points="6,50 58,50 48,26 16,26" fill="#26215c"/>
-      <polygon points="12,46 52,46 44,30 20,30" fill="#534ab7"/>
-      <g stroke="#5dd6e0" stroke-width="2.6" stroke-linecap="round">
-        <line x1="19" y1="34" x2="45" y2="34"/>
-        <line x1="16.5" y1="39" x2="47.5" y2="39"/>
-        <line x1="14" y1="44" x2="50" y2="44"/>
-      </g>
-    `),
+    `)
+  },
 
   // Treasure map: torn parchment edge, a green island, a dashed route and a
   // planted flag. The flag replaces the conventional X mark on purpose -- an
@@ -1092,23 +1196,33 @@ const ICONS = {
     `)
   },
 
-  // A pouring jug. `cup` is a small red cylinder with a token handle, so
-  // this is built from the two features a cup does not have: a beaked
-  // pouring lip that juts past the body outline, and a handle loop large
-  // enough to show daylight through it. Green ceramic keeps it out of the
-  // red `cup` / black `pot` / red `jam` vessel palette.
+  // Round 2 redraw. Round 1's body was closer to a tall vase than a jug and
+  // was rejected; the fix is a genuinely bulbous belly (the widest point is
+  // now well below the shoulder, not a near-cylinder) with a narrow neck
+  // and an asymmetric pinched pour-spout at the rim -- both cues real
+  // pitcher/jug clipart leads with. The handle is drawn as a single closed
+  // band that traces its own outer edge down and its own inner edge back up
+  // (same one-path-with-a-real-hole technique the `key` icon uses for its
+  // bow), so the loop you'd hook a finger through is actual background,
+  // not just a paler fill -- round 1's handle had no such hole.
   jug: () => {
     const clipId = nextId('jug-clip')
     const body =
-      'M12 13 L24 21 Q14 30 14 44 Q14 57 32 57 Q50 57 50 44 Q50 30 42 21 L42 14 Z'
+      'M22 8 L18 16 Q10 22 8 32 Q6 42 10 50 Q14 58 32 58 Q50 58 52 46 Q54 34 46 24 Q40 18 38 8 Z'
+    const handle = 'M46 20 Q60 22 60 34 Q60 46 48 49 L47 44 Q56 42 56 34 Q56 26 45 24 Z'
     return wrap(`
-      <path d="M45 24 Q58 28 58 37 Q58 46 46 48" fill="none" stroke="#2c2c2a" stroke-width="10.5" stroke-linecap="round"/>
-      <path d="M45 24 Q58 28 58 37 Q58 46 46 48" fill="none" stroke="#3b9922" stroke-width="6" stroke-linecap="round"/>
+      <path d="${handle}" fill="#256614"/>
+      <path d="${handle}" fill="none" stroke="#1c4d10" stroke-width="1.2"/>
       <clipPath id="${clipId}"><path d="${body}"/></clipPath>
       <path d="${body}" fill="#3b9922"/>
-      <rect x="10" y="36" width="44" height="8" fill="#f5f2ea" clip-path="url(#${clipId})"/>
-      <path d="${body}" fill="none" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
-      <ellipse cx="27" cy="15" rx="15" ry="4" fill="#eafcff" stroke="#2c2c2a" stroke-width="2"/>
+      <g clip-path="url(#${clipId})">
+        <path d="M6 42 Q10 54 32 56 Q50 54 52 44 Q48 54 32 55 Q12 54 8 40 Z" fill="#256614"/>
+        <path d="M14 14 Q9 24 8 34" fill="none" stroke="#5fce3a" stroke-width="3.4" stroke-linecap="round" opacity="0.65"/>
+        <ellipse cx="34" cy="34" rx="24" ry="16" fill="#ffffff" opacity="0.08"/>
+      </g>
+      <path d="${body}" fill="none" stroke="#1c4d10" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M18 16 Q24 10 30 12 Q26 16 22 20 Z" fill="#3b9922" stroke="#1c4d10" stroke-width="2" stroke-linejoin="round"/>
+      <ellipse cx="30" cy="9" rx="9" ry="3.4" fill="#eafcff" stroke="#1c4d10" stroke-width="2"/>
     `)
   },
 
@@ -1318,57 +1432,51 @@ const ICONS = {
       <path d="M18 24 Q32 40 46 24 Q32 34 18 24 Z" fill="#256614"/>
     `),
 
-  // A pair of soles seen from below, toes up. The empty arch between ball
-  // pad and heel pad is the whole reason for the build: it is a bite out of
-  // the middle of the silhouette that no other icon here has. `hand` is a
-  // single connected palm with five long staggered digits and a green cuff,
-  // `leg` is a single limb the user already rejected once for looking
-  // broken, `sock` is a single garment. There is no ankle on purpose -- an
-  // ankle turns this back into a leg -- and every gap is background rather
-  // than a stroke, the failure mode `hand`'s fingers were built around.
-  // Two drafts failed before this one, both on the toes. One foot as a
-  // single blob read as a bread roll; toes as a floating row of circles
-  // above the pad read as a frill or a crown, because there was a 2-unit
-  // gap between the toe bottoms and the pad. The toes now overlap the pad
-  // and are drawn ON TOP of it, so each toe's own arc becomes the crease
-  // where it joins the foot and the union silhouette is one wedge with a
-  // scalloped top.
+  // Round 2 redraw. Round 1 sat 5 toe circles on top of a path that was
+  // already wide enough to contain them, so under a hard-cutout silhouette
+  // test the toes vanished completely into a plain rounded blob -- verified
+  // by rendering both in silhouette side by side. The fix (confirmed the
+  // same way): toes are separate rotated capsules that FAN OUT from the
+  // ball of the foot with real background gaps between them, the same
+  // separate-fill construction the `hand` icon below uses for fingers, so
+  // the notches between toes are part of the outline itself, not a color
+  // difference a cutout erases. Foot proportions changed too -- toes are a
+  // shorter fraction of total length, with a proper ball-of-foot width and
+  // an inner arch notch, closer to a real top-down foot than the old
+  // uniform-width sock shape.
   feet: () => {
-    // One foot, mirrored by dir: the big toe sits on the inner side, so the
-    // toe row steps down and outward and the pad is a wedge, widest at the
-    // toes. dx/y/r are tuned so every toe overlaps the pad's top edge.
     const foot = (cx, dir) => {
       const s = n => (cx + dir * n).toFixed(1)
+      // [dx, length, width, angleDeg] -- big toe (idx 0) longest & widest,
+      // on the inner side; angle fans outward toe by toe.
       const toes = [
-        [5.0, 19.0, 4.0],
-        [1.0, 18.3, 3.4],
-        [-2.8, 18.9, 2.9],
-        [-6.0, 21.0, 2.5],
-        [-8.6, 25.5, 2.1],
+        [-9.2, 13, 7.2, dir * -16],
+        [-4.4, 15.5, 6.2, dir * -6],
+        [0.4, 15, 5.6, 0],
+        [5, 12.5, 5.2, dir * 8],
+        [9.2, 9.5, 4.6, dir * 18],
       ]
-        .map(
-          ([dx, y, r]) =>
-            `<circle cx="${s(dx)}" cy="${y}" r="${r}" fill="#f5d6b0" ` +
-            `stroke="#c98f4e" stroke-width="2"/>`
-        )
-        .join('')
+      let toeShapes = ''
+      let nails = ''
+      toes.forEach(([dx, len, w, ang]) => {
+        const tx = s(dx)
+        toeShapes +=
+          `<rect x="${(cx + dir * dx - w / 2).toFixed(1)}" y="28" width="${w}" height="${len}" rx="${(w / 2).toFixed(1)}" ` +
+          `fill="#f5d6b0" stroke="#c98f4e" stroke-width="2" transform="rotate(${ang} ${tx} 28)"/>`
+        nails +=
+          `<ellipse cx="${tx}" cy="${(28 + len * 0.32).toFixed(1)}" rx="${(w * 0.3).toFixed(1)}" ry="${(len * 0.22).toFixed(1)}" ` +
+          `fill="#fbe8cf" opacity="0.8" transform="rotate(${ang} ${tx} 28)"/>`
+      })
       return `
-        <path d="M${s(-9)} 30 Q${s(-9)} 21 ${s(0)} 21 Q${s(9)} 21 ${s(9)} 30
-                 Q${s(9)} 38.5 ${s(4.5)} 41 Q${s(0)} 43 ${s(-4.5)} 41 Q${s(-9)} 38.5 ${s(-9)} 30 Z"
-          fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.2" stroke-linejoin="round"/>
-        <ellipse cx="${s(0)}" cy="52.5" rx="6.8" ry="5.8"
-          fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.2"/>
-        ${toes}
-        <ellipse cx="${s(4.6)}" cy="18.4" rx="2.2" ry="1.8" fill="#fff6e8"
-          stroke="#c98f4e" stroke-width="1.1"/>`
+        <path d="M${s(-7)} 2 Q${s(-7)} -1 ${s(0)} -1 Q${s(7)} -1 ${s(7)} 2
+                 L${s(10)} 18 Q${s(13)} 24 ${s(9)} 29 Q${s(0)} 33 ${s(-9)} 29
+                 Q${s(-14)} 24 ${s(-9.5)} 15 Q${s(-8)} 8 ${s(-7)} 2 Z"
+          fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M${s(-9.5)} 15 Q${s(-14)} 24 ${s(-9)} 29 Q${s(-12)} 23 ${s(-8.5)} 16 Z" fill="#dba165" opacity="0.5"/>
+        <ellipse cx="${s(-3)}" cy="8" rx="3.4" ry="5.4" fill="#fbe8cf" opacity="0.55"/>
+        ${toeShapes}${nails}`
     }
-    return wrap(`
-      ${foot(19.5, 1)}${foot(44.5, -1)}
-      <g fill="#e0a273">
-        <path d="M11.5 31 Q11 38.5 15 41.2 Q12.6 36.5 13.1 31 Z"/>
-        <path d="M52.5 31 Q53 38.5 49 41.2 Q51.4 36.5 50.9 31 Z"/>
-      </g>
-    `)
+    return wrap(`${foot(17, 1)}${foot(47, -1)}`)
   },
 
   // A table fork, tilted so no axis-aligned symmetry invites a letter
@@ -1403,33 +1511,48 @@ const ICONS = {
   // `gum` is already the "yellowish slab" shape in the set (pink, rotated,
   // in a torn wrapper). Spelling and sound both carry /or/ here, which is
   // the bar `orange` and `door` fail (see chapter-08.js's header).
+  // Round 2 redraw. Round 1's kernels were rows offset brick-fashion, which
+  // reads as a checkerboard grid rather than corn -- the note this round
+  // was briefed on specifically: real corn is VERTICAL columns of kernels
+  // curving with the cob, not a grid. This version draws explicit vertical
+  // groove lines the full height of the cob (the column boundaries) with
+  // small individual kernel highlights inside each column instead of row
+  // rects, plus a rounder, more tapered cob silhouette (the old shape had a
+  // near-flat top that read as a canister) and larger, more sharply peeled
+  // husk leaves.
   corn: () => {
     const clipId = nextId('corn-clip')
-    const cob =
-      'M32 8 Q44 12 44 27 L44 44 Q44 57 32 57 Q20 57 20 44 L20 27 Q20 12 32 8 Z'
-    let kernels = ''
-    for (let r = 0; r < 10; r++) {
-      const y = 8 + r * 5.2
-      const off = r % 2 === 0 ? 0 : 3.2
-      for (let c = 0; c < 6; c++) {
-        const x = 16 + off + c * 6.4
-        kernels += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="5.2" height="4.2" rx="2.1" fill="#ffd43b"/>`
+    const cob = 'M32 6 Q46 10 46 26 L46 46 Q46 60 32 60 Q18 60 18 46 L18 26 Q18 10 32 6 Z'
+    let cols = ''
+    let notches = ''
+    const colXs = [21, 26, 31, 36, 41]
+    colXs.forEach((x, ci) => {
+      cols += `<line x1="${x}" y1="9" x2="${x}" y2="58" stroke="#c9781a" stroke-width="1.2" opacity="0.55"/>`
+      for (let r = 0; r < 11; r++) {
+        const y = 10 + r * 4.6 + (ci % 2 === 0 ? 0 : 2.3)
+        if (y > 56) continue
+        notches += `<ellipse cx="${x + 2.5}" cy="${y.toFixed(1)}" rx="2.1" ry="1.6" fill="#fff0b0" opacity="0.55"/>`
       }
-    }
+    })
     return wrap(`
-      <g stroke="#c98f4e" stroke-width="2.4" stroke-linecap="round" fill="none">
-        <path d="M30 11 Q26 6 26 4"/>
-        <path d="M32 10 Q33 5 33.5 3"/>
-        <path d="M34 11 Q38 7 39.5 5"/>
+      <g stroke="#c98f4e" stroke-width="2.2" stroke-linecap="round" fill="none">
+        <path d="M30 9 Q26 4 26 2"/>
+        <path d="M33 8 Q34 3 34.5 1"/>
+        <path d="M36 9 Q40 5 41 3"/>
       </g>
-      <path d="${cob}" fill="#ef9f27"/>
+      <path d="${cob}" fill="#ffd43b"/>
       <clipPath id="${clipId}"><path d="${cob}"/></clipPath>
-      <g clip-path="url(#${clipId})">${kernels}</g>
+      <g clip-path="url(#${clipId})">
+        ${cols}
+        ${notches}
+        <rect x="37" y="6" width="10" height="54" fill="#c9781a" opacity="0.3"/>
+        <rect x="18" y="6" width="6" height="54" fill="#fff6d0" opacity="0.4"/>
+      </g>
       <path d="${cob}" fill="none" stroke="#c98f4e" stroke-width="2.2"/>
-      <path d="M28 52 Q10 50 4 26 Q8 42 24 56 Z" fill="#3b9922"/>
-      <path d="M28 52 Q14 46 7 31" fill="none" stroke="#256614" stroke-width="1.8"/>
-      <path d="M36 54 Q52 50 58 30 Q54 44 40 57 Z" fill="#256614"/>
-      <path d="M36 54 Q49 47 55 34" fill="none" stroke="#3b9922" stroke-width="1.8"/>
+      <path d="M26 50 Q6 46 2 22 Q8 40 26 55 Q14 46 10 30 Z" fill="#3b9922"/>
+      <path d="M26 50 Q6 46 2 22 Q8 40 26 55 Z" fill="#256614" opacity="0.3"/>
+      <path d="M38 52 Q58 47 60 26 Q56 42 40 57 Q52 47 55 32 Z" fill="#3b9922"/>
+      <path d="M38 52 Q58 47 60 26 Z" fill="#ffffff" opacity="0.15"/>
     `)
   },
 
