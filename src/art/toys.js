@@ -544,6 +544,15 @@ export function toyBobo({
   const SUIT = '#3f7fc9'
   const SUIT_DK = '#265393'
   const SUIT_LT = '#7fb2e8'
+  // PASS 3 (reference-photo spot check): the reference minifigure's suit has
+  // a WHITE shoulder plate with a PURPLE panel on top of the blue sleeve --
+  // neither existed here, the sleeve was flat SUIT blue top to bottom, so
+  // "space alien in a suit" was missing the one detail that reads as
+  // moulded armour rather than a jumpsuit. Kept as two small overlaid
+  // polygons at the shoulder root only (not a recolour of the whole sleeve)
+  // so the arm still reads as the same blue suit from the elbow down.
+  const SHOULDER_WHITE = WHITE
+  const SHOULDER_PURPLE = '#8a5cc4'
 
   const claw = (cx, cy, rot) => `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
@@ -573,8 +582,12 @@ export function toyBobo({
       <polygon points="66,118 86,118 88,126 64,126" fill="${accent}" ${ol(3)}/>
 
       <polygon points="34,80 24,84 18,104 28,108 40,90" fill="${SUIT}" ${ol(3)}/>
+      <polygon points="33,80 24,84 21,92 35,90" fill="${SHOULDER_WHITE}" ${ol(2.4)}/>
+      <polygon points="24,89 35,87.5 33,93.5 25,95" fill="${SHOULDER_PURPLE}" ${ol(2)}/>
       ${claw(23, 112, -14)}
       <polygon points="86,80 96,84 102,104 92,108 80,90" fill="${SUIT}" ${ol(3)}/>
+      <polygon points="87,80 96,84 99,92 85,90" fill="${SHOULDER_WHITE}" ${ol(2.4)}/>
+      <polygon points="96,89 85,87.5 87,93.5 95,95" fill="${SHOULDER_PURPLE}" ${ol(2)}/>
       ${claw(97, 112, 14)}
 
       ${/* Suit torso, fixed blue -- the reference's "파란 우주복 상의" -- so
