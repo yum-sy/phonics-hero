@@ -1,6 +1,42 @@
 // Platformer-family character art — chapter 5, the jump-platformer genre slot
 // in the world order.
 //
+// REVISION NOTE (v10): LEGO CONVERSION FIXES. v9's approach (below) was
+// approved, but the first render shipped three faults, all user-caught:
+// "마리오는 관절을 표현하는 회색 원이 너무 도드라진다는게 가장 큰 문제야.
+// 마리오들 중에서 두번째 마리오는 몸이랑 목이 구분도 안되고. 모든 마리오의
+// 손이 머리보다 뒤에 있는 걸로 그려서 가려지는 것도 문제야." Three
+// independent fixes, heroes only (villains untouched, confirmed by diff):
+//  1. JOINT DISCS. `pegDisc` dropped its highlight dot (measured as the
+//     single brightest mark on the whole sticker, brighter than the eye's
+//     own highlight) and shrank at every call site (shoulder 0.58->0.4 of
+//     limb width, hip 8->5.6, knee 7->5, boss hip/knee 9/8->6.3/5.6), plus
+//     thinner strokes (2.2/1.3 -> 1.4/0.9). Six to eight of these sit on
+//     every figure; shrinking one without the others left the family
+//     lopsided, so all three changes shipped together.
+//  2. OLLIE'S NECK. `platSpring`'s first coil turn (cy 64, ry 8, top edge
+//     y 56) painted over the entire neck quad (y 58..68) because it started
+//     above the neck's own top -- geometry, not colour, so no seam could
+//     have fixed it. Moved the whole coil stack down and shrunk it (turns
+//     72/80/88 at ry 6/6.5/6, first top edge now y 66) so ~8 units of skin
+//     survive below the chin, matching what the other three heroes' shirt
+//     collar already shows. The pants box shifted down to meet the new
+//     stack bottom; its own height is unchanged.
+//  3. HANDS BEHIND HEADS. Every hero built its whole arm (tube + peg + fist)
+//     before `legoHead`, so a raised fist at head height painted UNDER the
+//     cap/brim -- `platJumper`'s punching arm (wrist next to the brim) and
+//     both of `platPowerup`'s (wrist inside the head's hairTuft zone) were
+//     visibly clipped by it. Split `legoArm` into `legoArmBase` (tube +
+//     shoulder peg, stays before the head) and `legoArmFist` (moves to
+//     after it) for all four heroes -- Umo's arms never reached head height
+//     so this is a no-visual-change consistency fix for that one. The
+//     boss's fireballs moved with their fists (fireball-after-fist order
+//     preserved) so the "held in the hand" read survives.
+// All three verified by rendering, not just by the arithmetic: this file's
+// own `_plat9.html` scratch harness (padded-viewBox alpha scan, the
+// project's clip authority) reports all five hero variants (including the
+// AI-digraph emblem case) inside the frame with no change to that harness.
+//
 // REVISION NOTE (v9): LEGO CONVERSION. User decision, final, not a
 // prototype: "지금 마이로는 너무 조잡해 보인다. 레고 마리오 이미지를 참고해."
 // v6-v8 spent three rounds getting a HUMAN skeleton right (joints, leg
@@ -650,17 +686,29 @@ function villainShoe(cx, cy, rx, ry) {
 // primitive below was deleted.
 // ---------------------------------------------------------------------------
 
-// A grey-plastic joint disc: ring, inset cap, corner highlight. Painted AFTER
-// the limb parts it sits on, at the shoulder, hip and knee — the three
-// joints the reference images show as a moulded pin cap, not an inked crease
-// standing in for one.
-const PEG = '#e7e1d2'
-const PEG_DEEP = '#b6ab90'
+// A grey-plastic joint disc: ring plus a soft inset, no separate highlight
+// dot. Painted AFTER the limb parts it sits on, at the shoulder, hip and
+// knee — the three joints the reference images show as a moulded pin cap,
+// not an inked crease standing in for one.
+//
+// v9's first draft stacked THREE layers (ring + inset + a 0.55-opacity
+// white highlight) at a radius spanning most of the limb's own width, and
+// six to eight of those landed on every figure — shoulders, hips, knees.
+// User feedback: "관절을 표현하는 회색 원이 너무 도드라진다." Measured on a
+// render, that highlight dot was the single brightest, most saturated-white
+// mark on the whole sticker (brighter than the eye's own highlight), which
+// is why the joints read before the character did. Fixed on three axes
+// together, none sufficient alone: every call site below now passes a
+// smaller `r` (a fraction of the limb width instead of ~all of it), the
+// highlight dot is gone outright, and both strokes are thinner (2.2/1.3 ->
+// 1.4/0.9) so the disc reads as a moulded seam in the plastic rather than an
+// outlined target sitting on top of the limb.
+const PEG = '#cdc6b4'
+const PEG_DEEP = '#a89a7c'
 function pegDisc(cx, cy, r) {
   return [
-    C(cx, cy, r, PEG, ink(2.2)),
-    C(cx, cy, r * 0.62, PEG_DEEP, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    C(cx - r * 0.22, cy - r * 0.24, r * 0.22, '#fff', { opacity: 0.55, nohalo: true }),
+    C(cx, cy, r, PEG, { stroke: LINE, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }),
+    C(cx, cy, r * 0.55, PEG_DEEP, { stroke: LINE, 'stroke-width': 0.9, opacity: 0.8, nohalo: true }),
   ]
 }
 
@@ -1007,9 +1055,10 @@ function bigButton(cx, cy, r = 7.5) {
 //   leg    hip {_,102} -> knee {_,118} -> ankle {_,128}, pegs at hip AND knee,
 //          boot 124..136
 //
-// `legoOveralls`/`legoLegsStanding`/`legoArm`/`legoHead` are shared by all
-// three; only the limb points, backdrop and (for Umo) a crate overlay differ
-// per hero, the same division v3-v8 used for `heroHead`/`bibPanel`/`neck`.
+// `legoOveralls`/`legoLegsStanding`/`legoArmBase`+`legoArmFist`/`legoHead`
+// are shared by all three; only the limb points, backdrop and (for Umo) a
+// crate overlay differ per hero, the same division v3-v8 used for
+// `heroHead`/`bibPanel`/`neck`.
 // ---------------------------------------------------------------------------
 
 // capTop/domeBot/brimY/brimH sit 4 units lower than the first-draft numbers
@@ -1079,8 +1128,8 @@ function legoLegsStanding(tone = DENIM_TONE, bootColor = SHOE) {
     legoLeg(37, 53, 102, 114, tone),
     legoLeg(38, 52, 114, 122, tone),
     legoBoot(35, 55, 118, 131, bootColor),
-    pegDisc(45, 102, 8),
-    pegDisc(45, 114, 7),
+    pegDisc(45, 102, 5.6),
+    pegDisc(45, 114, 5),
   ]
   return [side, mirror(side)]
 }
@@ -1089,10 +1138,18 @@ function legoLegsStanding(tone = DENIM_TONE, bootColor = SHOE) {
 // peg at the shoulder (the only joint this genre's arm has), and a fist
 // seated just past the wrist. Pose comes entirely from where `shoulder` and
 // `wrist` are — there is no elbow to bend.
-function legoArm(shoulder, wrist, bodyColor, cuffColor, handR) {
-  const pts = [shoulder, wrist]
-  const [hx, hy] = wristSeat(pts, 6)
-  const deg = towardBody(pts, hx, hy) + 180
+//
+// Split into two halves, `legoArmBase` (tube + shoulder peg) and
+// `legoArmFist` (just the fist), because every hero drew the whole arm
+// before `legoHead` and a raised arm's fist can sit at head height —
+// `platJumper`'s punching arm, both of `platPowerup`'s — so the head/cap
+// painted over it. User: "모든 마리오의 손이 머리보다 뒤에 있는 걸로 그려서
+// 가려지는 것도 문제야." The tube+peg half never reaches that high (it
+// stays down near the shoulder), so only the fist needs to move to after
+// the head; splitting it out is simpler and safer than reordering the
+// tube's own draw position, which would relitigate the shoulder-to-torso
+// connection this arm already gets right.
+function legoArmBase(shoulder, wrist, bodyColor) {
   return [
     tube(shoulder.x, shoulder.y, shoulder.w, wrist.x, wrist.y, wrist.w, bodyColor, ink(3.2)),
     S(
@@ -1101,9 +1158,18 @@ function legoArm(shoulder, wrist, bodyColor, cuffColor, handR) {
       shoulder.w * 0.22,
       { opacity: 0.22, nohalo: true }
     ),
-    pegDisc(shoulder.x, shoulder.y, shoulder.w * 0.58),
-    legoFist(hx, hy, handR, deg, cuffColor),
+    pegDisc(shoulder.x, shoulder.y, shoulder.w * 0.4),
   ]
+}
+
+function legoArmFist(shoulder, wrist, cuffColor, handR) {
+  const pts = [shoulder, wrist]
+  const [hx, hy] = wristSeat(pts, 6)
+  const deg = towardBody(pts, hx, hy) + 180
+  // Wrapped in an array (`legoFist` itself returns one `<g>` element, not a
+  // list) because `mirror()` needs an array for its own children -- every
+  // other mirror() call site in this file passes one.
+  return [legoFist(hx, hy, handR, deg, cuffColor)]
 }
 
 // The jumper: the only figure in the family with both feet off the ground.
@@ -1136,20 +1202,29 @@ export function platJumper({
     tube(pts[0].x, pts[0].y, pts[0].w, pts[1].x, pts[1].y, pts[1].w, DENIM_TONE.base, ink(3.2)),
     tube(pts[1].x, pts[1].y, pts[1].w, pts[2].x, pts[2].y, pts[2].w, DENIM_TONE.base, ink(3.2)),
     legoBoot(pts[2].x - 10, pts[2].x + 10, pts[2].y + 2, pts[2].y + 13),
-    pegDisc(pts[0].x, pts[0].y, 8),
-    pegDisc(pts[1].x, pts[1].y, 7),
+    pegDisc(pts[0].x, pts[0].y, 5.6),
+    pegDisc(pts[1].x, pts[1].y, 5),
   ]
   const backdrop = [
     E(60, 136, 12, 2.4, '#000', { opacity: 0.14 }),
     S('M 12,128 L 24,120 M 108,128 L 98,122 M 44,136 L 52,128 M 78,136 L 70,129', accent, 3.6, { opacity: 0.65 }),
   ]
+  // The punching arm is `armR`: its fist sits up near the brim (wrist
+  // {97,42} against the cap's brim box, which reaches to x 97 / y 34) so its
+  // `legoArmFist` call has to land after `legoHead` below or the brim paints
+  // over the fist — the exact case the user called out ("특히
+  // platJumper(Gogo)의 치켜든 팔").
+  const armL = { shoulder: { x: 34, y: 76, w: 15 }, wrist: { x: 22, y: 96, w: 11 } }
+  const armR = { shoulder: { x: 84, y: 72, w: 15 }, wrist: { x: 97, y: 42, w: 11 } }
   const body = [
     ...legoOveralls(bodyColor, accent, visorColor, emblem),
     bentLeg(legTuck),
     bentLeg(legTrail),
-    legoArm({ x: 34, y: 76, w: 15 }, { x: 22, y: 96, w: 11 }, bodyColor, accent, 10),
-    legoArm({ x: 84, y: 72, w: 15 }, { x: 97, y: 42, w: 11 }, bodyColor, accent, 10),
+    legoArmBase(armL.shoulder, armL.wrist, bodyColor),
+    legoArmBase(armR.shoulder, armR.wrist, bodyColor),
     legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
+    legoArmFist(armL.shoulder, armL.wrist, accent, 10),
+    legoArmFist(armR.shoulder, armR.wrist, accent, 10),
   ]
   return sticker(backdrop, body)
 }
@@ -1171,29 +1246,42 @@ export function platSpring({
   ]
   const seam = (cy, rx) => E(60, cy, rx, 2.6, accent, ink(2.2))
   const backdrop = [E(60, 135, 22, 3, '#000', { opacity: 0.14 })]
+  // The coil stack used to start at cy 64 / ry 8 (top edge y 56), which sits
+  // entirely ABOVE the neck's own top (y 58) — the first turn painted over
+  // the whole neck quad (y 58..68), so no skin showed between chin and
+  // spring at all. User: "두번째 마리오는 몸이랑 목이 구분도 안되고." Moved
+  // down and shrunk (ry 8/9/8 -> 6/6.5/6, first top edge now y 66) so ~8
+  // units of neck survive below the chin, the same order of visibility the
+  // other three heroes get from their shirt collar (see `legoOveralls`'s
+  // neck note) — confirmed on a render, not just by the arithmetic, since
+  // this is a "does it read" fix. The pants box shifts down to meet the
+  // shortened stack's new bottom edge; its own height is unchanged.
   const body = [
     neck(60, 58, 68, 7, 8),
-    turn(64, 26, 8),
-    turn(73, 29, 9),
-    turn(82, 26, 8),
-    seam(69, 27.5),
-    seam(78, 27.5),
+    turn(72, 26, 6),
+    turn(80, 29, 6.5),
+    turn(88, 26, 6),
+    seam(76, 27.5),
+    seam(84, 27.5),
 
-    box(39, 88, 81, 106, 7, DENIM, ink(3.2)),
-    R(40, 89, 14, 15, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
-    bigButton(37, 91, 7),
-    mirror(bigButton(37, 91, 7)),
+    box(39, 92, 81, 108, 7, DENIM, ink(3.2)),
+    R(40, 93, 14, 15, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
+    bigButton(37, 95, 7),
+    mirror(bigButton(37, 95, 7)),
     // Ollie keeps the family's one round plate — a stadium, not a disc, so
     // the letter O is not fighting square corners while still being full
     // width down the whole middle.
-    emblemPlate(41, 90, 38, 16, visorColor, accent, emblem, true),
+    emblemPlate(41, 94, 38, 16, visorColor, accent, emblem, true),
 
     legoLegsStanding(),
 
-    legoArm({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, bodyColor, accent, 10),
-    legoArm({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, bodyColor, accent, 10),
+    legoArmBase({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, bodyColor),
+    legoArmBase({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, bodyColor),
 
     legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
+
+    legoArmFist({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, accent, 10),
+    legoArmFist({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, accent, 10),
   ]
   return sticker(backdrop, body)
 }
@@ -1224,10 +1312,18 @@ export function platBlock({
 
     legoLegsStanding(),
 
-    legoArm({ x: 34, y: 76, w: 15.5 }, { x: 22, y: 92, w: 11.5 }, bodyColor, accent, 10),
-    legoArm({ x: 86, y: 76, w: 15.5 }, { x: 98, y: 92, w: 11.5 }, bodyColor, accent, 10),
+    legoArmBase({ x: 34, y: 76, w: 15.5 }, { x: 22, y: 92, w: 11.5 }, bodyColor),
+    legoArmBase({ x: 86, y: 76, w: 15.5 }, { x: 98, y: 92, w: 11.5 }, bodyColor),
 
     legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
+
+    // Umo's arms hang level with the shoulders, well clear of the head, so
+    // this split is not fixing a visible overlap for THIS hero — it is here
+    // for the same reason every other hero got it: consistency, and so a
+    // future repose of this arm does not quietly reopen the bug the other
+    // three were fixed for.
+    legoArmFist({ x: 34, y: 76, w: 15.5 }, { x: 22, y: 92, w: 11.5 }, accent, 10),
+    legoArmFist({ x: 86, y: 76, w: 15.5 }, { x: 98, y: 92, w: 11.5 }, accent, 10),
   ]
   return sticker(backdrop, body)
 }
@@ -1419,6 +1515,8 @@ export function platPowerup({
     P('29,75 40,75 37,88 28,88', FIRE_TONE.base, ink(2.8)),
     S('M 33,77 L 31,86', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
   ]
+  const armShoulder = { x: 27, y: 80, w: 16 }
+  const armWrist = { x: 21, y: 54, w: 12 }
   const body = [
     neck(60, 62, 75, 9, 10),
     box(27, 75, 93, 110, 9, FIRE_WHITE, ink(3.4)),
@@ -1441,30 +1539,41 @@ export function platPowerup({
     legoLeg(37, 55, 119, 125, FIRE_TONE),
     legoBoot(33, 59, 122, 131, SHOE),
     coilRing(46, 122),
-    pegDisc(46, 110, 9),
-    pegDisc(46, 119, 8),
+    pegDisc(46, 110, 6.3),
+    pegDisc(46, 119, 5.6),
     mirror([
       legoLeg(36, 56, 110, 119, FIRE_TONE),
       legoLeg(37, 55, 119, 125, FIRE_TONE),
       legoBoot(33, 59, 122, 131, SHOE),
       coilRing(46, 122),
-      pegDisc(46, 110, 9),
-      pegDisc(46, 119, 8),
+      pegDisc(46, 110, 6.3),
+      pegDisc(46, 119, 5.6),
     ]),
 
     // Red cuffs on white sleeves. Not decoration: the sleeve, the fist and
     // the halo are all near-whites within 1.07:1 of each other, so the wrist
     // is the one boundary on this figure with three whites meeting at it.
-    legoArm({ x: 27, y: 80, w: 16 }, { x: 21, y: 54, w: 12 }, FIRE_WHITE, FIRE_RED, 11),
-    mirror(legoArm({ x: 27, y: 80, w: 16 }, { x: 21, y: 54, w: 12 }, FIRE_WHITE, FIRE_RED, 11)),
+    //
+    // Only the BASE (tube + shoulder peg) goes here. The fist stays with
+    // `armShoulder`/`armWrist` below, drawn after `legoHead` — this boss's
+    // raised fist (wrist y 54, right where the head's hairTuft/cap sit at
+    // this scale) was getting painted over by the head, the same "손이
+    // 머리보다 뒤에 있다" defect the user found on platJumper.
+    legoArmBase(armShoulder, armWrist, FIRE_WHITE),
+    mirror(legoArmBase(armShoulder, armWrist, FIRE_WHITE)),
 
     wing,
     mirror(wing),
-    // AFTER the wings on purpose: the licks rise into the wing's serrated edge
-    // and the two flames read as one.
-    fireball(18, 41),
-    mirror(fireball(18, 41)),
     legoHead(G_BOSS, 33, 43, FIRE_WHITE, FIRE_BRIM, null, 1.14),
+
+    // Fist, then fireball, in that order and both after the head: the
+    // fireball has to land on top of its own fist for the "holding the
+    // flower's fireball" read the original comment describes, and both need
+    // to be on top of the head to actually be visible at all.
+    legoArmFist(armShoulder, armWrist, FIRE_RED, 11),
+    fireball(18, 41),
+    mirror(legoArmFist(armShoulder, armWrist, FIRE_RED, 11)),
+    mirror(fireball(18, 41)),
     // Sits in the same slot as the other three heroes' cap disc, but a star:
     // `legoHead` was called with `discColor = null` so its own plain accent
     // disc is skipped, and this figure gets the mark instead — the phonics
