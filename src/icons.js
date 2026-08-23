@@ -168,41 +168,41 @@ const ICONS = {
       <circle cx="46" cy="48" r="3" fill="#b8b8b8"/>
     `),
 
-  // Legs are drawn first and rooted deep inside the thorax, so the body
-  // paints over their anchor points -- anchored on the outline they read as
-  // detached at 60px. The three body blobs keep visible pinch gaps between
-  // them, which is what separates an ant from a two-part spider.
-  // Round 2 redraw (round 1's shading-only pass was rejected -- silhouette
-  // barely moved). Reference: kids'-illustration ant clipart consistently
-  // exaggerates the "wasp waist" -- head/thorax/abdomen as three lobes
-  // linked by a visibly THIN stalk with background showing on both sides,
-  // not just a gap between circles (which reads as one blob at this size).
-  // This version draws those stalks as short, deliberately narrow bars, and
-  // switches the pose from the old diagonal climb to a horizontal "walking
-  // on the ground" stance -- a different silhouette outline, not a recolor
-  // of the same one. Antennae stay a single smooth curve (elbowed antennae
-  // were tried and read as a second pair of legs at this size); three
-  // elbowed legs per side (not six radiating in a star) keep it from
-  // converging on the top-down `insect` ladybug silhouette.
+  // Round 3 redraw against 4 user-supplied ant-clipart photos (classic
+  // red ant, an "A is for Ant" card, a blue variant, a b/w silhouette).
+  // Round 2 was rejected as spider/goat-like for two specific reasons the
+  // references make obvious: the antennae were straight zigzag segments
+  // (read as horns) instead of one smooth insect-antenna curve, and the
+  // thorax circle (r=7.6) was drawn BIGGER than the head (r=6.4) -- the
+  // opposite of a wasp-waist pinch, so the "waist" never read as a waist.
+  // Also the legs kept diverging outward past the knee instead of bending
+  // back toward the body, which is what made them look like spread/splayed
+  // spider legs rather than legs supporting the body from below. Fixed
+  // all three: thorax is now clearly the smallest of the three lobes
+  // (head 6.4 > thorax 5.0 < abdomen 16x12.8, abdomen still the largest as
+  // every reference shows), antennae are single Q-curves with no angle
+  // break, and each leg's second segment bends back toward the midline
+  // instead of continuing outward, so the stance reads as "legs bent under
+  // the body" instead of "legs planted wide".
   ant: () =>
     wrap(`
       <g stroke="#2c2c2a" stroke-width="3" stroke-linecap="round" fill="none">
-        <path d="M9 18 L4 9 L1 3"/>
-        <path d="M14 17 L19 9 L22 4"/>
+        <path d="M9 18 Q3 10 6 3"/>
+        <path d="M14 17 Q20 10 24 4"/>
       </g>
-      <g stroke="#2c2c2a" stroke-width="5" stroke-linecap="round" fill="none">
-        <path d="M20 31 L14 42 L11 55"/>
-        <path d="M34 34 L32 46 L34 58"/>
-        <path d="M50 36 L54 47 L58 57"/>
+      <g stroke="#2c2c2a" stroke-width="4.6" stroke-linecap="round" fill="none">
+        <path d="M20 30 L17 40 L19 51"/>
+        <path d="M33 33 L35 44 L33 55"/>
+        <path d="M49 35 L53 45 L51 56"/>
       </g>
-      <line x1="15" y1="24" x2="20" y2="26" stroke="#2c2c2a" stroke-width="4.4" stroke-linecap="round"/>
-      <line x1="33" y1="30" x2="38" y2="33" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round"/>
+      <line x1="14" y1="23" x2="19" y2="25" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round"/>
+      <line x1="27" y1="29" x2="32" y2="31" stroke="#2c2c2a" stroke-width="3.6" stroke-linecap="round"/>
       <circle cx="10" cy="22" r="6.4" fill="#2c2c2a"/>
-      <circle cx="26" cy="27" r="7.6" fill="#2c2c2a"/>
-      <ellipse cx="47" cy="35" rx="15.5" ry="12.5" fill="#2c2c2a"/>
+      <circle cx="23" cy="27" r="5" fill="#2c2c2a"/>
+      <ellipse cx="45" cy="34" rx="16" ry="12.8" fill="#2c2c2a"/>
       <path d="M15 19 Q11 23 7 20 Q10 15 15 16 Z" fill="#4a4a52" opacity="0.7"/>
-      <path d="M31 23 Q27 27 22 24 Q25 19 31 20 Z" fill="#4a4a52" opacity="0.7"/>
-      <path d="M56 32 Q47 38 38 33 Q43 24 56 27 Z" fill="#4a4a52" opacity="0.7"/>
+      <path d="M27 25 Q24 29 20 27 Q22 24 27 23 Z" fill="#4a4a52" opacity="0.7"/>
+      <path d="M55 31 Q46 37 36 32 Q41 23 55 26 Z" fill="#4a4a52" opacity="0.7"/>
       <circle cx="8" cy="20" r="1.8" fill="#f5f2ea"/>
     `),
 
@@ -423,28 +423,32 @@ const ICONS = {
       </g>
     `),
 
-  // Round 2 redraw. Round 1's standalone symmetric front-on nose was
-  // rejected -- reviewed as unreadable alone, echoing this file's own
-  // pre-round-1 note that a bare nose is unclear (which is why that version
-  // had put it inside a whole face, and that in turn was rejected too for
-  // reading as "face"/"boy" rather than the single feature being taught).
-  // This is a full side-profile silhouette instead of a front-on one --
-  // the classic bridge-to-tip curve down to a flared nostril wing with the
-  // nostril hole cut into it, closer to how word-card illustrations and the
-  // universal "nose" pictogram draw it, and a shape no other icon in this
-  // set has. A single faint closed-lip line below (not a mouth, not a chin,
-  // not eyes) is the minimal face anchor: enough to say "this sits on a
-  // face" without pulling the read back to "face".
+  // Round 3: round 2's side-profile silhouette risked reading as a chili
+  // pepper / abstract blob in isolation. Switched to a front-on nose --
+  // the more universal "nose" pictogram shape: a bell that widens toward
+  // two separate nostril wings with a shallow inward notch between them at
+  // the very bottom, so the SILHOUETTE itself (not just the dark nostril
+  // fills) reads as two-holes-in-a-nose rather than a smooth round bottom
+  // with two dots, which could still land as eyes or a heart. Two very
+  // faint cheek-line strokes well outside the nose body are the minimal
+  // face anchor the brief asked for -- present enough to say "this sits on
+  // a face" without drawing eyes, a mouth, or a chin. Measured a first
+  // draft's hard-cutout against every existing icon afterward -- it came
+  // back closest to `tie` (both a centered vertical teardrop), so this is
+  // drawn shorter and noticeably WIDER (a round bulb nose, not a slim
+  // wedge) specifically to sit apart from tie's narrow necktie silhouette,
+  // which stays that narrow the whole way down with squared-off shoulders.
   nose: () =>
     wrap(`
-      <path d="M27 5 Q22 16 18 24 Q14 30 12 38 Q10 46 14 51 Q18 55 25 55.5
-               Q30 56.5 33 54 Q35 52 34.5 48.5
-               Q39 47 41 42 Q43 37 39 32 Q35 22 32 12 Q30 6 27 5 Z"
+      <path d="M32 11 Q23 21 19 31 Q16 41 19 47.5 Q21.5 52 27 53.5 Q29.5 54.5 32 52.5
+               Q34.5 54.5 37 53.5 Q42.5 52 45 47.5 Q48 41 45 31 Q41 21 32 11 Z"
         fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.6" stroke-linejoin="round"/>
-      <path d="M27 8 Q22 20 18 28" fill="none" stroke="#fbe8cf" stroke-width="3.2" stroke-linecap="round" opacity="0.85"/>
-      <path d="M12 40 Q10 46 15 50 Q11 45 13 39 Z" fill="#dba165" opacity="0.75"/>
-      <ellipse cx="19" cy="44" rx="4.6" ry="3.2" fill="#7a5230" transform="rotate(-18 19 44)"/>
-      <path d="M23 57 Q28 60.5 34 58" fill="none" stroke="#c98f4e" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+      <path d="M29 14 Q22 23 19 32" fill="none" stroke="#fbe8cf" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>
+      <path d="M19 44 Q17 48 21 51 Q18 46 20 43 Z" fill="#dba165" opacity="0.6"/>
+      <ellipse cx="25" cy="46.5" rx="4" ry="2.8" fill="#7a5230" transform="rotate(-20 25 46.5)"/>
+      <ellipse cx="39" cy="46.5" rx="4" ry="2.8" fill="#7a5230" transform="rotate(20 39 46.5)"/>
+      <path d="M8 36 Q5 44 9 51" fill="none" stroke="#c98f4e" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+      <path d="M56 36 Q59 44 55 51" fill="none" stroke="#c98f4e" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
     `),
 
   // -- Group 2: C/K, E, H (chapter 3) --
@@ -1432,29 +1436,31 @@ const ICONS = {
       <path d="M18 24 Q32 40 46 24 Q32 34 18 24 Z" fill="#256614"/>
     `),
 
-  // Round 2 redraw. Round 1 sat 5 toe circles on top of a path that was
-  // already wide enough to contain them, so under a hard-cutout silhouette
-  // test the toes vanished completely into a plain rounded blob -- verified
-  // by rendering both in silhouette side by side. The fix (confirmed the
-  // same way): toes are separate rotated capsules that FAN OUT from the
-  // ball of the foot with real background gaps between them, the same
-  // separate-fill construction the `hand` icon below uses for fingers, so
-  // the notches between toes are part of the outline itself, not a color
-  // difference a cutout erases. Foot proportions changed too -- toes are a
-  // shorter fraction of total length, with a proper ball-of-foot width and
-  // an inner arch notch, closer to a real top-down foot than the old
-  // uniform-width sock shape.
+  // Round 3: round 2's toe rects still fused into a mitten at real button
+  // size. The cause wasn't color -- it's that the toes' pre-rotation BASE
+  // positions actually overlapped each other by 1-2 units (dx spacing was
+  // narrower than the combined half-widths of neighboring toes), so the
+  // ball-of-foot attachment band was one solid fused mass and only the
+  // rotated tips fanned apart. This version gives every adjacent toe pair
+  // an explicit >=1.5-unit background gap at the base (computed from
+  // edges, not eyeballed), and replaces the old near-uniform toe-length
+  // rhythm (13/15.5/15/12.5/9.5 -- barely different from `hand`'s own
+  // 17/24/28/24/17 finger arc) with a strictly monotonic taper: big toe
+  // much longer and wider, pinky a small stub. That taper is a different
+  // rhythm from hand's symmetric peak-in-the-middle fingers before color
+  // is even considered, which is the actual ask (toes must not read as a
+  // second hand).
   feet: () => {
     const foot = (cx, dir) => {
       const s = n => (cx + dir * n).toFixed(1)
-      // [dx, length, width, angleDeg] -- big toe (idx 0) longest & widest,
-      // on the inner side; angle fans outward toe by toe.
+      // [dx, length, width, angleDeg] -- centers/widths solved so adjacent
+      // toe bases never overlap; strictly decreasing big-toe-to-pinky.
       const toes = [
-        [-9.2, 13, 7.2, dir * -16],
-        [-4.4, 15.5, 6.2, dir * -6],
-        [0.4, 15, 5.6, 0],
-        [5, 12.5, 5.2, dir * 8],
-        [9.2, 9.5, 4.6, dir * 18],
+        [-10.4, 17, 6.2, dir * -22],
+        [-3.3, 13, 5.0, dir * -10],
+        [2.8, 10, 4.2, 0],
+        [8.1, 7.5, 3.4, dir * 10],
+        [12.4, 5.5, 2.2, dir * 20],
       ]
       let toeShapes = ''
       let nails = ''
@@ -1464,7 +1470,7 @@ const ICONS = {
           `<rect x="${(cx + dir * dx - w / 2).toFixed(1)}" y="28" width="${w}" height="${len}" rx="${(w / 2).toFixed(1)}" ` +
           `fill="#f5d6b0" stroke="#c98f4e" stroke-width="2" transform="rotate(${ang} ${tx} 28)"/>`
         nails +=
-          `<ellipse cx="${tx}" cy="${(28 + len * 0.32).toFixed(1)}" rx="${(w * 0.3).toFixed(1)}" ry="${(len * 0.22).toFixed(1)}" ` +
+          `<ellipse cx="${tx}" cy="${(28 + len * 0.3).toFixed(1)}" rx="${(w * 0.28).toFixed(1)}" ry="${(len * 0.2).toFixed(1)}" ` +
           `fill="#fbe8cf" opacity="0.8" transform="rotate(${ang} ${tx} 28)"/>`
       })
       return `
