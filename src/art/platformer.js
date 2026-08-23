@@ -515,6 +515,13 @@ const FLAME_MID = '#ffa81c'
 const FLAME_CORE = '#fff2a0'
 const LEAF = '#3fa03a'
 const LEAF_DEEP = '#1f6b23'
+// Shell-plate spikes (Captain Gum only, v11 -- see the revision note on
+// platPowerup). A dark bronze rather than the reference's green: this figure
+// already carries white/red/gold, and a green shell would be a fourth hue
+// fighting the other three for attention. Bronze reads as armour plate next
+// to any of them.
+const SHELL = '#4a3324'
+const SHELL_LIT = '#7a5a3e'
 
 // ---------------------------------------------------------------------------
 // SKELETON PRIMITIVES (v4). See style rules S1–S4.
@@ -1246,32 +1253,46 @@ export function platSpring({
   ]
   const seam = (cy, rx) => E(60, cy, rx, 2.6, accent, ink(2.2))
   const backdrop = [E(60, 135, 22, 3, '#000', { opacity: 0.14 })]
-  // The coil stack used to start at cy 64 / ry 8 (top edge y 56), which sits
-  // entirely ABOVE the neck's own top (y 58) — the first turn painted over
-  // the whole neck quad (y 58..68), so no skin showed between chin and
-  // spring at all. User: "두번째 마리오는 몸이랑 목이 구분도 안되고." Moved
-  // down and shrunk (ry 8/9/8 -> 6/6.5/6, first top edge now y 66) so ~8
-  // units of neck survive below the chin, the same order of visibility the
-  // other three heroes get from their shirt collar (see `legoOveralls`'s
-  // neck note) — confirmed on a render, not just by the arithmetic, since
-  // this is a "does it read" fix. The pants box shifts down to meet the
-  // shortened stack's new bottom edge; its own height is unchanged.
+  // v11: NO SKIN NECK. v9 had the coil stack's own top turn swallow the whole
+  // neck quad; v10's fix was to shrink/lower the stack so the skin trapezoid
+  // showed again -- and the user reviewed THAT render and reversed the call:
+  // "코일 컨셉을 할라고 하면 목 대신에 적당한 굵기의 코일이 들어가면 좋겠어."
+  // Skin neck is wrong twice over for this hero specifically -- it is the one
+  // figure whose torso is a coil, so a bare neck between head and spring reads
+  // as an unfinished stack, not a design choice. The fix is a THIRD option,
+  // not a rerun of v9 or v10: one extra turn, narrower than the chest turns
+  // (rx 19 against 26-29) so it cannot swallow the 58-wide head the way v9's
+  // rx-26 first turn did, but wider than the old skin neck (14-16) so it does
+  // not read as a thin disconnected ring either. Its top edge (64-6.5=57.5)
+  // sits right at the chin (58) -- legoHead is painted after this whole list,
+  // so its face box quietly trims the 0.5 units that poke above the chin
+  // instead of a seam needing to line up by hand.
   const body = [
-    neck(60, 58, 68, 7, 8),
+    turn(64, 19, 6.5),
     turn(72, 26, 6),
     turn(80, 29, 6.5),
     turn(88, 26, 6),
+    seam(68, 20),
     seam(76, 27.5),
     seam(84, 27.5),
 
-    box(39, 92, 81, 108, 7, DENIM, ink(3.2)),
-    R(40, 93, 14, 15, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
-    bigButton(37, 95, 7),
-    mirror(bigButton(37, 95, 7)),
+    // BIGGER CHEST, BIGGER LETTER. User: "몸통이 너무 작아서 O 글자도 너무
+    // 작아졌어." The old box (92..108, 16 tall) was 10 units shorter than the
+    // other three heroes' bib (76..102, 26 tall) despite spanning the same
+    // 42-unit width -- the plate inherited that shortfall directly (h 16
+    // against their 21). Grown to 90..111 (21 tall, matching) and 4 units
+    // wider (38..82) so the plate gets real padding on every side instead of
+    // being sized to the box's own edge.
+    box(38, 90, 82, 111, 7, DENIM, ink(3.2)),
+    R(39, 91, 15, 16, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
+    bigButton(36, 94, 7),
+    mirror(bigButton(36, 94, 7)),
     // Ollie keeps the family's one round plate — a stadium, not a disc, so
     // the letter O is not fighting square corners while still being full
-    // width down the whole middle.
-    emblemPlate(41, 94, 38, 16, visorColor, accent, emblem, true),
+    // width down the whole middle. h 17 against the old 16 is a small jump on
+    // paper; on a round plate `emblemPlate`'s own radius (h/2) grows with it,
+    // so the glyph's usable band grows faster than the number suggests.
+    emblemPlate(40, 92, 40, 17, visorColor, accent, emblem, true),
 
     legoLegsStanding(),
 
@@ -1335,6 +1356,25 @@ export function platBlock({
 // plank panels on the bib flanks — none of which are skeleton geometry, so
 // none of them needed to change for the LEGO conversion. Only the body
 // underneath (head, torso, limbs) is rebuilt in the new grammar, bigger.
+//
+// REVISION NOTE (v11): BOWSER MOTIF. User, after seeing v10: "챕터 5 - 보스가
+// 특징이 너무 없어 좀 더 꽉차게 거대한 느낌을 줬으면 좋겠고, 기왕이면 불뿜는
+// 쿠파를 모티브로 해보자." Four additions, all confirmed clear of every
+// existing hard constraint on this figure (the frame's own halo budget, the
+// raised arm's tube envelope, the neck) rather than a re-derivation of them:
+//  1. SHELL SPIKES — a two-spike collar (`shellSpikes`), based inside the
+//     torso so only the tip shows, outboard of the neck and inboard of the
+//     raised arm's tube — the one gap this figure's existing geometry leaves
+//     free at shoulder height.
+//  2. FIRE BREATH — a flame plume (`breath`) anchored inside the open mouth,
+//     drawn last so it sits in front of the chest plate.
+//  3. TUSKS — two ivory tusks (`tusk`) at the mouth's own corners, a
+//     boss-only overlay so `legoFace` (shared by the other three heroes)
+//     stays untouched.
+//  4. MORE MASS — the white torso box, red bib, arm shoulder/wrist and the
+//     leg's hip segment all widened 2-4 units per side (see each call site's
+//     own note); the boot and shin, which set the family's one cutout hole
+//     between the legs, are untouched.
 //
 // `bodyColor` IS ACCEPTED AND IGNORED, same as before: the wardrobe is fixed
 // (casting rule 2's reasoning for DENIM applies here too) and the palette
@@ -1512,37 +1552,109 @@ export function platPowerup({
     mouthY: 58,
   }
   const strapL = [
-    P('29,75 40,75 37,88 28,88', FIRE_TONE.base, ink(2.8)),
-    S('M 33,77 L 31,86', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
+    P('27,75 38,75 35,88 26,88', FIRE_TONE.base, ink(2.8)),
+    S('M 31,77 L 29,86', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
   ]
+  // SHELL SPIKES (v11, Bowser motif). User: "기왕이면 불뿜는 쿠파를 모티브로
+  // 해보자" — a spiked shell collar is the reference's second-most-legible
+  // silhouette cue after the fire breath below.
+  // TWO EARLIER PLACEMENTS BOTH FAILED, and both failures were the same
+  // shape: anywhere between the chin and the torso is BELOW the head box
+  // (chin 62) but still inboard of the head's own width (27..93), so nothing
+  // masks the spike's sides and it reads as a fang hanging off the jaw, not
+  // armour on the shoulder. First draft (cx 42, tip 57) sat under the left
+  // eye (dx = 15*1.14 = 17.1, eye at 60-17.1 = 42.9); the fix that only moved
+  // the tip below the chin (cx 44, tip 64) still measured and rendered as
+  // teeth flanking the fire breath, one step down, same problem.
+  // v11-c tried moving the spike OUTSIDE the head's silhouette (cx 20,
+  // mirrored 100) to dodge the face — but that x/y band (7 units clear of
+  // the head, tip 36, base 56) is exactly where the raised fist's OWN
+  // fireball already lives (`fireball`'s own comment: "the ball plus licks
+  // span x 9..27, y 24..47.4"). Measured on a render, the spike was there
+  // but completely swallowed by the later-drawn fireball — invisible, not
+  // fixed.
+  // v11-d: the only band that is clear of the head (27..93), the neck
+  // (51..69), the raised arm's tube (x 14.6..32.8 left / 87.2..105.4 right
+  // for y 68..75) AND the fireball (x 9..27, y 24..47.4) is a shallow shelf
+  // right at the collar itself: cx 44 (mirrored 76), tip 68 — six units
+  // below the chin (62) and 0.4 units below the mouth's own lowest point
+  // (58 + 8.4*1.14 = 67.6), so the spike never touches the face at all —
+  // base 82, inside the torso (top edge 75) so it is attached, not
+  // floating. Shorter than either earlier attempt (7 units of tip visible
+  // above the collar instead of 11-18) because this is the only slot left
+  // that is not already owned by something else on this figure.
+  const spike = (cx, tipY, baseY, halfW) => [
+    P(`${cx - halfW},${baseY} ${cx},${tipY} ${cx + halfW},${baseY}`, SHELL, ink(2.2)),
+    P(
+      `${(cx - halfW * 0.3).toFixed(1)},${(baseY - 1.5).toFixed(1)} ${cx},${(tipY + 3).toFixed(1)} ${(cx + halfW * 0.2).toFixed(1)},${(baseY - 1.5).toFixed(1)}`,
+      SHELL_LIT,
+      { opacity: 0.6, nohalo: true }
+    ),
+  ]
+  const shellSpikes = [spike(44, 68, 82, 7), mirror(spike(44, 68, 82, 7))]
+  // FIRE BREATH (v11, Bowser motif). The reference's signature attack.
+  // Anchored inside the open mouth (my = G_BOSS.mouthY 58, mouth bottom
+  // 58 + 8.4*1.14 = 67.6) so the flame reads as spilling OUT of it rather
+  // than pasted beside it, and kept short of the chest plate (top edge 86)
+  // so it lands on the collar, not the phonics letter. Drawn last (with the
+  // fireballs) so it sits in front of the plate the way a breathed flame
+  // sits in front of a shell. Flat nested fills, no gradient.
+  const breath = (cx, cy) => [
+    P(`${cx - 9},${cy} ${cx - 2},${cy + 16} ${cx - 12},${cy + 12}`, FLAME_OUT, ink(2)),
+    P(`${cx + 3},${cy} ${cx + 10},${cy + 18} ${cx - 1},${cy + 14}`, FLAME_OUT, ink(2)),
+    P(`${cx - 5},${cy} ${cx},${cy + 20} ${cx + 5},${cy}`, FLAME_MID, { nohalo: true }),
+    P(`${cx - 2.5},${cy} ${cx},${cy + 11} ${cx + 2.5},${cy}`, FLAME_CORE, { nohalo: true }),
+  ]
+  // Two small ivory tusks at the mouth's own corners (mw = 8.6*1.14 = 9.8,
+  // my = 58 — the exact numbers `legoFace` computes for this figure's `s`,
+  // so they sit ON the mouth rather than beside a guess at it). A fiercer
+  // jaw without touching `legoFace` itself, which the other three heroes
+  // share — this figure gets its own overlay instead.
+  const tusk = (k) =>
+    D(
+      `M ${(60 + k * 8.2).toFixed(1)},59 L ${(60 + k * 11).toFixed(1)},52 L ${(60 + k * 6.4).toFixed(1)},57 Z`,
+      '#f7f0df',
+      ink(1.5)
+    )
+  // LEFT AT THE ORIGINAL COORDS on purpose, unlike the torso around it: a
+  // first pass shifted+widened this to (25,80,17)/(19,54,13) to track the
+  // wider torso, and a padded-viewBox scan caught the raised fist's own
+  // cuff sliding to x 0.2 — a hair's-width inside the frame. Reverting only
+  // this (torso/bib/plank/button keep their extra width) restored the
+  // original x 2.2..117.7 exactly. The arm can start slightly inboard of
+  // the torso's new edge without looking wrong; it could not survive
+  // shifting outward with it.
   const armShoulder = { x: 27, y: 80, w: 16 }
   const armWrist = { x: 21, y: 54, w: 12 }
   const body = [
     neck(60, 62, 75, 9, 10),
-    box(27, 75, 93, 110, 9, FIRE_WHITE, ink(3.4)),
-    R(29, 77, 15, 12, 5, '#000', { opacity: 0.06, nohalo: true }),
+    shellSpikes,
+    box(25, 75, 95, 110, 9, FIRE_WHITE, ink(3.4)),
+    R(27, 77, 15, 12, 5, '#000', { opacity: 0.06, nohalo: true }),
     strapL,
     mirror(strapL),
-    box(35, 84, 85, 110, 8, FIRE_TONE.base, ink(3.4)),
-    R(37, 86, 15, 22, 5, FIRE_TONE.lit, { opacity: 0.4, nohalo: true }),
-    bigButton(35, 88, 8),
-    mirror(bigButton(35, 88, 8)),
+    box(33, 84, 87, 110, 8, FIRE_TONE.base, ink(3.4)),
+    R(35, 86, 15, 22, 5, FIRE_TONE.lit, { opacity: 0.4, nohalo: true }),
+    bigButton(33, 88, 8),
+    mirror(bigButton(33, 88, 8)),
     emblemPlate(39, 86, 42, 20, panelColor, inkColor, emblem),
-    plankPanel(28),
-    plankPanel(82),
+    plankPanel(26),
+    plankPanel(84),
 
     // Leg heights come in shorter than the first draft (110..123/123..131,
     // boot to 137) for the same bootBot<=131-ish reason `legoLegsStanding`
     // measured its own boots against — this boss's boot carries the same
-    // 3.2 stroke.
-    legoLeg(36, 56, 110, 119, FIRE_TONE),
+    // 3.2 stroke. Hip segment widened (36..56 -> 34..58) for more mass;
+    // shin and boot are untouched so the family's one cutout hole between
+    // the boots (the 48-unit enclosure at (60,124)) does not close up.
+    legoLeg(34, 58, 110, 119, FIRE_TONE),
     legoLeg(37, 55, 119, 125, FIRE_TONE),
     legoBoot(33, 59, 122, 131, SHOE),
     coilRing(46, 122),
     pegDisc(46, 110, 6.3),
     pegDisc(46, 119, 5.6),
     mirror([
-      legoLeg(36, 56, 110, 119, FIRE_TONE),
+      legoLeg(34, 58, 110, 119, FIRE_TONE),
       legoLeg(37, 55, 119, 125, FIRE_TONE),
       legoBoot(33, 59, 122, 131, SHOE),
       coilRing(46, 122),
@@ -1570,10 +1682,24 @@ export function platPowerup({
     // fireball has to land on top of its own fist for the "holding the
     // flower's fireball" read the original comment describes, and both need
     // to be on top of the head to actually be visible at all.
+    //
+    // LEFT AT ITS OLD ANCHOR (18, 41) ON PURPOSE even though the wrist moved
+    // 2 units (21 -> 19) with the wider torso: tracking the wrist exactly
+    // pushed the ball's own licks to a measured x 0.2 (padded-viewBox scan),
+    // a hair's-width inside the frame with essentially none of the halo
+    // budget left. The fist only moved slightly, the fireball sits loosely
+    // "above" it rather than glued to it in the reference art anyway, and
+    // (18, 41) already had a real margin (x 2.2 before any of this figure's
+    // other changes) — not worth spending on a shift nothing asked for.
     legoArmFist(armShoulder, armWrist, FIRE_RED, 11),
     fireball(18, 41),
     mirror(legoArmFist(armShoulder, armWrist, FIRE_RED, 11)),
     mirror(fireball(18, 41)),
+    // Fierce jaw + breath, both after the head and the star for the same
+    // "has to be on top to be visible" reason as the fireballs.
+    tusk(-1),
+    tusk(1),
+    breath(60, 64),
     // Sits in the same slot as the other three heroes' cap disc, but a star:
     // `legoHead` was called with `discColor = null` so its own plain accent
     // disc is skipped, and this figure gets the mark instead — the phonics
