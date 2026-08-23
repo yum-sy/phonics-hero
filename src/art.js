@@ -250,16 +250,14 @@ export function heroAcrobat({
       <circle cx="75" cy="61" r="8.5" fill="${bodyColor}"/>
       <rect x="76" y="56" width="32" height="11" rx="5" fill="${bodyColor}"/>
       <circle cx="106" cy="61" r="8" fill="${accent}"/>
-      ${/* Measured gap before this patch: head bottom (cy32+r19=51) to chest
-            top (58) is 7 units at center, widening to ~17 at the chest's own
-            x43/x77 edges since the head is round and the chest top is flat --
-            "머리가 붕 떠있어" was a real gap, not a rendering artifact. This
-            rect's top edge (y32) sits at the head circle's own equator, which
-            spans x41-79 there -- wider than the chest's x43-77, so the whole
-            top edge is hidden under the head (drawn next, on top) with margin
-            at both corners; only the strip below the head's actual curve
-            shows, as a filled neck, down to y61 (3 units into the chest). */ ''}
-      <rect x="43" y="32" width="34" height="29" fill="${bodyColor}"/>
+      ${/* Head bottom (cy32+r19=51) to chest top (58) is a real 7-unit gap --
+            "머리가 붕 떠있어" -- but a rect as wide as the head's own equator
+            (x41-79, first tried) reads as a square pillar, not a neck: the
+            user's follow-up ("목이 두껍다") caught exactly that. 18 units
+            (~half the head's 38-unit width) is proportioned like a neck
+            instead. Centered under the head (x51-69) so its top corners at
+            y32 still land inside the head circle and stay hidden under it. */ ''}
+      <rect x="51" y="32" width="18" height="29" fill="${bodyColor}"/>
       <circle cx="60" cy="32" r="19" fill="${maskColor}"/>
       <g stroke="${webColor}" stroke-width="1.6" fill="none" opacity="0.85">
         <line x1="60" y1="13" x2="60" y2="51"/>
@@ -318,13 +316,10 @@ export function heroShield({
       <circle cx="91" cy="98" r="8" fill="${accent}"/>
       ${/* Head (cx67,cy32,r19) bottom is y51; chest top is y58 -- a 7-unit gap
             at center, same floating-head defect as the other three archetypes
-            (measured the same way: see heroAcrobat's note). This head sits at
-            the chest's own x-center, so its equator (y32) spans exactly
-            x48-86 -- the chest polygon's own top width -- so a patch flush
-            with those edges would land exactly tangent to the head circle.
-            Inset 1 unit per side (x49-85) to keep the patch's top corners
-            strictly inside the head disc instead of razor-tangent to it. */ ''}
-      <rect x="49" y="32" width="36" height="29" fill="${bodyColor}"/>
+            (measured the same way: see heroAcrobat's note). Same 18-unit
+            neck-proportioned width there too, not the head's full 38-unit
+            equator -- centered on this head's own cx=67 (x58-76). */ ''}
+      <rect x="58" y="32" width="18" height="29" fill="${bodyColor}"/>
       <circle cx="67" cy="32" r="19" fill="${bodyColor}"/>
       <polygon points="50,22 38,26 50,31" fill="${accent}"/>
       <polygon points="84,22 96,26 84,31" fill="${accent}"/>
@@ -393,12 +388,8 @@ export function heroThunder({
       <polygon points="42,28 24,18 28,34 38,36" fill="${maskColor}"/>
       <polygon points="78,28 96,18 92,34 82,36" fill="${maskColor}"/>
       ${/* Same floating-head defect and same fix as heroAcrobat/heroShield:
-            head bottom y51 to chest top y58 is a real 7-unit gap at center,
-            wider at the chest polygon's own x44/x78 edges. Patch top edge
-            sits at the head's own equator (y32, spans x41-79 there), inside
-            the chest's x44-78 width with margin, so it stays fully hidden
-            under the head and only shows as the strip below its curve. */ ''}
-      <rect x="44" y="32" width="34" height="29" fill="${bodyColor}"/>
+            18-unit neck-proportioned width, centered on this head's cx=60. */ ''}
+      <rect x="51" y="32" width="18" height="29" fill="${bodyColor}"/>
       <circle cx="60" cy="32" r="19" fill="${bodyColor}"/>
       <path d="M41 32 A19 19 0 0 1 79 32 Z" fill="${maskColor}"/>
       <circle cx="53" cy="38" r="3.6" fill="#fff"/>
@@ -484,6 +475,14 @@ export function heroPoweredArmor({
       <circle cx="95" cy="100" r="9" fill="${panelColor}"/>
       <circle cx="95" cy="100" r="5" fill="${visorColor}"/>
       <circle cx="95" cy="100" r="2.5" fill="#fff"/>
+      ${/* The helmet's ear-fins (y14-40) and chest top (y52) leave a real
+            gap at the flanks -- only the small maskColor chin patch below
+            bridged the center (x54-66), so the flanks on either side of it
+            were empty and the neck read as a thin sliver next to the other
+            three heroes' now-18-unit necks ("4는 목이 얇다"). Same 18-unit
+            width, centered on this head's cx=60 (x51-69), y38 so its top
+            sits under the ear-fins/helmet box drawn after it. */ ''}
+      <rect x="51" y="38" width="18" height="16" fill="${bodyColor}"/>
       <rect x="54" y="42" width="12" height="12" fill="${maskColor}"/>
       <rect x="41" y="14" width="9" height="26" rx="4" fill="${bodyColor}"/>
       <rect x="70" y="14" width="9" height="26" rx="4" fill="${bodyColor}"/>
