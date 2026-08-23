@@ -255,12 +255,478 @@ const MISREAD_NOTATIONS = new Map([
   ['ay', '두 음성이 **서로 다른 글자 이름**으로 읽는다: Samantha 는 글자 이름 I(=`eye`/`i`/`igh` 와 바이트 동일), Alex 는 글자 이름 A(=`a`/`eh` 와 바이트 동일). 즉 같은 데이터가 기기 음성에 따라 다른 소리를 가르친다. /ei/ 는 `a`, /ai/ 는 `eye` 를 써라'],
 ])
 
+// ============================================================================
+// 소리 표기 표 -- Jolly Group 1~7 전수. **챕터 9~33 은 조회만 하면 된다**
+// ============================================================================
+// 챕터 8 파일럿의 교훈 2번이 이 표를 만들라고 했다: "소리 표기를 계열 단위로
+// 몰아서 확정해라. 이 챕터 작업의 절반이 표기 측정이었다."
+//
+// --- 방법론 개선: pairwise cmp 를 해시 그룹핑으로 바꿨다 -------------------
+// `say` 는 결정적이므로 **md5 해시가 곧 파형 동일성**이다. 후보 n 개를 미끼
+// m 개와 `cmp` 하면 n*m 번 합성해야 하지만, 전부 한 번씩 합성해 해시로
+// 그룹핑하면 n+m 번에 전 쌍의 판정이 끝난다. 그래서 **음성별 고유 텍스트 763개**
+// (= 9 라운드, say 호출 1526회)로 후보 190여종을 미끼 전부와 비교했다. pairwise
+// cmp 로 같은 범위를 보려면 수만 번 합성해야 한다. 라운드를 늘리는 것이 곧
+// 미끼를 늘리는 것이고, **이전 라운드가 놓친 충돌이 소급으로 잡힌다** --
+// 실제로 그렇게 잡혔다(아래).
+//
+// --- 이 라운드가 발견한 새 오독 축: 낱자 이름 **나열** --------------------
+// 지금까지의 미끼는 (a) 낱자 이름 하나 (b) 숫자 (c) 로마 숫자 (d) 어휘
+// (e) 감탄사 였다. **"낱자 이름을 여러 개 이어 읽은 것"은 아무도 검사하지
+// 않았다.** 그 미끼를 넣자 후보 절반이 죽고 **이미 출하된 표기 6개도 죽었다**:
+//
+//   sss  == "ess ess ess"        (S) 두 음성 모두. **앱의 첫 소리다**
+//   ihh  == "eye aitch aitch"    (I) 두 음성 모두. `iii`=="three" 를 고친 표기다
+//   aaa  == "ay ay ay"           (A) Alex
+//   fff  == "eff eff eff"        (F) Alex
+//   rrr  == "ar ar ar"           (R) Samantha
+//   mmm  == "em em em"           (M) Samantha
+//   lll  == "el el el"           (L) Samantha
+//
+// **사용자의 첫 불만이 이것이었을 가능성이 높다.** 원문: "sss 이거 영 별로야.
+// s 소리가 나고 나서 쉬었다가 s 소리가 나야 할 것 같아. ... 파닉스에서 sss를
+// 빠르고 연속적으로 가르치는건 없을 것 같은데?" -- `sss` 가 "ess ess ess" 로
+// 렌더되면 그건 정확히 **낱자 이름이 빠르게 세 번** 나는 것이다. 직전
+// 라운드(`4027bb3`)는 그 불만을 "반복 형식이 나쁘다" 로 읽고 배열 원소의
+// 반복을 없앴는데, 반복은 **표기 안에** 그대로 남아 있었다(한 토큰이 세
+// 음절로 렌더된다). 이 표는 그 표기들을 아직 **교체하지 않았다** -- 아이가
+// 듣는 것을 챕터 1~6 의 100곳 이상에서 바꾸는 일이라 지시가 필요하다.
+// `broken` 필드가 그 사실을 들고 있고, 교체 후보는 `alt` 에 있다.
+//
+// 반대로 `nnn`(748/610) · `awh`(1329/1620) · `ee`(482/575) · `or`(384/413) 은
+// 깨끗하다. 즉 **"3자 반복은 안전하다" 는 이 파일의 옛 주석은 s/r/m/l/v/z 에서
+// 틀렸고 a/n/f 에서만 맞았다.** 규칙으로 유도할 수 없다 -- 글자마다 다르다.
+//
+// --- 두 번째 발견: CV 관례(`Xuh`)가 **마찰음에서** 무너진다 ---------------
+// 이 앱의 파열음 관례는 `tuh`/`kuh`/`buh`/`duh`/`guh`/`juh` 다. 같은 형태를
+// 마찰음에 쓰면 **Alex 가 이미 가르친 글자로 접는다**:
+//   zzuh == juh  (359.3ms, J = 챕터 7)     `zuh` 도 같다
+//   vvuh == buh  (323.6ms, B = 챕터 6)     `vuh` 도 같다
+//   ffuh == puh  (361.5ms, P = 챕터 2)
+// 기존 `buh`/`duh` 주석("Alex 가 b/d + 슈와를 파싱하지 못한다")의 일반형이다.
+// Alex 는 마찰음 + 슈와를 **같은 조음 위치의 파열음/파찰음**으로 접는다
+// (z->j, v->b, f->p). 그래서 Z 는 `zze`, V 는 `vve`, F 의 대체 후보는 `ffe` 로
+// **모음을 e 로 바꿔** 피했다. 새 마찰음 표기를 만들 때 `Xuh` 를 먼저 시도하면
+// 이 함정에 그대로 걸린다.
+//
+// --- 판정 기준 ------------------------------------------------------------
+// `proof` 필드:
+//   'phoneme'  -- 목표음과 같은 소리를 내는 **어휘 항목과 바이트 동일**이라
+//                 소리 자체가 증명된 것 (a=글자이름A, eye=글자이름I, u="you",
+//                 or==ore==oar 수렴). 가장 강한 등급이다
+//   'clean'    -- 위 763 텍스트 x 2음성 해시 공간에서 충돌 0. **음소 자체는 미증명**이고
+//                 `ough` 가 유령 음소를 가르쳤던 실패 모드가 여기 남아있다.
+//                 실기기 청취가 필요한 등급이다
+//
+// `ms` 는 [Samantha, Alex] 이고 `-r 88`(= audio.js EN_RATE 0.5) 실측이다.
+// **안전대 500~1200ms 는 이 앱이 지키고 있는 기준이 아니다** -- 기 출하 표기
+// 24개 중 14개가 Alex 에서 500ms 미만이다(tuh 328 · buh 324 · duh 326 ·
+// guh 329 · puh 362 · kuh 363 · huh 363 · juh 359 · uh 354 · oh 355 · a 413 ·
+// eye 412 · or 413 · eh 413). 파열음과 단모음은 조음 시간이 고정이라 표기로
+// 늘릴 수 없다(`4027bb3` 의 결론). 그래서 이 표는 **길이보다 오독 없음을
+// 우선**했고, 길이는 `ms` 로 그대로 노출한다.
+export const NOTATION_REPRO =
+  'say -v <Samantha|Alex> -r 88 -o a.aiff -- "<표기>" && md5 -q a.aiff && ' +
+  'afinfo a.aiff | grep "estimated duration"   # 해시가 같으면 같은 발화다'
+
+export const SOUND_TABLE = [
+  // ---------- Group 1~4 (챕터 1~8, 이미 출하됨) ----------
+  { g: 1, letterform: 'S', ipa: '/s/', say: 'sss', ms: [922, 1179], proof: 'clean',
+    broken: '두 음성 모두 "ess ess ess"(낱자 이름 S 세 번)와 바이트 동일 -- 교체 필요',
+    alt: ['sse'],
+    rejected: [
+      ['ssss', [689, 1551], 'Samantha 에서 `ss`("ess ess")와 바이트 동일 -- s 는 2개에서 포화한다. ' +
+        'Alex 는 포화하지 않는다(ss 889 vs ssss 1551) -- 기존 블랙리스트 주석이 이 포화를 ' +
+        '음성 구분 없이 적어두고 있었다'],
+      ['ssuh', [578, 455], 'Alex 에서 단어 `sir` 와 바이트 동일'],
+      ['ssih', [578, 365], 'Alex 에서 단어 `see` 와 바이트 동일'],
+      ['ssu', [863, 1005], 'Samantha 에서 "ess ess you" 와 바이트 동일'],
+      ['sso', [887, 970], 'Alex 에서 "ess ess oh" 와 바이트 동일'],
+      ['sssh', [1258, 1655], '"ess ess ess aitch" 와 바이트 동일'],
+      ['sssu', [543, 420], '두 음성 모두 단어 `sue`/`soo`/`sew` 와 바이트 동일'],
+    ] },
+  { g: 1, letterform: 'A', ipa: '/ei/', say: 'aaa', ms: [841, 1075], proof: 'clean',
+    broken: 'Alex 에서 "ay ay ay"(낱자 이름 A 세 번)와 바이트 동일',
+    alt: ['aae'],
+    note: 'A 의 목표음은 /ae/(apple)인데 이 표기는 /ei/ 를 낸다 -- 선재 미해결(HANDOFF §3)',
+    rejected: [
+      ['aaaa', [644, 1400], 'Samantha 에서 `aa` 와 바이트 동일(포화). Alex 는 포화하지 않는다'],
+      ['aah', [419, 1318], 'Alex 에서 "ay ay aitch" 와 바이트 동일'],
+      ['aauh', [477, 413], 'Alex 에서 `or`(OR, 챕터 8 채택 표기)와 바이트 동일'],
+      ['aaeh', [396, 413], '두 음성 모두 400ms 대로 짧다'],
+    ] },
+  { g: 1, letterform: 'T', ipa: '/t/', say: 'tuh', ms: [534, 328], proof: 'clean' },
+  { g: 1, letterform: 'I', ipa: '/i/', say: 'ihh', ms: [1049, 1504], proof: 'clean',
+    broken: '두 음성 모두 "eye aitch aitch"(낱자 이름 I·H·H)와 바이트 동일 -- ' +
+      '`iii`=="three" 를 고치려고 도입한 표기가 다른 오독으로 옮겨간 것이다',
+    alt: ['ieh', 'ihu'],
+    rejected: [
+      ['ihe', [445, 412], '두 음성 모두 글자 이름 I(`eye`/`i`)와 바이트 동일'],
+      ['ihhe', [445, 412], '위와 같음'],
+      ['iih', [480, 703], '`iihh` 와 동일. 깨끗하지만 Samantha 480ms'],
+    ] },
+  { g: 1, letterform: 'P', ipa: '/p/', say: 'puh', ms: [491, 362], proof: 'clean' },
+  { g: 1, letterform: 'N', ipa: '/n/', say: 'nnn', ms: [748, 610], proof: 'clean' },
+  { g: 2, letterform: 'C', ipa: '/k/', say: 'kuh', ms: [499, 363], proof: 'clean',
+    note: 'Jolly 는 c 를 /k/ 로 가르치므로 C 와 K 가 **같은 표기**를 쓴다' },
+  { g: 2, letterform: 'K', ipa: '/k/', say: 'kuh', ms: [499, 363], proof: 'clean' },
+  { g: 2, letterform: 'E', ipa: '/e/', say: 'eh', ms: [399, 413], proof: 'clean',
+    note: '확정 충돌쌍 a==eh (두 음성 바이트 동일). 엔진이 `eh` 를 글자 이름 A 로 정규화한다' },
+  { g: 2, letterform: 'H', ipa: '/h/', say: 'huh', ms: [489, 363], proof: 'clean' },
+  { g: 2, letterform: 'R', ipa: '/r/', say: 'rrr', ms: [875, 749], proof: 'clean',
+    broken: 'Samantha 에서 "ar ar ar"(낱자 이름 R 세 번)와 바이트 동일',
+    alt: ['rruh'],
+    rejected: [['rrh', [1014, 1074], 'Samantha 에서 "ar ar aitch" 와 바이트 동일']] },
+  { g: 2, letterform: 'M', ipa: '/m/', say: 'mmm', ms: [736, 633], proof: 'clean',
+    broken: 'Samantha 에서 "em em em"(낱자 이름 M 세 번)와 바이트 동일',
+    alt: ['mmh', 'mmo'],
+    rejected: [
+      ['mmmm', [562, 784], 'Samantha 에서 `mm` 와 바이트 동일(포화). Alex 는 포화하지 않는다'],
+      ['mhh', [1084, 1376], 'Samantha 에서 "em aitch aitch" 와 바이트 동일'],
+      ['mmmh', [1084, 366], 'Samantha 에서 "em em em aitch" 와 바이트 동일'],
+      ['mmhh', [1258, 1527], 'Samantha 에서 "em em aitch aitch" 와 바이트 동일'],
+      ['mmu', [759, 703], 'Samantha 에서 "em em you" 와 바이트 동일'],
+    ] },
+  { g: 2, letterform: 'D', ipa: '/d/', say: 'duh', ms: [446, 326], proof: 'clean',
+    note: '확정 충돌쌍 buh/duh -- 같은 문항의 letterTile 로 함께 두지 마라' },
+  { g: 3, letterform: 'G', ipa: '/g/', say: 'guh', ms: [446, 329], proof: 'clean' },
+  { g: 3, letterform: 'O', ipa: '/o/', say: 'awh', ms: [1329, 1620], proof: 'clean',
+    note: '낱자 이름 나열 검사도 통과했다. 다만 음소 미증명이라 실기기 청취 1순위(`4027bb3`)' },
+  { g: 3, letterform: 'U', ipa: '/uh/', say: 'uh', ms: [419, 354], proof: 'clean' },
+  { g: 3, letterform: 'L', ipa: '/l/', say: 'lll', ms: [863, 587], proof: 'clean',
+    broken: 'Samantha 에서 "el el el"(낱자 이름 L 세 번)와 바이트 동일',
+    alt: ['lleh', 'lluh'],
+    note: 'L 은 깨끗한 후보가 전부 Alex 343ms 다 -- 안전대 안에 있는 대체 표기가 없다',
+    rejected: [
+      ['llll', [666, 738], 'Samantha 에서 `ll` 와 바이트 동일(포화). Alex 는 포화하지 않는다'],
+      ['llh', [956, 1016], 'Samantha 에서 "el el aitch" 와 바이트 동일'],
+      ['lllh', [1142, 1167], 'Samantha 에서 "el el el aitch" 와 바이트 동일'],
+      ['lhh', [1119, 1365], 'Samantha 에서 "el aitch aitch" 와 바이트 동일'],
+      ['llhh', [1305, 1527], 'Samantha 에서 "el el aitch aitch" 와 바이트 동일'],
+      ['llu', [805, 715], 'Samantha 에서 "el el you" 와 바이트 동일'],
+    ] },
+  { g: 3, letterform: 'F', ipa: '/f/', say: 'fff', ms: [864, 1307], proof: 'clean',
+    broken: 'Alex 에서 "eff eff eff"(낱자 이름 F 세 번)와 바이트 동일',
+    alt: ['ffe', 'ffeh'],
+    rejected: [
+      ['ffuh', [553, 362], 'Alex 에서 `puh`(P, 챕터 2 채택 표기)와 바이트 동일 -- ' +
+        'CV 관례가 무성 마찰음에서도 무너진다(`zzuh`==`juh` · `vvuh`==`buh` 와 같은 축)'],
+      ['ffh', [1003, 1376], 'Samantha 에서 "eff eff aitch" 와 바이트 동일'],
+      ['ffu', [852, 1028], '두 음성 모두 "eff eff you" 와 바이트 동일'],
+    ] },
+  { g: 3, letterform: 'B', ipa: '/b/', say: 'buh', ms: [480, 324], proof: 'clean' },
+  { g: 4, letterform: 'AI', ipa: '/ei/', say: 'a', ms: [399, 413], proof: 'phoneme',
+    note: '글자 이름 A. LETTER_NAME_ONLY 의 의도적 예외 두 개 중 하나' },
+  { g: 4, letterform: 'J', ipa: '/j/', say: 'juh', ms: [505, 359], proof: 'clean' },
+  { g: 4, letterform: 'OA', ipa: '/ou/', say: 'oh', ms: [419, 355], proof: 'phoneme',
+    note: '글자 이름 O 와 바이트 동일 -- OA 의 목표음이 그것이다' },
+  { g: 4, letterform: 'IE', ipa: '/ai/', say: 'eye', ms: [445, 412], proof: 'phoneme',
+    note: '글자 이름 I 와 두 음성 바이트 동일' },
+  { g: 4, letterform: 'EE', ipa: '/i:/', say: 'ee', ms: [482, 575], proof: 'clean',
+    note: '낱자 이름 나열("ee ee"/"double e")도 통과. 음소 미증명은 그대로다(챕터 8 헤더)' },
+  { g: 4, letterform: 'OR', ipa: '/o:/', say: 'or', ms: [384, 413], proof: 'phoneme',
+    note: 'or==ore==oar 가 두 음성에서 수렴 -- 독립 철자 셋이 한 음소로 모이는 것이 증거다' },
+
+  // ---------- Group 5 (Jolly: z w ng v oo oo) ----------
+  { g: 5, letterform: 'Z', ipa: '/z/', say: 'zze', ms: [770, 1230], proof: 'clean',
+    alt: ['zzeh'],
+    rejected: [
+      ['zz', [759, 1068], 'Samantha 에서 "zee zee"(낱자 이름 Z 두 번)와 바이트 동일'],
+      ['zzz', [212, 1555], 'Samantha 212ms "잠자기" 어휘 항목 (`4027bb3` 이 이미 잡았다)'],
+      ['zzzz', [759, 2031], 'Samantha 는 `zz` 에서 포화(= "zee zee"), Alex 는 2031ms'],
+      ['zuh', [585, 359], 'Alex 에서 `juh`(J, 챕터 7 채택 표기)와 바이트 동일'],
+      ['zzuh', [585, 359], 'Alex 에서 `juh` 와 바이트 동일 -- CV 관례가 유성 마찰음에서 무너진다'],
+      ['zhh', [1130, 1532], 'Samantha 에서 "zee aitch aitch" 와 바이트 동일'],
+      ['zzhh', [1386, 2066], 'Samantha 에서 "zee zee aitch aitch" 와 바이트 동일'],
+      ['zzu', [875, 1219], 'Samantha 에서 "zee zee you" 와 바이트 동일'],
+      ['zzo', [909, 1230], 'Samantha 에서 "zee zee oh" 와 바이트 동일'],
+      ['zih', [585, 336], '`zzih` 와 동일이고 Alex 336ms -- 짧고 /i/ 가 섞인다'],
+    ] },
+  { g: 5, letterform: 'W', ipa: '/w/', say: 'weh', ms: [521, 331], proof: 'clean',
+    alt: ['wah', 'waa'],
+    note: '/w/ 는 활음이라 홀로 늘릴 수 없다. Alex 331ms 는 tuh(328)/buh(324) 와 같은 등급이다',
+    rejected: [
+      ['wuh', [358, 331], 'Samantha 에서 `woo`, Alex 에서 `whoa` 와 바이트 동일'],
+      ['wu', [358, 354], 'Samantha `woo` · Alex `ew`/`ugh`/`woo` 와 바이트 동일'],
+      ['wih', [521, 308], 'Alex 에서 단어 `we` 와 바이트 동일'],
+      ['wuhh', [521, 331], 'Alex 에서 `whoa`/`were` 와 바이트 동일'],
+      ['wwuh', [521, 331], 'Alex 에서 `whoa` 와 바이트 동일'],
+      ['whuh', [521, 331], 'Alex 에서 `were`/`whoa` 와 바이트 동일'],
+      ['whh', [1382, 1752], '안전대 상단을 두 음성 모두 크게 초과'],
+    ] },
+  { g: 5, letterform: 'NG', ipa: '/ng/', say: 'ngh', ms: [968, 1098], proof: 'clean',
+    alt: ['ngg', 'nng'],
+    note: '뒤에 h 를 붙이는 이 앱의 관례(ihh/awh/erh/arh)와 같은 형태이고, ' +
+      '낱자 이름 나열("en gee aitch")과도 다르다',
+    rejected: [
+      ['ng', [412, 552], 'Samantha 412ms -- 파열음보다도 짧다'],
+      ['ung', [474, 517], '앞에 /u/ 가 붙어 들린다'],
+      ['nghh', [1316, 1608], '안전대 상단 초과'],
+      ['unng', [376, 471], '두 음성 모두 짧다'],
+    ] },
+  { g: 5, letterform: 'V', ipa: '/v/', say: 'vve', ms: [697, 979], proof: 'clean',
+    alt: ['vvu', 'vvhu'],
+    rejected: [
+      ['vvv', [848, 1072], 'Samantha 에서 "vee vee vee"(낱자 이름 V 세 번)와 바이트 동일'],
+      ['vuh', [502, 324], 'Alex 에서 `buh`(B, 챕터 6 채택 표기)와 바이트 동일'],
+      ['vvuh', [502, 324], 'Alex 에서 `buh` 와 바이트 동일 -- CV 관례가 유성 마찰음에서 무너진다'],
+      ['vv', [569, 735], 'Samantha 에서 `vvvv` 와 동일(포화)'],
+      ['vvh', [964, 1339], 'Samantha 에서 "vee vee aitch" 와 바이트 동일'],
+      ['vhh', [1103, 1513], 'Samantha 에서 "vee aitch aitch" 와 바이트 동일'],
+      ['vvu', [813, 944], '깨끗하다. `vve` 와 동급이라 차점자로 남긴다'],
+      ['vvo', [848, 956], 'Samantha 에서 "vee vee oh" 와 바이트 동일'],
+      ['vih', [502, 334], '`vvih` 와 동일이고 /i/ 가 섞인다'],
+    ] },
+  { g: 5, letterform: 'OO', ipa: '/u:/', say: 'uuu', ms: [685, 795], proof: 'clean',
+    alt: ['uu', 'oouu'],
+    note: 'OO 는 **한 글자꼴에 소리가 둘**이다 -- 아래 multiSoundLetterforms() 규칙 참조',
+    rejected: [
+      ['oo', [654, 575], 'Samantha 에서 "oh oh"(낱자 이름 O 두 번)와 바이트 동일'],
+      ['oooo', [654, 982], 'Samantha 에서 `oo` 와 동일(포화) = "oh oh"'],
+      ['ooo', [384, 761], 'Samantha 에서 `ooh`/`oohh`/`ew` 와 바이트 동일'],
+      ['ooh', [384, 354], 'Samantha 에서 `ooo`/`oohh`/`ew` 와 바이트 동일'],
+      ['ooou', [1046, 912], 'Samantha 에서 "oh oh oh you" 와 바이트 동일'],
+      ['oooh', [477, 378], '두 음성 모두 짧고 `oh`(OA) 와 눈으로 헷갈린다'],
+    ] },
+  { g: 5, letterform: 'OO', ipa: '/u/', say: 'uuh', ms: [1033, 1132], proof: 'clean',
+    alt: ['ooe', 'oohu'],
+    note: 'Jolly 의 짧은 oo(book). 음소 미증명이고 **실기기 청취 1순위**다 -- ' +
+      '긴 oo(`uuu`)와 짧은 oo(`uuh`)를 아이가 실제로 구별하는지가 이 챕터의 성패다. ' +
+      '구별되지 않으면 낱소리 드릴을 긴 oo 하나로 줄이고 짧은 oo 는 단어(book/foot)로만 가르쳐라',
+    rejected: [
+      ['oou', [837, 691], 'Samantha 에서 "oh oh you" 와 바이트 동일'],
+      ['oohh', [384, 354], 'Samantha `ooh`/`ooo`/`ew` · Alex `ugh`/`woo`/`wu` 와 바이트 동일'],
+      ['uhh', [388, 1399], 'Samantha 에서 `ugh` 와 바이트 동일 + 음성 간 3.6배'],
+      ['ouh', [419, 435], '두 음성 모두 감탄사 `ow` 와 바이트 동일'],
+      ['uuhh', [477, 413], '두 음성 모두 짧다'],
+    ] },
+
+  // ---------- Group 6 (Jolly: y x ch sh th th) ----------
+  { g: 6, letterform: 'Y', ipa: '/y/', say: 'yyuh', ms: [627, 621], proof: 'clean',
+    rejected: [
+      ['yuh', [546, 331], 'Alex 에서 글자 이름 U(`u`)와 바이트 동일 -- Y 자리에서 UE 소리가 난다'],
+      ['yu', [384, 331], '두 음성 모두 `you`/`yoo`/`yew`/`ewe` 군집과 동일 = /ju:/ (UE 의 소리다)'],
+      ['yih', [546, 308], 'Alex 308ms'],
+      ['yuhh', [546, 296], 'Samantha 에서 `yuh` 와 동일'],
+    ] },
+  { g: 6, letterform: 'X', ipa: '/ks/', say: 'ksuh', ms: [667, 642], proof: 'clean',
+    note: '/ks/ 계열 후보 9종 중 **유일한 생존자**다. 나머지는 전부 낱자 이름 나열로 접힌다',
+    rejected: [
+      ['ks', [689, 903], '두 음성 모두 "kay ess" 와 바이트 동일'],
+      ['kss', [922, 1205], '두 음성 모두 "kay ess ess" 와 바이트 동일'],
+      ['ksss', [1165, 1542], '"kay ess ess ess" 와 바이트 동일'],
+      ['cks', [1020, 1212], 'Samantha 에서 "see kay ess" 와 바이트 동일'],
+      ['kks', [956, 1275], '"kay kay ess" 와 바이트 동일'],
+      ['ksh', [1015, 1298], '"kay ess aitch" 와 바이트 동일'],
+      ['kx', [736, 857], 'Alex 에서 "kay ex" 와 바이트 동일'],
+      ['xx', [817, 854], 'Alex 에서 "ex ex" 와 바이트 동일'],
+      ['ekss', [528, 517], '두 음성 모두 글자 이름 X(`ex`/`eks`)와 바이트 동일'],
+    ] },
+  { g: 6, letterform: 'CH', ipa: '/ch/', say: 'ch', ms: [729, 887], proof: 'clean',
+    note: '두 글자인데 낱자 이름 나열("see aitch")로 접히지 **않는** 드문 경우다. ' +
+      '같은 형태의 `sh` 는 Alex 에서 접힌다 -- 그래서 CH 와 SH 의 표기 모양이 다르다',
+    rejected: [
+      ['chh', [1171, 1398], 'Samantha 에서 "see aitch aitch" 와 바이트 동일'],
+      ['chuh', [532, 373], '`tchuh` 와 동일이고 Alex 373ms'],
+      ['chhh', [1519, 1897], '두 음성 모두 안전대 크게 초과'],
+      ['chch', [1414, 1595], '한 발화에서 소리가 두 번 난다'],
+    ] },
+  { g: 6, letterform: 'SH', ipa: '/sh/', say: 'shhu', ms: [647, 655], proof: 'clean',
+    alt: ['shhe'],
+    rejected: [
+      ['sh', [701, 993], 'Alex 에서 "ess aitch" 와 바이트 동일'],
+      ['shh', [235, 1527], 'Samantha 235ms 어휘 항목(쉿) vs Alex 1527ms = **음성 간 6.5배**. ' +
+        '`shhh` 가 Samantha 에서 `shh` 와 바이트 동일(235ms 포화)인데 Alex 는 2038ms 로 ' +
+        '단조 증가한다 -- 즉 Samantha 는 사전 항목을, Alex 는 철자 그대로를 읽는다. ' +
+        '`ough` 가 음성마다 다른 유령 음소였던 것과 같은 실패 모드다'],
+      ['shhh', [235, 2038], '위와 같은 이유 (Samantha 포화가 그 증거다)'],
+      ['shuh', [543, 400], 'Samantha 에서 단어 `shoe` 와 바이트 동일'],
+      ['shs', [1038, 1353], '두 음성 모두 "ess aitch ess" 와 바이트 동일'],
+      ['ssh', [922, 1283], 'Alex 에서 "ess ess aitch" 와 바이트 동일'],
+      ['sshh', [1363, 1841], '"ess ess aitch aitch" 와 바이트 동일'],
+      ['shsh', [1363, 1794], '"ess aitch ess aitch" 와 바이트 동일'],
+      ['shhs', [1398, 1887], '"ess aitch aitch ess" 와 바이트 동일'],
+      ['shuhh', [566, 400], 'Alex 에서 `shuh`(= Samantha 의 `shoe`) 와 바이트 동일'],
+    ] },
+  { g: 6, letterform: 'TH', ipa: '/th/', say: 'thhu', ms: [593, 563], proof: 'clean',
+    alt: ['thhe'],
+    note: '무성 /th/(thin). **유성 /th/(this)는 아래 행이고 표기가 없다**',
+    rejected: [
+      ['thh', [1107, 1414], 'Samantha 에서 "tee aitch aitch" 와 바이트 동일'],
+      ['thuh', [512, 455], 'Alex 에서 단어 `sir` 와 바이트 동일'],
+      ['thih', [512, 365], 'Alex 에서 단어 `see` 와 바이트 동일'],
+      ['th', [759, 352], 'Alex 352ms + 음성 간 2.2배'],
+      ['thhh', [1467, 1913], '두 음성 모두 안전대 크게 초과'],
+      ['ths', [922, 1263], '어말에 /s/ 가 붙어 없는 음소를 가르친다'],
+    ] },
+  { g: 6, letterform: 'TH', ipa: '/dh/', say: null, proof: 'none',
+    note: '**안전한 표기를 찾지 못했다. 억지로 채우지 않았다.** 후보 7종이 전부 탈락이고 ' +
+      '탈락 사유가 두 종류다: (1) 낱자 이름 나열로 접힌다 (2) 표기에 넣은 d 가 실제로 ' +
+      '/d/ 로 들리는데 **D 는 이미 가르친 글자**다 -- 그건 "TH 는 duh 소리" 를 가르치는 ' +
+      '것이고, /s/ 를 ㅅ 으로 가르치지 말라는 이 파일의 규칙과 같은 종류의 오류다. ' +
+      '권고: TH 챕터는 무성 /th/(`thhu`) 하나만 낱소리로 드릴하고, 유성 /th/ 는 ' +
+      '**단어로만** 가르쳐라(this/that/them 을 listen-repeat/finale 의 words[] 로). ' +
+      '단어는 엔진 사전에 있으므로 증명된 발화다. Jolly 자체가 둘을 한 글자꼴의 ' +
+      '유성/무성 쌍으로 가르치므로 커리큘럼상으로도 벗어나지 않는다',
+    rejected: [
+      ['thth', [1363, 1693], 'Samantha 에서 "tee aitch tee aitch" 와 바이트 동일'],
+      ['dhuh', [446, 326], 'Samantha·Alex 모두 `duh`(D) 와 바이트 동일. Alex 는 `the` 까지 같다'],
+      ['thd', [980, 1112], 'Samantha 에서 "tee aitch dee" 와 바이트 동일'],
+      ['dth', [975, 1151], 'Samantha 에서 "dee tee aitch" 와 바이트 동일'],
+      ['dhh', [1056, 1395], 'Samantha 에서 "dee aitch aitch" 와 바이트 동일 ' +
+        '(`zhh`=="zee aitch aitch" · `vhh`=="vee aitch aitch" 와 같은 축이다)'],
+      ['thv', [991, 1170], '어말에 /v/ 가 붙는다. V 는 group 5 에서 가르치는 글자다'],
+      ['thu', [764, 420], 'Alex 420ms + 무성 `thhu` 와 눈으로 구별되지 않는다'],
+    ] },
+
+  // ---------- Group 7 (Jolly: qu ou oi ue er ar) ----------
+  { g: 7, letterform: 'QU', ipa: '/kw/', say: 'kw', ms: [922, 1112], proof: 'clean',
+    note: '낱자 이름 나열("kay double u")과 다르다',
+    rejected: [
+      ['kwuh', [581, 364], '`quuh` 와 동일이고 Alex 364ms'],
+      ['quh', [528, 306], 'Alex 306ms'],
+      ['kwu', [418, 363], 'Alex 에서 단어 `queue` 와 바이트 동일'],
+    ] },
+  { g: 7, letterform: 'OU', ipa: '/ou/', say: 'ou', ms: [617, 506], proof: 'clean',
+    alt: ['owww'],
+    rejected: [
+      ['owh', [1324, 1539], '두 음성 모두 안전대 상단 초과'],
+      ['ouh', [419, 435], '두 음성 모두 감탄사 `ow` 와 바이트 동일'],
+    ] },
+  { g: 7, letterform: 'OI', ipa: '/oi/', say: 'oi', ms: [442, 622], proof: 'phoneme',
+    alt: ['oyy', 'oyuh'],
+    note: '`oi`==`oih`==`oyh` 이고 `oyhh`==`oy`(감탄사, /oi/) 다 -- 즉 oi/oy 철자 군집 ' +
+      '전체가 /oi/ 로 렌더된다는 것이 증명된다. **`oy` 와의 일치는 결함이 아니다**: ' +
+      'Jolly 가 oi 와 oy 를 같은 소리의 두 철자로 가르치므로 일치하는 것이 맞다',
+    rejected: [
+      ['oyh', [442, 390], '같은 음소이고 Alex 390ms 로 `oi`(622) 보다 짧다'],
+      ['oyeh', [396, 575], 'Samantha 396ms'],
+    ] },
+  { g: 7, letterform: 'UE', ipa: '/yu:/', say: 'u', ms: [384, 331], proof: 'phoneme',
+    alt: ['ueh', 'uue'],
+    note: '**/ju:/ 는 정확히 글자 이름 U 다.** `u`==`you`==`ewe`==`yew`==`yoo`==`yooh`==`yu` ' +
+      '가 두 음성에서 바이트 동일이고, 그 소리가 UE 의 목표음이다 -- AI 가 `a`(글자 이름 A), ' +
+      'IE 가 `eye`(글자 이름 I)를 쓰는 것과 같은 Jolly 의 교육 장치다. 그래서 ' +
+      'LETTER_NAME_ONLY 의 예외를 `a` 와 `u` 두 개로 늘렸다. ' +
+      '리더의 발주는 "`yoo`/`yooh`/`yu` 가 전부 `you` 와 동일이므로 UE 후보 셋이 전부 ' +
+      '탈락" 이라고 봤는데, **그 일치가 곧 증명이다** -- 탈락 사유가 아니다. ' +
+      '길이(384/331)가 짧은 것이 유일한 약점이고 그건 `a`(399/413)·`oh`(419/355)· ' +
+      '`or`(384/413) 와 같은 등급이다',
+    rejected: [
+      ['yuh', [546, 331], 'Alex 에서 `u` 와 동일인데 Y 의 표기 후보였다 -- Y 와 UE 가 겹친다'],
+      ['uueh', [477, 413], '두 음성 모두 짧고 음소 미증명'],
+      ['yuue', [499, 412], '`yoou` 와 동일이고 음소 미증명'],
+    ] },
+  { g: 7, letterform: 'ER', ipa: '/er/', say: 'erh', ms: [911, 1039], proof: 'clean',
+    alt: ['urh'],
+    note: '리더의 발주는 `er`==`air`(Alex) 로 탈락을 확정했고 그건 맞다. ' +
+      '**Samantha 에서는 더 나쁘다** -- `err`/`ehr` 이 `air`·`arr`·`arrr` 과 한 군집이라 ' +
+      'ER 과 AR 이 같은 소리가 된다. 뒤에 h 를 붙이면 그 군집에서 빠져나온다',
+    rejected: [
+      ['er', [341, 436], 'Alex 에서 `air`/`arrr` 와 바이트 동일 -- /er/ 이 /air/ 로 읽힌다'],
+      ['err', [387, 436], '두 음성 모두 `air` 와 바이트 동일. Samantha 는 `arr`/`arrr` 까지 같다'],
+      ['errr', [341, 436], 'Alex 에서 `air`/`er`/`err` 와 바이트 동일'],
+      ['ur', [382, 354], 'Alex 에서 `uh`(U, 챕터 5 채택 표기)와 바이트 동일'],
+      ['urr', [341, 354], 'Alex 에서 `uh` 와 바이트 동일'],
+      ['urrr', [341, 354], 'Alex 에서 `uh` 와 바이트 동일'],
+      ['ehr', [387, 1004], 'Samantha 에서 `air`/`arr`/`arrr` 와 바이트 동일'],
+      ['uhr', [382, 1004], 'Samantha 382ms + 음성 간 2.6배'],
+      ['erhh', [341, 354], 'Alex 에서 `uh` 와 바이트 동일'],
+      ['urhh', [341, 354], 'Alex 에서 `uh` 와 바이트 동일'],
+    ] },
+  { g: 7, letterform: 'AR', ipa: '/ar/', say: 'arh', ms: [1015, 1121], proof: 'clean',
+    note: 'AR 후보 14종 중 **유일한 생존자**다. 나머지는 두 군집으로 접힌다 -- ' +
+      '`are`/`our`/**글자 이름 R** 군집과 `air`/`heir` 군집. 즉 AR 은 자칫하면 ' +
+      '글자 R 의 이름이나 /air/ 를 가르친다',
+    rejected: [
+      ['ar', [387, 355], '두 음성 모두 단어 `are` 와, Samantha 는 **글자 이름 R** 과도 바이트 동일'],
+      ['arr', [387, 1005], 'Samantha 에서 `air`/`ehr`/`err` 와 바이트 동일 -- ER 과 겹친다'],
+      ['ahr', [387, 1109], 'Samantha 에서 `are`/`our`/글자 이름 R 과 바이트 동일'],
+      ['arrr', [387, 436], '두 음성 모두 `air` 와 바이트 동일'],
+      ['aar', [387, 889], 'Samantha 에서 `are`/`our`/글자 이름 R 과 바이트 동일'],
+      ['arhh', [387, 355], 'Samantha `are`/`our`/R · Alex `are` 와 바이트 동일'],
+      ['aarh', [387, 355], '위와 같음'],
+      ['aahr', [387, 355], '위와 같음'],
+      ['aarr', [387, 355], '위와 같음'],
+      ['ahrh', [387, 355], '위와 같음'],
+      ['ahrr', [387, 436], 'Samantha `air`/`heir` · Alex `air` 와 바이트 동일'],
+      ['arrh', [387, 436], '위와 같음'],
+      ['ahh', [481, 1504], '음성 간 3.1배 (`4027bb3` 이 O 의 차점자로 남긴 표기다)'],
+    ] },
+]
+
+// 채택 표기 전체의 **상호 판별성**도 측정했다(62종 x 2음성 한 해시 공간).
+// 결과: `a`==`eh`(기존 확정 충돌쌍)와 `oi`==`oy`(같은 음소의 두 철자, 정상)
+// 말고는 전부 서로 다르다. 이 검사가 `zzuh`==`juh` 와 `vvuh`==`buh` 를 잡았다 --
+// **미끼 스윕만으로는 안 잡힌다**(둘 다 이 앱의 다른 채택 표기이고, 미끼 목록에
+// 자기 앱의 표기를 넣을 생각을 아무도 하지 않는다).
+
+// 글자꼴 -> 그 글자꼴이 낼 수 있는 소리 표기. 표에서 유도하므로 드리프트가 없다.
+//
+// 게으르게 만든다: `export const X = (() => {...})()` 형태는 Rollup 이 순수하다고
+// 증명할 수 없어서 SOUND_TABLE 을 프로덕션 번들에 끌고 들어간다(위 주석 참조).
+// 두 번째 항목은 **한 글자꼴에 소리가 둘**인 것 (현재 OO 하나 -- TH 는 유성 표기를
+// 채택하지 않았다). **기존 "한 소리에 글자꼴 둘"(C/K) 규칙의 정반대 방향**이고,
+// 파일럿이 미리 지목한 항목이다. 실패 모양이 다르다:
+//   한 소리 / 글자꼴 둘  -> 정답이 둘인 문항 (아이가 맞는 타일을 탭하고 오답 처리)
+//   한 글자꼴 / 소리 둘  -> **보기가 시각적으로 구별 불가**한 문항. 타일 두 개가
+//                          글자까지 똑같으므로 아이는 무엇을 보고 고를지가 없다.
+//                          multiselect 예외도 성립하지 않는다 -- "모두 찾기" 가
+//                          가르치는 것이 없다(두 타일이 같은 그림이다).
+let letterformSoundsCache = null
+export function letterformSounds() {
+  if (letterformSoundsCache) return letterformSoundsCache
+  const m = new Map()
+  for (const row of SOUND_TABLE) {
+    if (!row.say) continue
+    if (!m.has(row.letterform)) m.set(row.letterform, [])
+    if (!m.get(row.letterform).includes(row.say)) m.get(row.letterform).push(row.say)
+  }
+  letterformSoundsCache = m
+  return m
+}
+function multiSoundLetterforms() {
+  return new Set([...letterformSounds()].filter(([, s]) => s.length > 1).map(([lf]) => lf))
+}
+
+// 표의 탈락 후보를 블랙리스트에 합친다 -- **표가 문서가 아니라 검사가 되는 지점**이고,
+// 이 표의 절반의 값어치가 여기 있다(다음 작성자가 같은 후보를 다시 측정하지 않는다).
+// `broken` 인 표기는 넣지 않는다: 챕터 1~6 이 그 표기를 쓰고 있고, 교체 없이
+// 블랙리스트에 넣으면 검증기가 100건 이상을 쏟아내 아무도 읽지 않게 된다.
+//
+// **top-level 루프로 쓰면 안 된다.** 모듈 최상위에서 Map 을 변형하는 것은
+// Rollup 이 지울 수 없는 부수효과이고, 그 부수효과가 SOUND_TABLE 을 살려서
+// 산문 주석까지 프로덕션 번들에 들어갔다(측정: 번들 +14.6KB). 그래서
+// validateChapters 안에서 한 번만 부른다 -- dev 전용 경로다.
+let tableMerged = false
+function mergeTableIntoMisread() {
+  if (tableMerged) return
+  tableMerged = true
+  for (const row of SOUND_TABLE) {
+    for (const [cand, ms, why] of row.rejected || []) {
+      if (MISREAD_NOTATIONS.has(cand)) continue
+      if (SOUND_TABLE.some((r) => r.say === cand)) continue
+      MISREAD_NOTATIONS.set(
+        cand,
+        `${why} (${row.letterform} ${row.ipa} 후보로 측정: Samantha ${ms[0]}ms / Alex ${ms[1]}ms). ` +
+          (row.say
+            ? `${row.letterform} 는 \`${row.say}\` 를 써라`
+            : `${row.letterform} ${row.ipa} 는 안전한 표기가 없다 -- SOUND_TABLE 의 note 를 읽어라`)
+      )
+    }
+  }
+}
+
 // 단일 소문자 한 글자는 예외 없이 글자 **이름**으로 읽힌다(s==ess, n==en,
-// m==em, l==el, r==ar, f==ef, z==zee, u=="you", o=="oh", i=="eye"). 즉 소리를
-// 가르치려는 자리에서 정확히 반대의 것을 들려준다. 유일한 예외는 `a` 인데,
-// 그건 AI 계열의 /ei/ 를 **의도적으로** 글자 이름으로 내는 자리다
-// (그래서 확정 충돌쌍 a==eh 가 존재한다 -- 위 SPEECH_COLLISION_PAIRS 참조).
-const LETTER_NAME_ONLY = /^[b-z]$/
+// m==em, l==el, r==ar, f==ef, z==zee, o=="oh", i=="eye"). 즉 소리를
+// 가르치려는 자리에서 정확히 반대의 것을 들려준다. 예외는 **두 개**이고 둘 다
+// "그 글자의 이름이 곧 그 글자소의 목표음" 인 자리다:
+//   `a`  = AI 의 /ei/   (챕터 7)
+//   `u`  = UE 의 /ju:/  (Jolly group 7. u=="you"=="ewe"=="yew" 가 두 음성에서
+//          바이트 동일이고 /ju:/ 는 정확히 그 소리다 -- IE 가 `eye` 를 쓰는
+//          것과 같은 논리. 아래 SOUND_TABLE 의 UE 행 참조)
+// 그래서 확정 충돌쌍 a==eh 가 존재한다 -- 위 SPEECH_COLLISION_PAIRS 참조.
+const LETTER_NAME_ONLY = /^[b-tv-z]$/
 
 // ---------- 한 발화 = 한 소리 (반복 금지) ----------
 // 사용자가 실기기 QA 2차에서 반복 형식 전체를 반려했다. 원문:
@@ -525,6 +991,11 @@ const ROMAJI = /[a-z]/i
 
 export function validateChapters(chapterList = chapters, iconKeys = null) {
   const problems = []
+  // 표 유래 데이터는 여기서 준비한다 -- 모듈 최상위에 두면 프로덕션 번들이
+  // SOUND_TABLE 을 끌고 들어간다(SOUND_TABLE 위 주석의 측정값 참조).
+  mergeTableIntoMisread()
+  const lfSounds = letterformSounds()
+  const multiSound = multiSoundLetterforms()
   // 정답 위치 편향은 문항 하나를 봐서는 안 보이고 집계로만 보인다 -- 챕터
   // 단위와 커리큘럼 전체 kind 단위, 두 곳에서 본다.
   const allAnswerSlots = []
@@ -577,6 +1048,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
       const displayed = []
       // 발화 전용 필드 -- 표시되지 않지만 소리 표기 규칙을 지켜야 한다.
       const spoken = []
+      // 화면의 글자꼴과 그 글자꼴을 탭했을 때 나는 소리의 짝. SOUND_TABLE 과
+      // 대조한다 -- 표를 문서가 아니라 **계약**으로 만드는 지점이다. 챕터 9~33 은
+      // 각각 다른 세션이 쓰고, 표기를 손으로 옮겨 적는 순간 드리프트가 시작된다.
+      const letterformSounds = []
       let reachableHits = 0
       // 보스 스테이지의 "조립할 단어" 와 "낱소리 -> 단어 블렌드 시연" 을 짝지어
       // 본다 (아래 블렌드 계약).
@@ -649,6 +1124,46 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             })
           }
           if (checkSpeechCollisions) {
+            // ---------- 한 글자꼴 / 소리 둘 (기존 C·K 규칙의 정반대 방향) ----------
+            // 같은 글자꼴 타일이 한 문항에 둘 있으면 아이는 **무엇을 보고 고를지가
+            // 없다** -- 두 보기가 글자까지 똑같다. multiselect 예외도 성립하지
+            // 않는다("모두 찾기" 가 가르치는 것이 없다). Jolly group 5 의 OO 두
+            // 소리가 정확히 이 모양을 만든다.
+            const byLabel = new Map()
+            for (const o of options) {
+              if (o.icon !== 'letterTile' || !o.label) continue
+              if (!byLabel.has(o.label)) byLabel.set(o.label, [])
+              byLabel.get(o.label).push(o)
+            }
+            for (const [label, sharing] of byLabel) {
+              if (sharing.length < 2) continue
+              problems.push(
+                `${at}: letterTile 보기 [${sharing.map((o) => o.id).join(', ')}] 가 같은 글자꼴 ` +
+                  `'${label}' 이다 (소리는 ${sharing.map((o) => `'${o.say}'`).join(' / ')}) -- ` +
+                  `보기 두 개가 화면에서 똑같이 보이므로 아이가 무엇을 보고 고를지가 없다. ` +
+                  `한 글자꼴에 소리가 둘이면(OO 의 긴/짧은 소리) 대비는 **단어**로 시켜라 ` +
+                  `(listen-repeat/finale 의 words[] 에 moon 과 book 을 나란히). ` +
+                  `"한 소리에 글자꼴 둘"(C/K)의 multiselect 예외가 여기서는 통하지 않는다`
+              )
+            }
+            // 다중음 글자꼴이 **오답**인데 프롬프트가 그 글자꼴의 다른 소리인 경우.
+            // 아이가 OO 를 탭하면 글자꼴로는 맞는데 오답 피드백을 받는다 -- 위의
+            // "프롬프트 vs 오답 타일" 검사와 같은 종류의 답할 수 없는 문항이다.
+            if (promptAudio) {
+              const ps = soundOf(promptAudio)
+              for (const o of options) {
+                if (o.icon !== 'letterTile' || o.correct || !o.label) continue
+                if (!multiSound.has(o.label)) continue
+                if (!(lfSounds.get(o.label) || []).includes(ps)) continue
+                problems.push(
+                  `${at}: 오답 타일 ${o.id} 의 글자꼴 '${o.label}' 이 promptAudio '${promptAudio}' 를 ` +
+                    `내는 글자꼴이다 (${o.label} 의 소리는 ` +
+                    `[${lfSounds.get(o.label).join(', ')}] 둘이다) -- 아이가 글자꼴로는 ` +
+                    `맞는 타일을 탭하고 오답 처리된다. 다중음 글자꼴은 자기 소리 문항에서 ` +
+                    `오답으로 쓸 수 없다`
+                )
+              }
+            }
             const tileSounds = options
               .filter((o) => o.icon === 'letterTile' && o.say)
               // soundOf: 충돌은 표기가 아니라 **소리**의 속성이다. 콤마 묶음이
@@ -717,8 +1232,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               problems.push(`${at}/${option.id}: icons.js 에 없는 아이콘 '${option.icon}'`)
             }
             displayed.push([`${at}/${option.id} label`, option.label])
-            if (option.say !== undefined)
+            if (option.say !== undefined) {
               spoken.push([`${at}/${option.id} say`, option.say])
+              letterformSounds.push([`${at}/${option.id}`, option.label, option.say])
+            }
           }
         }
 
@@ -742,8 +1259,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
               } else if (word && typeof word.text === 'string' && word.text) {
                 checkKeys(problems, `${at} words[${i}]`, word, SPOKEN_PAIR_KEYS, 'word')
                 displayed.push([`${at} words[${i}].text`, word.text])
-                if (word.say !== undefined)
+                if (word.say !== undefined) {
                   spoken.push([`${at} words[${i}].say`, word.say])
+                  letterformSounds.push([`${at} words[${i}]`, word.text, word.say])
+                }
               } else {
                 problems.push(`${at}: words[${i}] 가 문자열도 { text } 객체도 아님`)
               }
@@ -777,7 +1296,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
             if (l && typeof l === 'object') {
               checkKeys(problems, `${at} letters[${i}]`, l, SPOKEN_PAIR_KEYS, 'letter')
             }
-            if (l && l.say !== undefined) spoken.push([`${at} letters[${i}].say`, l.say])
+            if (l && l.say !== undefined) {
+              spoken.push([`${at} letters[${i}].say`, l.say])
+              letterformSounds.push([`${at} letters[${i}]`, l.text, l.say])
+            }
           }
           slots.forEach((slot, i) => displayed.push([`${at} target[${i}]`, slot]))
           buildTargets.push({ at, word: slots.join(''), slots })
@@ -786,8 +1308,10 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         if (beat.readAloud) {
           checkKeys(problems, at, beat.readAloud, READ_ALOUD_KEYS, 'readAloud')
           displayed.push([`${at} readAloud.targetText`, beat.readAloud.targetText])
-          if (beat.readAloud.say !== undefined)
+          if (beat.readAloud.say !== undefined) {
             spoken.push([`${at} readAloud.say`, beat.readAloud.say])
+            letterformSounds.push([`${at} readAloud`, beat.readAloud.targetText, beat.readAloud.say])
+          }
         }
         if (beat.letter) displayed.push([`${at} letter`, beat.letter])
         if (beat.promptLetter) displayed.push([`${at} promptLetter`, beat.promptLetter])
@@ -938,6 +1462,27 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
       // 그게 실제 결함이었다: 아이가 'iii' 자리에서 "three" 를 들었다.
       for (const [field, text] of spoken) {
         checkSpeechNotation(problems, field, text)
+      }
+
+      // ---------- 글자꼴 <-> 소리 표기 계약 (SOUND_TABLE) ----------
+      // 챕터 8 파일럿의 교훈 2번이 요구한 표를 **검사로** 만든다. 표기는 측정으로
+      // 확정되지만 챕터마다 손으로 옮겨 적히고, 그 순간부터 드리프트가 시작된다
+      // -- 실제로 이 프로젝트에서 같은 종류의 드리프트가 두 번 있었다(콤마 규칙이
+      // 두 벌로 갈렸고, reviewTargets 가 챕터 로컬 값이 됐다).
+      //
+      // 검사 대상은 **글자꼴로 인식되는 표시 문자열**(대문자 1~2자)뿐이다.
+      // 단어(`moon`, `cat`)는 건드리지 않는다 -- 단어의 발화는 단어 자체다.
+      for (const [field, text, say] of letterformSounds) {
+        if (typeof text !== 'string' || !LETTERFORM.test(text)) continue
+        const allowed = lfSounds.get(text)
+        if (!allowed) continue
+        if (allowed.includes(soundOf(say))) continue
+        problems.push(
+          `${field}: 글자꼴 '${text}' 에 소리 표기 '${say}' -- SOUND_TABLE 이 확정한 ` +
+            `'${text}' 의 소리는 [${allowed.join(', ')}] 다. 표기를 바꾸려면 데이터가 아니라 ` +
+            `**표를 고쳐라**(chapters/index.js 의 SOUND_TABLE). 표에는 측정값과 탈락 후보가 ` +
+            `같이 있으므로 재측정 없이 판단할 수 있다. 재현: ${NOTATION_REPRO}`
+        )
       }
 
       for (const [field, text] of displayed) {

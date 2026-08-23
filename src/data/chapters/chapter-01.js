@@ -230,7 +230,7 @@ export const chapter1 = {
           instructionKo: 'sss 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'sss',
           options: [
-            { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zz', correct: false },
+            { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zze', correct: false },
             { id: 'C3', icon: 'letterTile', label: 'C', say: 'kuh', correct: false },
             { id: 'S3', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
           ],
