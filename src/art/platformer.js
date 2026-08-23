@@ -513,8 +513,6 @@ const FIRE_MARK = '#c9231d'
 const FLAME_OUT = '#e8400c'
 const FLAME_MID = '#ffa81c'
 const FLAME_CORE = '#fff2a0'
-const LEAF = '#3fa03a'
-const LEAF_DEEP = '#1f6b23'
 // Shell-plate spikes (Captain Gum only, v11 -- see the revision note on
 // platPowerup). A dark bronze rather than the reference's green: this figure
 // already carries white/red/gold, and a green shell would be a fourth hue
@@ -1420,42 +1418,9 @@ export function platPowerup({
     star(cx, cy, r, visorColor, { opacity: 0.85 }),
     C(cx, cy, r * 0.3, panelColor, { opacity: 0.9 }),
   ]
-  // The fire flower itself, small and in the backdrop. It is here because the
-  // reference sheet shows the item beside the figure, and it is THIS SIZE and
-  // THIS HIGH because there is nowhere bigger or lower: the frame's two free
-  // pockets are the lower corners, and a boot's halo claims everything from
-  // x 14 (mirrored: 106) and y 112.5 down. Measured, an earlier seat at
-  // (11,100) put the lower leaf at y 114.8 and CLOSED a background gap that
-  // used to be 4.8 units wide at y 114. Seated at y 96 the whole plant ends at
-  // y 109.2 and is clear of it.
-  //
-  // What replacing the two lower sparkles DOES cost, measured and not hidden:
-  // the pocket outboard of the left boot at (23,108) used to be an ENCLOSED
-  // hole of 120 units, because the old sparkle at (14,116) walled it in from
-  // below. It is now an OPEN bay reaching the frame edge — scanline y 114 went
-  // from three ink runs ([8.3,19.8] [24.6,95.4] [98.3,109.8]) to one. That is
-  // the opposite of a fusion, but a hole count alone reads it as a loss, so:
-  // no ink merged, one decoration moved 20 units up. The hole that matters —
-  // the 48-unit enclosure between the boots at (60,124) — is untouched.
-  // Between the boots is wider but that gap IS the family's only cutout hole
-  // and cannot be filled.
-  // No halo (backdrop), so it carries its own thin ink.
-  const fireFlower = (cx, cy) => {
-    const petal = (dx, dy) => C(cx + dx, cy + dy, 3.4, FLAME_OUT, ink(1.8))
-    return [
-      S(`M ${cx},${cy + 3} L ${cx},${cy + 12}`, LEAF_DEEP, 2.4),
-      E(cx - 4.4, cy + 6.6, 3.6, 2, LEAF, ink(1.6)),
-      E(cx + 4.4, cy + 9, 3.6, 2, LEAF, ink(1.6)),
-      petal(0, -4.6),
-      petal(-4.4, -1.4),
-      petal(4.4, -1.4),
-      petal(-2.7, 3.7),
-      petal(2.7, 3.7),
-      C(cx, cy, 3.6, FLAME_CORE, ink(1.8)),
-      C(cx - 1.3, cy - 0.5, 0.9, LINE, { opacity: 0.85 }),
-      C(cx + 1.3, cy - 0.5, 0.9, LINE, { opacity: 0.85 }),
-    ]
-  }
+  // v12: the fire-flower item that used to live here is gone — see the
+  // backdrop note below, where the pockets it occupied get reused for real
+  // shoulder spikes instead of a decorative easter egg.
   // The fireball, one per raised fist. The reference holds one; this figure is
   // mirror-symmetric in every other part, and a single ball made the pose look
   // like a mistake rather than a stance. Sized and seated to add NOTHING to the
@@ -1484,10 +1449,15 @@ export function platPowerup({
   // hard cutout is untouched — and the serrated edge that was fighting to read
   // as feathers now reads as what it always looked like: flame. Three nested
   // tones instead of gold-over-cream.
+  // v12: scaled 5% further out from the root at x 42 (the attachment point,
+  // unmoved) — measured safe: the outermost point's halo edge lands at
+  // x 2.5, still clear of the frame. A bigger factor was tried and rejected:
+  // 8% put two points inside a 1-unit margin, too close to call safe without
+  // re-measuring every render.
   const wing = [
-    P('42,18 10,7 15,15 9,14 16,20 9,23 19,28 42,29', FLAME_OUT, ink(2.8)),
-    P('42,19 16,11 18,16 26,21 42,25', FLAME_MID, { nohalo: true }),
-    P('42,20 24,15 27,19 42,23', FLAME_CORE, { nohalo: true }),
+    P('42,18 8.4,7 13.7,15 7.4,14 14.7,20 7.4,23 20,28 42,29', FLAME_OUT, ink(2.8)),
+    P('42,19 14.7,11 16.8,16 25.2,21 42,25', FLAME_MID, { nohalo: true }),
+    P('42,20 23.1,15 26.25,19 42,23', FLAME_CORE, { nohalo: true }),
   ]
   // Narrow: wider, the two panels plus the emblem plate covered the bib edge
   // to edge and the denim — half of the family's two-tone — disappeared on the
@@ -1527,9 +1497,12 @@ export function platPowerup({
     // between them and the body, which is what an aura has to be here.
     ...Array.from({ length: 16 }, (_, i) => ray(i * 22.5 + 11, 44, 78, 6.5, visorColor, 0.85)),
     ...Array.from({ length: 8 }, (_, i) => ray(i * 45 + 22.5, 44, 82, 4, panelColor, 0.9)),
-    // The two LOWER sparkles become the item; the upper pair stay motes.
-    fireFlower(11, 96),
-    mirror(fireFlower(11, 96)),
+    // v12: FIRE FLOWER REMOVED. The leader's re-review called v11 "decoration,
+    // not structure" — the lower-corner pockets this flower lived in are
+    // exactly where the shoulder spikes below need to sit for real (not
+    // hidden-in-the-collar) visibility, and a phonics-app fire flower easter
+    // egg is a much lower priority than the Bowser silhouette the user
+    // actually asked for. The upper motes stay; they cost nothing structural.
     sparkle(11, 70, 4.4),
     sparkle(108, 76, 4.4),
   ]
@@ -1551,115 +1524,133 @@ export function platPowerup({
     noseCy: 53,
     mouthY: 58,
   }
+  // v12: STRUCTURAL, NOT DECORATIVE. The leader's re-review of v11 measured
+  // it and called it out directly: ink fill moved 82.36% -> 82.65%, "sacsuchi
+  // 안 커졌다." Every v11 addition (2 spikes hidden in the collar, a mouth-
+  // sized flame, 2 small tusks) was scaled to fit into gaps the existing
+  // silhouette already had, which is why the silhouette itself never changed.
+  // The comparison the leader gave: the toy-family boss went full silhouette
+  // rework (horns + wings + cape + glowing eyes) for the same "특징이 너무
+  // 없다" complaint. v12 answers in kind — the head, torso, bib and both legs
+  // are all structurally bigger (not just re-decorated), the flower item is
+  // gone so its lower-corner pockets can carry REAL shoulder spikes instead
+  // of ones buried in the collar, and the flame is sized to beat every other
+  // fireball in the family, not tuck in beside one.
   const strapL = [
-    P('27,75 38,75 35,88 26,88', FIRE_TONE.base, ink(2.8)),
-    S('M 31,77 L 29,86', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
+    P('20,72 31,72 28,85 19,85', FIRE_TONE.base, ink(2.8)),
+    S('M 24,74 L 22,83', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
   ]
-  // SHELL SPIKES (v11, Bowser motif). User: "기왕이면 불뿜는 쿠파를 모티브로
-  // 해보자" — a spiked shell collar is the reference's second-most-legible
-  // silhouette cue after the fire breath below.
-  // TWO EARLIER PLACEMENTS BOTH FAILED, and both failures were the same
-  // shape: anywhere between the chin and the torso is BELOW the head box
-  // (chin 62) but still inboard of the head's own width (27..93), so nothing
-  // masks the spike's sides and it reads as a fang hanging off the jaw, not
-  // armour on the shoulder. First draft (cx 42, tip 57) sat under the left
-  // eye (dx = 15*1.14 = 17.1, eye at 60-17.1 = 42.9); the fix that only moved
-  // the tip below the chin (cx 44, tip 64) still measured and rendered as
-  // teeth flanking the fire breath, one step down, same problem.
-  // v11-c tried moving the spike OUTSIDE the head's silhouette (cx 20,
-  // mirrored 100) to dodge the face — but that x/y band (7 units clear of
-  // the head, tip 36, base 56) is exactly where the raised fist's OWN
-  // fireball already lives (`fireball`'s own comment: "the ball plus licks
-  // span x 9..27, y 24..47.4"). Measured on a render, the spike was there
-  // but completely swallowed by the later-drawn fireball — invisible, not
-  // fixed.
-  // v11-d: the only band that is clear of the head (27..93), the neck
-  // (51..69), the raised arm's tube (x 14.6..32.8 left / 87.2..105.4 right
-  // for y 68..75) AND the fireball (x 9..27, y 24..47.4) is a shallow shelf
-  // right at the collar itself: cx 44 (mirrored 76), tip 68 — six units
-  // below the chin (62) and 0.4 units below the mouth's own lowest point
-  // (58 + 8.4*1.14 = 67.6), so the spike never touches the face at all —
-  // base 82, inside the torso (top edge 75) so it is attached, not
-  // floating. Shorter than either earlier attempt (7 units of tip visible
-  // above the collar instead of 11-18) because this is the only slot left
-  // that is not already owned by something else on this figure.
-  const spike = (cx, tipY, baseY, halfW) => [
-    P(`${cx - halfW},${baseY} ${cx},${tipY} ${cx + halfW},${baseY}`, SHELL, ink(2.2)),
-    P(
-      `${(cx - halfW * 0.3).toFixed(1)},${(baseY - 1.5).toFixed(1)} ${cx},${(tipY + 3).toFixed(1)} ${(cx + halfW * 0.2).toFixed(1)},${(baseY - 1.5).toFixed(1)}`,
-      SHELL_LIT,
-      { opacity: 0.6, nohalo: true }
-    ),
+  // SHOULDER SPIKES (v12). v11 tried three collar/jaw placements and all
+  // three either read as fangs or vanished under the fireball — because
+  // every gap near the head is already owned by the neck, the arm's tube or
+  // the fireball's own envelope. v12 does not fight for a gap: it removes
+  // the fire-flower item (see the backdrop below) and uses the pocket that
+  // frees up instead — outboard of the torso's own new left/right edge
+  // (18..102, see the torso box below), below where the raised arm's tube
+  // exists at all (tube spans y 54..80; these start at y 78) and below the
+  // fireball's own footprint (y 24..47.4). Three per side, based inside the
+  // torso (baseX 26, torso's own edge is 18) so only the points show, in a
+  // vertical row that reads as a spiked plate running down the flank — the
+  // "3~5개 열" the leader asked for, not two hints of one.
+  // v12-b (after the leader's second pass): three SEPARATE thin triangles
+  // measured as only a small ink gain (most of a triangle tapers to nothing).
+  // Replaced with ONE solid jagged plate per side — a real mass with three
+  // teeth on its outer edge, not three slivers. Base runs 27..18 (fully
+  // behind the torso, whose own edge is 18), so only the x 8..18 strip plus
+  // the three teeth (out to x 8) are ever visible. Leftmost point measured
+  // at x 8: ink 2.6/2 + halo 4.5 = edge 2.2, clear of the frame.
+  // Stretched to match the torso's own extended top/bottom (68/117, see the
+  // box below) once that grew a second time — a plate shorter than the
+  // torso it is riveted to would leave an unexplained gap at the collar.
+  const shoulderPlate = [
+    P('27,68 14,68 8,78 15,85 8,94 16,103 8,112 15,118 27,118', SHELL, ink(2.6)),
+    P('20,71 12,79 17,85 12,94 18,103 12,111 20,115', SHELL_LIT, { opacity: 0.5, nohalo: true }),
   ]
-  const shellSpikes = [spike(44, 68, 82, 7), mirror(spike(44, 68, 82, 7))]
-  // FIRE BREATH (v11, Bowser motif). The reference's signature attack.
-  // Anchored inside the open mouth (my = G_BOSS.mouthY 58, mouth bottom
-  // 58 + 8.4*1.14 = 67.6) so the flame reads as spilling OUT of it rather
-  // than pasted beside it, and kept short of the chest plate (top edge 86)
-  // so it lands on the collar, not the phonics letter. Drawn last (with the
-  // fireballs) so it sits in front of the plate the way a breathed flame
-  // sits in front of a shell. Flat nested fills, no gradient.
+  const shoulderSpikes = [shoulderPlate, mirror(shoulderPlate)]
+  // FIRE BREATH (v12, made deliberately the biggest flame in the family).
+  // `fireball` (the held one, below) spans 20 units wide by 16 tall; this
+  // spans 38 by 28 — roughly DOUBLE the area — and ends at y 84, two units
+  // clear of the chest plate (top edge 86) so the phonics star is never
+  // touched. Four outer licks fan wider than a single pair so the blast
+  // reads as a roar rather than a candle, over a wide core column.
   const breath = (cx, cy) => [
-    P(`${cx - 9},${cy} ${cx - 2},${cy + 16} ${cx - 12},${cy + 12}`, FLAME_OUT, ink(2)),
-    P(`${cx + 3},${cy} ${cx + 10},${cy + 18} ${cx - 1},${cy + 14}`, FLAME_OUT, ink(2)),
-    P(`${cx - 5},${cy} ${cx},${cy + 20} ${cx + 5},${cy}`, FLAME_MID, { nohalo: true }),
-    P(`${cx - 2.5},${cy} ${cx},${cy + 11} ${cx + 2.5},${cy}`, FLAME_CORE, { nohalo: true }),
+    P(`${cx - 14},${cy} ${cx - 4},${cy + 18} ${cx - 17},${cy + 13}`, FLAME_OUT, ink(2.4)),
+    P(`${cx - 6},${cy} ${cx - 1},${cy + 22} ${cx - 9},${cy + 16}`, FLAME_OUT, ink(2.4)),
+    P(`${cx + 7},${cy} ${cx + 2},${cy + 22} ${cx + 10},${cy + 16}`, FLAME_OUT, ink(2.4)),
+    P(`${cx + 14},${cy} ${cx + 5},${cy + 18} ${cx + 18},${cy + 13}`, FLAME_OUT, ink(2.4)),
+    P(`${cx - 7},${cy} ${cx},${cy + 22} ${cx + 7},${cy}`, FLAME_MID, { nohalo: true }),
+    P(`${cx - 3.5},${cy} ${cx},${cy + 13} ${cx + 3.5},${cy}`, FLAME_CORE, { nohalo: true }),
   ]
-  // Two small ivory tusks at the mouth's own corners (mw = 8.6*1.14 = 9.8,
-  // my = 58 — the exact numbers `legoFace` computes for this figure's `s`,
-  // so they sit ON the mouth rather than beside a guess at it). A fiercer
-  // jaw without touching `legoFace` itself, which the other three heroes
-  // share — this figure gets its own overlay instead.
+  // TUSKS (v12, bigger). Tied to `mw` (this figure's own mouth half-width,
+  // 8.6 * s) instead of hand-picked offsets, so they sit ON the new bigger
+  // mouth's own corners at any `s`. Reach is 1.5x v11's, tips higher (y 48
+  // against 52) for a real "poking above the lip" fang read instead of a
+  // sliver next to the smile.
+  const mw = 8.6 * 1.32
   const tusk = (k) =>
     D(
-      `M ${(60 + k * 8.2).toFixed(1)},59 L ${(60 + k * 11).toFixed(1)},52 L ${(60 + k * 6.4).toFixed(1)},57 Z`,
+      `M ${(60 + k * mw * 0.85).toFixed(1)},60 L ${(60 + k * (mw * 0.85 + 5)).toFixed(1)},48 L ${(60 + k * (mw * 0.85 - 3)).toFixed(1)},55 Z`,
       '#f7f0df',
-      ink(1.5)
+      ink(2)
     )
-  // LEFT AT THE ORIGINAL COORDS on purpose, unlike the torso around it: a
-  // first pass shifted+widened this to (25,80,17)/(19,54,13) to track the
-  // wider torso, and a padded-viewBox scan caught the raised fist's own
-  // cuff sliding to x 0.2 — a hair's-width inside the frame. Reverting only
-  // this (torso/bib/plank/button keep their extra width) restored the
-  // original x 2.2..117.7 exactly. The arm can start slightly inboard of
-  // the torso's new edge without looking wrong; it could not survive
-  // shifting outward with it.
+  // ARM LEFT AT ITS SAFE COORDS. v11 learned this the hard way: shifting the
+  // shoulder/wrist outward with the torso pushed the raised fist's own
+  // fireball to a measured x 0.2 (padded-viewBox scan), a hair's-width
+  // inside the frame. The torso, bib, legs and head all grow around this
+  // figure in v12 too; the arm does not, on purpose — it can sit inboard of
+  // a much bigger torso without looking wrong, and re-testing it against
+  // every other structural change below confirmed the same near-miss
+  // reappears the moment it moves.
   const armShoulder = { x: 27, y: 80, w: 16 }
   const armWrist = { x: 21, y: 54, w: 12 }
   const body = [
     neck(60, 62, 75, 9, 10),
-    shellSpikes,
-    box(25, 75, 95, 110, 9, FIRE_WHITE, ink(3.4)),
-    R(27, 77, 15, 12, 5, '#000', { opacity: 0.06, nohalo: true }),
+    shoulderSpikes,
+    // TORSO: 18..102 (84 wide), up from v11's 25..95 (70) and the original
+    // 27..93 (66) — +18 units of shoulder width total over the original.
+    // Top edge raised 75 -> 68 and bottom dropped 110 -> 117 add real height
+    // too (this is the safe direction to grow in: the frame's tight margins
+    // are at the cap's top and the boots' bottom, not here, so this costs
+    // nothing on the clip budget). The neck's own visible strip shrinks to
+    // 6 units (62..68) — shorter than the standing heroes' but still a clear
+    // break between head and torso, matched against a render, not just the
+    // arithmetic.
+    box(18, 68, 102, 117, 9, FIRE_WHITE, ink(3.4)),
+    R(20, 74, 15, 12, 5, '#000', { opacity: 0.06, nohalo: true }),
     strapL,
     mirror(strapL),
-    box(33, 84, 87, 110, 8, FIRE_TONE.base, ink(3.4)),
-    R(35, 86, 15, 22, 5, FIRE_TONE.lit, { opacity: 0.4, nohalo: true }),
-    bigButton(33, 88, 8),
-    mirror(bigButton(33, 88, 8)),
+    box(24, 78, 96, 116, 8, FIRE_TONE.base, ink(3.4)),
+    R(26, 82, 15, 22, 5, FIRE_TONE.lit, { opacity: 0.4, nohalo: true }),
+    bigButton(24, 84, 8),
+    mirror(bigButton(24, 84, 8)),
+    // Plate size/anchor UNCHANGED from v11 (39,86,42,20) — its contrast and
+    // fit were already tuned line by line (see the note above `emblemPlate`
+    // calls in this file) and a bigger bib just gives it more margin, not a
+    // reason to re-derive that math.
     emblemPlate(39, 86, 42, 20, panelColor, inkColor, emblem),
-    plankPanel(26),
-    plankPanel(84),
+    plankPanel(18),
+    plankPanel(86),
 
-    // Leg heights come in shorter than the first draft (110..123/123..131,
-    // boot to 137) for the same bootBot<=131-ish reason `legoLegsStanding`
-    // measured its own boots against — this boss's boot carries the same
-    // 3.2 stroke. Hip segment widened (36..56 -> 34..58) for more mass;
-    // shin and boot are untouched so the family's one cutout hole between
-    // the boots (the 48-unit enclosure at (60,124)) does not close up.
-    legoLeg(34, 58, 110, 119, FIRE_TONE),
-    legoLeg(37, 55, 119, 125, FIRE_TONE),
-    legoBoot(33, 59, 122, 131, SHOE),
-    coilRing(46, 122),
-    pegDisc(46, 110, 6.3),
-    pegDisc(46, 119, 5.6),
+    // LEGS: widened on the OUTER edge only, twice over (original -> v12 ->
+    // v12-b): hip 34->25, shin 37->28, boot 33->24 on the left; inner edges
+    // at 58/55/59 untouched throughout. That is what adds a planted,
+    // powerful stance without touching the one number that matters for the
+    // family's only cutout hole — the boot's INNER edge, which sets the gap
+    // to the mirrored boot. Gap was 61-59=2 units before; untouched inner
+    // edges keep it exactly that after mirroring.
+    legoLeg(25, 58, 110, 119, FIRE_TONE),
+    legoLeg(28, 55, 119, 125, FIRE_TONE),
+    legoBoot(24, 59, 122, 131, SHOE),
+    coilRing(41, 122),
+    pegDisc(41, 110, 6.9),
+    pegDisc(41, 119, 6.2),
     mirror([
-      legoLeg(34, 58, 110, 119, FIRE_TONE),
-      legoLeg(37, 55, 119, 125, FIRE_TONE),
-      legoBoot(33, 59, 122, 131, SHOE),
-      coilRing(46, 122),
-      pegDisc(46, 110, 6.3),
-      pegDisc(46, 119, 5.6),
+      legoLeg(25, 58, 110, 119, FIRE_TONE),
+      legoLeg(28, 55, 119, 125, FIRE_TONE),
+      legoBoot(24, 59, 122, 131, SHOE),
+      coilRing(41, 122),
+      pegDisc(41, 110, 6.9),
+      pegDisc(41, 119, 6.2),
     ]),
 
     // Red cuffs on white sleeves. Not decoration: the sleeve, the fist and
@@ -1676,21 +1667,22 @@ export function platPowerup({
 
     wing,
     mirror(wing),
-    legoHead(G_BOSS, 33, 43, FIRE_WHITE, FIRE_BRIM, null, 1.14),
+    // HEAD: half-width 33 -> 40, brim 43 -> 52, face scale 1.14 -> 1.32 —
+    // a genuinely bigger (not just re-decorated) head, which is also most of
+    // "포효하는 인상": `legoFace`'s mouth width is 8.6 * s, so this alone
+    // widens the jaw from 9.8 to 11.4 units before the bigger tusks even
+    // attach to it. Brim's own halo edge measured at x 8 minimum (60-52,
+    // less ink/halo) — pushed to here and no further; 54 measured under a
+    // 1-unit margin.
+    legoHead(G_BOSS, 40, 52, FIRE_WHITE, FIRE_BRIM, null, 1.32),
 
     // Fist, then fireball, in that order and both after the head: the
     // fireball has to land on top of its own fist for the "holding the
     // flower's fireball" read the original comment describes, and both need
     // to be on top of the head to actually be visible at all.
     //
-    // LEFT AT ITS OLD ANCHOR (18, 41) ON PURPOSE even though the wrist moved
-    // 2 units (21 -> 19) with the wider torso: tracking the wrist exactly
-    // pushed the ball's own licks to a measured x 0.2 (padded-viewBox scan),
-    // a hair's-width inside the frame with essentially none of the halo
-    // budget left. The fist only moved slightly, the fireball sits loosely
-    // "above" it rather than glued to it in the reference art anyway, and
-    // (18, 41) already had a real margin (x 2.2 before any of this figure's
-    // other changes) — not worth spending on a shift nothing asked for.
+    // LEFT AT ITS OLD ANCHOR (18, 41) — see the note on `armShoulder` above;
+    // this is the one part of the figure v12 deliberately does not enlarge.
     legoArmFist(armShoulder, armWrist, FIRE_RED, 11),
     fireball(18, 41),
     mirror(legoArmFist(armShoulder, armWrist, FIRE_RED, 11)),
@@ -1699,7 +1691,7 @@ export function platPowerup({
     // "has to be on top to be visible" reason as the fireballs.
     tusk(-1),
     tusk(1),
-    breath(60, 64),
+    breath(60, 62),
     // Sits in the same slot as the other three heroes' cap disc, but a star:
     // `legoHead` was called with `discColor = null` so its own plain accent
     // disc is skipped, and this figure gets the mark instead — the phonics
