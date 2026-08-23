@@ -1,4 +1,5 @@
-// Chapter 8 (Carbot theme, world 2 opens): IE, EE, OR -> boss blends "TIE" + "CORN".
+// Chapter 8 (Marvel-hero theme, world 2 opens -- reassigned from Carbot, see
+// "계열 배정" note below): IE, EE, OR -> boss blends "TIE" + "CORN".
 // Finishes Jolly Phonics Group 4 (ai j oa | ie ee or) -- chapter 7 took the
 // first three, this takes the rest. Beat vocabulary is identical to
 // chapter-01.js -- see that file's header.
@@ -85,37 +86,16 @@
 // 이 그물이 필요하다.
 //
 // ============================================================================
-// 아트 선행 조건 -- 데이터만으로는 해결할 수 없다 (리더/아트 담당에게)
+// 계열 배정 (2026-08 재배정)
 // ============================================================================
-// 챕터 8 은 계열 사이클이 카봇(`art/robots.js`)으로 돌아오는 자리다.
-// robots.js 의 엠블럼 판은 `polygon points="45,72 75,72 73,94 47,94"`
-// (아래 26 ~ 위 30 단위) 이고 글자는 font-size 21 / weight 800 이다.
-// 실측(헤드리스 Chrome, getBBox advance width, 판 경계는 글자의 y 대역에서
-// 사다리꼴 변을 보간):
-//     IE  w=18.70  여유 +3.65/측   -> 들어간다
-//     EE  w=24.96  여유 +0.52/측   -> 판 폭의 2% 만 남는다 (실질적으로 안 들어간다)
-//     OR  w=30.09  여유 -2.04/측   -> **넘친다**
-//     (대조: S 13.73 / A 15.11 / T 13.21 -- 판은 한 글자용으로 설계돼 있다)
-// 재현: 이 파일의 커밋 메시지에 하네스가 있다. 리더의 이전 측정(sammy OA -1.4)
-// 과 값이 다른 이유는 측정 기준선이다 -- 여기서는 판의 사다리꼴 변을 글자
-// y 대역에서 보간했고 advance width 를 썼다(더 보수적).
-//
-// **다이그래프의 첫 글자만 새기는 우회는 하지 마라.** 이 챕터의 세 다이그래프는
-// 하필 전부 **앱이 이미 다른 소리로 가르친 모음**으로 시작한다:
-// I=짧은 /i/(챕터 2) · E=짧은 /e/(챕터 3) · O=짧은 /o/(챕터 5). 그러니
-// 가슴에 `I` 만 새기는 것은 정보를 줄이는 게 아니라 **아이가 이미 배운 다른
-// 소리의 글자를 그 소리의 히어로 가슴에 붙이는 것**이다 -- 축약이 아니라 모순이다.
-// 챕터 7 의 DC 계열이 같은 문제를 "큰 이름표" 로 풀었다(HANDOFF §1). 카봇도
-// 같은 방향이어야 한다. 그때까지 `★` 로 두는 것이 첫 글자보다 낫다 --
-// 파닉스 정보는 0 이지만 틀린 정보는 아니다.
-//
-// **그리고 그 전에 art.js 팔레트 배선이 필요하다.** 이 파일의 art 슬러그 9개
-// (nitro/speedy/stormer/nitrostorm, rustbot/crashbot/slowbot/grindbot/iron-wreck)
-// 는 아직 HERO_PALETTES/VILLAIN_PALETTES 에 없다. 없으면 robots.js 의 기본값이
-// 쓰이고 **기본 emblem 이 'S' 다** -- 챕터 8 히어로 전원이 가슴에 S 를 달고
-// 나온다. 크래시는 없어서 조용히 지나간다. 의도한 엠블럼은
-// nitro='IE' · speedy='EE' · stormer='OR' · nitrostorm='★'(보스 관례) 다.
-//
+// 챕터 8 은 원래 카봇(robots.js) 이었으나, 사용자 지시로 "월드 2부터 계열
+// 순서를 월드 1과 다르게" 배정하면서 **마블 계열**로 옮겼다(art.js 의
+// superhero-acrobat/-shield/-thunder/-armor + supervillain-fog/-eraser/
+// -stop/-jumble/-king 재사용, 새 이름 Comet/Halo/Torque/Captain Nova +
+// Foglurk/Smudge/Blockade/Tanglewire/King Static). 마블 엠블럼 판은 이미
+// 두 글자를 담을 수 있게 설계돼 있어 IE/EE/OR 전부 문제 없다. 카봇으로
+// 만들어뒀던 nitro/speedy/stormer 등 팔레트·변주 작업은 버려지지 않고
+// robots.js 의 다음 반복 챕터(15/22/29)에 쓰인다.
 // ============================================================================
 // 난이도: 보기 개수를 3 -> 4~5 로 올렸다 (챕터 8 이 이걸 처음 한다)
 // ============================================================================
@@ -220,20 +200,20 @@
 export const chapter8 = {
   id: 'chapter-8',
   order: 8,
-  title: 'Carbot Steel Harbor',
+  title: 'Heroes of Comet City',
   stages: [
     {
       id: 'c8-stage-1',
       order: 1,
       title: 'A Rising Sound',
-      villain: { name: 'Rustbot', art: 'rustbot', style: 'robot' },
-      hero: { name: 'Nitro', art: 'nitro', style: 'robot' },
+      villain: { name: 'Foglurk', art: 'foglurk', style: 'supervillain-fog' },
+      hero: { name: 'Comet', art: 'comet', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
           id: 'c8s1-teach',
           kind: 'teach',
-          instructionKo: 'Nitro가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: 'Comet이 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['eye'],
         },
@@ -333,8 +313,8 @@ export const chapter8 = {
       id: 'c8-stage-2',
       order: 2,
       title: 'Power of IE',
-      villain: { name: 'Crashbot', art: 'crashbot', style: 'robot' },
-      hero: { name: 'Nitro', art: 'nitro', style: 'robot' },
+      villain: { name: 'Smudge', art: 'smudge', style: 'supervillain-eraser' },
+      hero: { name: 'Comet', art: 'comet', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
@@ -476,8 +456,8 @@ export const chapter8 = {
       id: 'c8-stage-3',
       order: 3,
       title: 'Power of EE',
-      villain: { name: 'Slowbot', art: 'slowbot', style: 'robot' },
-      hero: { name: 'Speedy', art: 'speedy', style: 'robot' },
+      villain: { name: 'Blockade', art: 'blockade', style: 'supervillain-stop' },
+      hero: { name: 'Halo', art: 'halo', style: 'superhero-shield' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -619,8 +599,8 @@ export const chapter8 = {
       id: 'c8-stage-4',
       order: 4,
       title: 'Power of OR',
-      villain: { name: 'Grindbot', art: 'grindbot', style: 'robot' },
-      hero: { name: 'Stormer', art: 'stormer', style: 'robot' },
+      villain: { name: 'Tanglewire', art: 'tanglewire', style: 'supervillain-jumble' },
+      hero: { name: 'Torque', art: 'torque', style: 'superhero-thunder' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -632,7 +612,7 @@ export const chapter8 = {
           kind: 'teach',
           // OR 은 글자 이름이 아니라 별개의 장모음이라 IE/EE 의 "이름을
           // 말한다" 장치를 쓸 수 없다. 챕터 1~6 처럼 히어로 동작에 붙인다.
-          instructionKo: 'OR은 Stormer의 폭풍이 몰아칠 때처럼 소리를 내요!',
+          instructionKo: 'OR은 Torque의 회전력이 몰아칠 때처럼 소리를 내요!',
           art: 'hero',
           letter: 'OR',
           repeatAudio: ['or'],
@@ -816,7 +796,7 @@ export const chapter8 = {
           words: [{ text: 'OR', say: 'or' }, 'corn'],
         },
       ],
-      recapKo: '이제 IE, EE, OR를 모두 알아요! Nitro, Speedy, Stormer가 합체할 준비를 해요!',
+      recapKo: '이제 IE, EE, OR를 모두 알아요! Comet, Halo, Torque가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 두 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['or', 'fork', 'corn'],
@@ -827,8 +807,8 @@ export const chapter8 = {
       id: 'c8-stage-5',
       order: 5,
       title: 'Boss: TIE and CORN!',
-      villain: { name: 'Iron Wreck', art: 'iron-wreck', style: 'robot-deluxe' },
-      hero: { name: 'Nitrostorm', art: 'nitrostorm', style: 'robot-deluxe' },
+      villain: { name: 'King Static', art: 'king-static', style: 'supervillain-king' },
+      hero: { name: 'Captain Nova', art: 'captain-nova', style: 'superhero-armor' },
       chapterBoss: true,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -840,7 +820,7 @@ export const chapter8 = {
           kind: 'teach',
           // 보스 인트로에는 emoji 를 달지 않는다 -- 이 자리에는
           // buildEquationsHtml() 의 글자 등식("T + IE = TIE")이 그려진다.
-          instructionKo: 'Nitro + Speedy + Stormer가 합체해요! 먼저 tie를 만들어요.',
+          instructionKo: 'Comet + Halo + Torque가 합체해요! 먼저 tie를 만들어요.',
           repeatAudio: ['tuh', 'eye', 'tie'],
         },
         {
