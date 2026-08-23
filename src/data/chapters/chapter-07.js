@@ -73,6 +73,20 @@
 // 'oh'(OA) vs 'awh'(단모음 O) 는 1.3~2.7초 차이 -- 확인된 대비쌍
 // 문항에서 안전하게 공존한다.
 //
+// ============================================================================
+// 난이도 곡선 파일럿 (이 라운드) -- chapter-06.js 헤더와 같은 라운드,
+// 전체 분석·계획은 CLAUDE.md 를 보라. 챕터 6 에서 세운 표(표준 4 / hard 5,
+// warmup·wordspot·multiselect 는 그대로)를 그대로 이어서 챕터 8 진입 시
+// 단절이 없게 한다.
+//
+// 늘리지 않은 것: **oddoneout(과반 일치) 형식**은 이 챕터의 세 소리(AI/J/OA)
+// 전부 그림이 2개뿐이라(rain·train·aim 은 있지만 odd-one-out 에는 그 중
+// 둘만 쓴다, jam·jug, boat·coat) 과반을 3개로 못 채운다 -- c7s3-r2-oddoneout,
+// c7s4-r2-oddoneout 은 아이콘 담당의 신규 그림 없이는 그대로 둔다.
+// promptAudio 직접 지목 형식과 reversed, letterTile 기반(hard,
+// choose-sequence)은 이 제약이 없어서 전부 늘렸다.
+// ============================================================================
+//
 // --- 보스 단어: RAIN(R+AI+N) · BOAT(B+OA+T) ---
 // 챕터 3-6 구조 그대로: 각 소리를 자기 스테이지 finale 에서 미리 노출
 // -> 보스는 조립 시험. J 는 stage-3 finale 에 보너스 단어 'jam'
@@ -150,11 +164,15 @@ export const chapter7 = {
           // (promptAudio, choose 렌더러는 다시 듣기 버튼까지 붙여준다) 그
           // 소리가 들어있는 그림 하나만 고르게 한다. 오답 둘은 어중 모음이
           // 서로도 다르고 AI 와도 다르다(bed /e/, box /o/).
+          // 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). promptAudio 로 목표
+          // 소리를 직접 지목하는 형식이라 오답이 서로 같은 소리일 필요가
+          // 없다 -- 아이콘 재고 제약이 없다.
           instructionKo: '이 소리가 들어있는 그림을 찾아보세요!',
           promptAudio: 'a',
           options: [
             { id: 'c7s1-bed', icon: 'bed', label: 'bed', correct: false },
             { id: 'c7s1-box', icon: 'box', label: 'box', correct: false },
+            { id: 'c7s1-pig', icon: 'pig', label: 'pig', correct: false },
             { id: 'c7s1-rain', icon: 'rain', label: 'rain', correct: true },
           ],
           readAloud: { targetText: 'rain' },
@@ -164,12 +182,14 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
+          // 보기 3 -> 4 (난이도 곡선).
           instructionKo: '"gift"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'gift',
           options: [
             { id: 'c7s1-octopus', icon: 'octopus', label: 'octopus', correct: false },
             { id: 'c7s1-gum', icon: 'gum', label: 'gum', correct: true },
             { id: 'c7s1-leg', icon: 'leg', label: 'leg', correct: false },
+            { id: 'c7s1-net', icon: 'net', label: 'net', correct: false },
           ],
           readAloud: { targetText: 'gum' },
         },
@@ -309,10 +329,17 @@ export const chapter7 = {
           // 대체는 I(`ihh`) -- 한국어 화자에게 /ei/↔/i/ 는 실제 근접쌍(ㅔ이/ㅣ)
           // 이면서 측정상 두 음성 모두 배수에 비례해 벌어진다(30x 기준 Alex
           // 15.5초, Samantha 5.5초 차이, 파형 차이 140~142%).
+          //
+          // 보기 3 -> 5 (난이도 곡선, CLAUDE.md 참조). 추가 오답은 챕터8의
+          // IE 항목과 같은 논리로 **경쟁하는 다른 모음**(O·U)이다. E(`eh`)는
+          // 절대 넣지 않는다 -- AI 의 `a` 와 확정 충돌쌍이고, 정확히 이 문항의
+          // 실제 사고(위 주석)가 그 이유다.
           options: [
             { id: 'c7s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c7s2-AI3', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
             { id: 'c7s2-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
+            { id: 'c7s2-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
+            { id: 'c7s2-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
           ],
           readAloud: { targetText: 'AI', say: 'a' },
         },
@@ -324,11 +351,13 @@ export const chapter7 = {
           // 역방향: 글자 -> 그림. 보기가 그림이라 발화되는 건 그림 단어이므로
           // 두 글자 promptLetter 도 안전하다(발화 경로 없음, 표시만 된다).
           // '시작하는' 이 아니라 '들어있는' 이다 -- train 의 ai 는 어중이다.
+          // 보기 3 -> 4 (난이도 곡선).
           instructionKo: '이 글자가 들어있는 그림을 찾아보세요!',
           promptLetter: 'AI',
           options: [
             { id: 'c7s2-gum', icon: 'gum', label: 'gum', correct: false },
             { id: 'c7s2-fish2', icon: 'fish', label: 'fish', correct: false },
+            { id: 'c7s2-net2', icon: 'net', label: 'net', correct: false },
             { id: 'c7s2-train2', icon: 'train', label: 'train', correct: true },
           ],
           readAloud: { targetText: 'train' },
@@ -444,10 +473,14 @@ export const chapter7 = {
           hits: 1,
           instructionKo: 'juh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'juh',
+          // 보기 3 -> 5 (난이도 곡선). D(duh)는 넣지 않는다 -- B(buh)가 이미
+          // 있어서 확정 충돌쌍이 성립한다.
           options: [
             { id: 'c7s3-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
             { id: 'c7s3-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
             { id: 'c7s3-J3', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
+            { id: 'c7s3-K3', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
+            { id: 'c7s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
           ],
           readAloud: { targetText: 'J', say: 'juh' },
         },
@@ -456,12 +489,14 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
+          // 보기 3 -> 4 (난이도 곡선).
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'J',
           options: [
             { id: 'c7s3-jug2', icon: 'jug', label: 'jug', correct: true },
             { id: 'c7s3-bed3', icon: 'bed', label: 'bed', correct: false },
             { id: 'c7s3-octopus2', icon: 'octopus', label: 'octopus', correct: false },
+            { id: 'c7s3-pig2', icon: 'pig', label: 'pig', correct: false },
           ],
           readAloud: { targetText: 'jug' },
         },
@@ -576,10 +611,15 @@ export const chapter7 = {
           hits: 1,
           instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'oh',
+          // 보기 3 -> 5 (난이도 곡선). 추가 오답은 경쟁하는 모음 U·I 다.
+          // AI(`a`)는 넣지 않는다 -- E(`eh`)가 이미 있어서 확정 충돌쌍
+          // a==eh 가 성립한다(위 promptAudio 'a' 문항의 실제 사고와 같은 축).
           options: [
             { id: 'c7s4-OA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
             { id: 'c7s4-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
             { id: 'c7s4-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
+            { id: 'c7s4-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+            { id: 'c7s4-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
           ],
           readAloud: { targetText: 'OA', say: 'oh' },
         },
@@ -590,12 +630,14 @@ export const chapter7 = {
           hits: 1,
           // 보스 단어 'boat' 를 역방향 문항의 정답으로 둔다 -- 다음 스테이지가
           // B+OA+T 를 조립하므로 여기서 글자 OA 와 그림 boat 를 붙여둔다.
+          // 보기 3 -> 4 (난이도 곡선).
           instructionKo: '이 글자가 들어있는 그림을 찾아보세요!',
           promptLetter: 'OA',
           options: [
             { id: 'c7s4-gift', icon: 'gift', label: 'gift', correct: false },
             { id: 'c7s4-boat2', icon: 'boat', label: 'boat', correct: true },
             { id: 'c7s4-fish4', icon: 'fish', label: 'fish', correct: false },
+            { id: 'c7s4-net4', icon: 'net', label: 'net', correct: false },
           ],
           readAloud: { targetText: 'boat' },
         },
@@ -613,6 +655,9 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+          // 스텝당 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). E(`eh`)는 AI(`a`)가
+          // 있는 스텝에 절대 넣지 않는다 -- 확정 충돌쌍이다. 그래서 추가
+          // 오답은 전부 O/U 다.
           steps: [
             {
               promptAudio: 'a',
@@ -620,6 +665,7 @@ export const chapter7 = {
                 { id: 'c7s4-qJ', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
                 { id: 'c7s4-qOA', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s4-qAI', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
+                { id: 'c7s4-qU', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
             {
@@ -628,6 +674,7 @@ export const chapter7 = {
                 { id: 'c7s4-qOA2', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s4-qJ2', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
                 { id: 'c7s4-qAI2', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
+                { id: 'c7s4-qG2', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
               ],
             },
             {
@@ -636,6 +683,7 @@ export const chapter7 = {
                 { id: 'c7s4-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
                 { id: 'c7s4-qAI3', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
                 { id: 'c7s4-qJ3', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
+                { id: 'c7s4-qO3', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
               ],
             },
             // 누적 복습(챕터 1 의 A). 이 챕터의 AI 는 A 와 글자를 공유하므로
@@ -649,6 +697,7 @@ export const chapter7 = {
                 { id: 'c7s4-qAI4', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
                 { id: 'c7s4-qJ4', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
                 { id: 'c7s4-qA', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
+                { id: 'c7s4-qO4', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
               ],
             },
           ],
@@ -729,6 +778,8 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+          // 스텝당 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). E(`eh`)는 AI(`a`)가
+          // 있는 스텝에 절대 넣지 않는다 -- 확정 충돌쌍이다.
           steps: [
             {
               promptAudio: 'oh',
@@ -736,6 +787,7 @@ export const chapter7 = {
                 { id: 'c7s5-qOA', icon: 'letterTile', label: 'OA', say: 'oh', correct: true },
                 { id: 'c7s5-qAI', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
                 { id: 'c7s5-qJ', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
+                { id: 'c7s5-qO', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
               ],
             },
             {
@@ -744,6 +796,7 @@ export const chapter7 = {
                 { id: 'c7s5-qJ2', icon: 'letterTile', label: 'J', say: 'juh', correct: false },
                 { id: 'c7s5-qOA2', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s5-qAI2', icon: 'letterTile', label: 'AI', say: 'a', correct: true },
+                { id: 'c7s5-qU2', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
             {
@@ -752,6 +805,7 @@ export const chapter7 = {
                 { id: 'c7s5-qOA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s5-qJ3', icon: 'letterTile', label: 'J', say: 'juh', correct: true },
                 { id: 'c7s5-qAI3', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
+                { id: 'c7s5-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
               ],
             },
             // 누적 복습(챕터 5 의 O). AI/A 와 같은 구조로 OA 가 홑글자 O 를
@@ -761,9 +815,10 @@ export const chapter7 = {
             {
               promptAudio: 'awh',
               options: [
-                { id: 'c7s5-qO', icon: 'letterTile', label: 'O', say: 'awh', correct: true },
+                { id: 'c7s5-qO4', icon: 'letterTile', label: 'O', say: 'awh', correct: true },
                 { id: 'c7s5-qOA4', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },
                 { id: 'c7s5-qAI4', icon: 'letterTile', label: 'AI', say: 'a', correct: false },
+                { id: 'c7s5-qU4', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
               ],
             },
           ],

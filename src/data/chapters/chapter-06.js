@@ -45,6 +45,26 @@
 // 그림 문항이라 발화되는 건 단어이므로 buh/duh 충돌쌍 규칙과 무관하다.
 // multiselect 한 슬롯씩은 앞 챕터 누적 복습으로 남겨뒀다.
 //
+// ============================================================================
+// 난이도 곡선 파일럿 (이 라운드) -- CLAUDE.md/HANDOFF.md 의 "챕터 간 누적
+// 복습이 설계되지 않았다" 항목에 대한 첫 실행. 전체 분석과 전 챕터 계획은
+// CLAUDE.md 를 보라. 요약: 챕터 8 이 이미 확립한 역할별 표(warmup 3 유지 /
+// 표준 4 / hard 5 / wordspot 3 유지 / multiselect 는 이 챕터에서 유지)를
+// 챕터 6 에 소급 적용해 챕터 7 로 이어지는 연속선을 만든다(챕터 6·7 모두
+// 표준 4·hard 5 로 맞춰 챕터 8 진입 시 단절이 없다).
+//
+// 늘리지 않은 것: **oddoneout(과반 일치) 형식은 아이콘 재고가 한 소리에
+// 그림 2개뿐인 경우 3 -> 4 로 못 늘린다** -- 과반을 3개로 채우려면 같은
+// 소리 그림이 3개 필요한데, /l/(lion/leg) 와 /f/(fish/fan) 는 각각 2개뿐이다.
+// **유일한 예외가 /b/**(ball/bed/box/bus, 4개)라 c6s4-r2-oddoneout 만 실제로
+// 늘렸다. 나머지 oddoneout(c6s1-r2, c6s2-r2, c6s3-r2)은 아이콘 담당의 신규
+// 그림 없이는 손대지 않는다 -- 이 파일 소유자가 icons.js 를 건드리지 않는다.
+// promptAudio 로 목표 소리를 직접 지목하는 형식(과반 불필요, "match" 형)과
+// reversed(promptLetter -> 그림, 오답이 서로 다른 소리이기만 하면 됨)는
+// 이 제약이 없어서 전부 늘렸다. letterTile 기반(hard, choose-sequence 스텝)도
+// SOUND_TABLE 전체가 후보 풀이라 제약이 없다.
+// ============================================================================
+//
 // --- 보스 단어: FIT(F+I+T) · BIG(B+I+G) ---
 // 챕터 3-5 에서 확립한 구조: 각 단어를 자기 스테이지 finale 에서 미리
 // 노출 -> 보스는 조립 시험. L 은 stage-2 finale 에 보너스 단어 'lap'
@@ -109,9 +129,14 @@ export const chapter6 = {
           hits: 1,
           instructionKo: '"hen"과 같은 소리로 시작하는 걸 찾아보세요!',
           promptAudio: 'hen',
+          // 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). 이 형식(promptAudio 로
+          // 목표 소리를 직접 지목)은 나머지 보기가 서로 같은 소리일 필요가
+          // 없어 아이콘 재고 제약 없이 확장할 수 있다 -- oddoneout(과반 일치)
+          // 형식과 다르다.
           options: [
             { id: 'c6s1-dog2', icon: 'dog', label: 'dog', correct: false },
             { id: 'c6s1-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c6s1-egg', icon: 'egg', label: 'egg', correct: false },
             { id: 'c6s1-hat', icon: 'hat', label: 'hat', correct: true },
           ],
           readAloud: { targetText: 'hat' },
@@ -246,9 +271,13 @@ export const chapter6 = {
           hits: 1,
           instructionKo: 'lll 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'lll',
+          // 보기 3 -> 5 (난이도 곡선, CLAUDE.md 참조). D 를 넣어도 안전하다 --
+          // buh/duh 충돌쌍은 B 가 걸린 문항에만 해당하고, 여기는 B 가 없다.
           options: [
             { id: 'c6s2-R3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
+            { id: 'c6s2-D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
             { id: 'c6s2-M3', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
+            { id: 'c6s2-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
             { id: 'c6s2-L3', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
           ],
           readAloud: { targetText: 'L', say: 'lll' },
@@ -260,10 +289,13 @@ export const chapter6 = {
           hits: 1,
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'L',
+          // 보기 3 -> 4 (난이도 곡선). 오답은 서로 다른 소리이기만 하면 되므로
+          // (과반 일치가 필요한 oddoneout 과 다르다) 아이콘 재고 제약이 없다.
           options: [
             { id: 'c6s2-leg2', icon: 'leg', label: 'leg', correct: true },
             { id: 'c6s2-dog2', icon: 'dog', label: 'dog', correct: false },
             { id: 'c6s2-egg', icon: 'egg', label: 'egg', correct: false },
+            { id: 'c6s2-net', icon: 'net', label: 'net', correct: false },
           ],
           readAloud: { targetText: 'leg' },
         },
@@ -377,9 +409,14 @@ export const chapter6 = {
           hits: 1,
           instructionKo: 'fff 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'fff',
+          // 보기 3 -> 5 (난이도 곡선). P 는 /f/->/p/ 대치(한국어에 /f/ 가 없어
+          // 생기는 대표 오류)와 정확히 같은 근접쌍이라 오답으로 넣을 값이 있다
+          // (오답이 근접쌍이어야 한다는 이 챕터의 원칙, 파일 헤더 참조).
           options: [
             { id: 'c6s3-F3', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
             { id: 'c6s3-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+            { id: 'c6s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
+            { id: 'c6s3-K3', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
             { id: 'c6s3-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
           ],
           readAloud: { targetText: 'F', say: 'fff' },
@@ -391,10 +428,12 @@ export const chapter6 = {
           hits: 1,
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'F',
+          // 보기 3 -> 4 (난이도 곡선).
           options: [
             { id: 'c6s3-hat2', icon: 'hat', label: 'hat', correct: false },
             { id: 'c6s3-fan2', icon: 'fan', label: 'fan', correct: true },
             { id: 'c6s3-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c6s3-box', icon: 'box', label: 'box', correct: false },
           ],
           readAloud: { targetText: 'fan' },
         },
@@ -467,9 +506,14 @@ export const chapter6 = {
           // 오답이 /p/ 다 -- /b/ 와 /p/ 는 같은 자리 유무성 짝이라 진짜 근접쌍이다.
           // 그림 문항이므로 발화되는 건 단어이고, buh/duh 충돌쌍 규칙은
           // letterTile 보기에만 적용된다.
+          // 보기 3 -> 4. 이 챕터는 유일하게 B 그림이 4개(ball/bed/box/bus)라
+          // 과반(box 추가로 3개) + 오답 1개(pot) 형태의 oddoneout 을 늘릴 수
+          // 있다 -- 다른 소리들은 그림이 2개뿐이라 이 형식을 못 늘린다(파일
+          // 헤더의 "아이콘 사정" 참조, CLAUDE.md 의 난이도 곡선 절도 참조).
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
             { id: 'c6s4-ball', icon: 'ball', label: 'ball', correct: false },
+            { id: 'c6s4-box2', icon: 'box', label: 'box', correct: false },
             { id: 'c6s4-pot', icon: 'pot', label: 'pot', correct: true },
             { id: 'c6s4-bed2', icon: 'bed', label: 'bed', correct: false },
           ],
@@ -514,10 +558,14 @@ export const chapter6 = {
           hits: 1,
           instructionKo: 'buh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'buh',
+          // 보기 3 -> 5 (난이도 곡선). D 는 절대 넣지 않는다 -- buh/duh 는
+          // 확정 충돌쌍이다(SPEECH_COLLISION_PAIRS, 파일 헤더 참조).
           options: [
             { id: 'c6s4-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
             { id: 'c6s4-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
             { id: 'c6s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+            { id: 'c6s4-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
+            { id: 'c6s4-K3', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
           ],
           readAloud: { targetText: 'B', say: 'buh' },
         },
@@ -546,10 +594,12 @@ export const chapter6 = {
           // 이 챕터에서 유일하게 진짜 B 그림(bed)으로 성립하는 역방향 문항.
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'B',
+          // 보기 3 -> 4 (난이도 곡선).
           options: [
             { id: 'c6s4-bed', icon: 'bed', label: 'bed', correct: true },
             { id: 'c6s4-moon2', icon: 'moon', label: 'moon', correct: false },
             { id: 'c6s4-egg2', icon: 'egg', label: 'egg', correct: false },
+            { id: 'c6s4-cup', icon: 'cup', label: 'cup', correct: false },
           ],
           readAloud: { targetText: 'bed' },
         },
@@ -567,12 +617,15 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+          // 스텝당 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). D(duh)는 B(buh)가
+          // 있는 스텝(2·3·4)에 절대 넣지 않는다 -- 확정 충돌쌍이다.
           steps: [
             {
               promptAudio: 'lll',
               options: [
                 { id: 'c6s4-qF', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s4-qB', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s4-qG', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
                 { id: 'c6s4-qL', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
               ],
             },
@@ -582,6 +635,7 @@ export const chapter6 = {
                 { id: 'c6s4-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
                 { id: 'c6s4-qF2', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
                 { id: 'c6s4-qL2', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
+                { id: 'c6s4-qP2', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
               ],
             },
             {
@@ -590,19 +644,20 @@ export const chapter6 = {
                 { id: 'c6s4-qB3', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s4-qL3', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s4-qF3', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
+                { id: 'c6s4-qG3', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
               ],
             },
             // 누적 복습(챕터 4 의 R). L 을 배우는 순간 가장 위험해지는 앞 글자가
             // R 이다 -- 한국어 화자에게 /l/ 대 /r/ 이 최대 난점이라 새로 배운 L 이
             // R 을 덮어쓴다. 오답이 L 이라 이 스텝이 곧 그 변별 시험이다.
             // rrr 대 lll 은 두 음성 20x 에서 23.1~27.9초 벌어진다(별개 음소).
-            // D(duh)는 이 스텝에 절대 넣지 않는다 -- B(buh)와 확정 충돌쌍이다.
             {
               promptAudio: 'rrr',
               options: [
                 { id: 'c6s4-qL4', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s4-qR', icon: 'letterTile', label: 'R', say: 'rrr', correct: true },
                 { id: 'c6s4-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s4-qM4', icon: 'letterTile', label: 'M', say: 'mmm', correct: false },
               ],
             },
           ],
@@ -680,6 +735,8 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+          // 스텝당 보기 3 -> 4 (난이도 곡선, CLAUDE.md 참조). D(duh)는 B(buh)가
+          // 있는 스텝에 절대 넣지 않는다 -- 확정 충돌쌍이다.
           steps: [
             {
               promptAudio: 'fff',
@@ -687,6 +744,7 @@ export const chapter6 = {
                 { id: 'c6s5-qB', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
                 { id: 'c6s5-qL', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s5-qF', icon: 'letterTile', label: 'F', say: 'fff', correct: true },
+                { id: 'c6s5-qP1', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
               ],
             },
             {
@@ -695,6 +753,7 @@ export const chapter6 = {
                 { id: 'c6s5-qL2', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
                 { id: 'c6s5-qB2', icon: 'letterTile', label: 'B', say: 'buh', correct: true },
                 { id: 'c6s5-qF2', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
+                { id: 'c6s5-qG2', icon: 'letterTile', label: 'G', say: 'guh', correct: false },
               ],
             },
             {
@@ -703,6 +762,7 @@ export const chapter6 = {
                 { id: 'c6s5-qL3', icon: 'letterTile', label: 'L', say: 'lll', correct: true },
                 { id: 'c6s5-qF3', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s5-qB3', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
+                { id: 'c6s5-qR3', icon: 'letterTile', label: 'R', say: 'rrr', correct: false },
               ],
             },
             // 누적 복습(챕터 2 의 P). 한국어에 /f/ 가 없어 ㅍ 로 대치하는 것이
@@ -716,6 +776,7 @@ export const chapter6 = {
                 { id: 'c6s5-qF4', icon: 'letterTile', label: 'F', say: 'fff', correct: false },
                 { id: 'c6s5-qB4', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
                 { id: 'c6s5-qP', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+                { id: 'c6s5-qK4', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
               ],
             },
           ],
