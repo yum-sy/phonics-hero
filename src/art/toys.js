@@ -621,14 +621,6 @@ export function toyBobo({
       ${shadeP('78,30 90,28 96,52 84,70 76,72 84,52', 0.14)}
       <path d="M 32,60 Q 60,68 88,60" fill="none" ${ol(2)}/>
 
-      ${/* Third-eye housing, enlarged (rx/ry 12/10 -> 14/11.5) to match the
-            bigger main eyes below -- a small dome now reads as undersized
-            next to them. Still a domed bump poking past the cranium's flat
-            top edge rather than a flush disc (silhouette weight, see the
-            surrounding note history). */ ''}
-      <ellipse cx="60" cy="18" rx="14" ry="11.5" fill="${bodyColor}" ${ol(3.2)}/>
-      ${litP('48,9 60,7 64,17 50,20', 0.22)}
-
       <path d="M 42,26 L 26,8" ${ol(3.4)}/>
       <circle cx="24" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('20,3 24,1 26,4 22,6', 0.4)}
@@ -636,17 +628,22 @@ export function toyBobo({
       <circle cx="96" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('92,3 96,1 98,4 94,6', 0.4)}
 
-      ${/* Main eyes, PASS 2: r 13.5 -> 15 and pulled 3 more units together
-            (44.5/76.5 -> 46/75). Pass 1's enlargement was measured NOT
-            enough -- the reference's three eyes cover essentially the
-            whole lower face with no visible cheek/jowl at all, and 13.5
-            still left a clear green margin either side. Brow span
-            narrowed to match the tighter eye spacing. */ ''}
-      ${eye(60, 20, 9)}
-      ${brow(46, 40, 17, -14, 5.8)}
-      ${brow(75, 40, 17, 14, 5.8)}
-      ${eye(46, 53, 15, -0.2)}
-      ${eye(75, 53, 15, 0.2)}
+      ${/* PASS 4 (user): the third eye sat in its own raised dome at the
+            top of the skull (cy=18), 33 units above the main pair (cy=53)
+            -- a real vertical gap that read as "third eye chakra opening
+            on the forehead", not "alien with three eyes across its face"
+            like the reference. Fix is arrangement, not size: all three
+            eyes now sit on ONE row (cy=53), left/centre/right, tangent-plus-
+            gap so none overlap (34-13=21 clears the head's left edge at
+            this height, 86+13=99 the right, centre at 60 sits 3 units
+            clear of both neighbours). The dome housing is gone entirely --
+            a flush third eye reads as part of the same face, not a bump
+            on the head. */ ''}
+      ${brow(34, 40, 15, -12, 5.4)}
+      ${brow(86, 40, 15, 12, 5.4)}
+      ${eye(34, 53, 13, -0.2)}
+      ${eye(60, 53, 10, 0)}
+      ${eye(86, 53, 13, 0.2)}
       <path d="M 48,68 Q 60,76 72,68" fill="none" ${ol(3)}/>
       <path d="M 48,68 L 45,65 M 72,68 L 75,65" ${ol(2.4)}/>
     </g>
