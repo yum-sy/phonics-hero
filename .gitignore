@@ -35,3 +35,6 @@ _art-preview.html
 !public/_probe.html
 !public/_probe-fs.html
 !public/_art.html
+# _audio.html 은 사용자가 실기기에서 소리를 귀로 판정하는 창구다 -- 판정은
+# sound-verdicts.json 으로 저장소에 들어오므로 페이지도 추적한다.
+!public/_audio.html

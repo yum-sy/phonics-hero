@@ -1,0 +1,235 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sound Gallery</title>
+<style>
+  :root { --ok: #1f9d55; --no: #d64545; --ink: #1b2430 }
+  * { box-sizing: border-box }
+  body { font: 17px/1.4 -apple-system, sans-serif; margin: 0; padding: 12px 12px 80px;
+         color: var(--ink); -webkit-text-size-adjust: 100% }
+  h2 { margin: 18px 0 8px; font-size: 19px }
+  .row { display: flex; align-items: center; gap: 8px; padding: 7px 0;
+         border-bottom: 1px solid #e6e9ee }
+  .key { flex: 0 0 6.4em; font-weight: 700; font-size: 21px; font-family: ui-monospace, monospace }
+  .src { flex: 0 0 4.6em; font-size: 12px; color: #6b7684 }
+  button { font-size: 19px; padding: 13px 15px; border-radius: 11px; border: 1px solid #c8cfd8;
+           background: #fff; color: var(--ink); min-width: 56px; touch-action: manipulation }
+  .play { flex: 1 1 auto; text-align: left }
+  .v { font-weight: 700 }
+  .v.on-ok { background: var(--ok); border-color: var(--ok); color: #fff }
+  .v.on-no { background: var(--no); border-color: var(--no); color: #fff }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; background: #fff;
+         border-top: 2px solid var(--ink); padding: 9px 12px; font-size: 14px;
+         display: flex; gap: 10px; align-items: center }
+  .bar b { font-size: 16px }
+  pre { background: #101820; color: #7ee787; padding: 9px; border-radius: 8px;
+        font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 30vh;
+        overflow: auto }
+  .note { color: #6b7684; font-size: 13px; margin: 4px 0 10px }
+  input[type=text] { font-size: 17px; padding: 9px; width: 6em; border-radius: 8px;
+                     border: 1px solid #c8cfd8 }
+</style>
+
+<h2>Sound Gallery</h2>
+<p class="note">각 소리를 눌러 들어보고 <b>OK</b> 또는 <b>NO</b> 를 눌러라.
+판정은 저장소의 <code>sound-verdicts.json</code> 에 바로 기록된다.
+<span class="src">file</span> = 미리 생성된 음소 파일, <span class="src">tts</span> = 엔진 합성.</p>
+
+<div id="list"></div>
+
+<h2>RAW rate 확인</h2>
+<p class="note">엔진 합성만 해당. 파일 소리는 rate 와 무관하다.</p>
+<div id="rates"></div>
+<p>단어 <input type="text" id="word" value="sss">
+   rate <input type="text" id="custom" value="0.5">
+   <button id="customgo">🔊 GO</button></p>
+
+<h2>진단</h2>
+<pre id="out"></pre>
+
+<div class="bar">
+  <b id="tally">–</b>
+  <button id="reload">↻ 새로고침</button>
+  <button id="dump">판정 보기</button>
+</div>
+
+<script type="module">
+const out = document.getElementById('out')
+const log = (s) => { out.textContent += s + '\n' }
+
+// ---- what to audition -------------------------------------------------------
+// The generator writes a manifest; until it exists the gallery still works off
+// the notations the corpus actually speaks (measured set, see CLAUDE.md).
+const FALLBACK = [
+  'sss','aaa','tuh','ihh','puh','nnn','kuh','eh','huh','rrr','mmm','duh',
+  'guh','oh','uh','awh','lll','fff','buh','juh','zz','ee','or','eye',
+]
+let manifest = { sounds: {}, ext: 'm4a' }
+try {
+  const r = await fetch('/sounds/manifest.json', { cache: 'no-store' })
+  if (r.ok) manifest = await r.json()
+} catch (e) { /* not generated yet */ }
+
+const keys = Object.keys(manifest.sounds || {}).length
+  ? Object.keys(manifest.sounds)
+  : FALLBACK
+log(`manifest: ${keys.length} sounds, ${Object.keys(manifest.sounds || {}).length ? 'from /sounds' : 'FALLBACK (에셋 미생성)'}`)
+
+// ---- verdicts --------------------------------------------------------------
+let verdicts = {}
+async function loadVerdicts() {
+  // Vite's SPA fallback answers an unregistered path with index.html and a
+  // 200, so `r.ok` alone would read "the endpoint is missing" as "no verdicts
+  // yet" -- the verdicts would look wiped rather than unreachable. Check the
+  // body type, and say so loudly: this page exists to carry judgements back
+  // into the repo, and silently dropping them is the one thing it must not do.
+  try {
+    const r = await fetch('/__verdict', { cache: 'no-store' })
+    const ct = r.headers.get('content-type') || ''
+    if (!r.ok || !ct.includes('json')) {
+      log(`⚠️ /__verdict 이 없다 (${r.status} ${ct.split(';')[0]}) -- 판정이 저장되지 않는다.`)
+      log('   dev 서버가 vite.config.js 없이 시작됐다. 서버를 재시작해라.')
+      verdicts = {}
+    } else {
+      verdicts = await r.json()
+    }
+  } catch (e) {
+    log('⚠️ /__verdict 실패: ' + e)
+    verdicts = {}
+  }
+  paint()
+}
+async function save(key, value) {
+  verdicts[key] = { v: value, at: new Date().toISOString().slice(0, 19) }
+  paint()
+  try {
+    const r = await fetch('/__verdict', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ [key]: verdicts[key] }),
+    })
+    if (!r.ok) log('save failed ' + r.status)
+  } catch (e) { log('save threw ' + e) }
+}
+
+// ---- playback: file first, engine as fallback -------------------------------
+let ctx = null
+const buffers = new Map()
+function audioCtx() {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)()
+  if (ctx.state === 'suspended') ctx.resume()
+  return ctx
+}
+async function playFile(key) {
+  const url = `/sounds/${key}.${manifest.ext || 'm4a'}`
+  let buf = buffers.get(key)
+  if (!buf) {
+    const r = await fetch(url, { cache: 'no-store' })
+    if (!r.ok) return false
+    buf = await audioCtx().decodeAudioData(await r.arrayBuffer())
+    buffers.set(key, buf)
+  }
+  const src = audioCtx().createBufferSource()
+  src.buffer = buf
+  src.connect(audioCtx().destination)
+  src.start()
+  log(`${key}: file ${Math.round(buf.duration * 1000)}ms`)
+  return true
+}
+function playTts(key) {
+  const u = new SpeechSynthesisUtterance(key)
+  u.lang = 'en-US'
+  u.rate = 0.5
+  const t0 = Date.now()
+  u.onend = () => log(`${key}: tts ${Date.now() - t0}ms`)
+  u.onerror = (e) => log(`${key}: tts ERROR ${e.error || '?'}`)
+  window.speechSynthesis.speak(u)
+}
+async function play(key) {
+  audioCtx()
+  try {
+    if (await playFile(key)) return 'file'
+  } catch (e) { log(`${key}: file failed (${e && e.message}) -> tts`) }
+  playTts(key)
+  return 'tts'
+}
+
+// ---- render ----------------------------------------------------------------
+const list = document.getElementById('list')
+for (const key of keys) {
+  const row = document.createElement('div')
+  row.className = 'row'
+  row.innerHTML =
+    `<span class="key">${key}</span>` +
+    `<span class="src" data-src></span>` +
+    `<button class="play">🔊 들어보기</button>` +
+    `<button class="v" data-v="ok">OK</button>` +
+    `<button class="v" data-v="no">NO</button>`
+  row.dataset.key = key
+  row.querySelector('.play').onclick = async () => {
+    row.querySelector('[data-src]').textContent = '…'
+    row.querySelector('[data-src]').textContent = await play(key)
+  }
+  for (const b of row.querySelectorAll('.v')) b.onclick = () => save(key, b.dataset.v)
+  list.appendChild(row)
+}
+
+function paint() {
+  let ok = 0, no = 0
+  for (const row of list.children) {
+    const v = verdicts[row.dataset.key]
+    for (const b of row.querySelectorAll('.v')) {
+      b.classList.toggle('on-ok', !!v && v.v === 'ok' && b.dataset.v === 'ok')
+      b.classList.toggle('on-no', !!v && v.v === 'no' && b.dataset.v === 'no')
+    }
+    if (v && v.v === 'ok') ok++
+    if (v && v.v === 'no') no++
+  }
+  document.getElementById('tally').textContent =
+    `OK ${ok} · NO ${no} · 미판정 ${keys.length - ok - no} / ${keys.length}`
+}
+
+document.getElementById('reload').onclick = () => loadVerdicts()
+document.getElementById('dump').onclick = () => {
+  const no = keys.filter((k) => verdicts[k] && verdicts[k].v === 'no')
+  log('NO: ' + (no.length ? no.join(' ') : '(없음)'))
+  log('미판정: ' + (keys.filter((k) => !verdicts[k]).join(' ') || '(없음)'))
+}
+
+// ---- raw rate ladder + engine diagnostics ----------------------------------
+for (const r of [0.1, 0.2, 0.3, 0.5, 0.85, 1]) {
+  const b = document.createElement('button')
+  b.textContent = '🔊 ' + r
+  b.onclick = () => {
+    const u = new SpeechSynthesisUtterance(document.getElementById('word').value || 'sss')
+    u.lang = 'en-US'
+    u.rate = r
+    const t0 = Date.now()
+    u.onend = () => log(`rate ${r}: ${Date.now() - t0}ms (reads back ${u.rate})`)
+    window.speechSynthesis.speak(u)
+  }
+  document.getElementById('rates').appendChild(b)
+}
+document.getElementById('customgo').onclick = () => {
+  const r = parseFloat(document.getElementById('custom').value)
+  const u = new SpeechSynthesisUtterance(document.getElementById('word').value || 'sss')
+  u.lang = 'en-US'
+  u.rate = r > 0 ? r : 1
+  const t0 = Date.now()
+  u.onend = () => log(`rate ${u.rate}: ${Date.now() - t0}ms`)
+  window.speechSynthesis.speak(u)
+}
+
+function dumpVoices(tag) {
+  const v = window.speechSynthesis.getVoices() || []
+  log(`${tag}: ${v.length} voices`)
+  v.filter((x) => /^(en|ko)/i.test(x.lang || '')).forEach((x) =>
+    log(`  ${x.name} [${x.lang}]${x.localService === false ? ' REMOTE' : ''}${x.default ? ' DEFAULT' : ''}`))
+}
+log('UA: ' + navigator.userAgent.slice(0, 80))
+dumpVoices('voices at load')
+window.speechSynthesis.addEventListener?.('voiceschanged', () => dumpVoices('voiceschanged'))
+document.addEventListener('pointerdown', () => audioCtx(), { once: true })
+
+await loadVerdicts()
+</script>
