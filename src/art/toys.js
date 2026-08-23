@@ -304,7 +304,11 @@ export function toyLeo({
   const HAT_DK = '#754a27'
   const JEAN = '#4a6d9c'
   const CREAM = '#f6e9c6'
-  const BANDANA = '#3f7fbf'
+  // Was blue -- measured against the reference sheet's Woody figure this was
+  // simply the wrong colour. The knotted neckerchief is red, not blue, and
+  // it is one of only three colours (red/yellow/brown) that read as
+  // "cowboy" at a glance; a blue bandana reads as generic western instead.
+  const BANDANA = '#c23b3b'
   // Fixed, not bodyColor: Woody's shirt is yellow-check the same way the
   // hat is brown leather and the jeans are denim -- a genre colour, not a
   // free one. `bodyColor` now drives the vest instead (see grammar note
@@ -370,41 +374,40 @@ export function toyLeo({
       </g>
       <path d="M 34,70 L 86,70" ${ol(3.4)}/>
 
-      ${/* THE VEST. This is the one new prop the reference sheet's Woody
-            figure asked for that the previous pass didn't have any room for
-            -- a vest needs an edge to open along, and the old torso was one
-            uninterrupted shirt panel. Two outer lapels in `bodyColor`,
-            open down the front so the yellow check shirt and bandana still
-            show through the centre third (the same centre third the belt
-            buckle and nameplate already anchor to), plus a shoulder yoke
-            so the vest reads as one garment instead of two stray patches. */ ''}
-      <polygon points="34,70 46,73 44,104 31,104" fill="${bodyColor}" ${ol(3.2)}/>
-      ${shadeP('40,73 44,104 38,104 36,76', 0.16)}
-      <polygon points="86,70 74,73 76,104 89,104" fill="${bodyColor}" ${ol(3.2)}/>
-      ${litP('80,73 76,104 82,104 84,76', 0.2)}
-      <polygon points="40,70 80,70 79,76 41,76" fill="${bodyColor}" ${ol(3)}/>
-      <path d="M 44,79 L 42,101 M 80,79 L 82,101" stroke="${VEST_DK}" stroke-width="1.6" opacity="0.6"/>
+      ${/* THE VEST, PASS 2. Pass 1's vest was wide enough to swallow almost
+            the entire visible shirt, AND the emblem plate sat directly in
+            what little of the centre panel it left open (cy=88, the exact
+            zone between the lapels) -- so the yellow check, the single
+            most identifying colour on the reference, was never actually
+            on screen behind the badge-sized plate. Fixed two ways: the
+            lapels are now thin edge strips (were 12-15 units wide, now
+            5-8), and the emblem has moved down onto the belt buckle (see
+            below) so nothing sits on top of the newly-opened centre panel
+            at all. Vest bottom also raised 104 -> 100 to meet the new
+            belt line instead of running under it. */ ''}
+      <polygon points="34,70 39,72 38,100 31,100" fill="${bodyColor}" ${ol(3.2)}/>
+      ${shadeP('36,72 38,100 33,100 34,74', 0.16)}
+      <polygon points="86,70 81,72 82,100 89,100" fill="${bodyColor}" ${ol(3.2)}/>
+      ${litP('84,72 82,100 87,100 86,74', 0.2)}
+      <path d="M 37,74 L 35,98 M 83,74 L 85,98" stroke="${VEST_DK}" stroke-width="1.6" opacity="0.6"/>
 
-      ${/* Sheriff badge, restored to the chest -- the reference sheet's
-            clearest Woody mark and the one the previous pass had to give up
-            because the chest was solid shirt with nowhere to pin a badge.
-            The vest's left lapel is exactly that edge. Small enough (r=6)
-            that it sits inside the lapel with room to spare, so it can't
-            collide with the nameplate on the bandana below it. */ ''}
-      <polygon points="${starPoints(38, 82, 6.4, 2.8)}" fill="${accent}" ${ol(2.4)}/>
+      ${/* Sheriff badge stays on the lapel edge, just narrower now (was
+            r=6.4, the lapel itself is only 5-8 units wide) so it still
+            reads as pinned TO the vest rather than floating past it. */ ''}
+      <polygon points="${starPoints(35, 81, 5.6, 2.4)}" fill="${accent}" ${ol(2.2)}/>
 
-      <polygon points="30,102 90,102 90,112 30,112" fill="${DARK}" ${ol(3)}/>
-      <ellipse cx="60" cy="107" rx="13" ry="9.5" fill="${accent}" ${ol(3)}/>
-      ${litP('50,101 68,101 65,105 53,105', 0.3)}
-      <ellipse cx="60" cy="107" rx="6.5" ry="4.6" fill="none" ${ol(2)}/>
-      <circle cx="51" cy="107" r="1.7" fill="${HAT_DK}" stroke="none"/>
-      <circle cx="69" cy="107" r="1.7" fill="${HAT_DK}" stroke="none"/>
+      ${/* Belt, widened into a buckle plate that now CARRIES the emblem --
+            the pass-1 buckle (a plain oval) is gone; the emblem plate does
+            both jobs at once (letter + buckle) instead of the letter
+            fighting the buckle for the same chest real-estate one row up.
+            This is also what freed the centre shirt panel above: nothing
+            in this file draws over y:70-100, x:39-81 any more. */ ''}
+      <polygon points="30,100 90,100 90,116 30,116" fill="${DARK}" ${ol(3)}/>
+      ${letterPlate(60, 108, 30, 15, visorColor, HAT_DK, emblem)}
 
       <polygon points="38,64 82,64 60,88" fill="${BANDANA}" ${ol(3.2)}/>
       ${shadeP('66,64 82,64 60,88 62,78', 0.16)}
       <polygon points="50,62 70,62 72,70 48,70" fill="${BANDANA}" ${ol(2.8)}/>
-
-      ${letterPlate(60, 88, 34, 21, visorColor, HAT_DK, emblem)}
 
       <polygon points="45,28 75,28 79,48 73,66 60,74 47,66 41,48" fill="${FACE}" ${ol(3.4)}/>
       ${shadeP('70,32 79,48 73,66 66,70 73,48 66,30', 0.12)}
@@ -553,24 +556,39 @@ export function toyBobo({
     <g>
       ${shadow(60, 30)}
 
-      <polygon points="40,110 52,110 51,126 38,126" fill="${bodyColor}" ${ol(3)}/>
-      <polygon points="34,124 54,124 55,132 32,132" fill="${accent}" ${ol(3)}/>
-      <polygon points="68,110 80,110 82,126 69,126" fill="${bodyColor}" ${ol(3)}/>
-      <polygon points="66,124 86,124 88,132 64,132" fill="${accent}" ${ol(3)}/>
+      ${/* PASS 2: legs and arms recoloured from `bodyColor` (green) to
+            `SUIT` (blue) and shortened ~6 units. Pass 1 only made the
+            TORSO blue, which left every limb green -- from the shoulders
+            down the figure was still 80% green, so "alien in a blue suit"
+            kept reading as "green alien with a blue belly patch". A suit
+            is a one-piece garment; if the sleeves and legs are the
+            creature's own bare skin colour it isn't a suit at all. Only
+            the claws stay green (bare hands poking out of the cuffs, the
+            reference's own read). Legs shortened (126/132 -> 120/126) so
+            more of the body sits under the now-much-larger suit block and
+            the head reads as a bigger fraction of the figure. */ ''}
+      <polygon points="40,110 52,110 51,120 38,120" fill="${SUIT}" ${ol(3)}/>
+      <polygon points="34,118 54,118 55,126 32,126" fill="${accent}" ${ol(3)}/>
+      <polygon points="68,110 80,110 82,120 69,120" fill="${SUIT}" ${ol(3)}/>
+      <polygon points="66,118 86,118 88,126 64,126" fill="${accent}" ${ol(3)}/>
 
-      <polygon points="34,80 24,84 18,104 28,108 40,90" fill="${bodyColor}" ${ol(3)}/>
+      <polygon points="34,80 24,84 18,104 28,108 40,90" fill="${SUIT}" ${ol(3)}/>
       ${claw(23, 112, -14)}
-      <polygon points="86,80 96,84 102,104 92,108 80,90" fill="${bodyColor}" ${ol(3)}/>
+      <polygon points="86,80 96,84 102,104 92,108 80,90" fill="${SUIT}" ${ol(3)}/>
       ${claw(97, 112, 14)}
 
       ${/* Suit torso, fixed blue -- the reference's "파란 우주복 상의" -- so
             the alien reads as a space traveller in a jumpsuit instead of a
             uniformly green creature. A collar band ties it to the green
-            neck instead of the two colours meeting on a bare seam. */ ''}
+            neck instead of the two colours meeting on a bare seam. A
+            centre seam line now runs the height of the torso -- the
+            one-piece-garment detail a flat colour block can't carry on
+            its own. */ ''}
       <polygon points="38,74 82,74 86,112 34,112" fill="${SUIT}" ${ol(3.4)}/>
       ${shadeP('72,74 82,74 86,112 74,112', 0.16)}
       ${litP('38,76 48,74 44,110 36,110', 0.16)}
       <polygon points="42,74 78,74 80,80 40,80" fill="${SUIT_DK}" ${ol(2.6)}/>
+      <path d="M 60,80 L 58,112" stroke="${SUIT_DK}" stroke-width="2" opacity="0.5"/>
 
       ${/* Rocket mission patch, top-left of the chest, clear of the
             nameplate (now narrowed to 30 wide to make room). This is the
@@ -605,16 +623,17 @@ export function toyBobo({
       <circle cx="96" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('92,3 96,1 98,4 94,6', 0.4)}
 
-      ${/* Main eyes, r 11 -> 13.5 and pulled 3 units closer together (43/78
-            -> 44.5/76.5): the reference's three eyes cover most of the
-            face, and the old pair left visible cheek/jowl either side that
-            no alien in the reference has. Brow nudged up 2 units so it
-            still clears the bigger sclera instead of touching it. */ ''}
+      ${/* Main eyes, PASS 2: r 13.5 -> 15 and pulled 3 more units together
+            (44.5/76.5 -> 46/75). Pass 1's enlargement was measured NOT
+            enough -- the reference's three eyes cover essentially the
+            whole lower face with no visible cheek/jowl at all, and 13.5
+            still left a clear green margin either side. Brow span
+            narrowed to match the tighter eye spacing. */ ''}
       ${eye(60, 20, 9)}
-      ${brow(44.5, 40, 18, -14, 5.8)}
-      ${brow(76.5, 40, 18, 14, 5.8)}
-      ${eye(44.5, 53, 13.5, -0.2)}
-      ${eye(76.5, 53, 13.5, 0.2)}
+      ${brow(46, 40, 17, -14, 5.8)}
+      ${brow(75, 40, 17, 14, 5.8)}
+      ${eye(46, 53, 15, -0.2)}
+      ${eye(75, 53, 15, 0.2)}
       <path d="M 48,68 Q 60,76 72,68" fill="none" ${ol(3)}/>
       <path d="M 48,68 L 45,65 M 72,68 L 75,65" ${ol(2.4)}/>
     </g>
@@ -681,6 +700,23 @@ export function toyCaptainBig({
       <polygon points="28,50 92,50 88,94 32,94" fill="${panelColor}" ${ol(3.8)}/>
       ${shadeP('76,52 92,50 88,94 78,94', 0.11)}
       <polygon points="28,50 92,50 91,60 29,60" fill="${GREEN}" ${ol(3)}/>
+
+      ${/* PASS 2: retractable wings, flared out behind the shoulder pads.
+            This was the single missing identification mark from the
+            reference figure -- helmet, tri-colour panels, control row and
+            joint rings were all already present, but a space ranger suit
+            with no wings reads as a generic astronaut, not specifically
+            this figure. Drawn BEFORE the shoulder pads so the pads sit in
+            front of the wing roots, the same layering the reference's own
+            armour does. White main blade (the suit's own panelColor) with
+            a green tip panel, kept inside the viewBox with margin for the
+            3.2-unit stroke (min x=4, half-stroke 1.6 -> edge 2.4). */ ''}
+      <polygon points="16,46 5,28 4,54 13,63" fill="${panelColor}" ${ol(3.2)}/>
+      ${shadeP('13,63 4,54 8,50 15,58', 0.15)}
+      <polygon points="5,28 9,32 8,45 4,42" fill="${GREEN}" ${ol(2)}/>
+      <polygon points="104,46 115,28 116,54 107,63" fill="${panelColor}" ${ol(3.2)}/>
+      ${shadeP('107,63 116,54 112,50 105,58', 0.15)}
+      <polygon points="115,28 111,32 112,45 116,42" fill="${GREEN}" ${ol(2)}/>
 
       <polygon points="12,50 40,44 42,66 14,70" fill="${GREEN}" ${ol(3.4)}/>
       ${litP('14,52 30,47 31,55 15,59', 0.24)}
