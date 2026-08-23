@@ -513,13 +513,8 @@ const FIRE_MARK = '#c9231d'
 const FLAME_OUT = '#e8400c'
 const FLAME_MID = '#ffa81c'
 const FLAME_CORE = '#fff2a0'
-// Shell-plate spikes (Captain Gum only, v11 -- see the revision note on
-// platPowerup). A dark bronze rather than the reference's green: this figure
-// already carries white/red/gold, and a green shell would be a fourth hue
-// fighting the other three for attention. Bronze reads as armour plate next
-// to any of them.
-const SHELL = '#4a3324'
-const SHELL_LIT = '#7a5a3e'
+const LEAF = '#3fa03a'
+const LEAF_DEEP = '#1f6b23'
 
 // ---------------------------------------------------------------------------
 // SKELETON PRIMITIVES (v4). See style rules S1–S4.
@@ -1355,25 +1350,6 @@ export function platBlock({
 // none of them needed to change for the LEGO conversion. Only the body
 // underneath (head, torso, limbs) is rebuilt in the new grammar, bigger.
 //
-// REVISION NOTE (v11): BOWSER MOTIF. User, after seeing v10: "챕터 5 - 보스가
-// 특징이 너무 없어 좀 더 꽉차게 거대한 느낌을 줬으면 좋겠고, 기왕이면 불뿜는
-// 쿠파를 모티브로 해보자." Four additions, all confirmed clear of every
-// existing hard constraint on this figure (the frame's own halo budget, the
-// raised arm's tube envelope, the neck) rather than a re-derivation of them:
-//  1. SHELL SPIKES — a two-spike collar (`shellSpikes`), based inside the
-//     torso so only the tip shows, outboard of the neck and inboard of the
-//     raised arm's tube — the one gap this figure's existing geometry leaves
-//     free at shoulder height.
-//  2. FIRE BREATH — a flame plume (`breath`) anchored inside the open mouth,
-//     drawn last so it sits in front of the chest plate.
-//  3. TUSKS — two ivory tusks (`tusk`) at the mouth's own corners, a
-//     boss-only overlay so `legoFace` (shared by the other three heroes)
-//     stays untouched.
-//  4. MORE MASS — the white torso box, red bib, arm shoulder/wrist and the
-//     leg's hip segment all widened 2-4 units per side (see each call site's
-//     own note); the boot and shin, which set the family's one cutout hole
-//     between the legs, are untouched.
-//
 // `bodyColor` IS ACCEPTED AND IGNORED, same as before: the wardrobe is fixed
 // (casting rule 2's reasoning for DENIM applies here too) and the palette
 // entry for `captain-gum` still does not pass one.
@@ -2055,33 +2031,90 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
 // row, so the erosion cannot settle into a straight edge or corner that would
 // read as a letterform. The debris squares are backdrop parts: haloed, they
 // would turn into a row of white-framed tiles and stop reading as decay.
+//
+// REVISION NOTE (BOWSER MOTIF): the actual request, twice misrouted to the
+// combined hero (Captain Gum) before the user corrected it — "합체한 히어로
+// 말하는게 아니라 bug king(보스 빌런)을 수정해달라는 요청이었어." Bowser
+// features chosen to be recognisable without copying him: a shell silhouette
+// (one big shoulder spike plus a three-tooth flank ridge per side, both
+// attached to the torso's own edge so they read as armour, not stickers), a
+// fire-breath column, a taller/heavier belly, and thicker limbs.
+//
+// FIRE COMES FROM THE VOID, NOT A SECOND MOUTH. This figure's belly void has
+// been "this one's mouth" since v4 (the head carries eyes and brows only —
+// see below); a flame plume anywhere else would give it two mouths. The
+// stream runs straight down between the legs, which is the only direction
+// the void actually opens toward.
+//
+// THE FRAME WAS ALREADY NEARLY FULL, so "bigger" could not mean "reaches
+// further outward" — the pre-edit render's own padded-viewBox alpha scan
+// (this file's clip authority, `public/_bugking.html` scratch harness, K=3
+// px/unit) measured x 4.3..116.3 / y 3.7..137.7 on the 0..120/0..140 canvas
+// and an ink ratio (opaque pixels / frame area) of 68.20%, i.e. every edge
+// already had well under 6 units of slack (the left arm's glove and the horn
+// tips own that ceiling). Every new tip below was placed to stay inside that
+// existing envelope and rechecked with the same scan after each edit — final
+// result x 2.3..117.3 / y 3.7..137.7, CLIP-free, ink ratio 75.33% (+7.1
+// points). The gain is FILL, not reach: the background gaps between torso
+// and arm, above the shoulder below the horns, and between the legs, which
+// is exactly where an earlier attempt at this same brief measured
+// 82.36% -> 82.65% on a different figure (decoration added, no real change)
+// before it was caught and sent back. Horn tips and the head's own vertical
+// reach are UNTOUCHED — they set that 3.7-unit ceiling, and the new mass
+// targets the frame's actual empty interior instead of pushing past them.
+// Limb ANCHOR points (shoulder/elbow/wrist, hip/knee/ankle) are unchanged
+// from v4 too, on purpose: only each joint's `w` grew, which thickens the
+// tube around its existing centreline instead of moving its tip further from
+// the pivot — the one part of "thicker limbs" that could not reopen the old
+// clips.
 export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   const bit = (x, y, s, fill, op) => R(x, y, s, s, 0, fill, { opacity: op })
   const horn = (points) => P(points, accent, ink(2.6))
+  // Shell shoulder spike, left side; mirrored for the right. Anchored on the
+  // torso's own widened top edge (see the torso path below) so the ink reads
+  // as a plate riveted to the shell, not a shape floating beside the figure.
+  // Tip (12,44) sits ~35 units below the horns' y 9 ceiling and, even after
+  // the group's own -4 deg rotation, measured well inside the old x 4.3
+  // floor (see the revision note's before/after scan) — it cannot become the
+  // new extreme.
+  // Wrapped in arrays (not bare part objects) because `mirror()` needs an
+  // array for its own children -- every other mirror() call site in this
+  // file passes one (see `legoFist`'s own note on the same requirement).
+  const shoulderSpike = [P('27,64 12,44 37,59', accent, ink(3))]
+  // Three-tooth flank ridge, left side; mirrored for the right. Kept to
+  // y 62..90 -- the shoulder deltoid ball's own vertical span -- rather than
+  // running the full torso height: lower than that, the arm's forearm and
+  // glove already reach past any tip this ridge could offer without risking
+  // the frame edge, and the teeth would fuse into the arm's own silhouette
+  // instead of reading as a separate plate (measured on a render: the first
+  // draft's full-height ridge did exactly that). Tips at x 9, a good 10
+  // units outside the deltoid ball's own x 19 reach at its widest (y 74), so
+  // the middle tooth clears the arm rather than disappearing into it.
+  const flankRidge = [
+    P('25,62 9,67 25,72 9,76 25,81 9,85 25,90', accent, ink(2.8)),
+  ]
+  // Anchor points identical to v4's — only `w` (tube width) grew, so the
+  // thickening happens around the existing centreline instead of pushing any
+  // tip further from the torso.
   const armL = [
-    { x: 31, y: 74, w: 11 },
-    { x: 23, y: 85, w: 9.2 },
-    { x: 21, y: 95, w: 7.6 },
+    { x: 31, y: 74, w: 13 },
+    { x: 23, y: 85, w: 11 },
+    { x: 21, y: 95, w: 9.2 },
   ]
-  // Wrist pulled in 3 units: at x 100 the r=11 glove's halo reached x 121.3,
-  // i.e. off the right edge of the viewBox entirely.
   const armR = [
-    { x: 89, y: 72, w: 11 },
-    { x: 96, y: 83, w: 9.2 },
-    { x: 97, y: 93, w: 7.6 },
+    { x: 89, y: 72, w: 13 },
+    { x: 96, y: 83, w: 11 },
+    { x: 97, y: 93, w: 9.2 },
   ]
-  // Hips lifted 102 -> 96 against a torso that now ends at 100. v4's torso ran
-  // to y 106 over legs starting at 102, so four units of thigh showed above the
-  // shoe and the boss read as a head-and-belly with no legs at all.
   const legL = [
-    { x: 52, y: 90, w: 11 },
-    { x: 47, y: 105, w: 9 },
-    { x: 44, y: 117, w: 8 },
+    { x: 52, y: 90, w: 13 },
+    { x: 47, y: 105, w: 10.5 },
+    { x: 44, y: 117, w: 9.2 },
   ]
   const legR = [
-    { x: 68, y: 90, w: 11 },
-    { x: 74, y: 107, w: 9 },
-    { x: 77, y: 119, w: 8 },
+    { x: 68, y: 90, w: 13 },
+    { x: 74, y: 107, w: 10.5 },
+    { x: 77, y: 119, w: 9.2 },
   ]
   const backdrop = [
     E(60, 133, 44, 4.6, '#000', { opacity: 0.17 }),
@@ -2096,49 +2129,73 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   ]
   const body = [
     G('rotate(-4 60 78)', [
-      neck(58, 52, 66, 10, 11, bodyColor, '#000'),
+      // halfTop/halfBot grew 10/11 -> 11/12 to match the deeper belly below.
+      neck(58, 52, 66, 11, 12, bodyColor, '#000'),
 
-      plainLimb(legL, accent, 2.8),
-      plainLimb(legR, accent, 2.8),
+      plainLimb(legL, accent, 3),
+      plainLimb(legR, accent, 3),
       villainShoe(41, 121, 14, 8.5),
       villainShoe(80, 123, 14, 8.5),
 
+      // Taller AND wider belly: top edge 63 -> 60, bottom 87/92 -> 94/99 (was
+      // a 29-unit torso, now 39 tall), span 29..91 -> 25..95 (62 -> 70 wide).
+      // Re-verified after the widen with the same alpha scan (see the
+      // revision note above) rather than assumed safe by proximity to the
+      // old arm/horn extremes.
       D(
-        `M 29,74 C 29,66 38,63 48,63 L 72,63 C 82,63 91,66 91,74
-         L 89,87 Q 89,92 83,92 L 37,92 Q 31,92 31,87 Z`,
+        `M 25,75 C 25,60 36,60 48,60 L 72,60 C 84,60 95,60 95,75
+         L 92,94 Q 92,99 84,99 L 36,99 Q 28,99 25,94 Z`,
         bodyColor,
         ink(3.4)
       ),
 
+      shoulderSpike,
+      mirror(shoulderSpike),
+      flankRidge,
+      mirror(flankRidge),
+
       // The void in the belly IS this one's mouth — so the head carries eyes
       // and brows only. Giving the head its own mouth as well produced a
-      // figure with two mouths and neither read.
-      // Lifted with the shortened torso: the maw's own ink is haloed, so at
-      // v4's y 101 against a torso ending at 100 it left a white rim hanging
-      // below the belly outline.
-      E(58, 77, 23, 13, SOLE, ink(3)),
-      R(46, 65, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(58, 65, 12, 12, 0, accent, { nohalo: true }),
-      R(46, 77, 12, 12, 0, accent, { nohalo: true }),
-      R(58, 77, 12, 12, 0, bodyColor, { nohalo: true }),
-      R(46, 65, 24, 24, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
+      // figure with two mouths and neither read. Grown with the deeper belly
+      // (23x13 -> 28x16) and re-centred on it (77 -> 80).
+      E(58, 80, 28, 16, SOLE, ink(3)),
+      R(43, 65, 15, 15, 0, bodyColor, { nohalo: true }),
+      R(58, 65, 15, 15, 0, accent, { nohalo: true }),
+      R(43, 80, 15, 15, 0, accent, { nohalo: true }),
+      R(58, 80, 15, 15, 0, bodyColor, { nohalo: true }),
+      R(43, 65, 30, 30, 0, 'none', { stroke: LINE, 'stroke-width': 2.4, nohalo: true }),
       // Fangs at the maw's rim, as triangles rather than the chevron strokes a
       // first pass used — a '<' next to a '>' is exactly the accidental glyph
       // this app has been bitten by before.
-      P('39,70 45,70 42,78', '#fff', { nohalo: true }),
-      P('71,70 77,70 74,78', '#fff', { nohalo: true }),
+      P('35,71 43,71 38,81', '#fff', { nohalo: true }),
+      P('75,71 83,71 78,81', '#fff', { nohalo: true }),
 
-      villainArm(armL, bodyColor, accent, 11),
-      villainArm(armR, bodyColor, accent, 11),
+      // Fire breath. The void is this figure's mouth, so the flame has to
+      // come from there rather than the face — a stream pouring straight
+      // down between the legs. Contained to x 35..81 / y 92..131, well
+      // inside every edge the old scan measured, so it adds mass without
+      // touching the frame's tight margins at all. Three nested flat fills
+      // (no gradient, per the family rule), outer ring haloed like the rest
+      // of the body so it reads as attached to the maw rather than a loose
+      // decal.
+      D('M 45,96 C 39,106 35,116 40,126 C 47,131 69,131 76,126 C 81,116 77,106 71,96 Z', FLAME_OUT, ink(2.4)),
+      D('M 48,98 C 43,107 40,115 45,123 C 50,127 66,127 71,123 C 76,115 73,107 68,98 Z', FLAME_MID, { nohalo: true }),
+      D('M 51,101 C 48,108 46,113 50,120 C 53,123 63,123 66,120 C 70,113 68,108 65,101 Z', FLAME_CORE, { nohalo: true }),
+
+      villainArm(armL, bodyColor, accent, 12),
+      villainArm(armR, bodyColor, accent, 12),
 
       // v4's left horn had its tip at x 23 against a head whose left edge is
       // x 28 — it was drawn INSIDE the skull and read as nothing at all, while
       // the right one read as a triangle. Now both break the silhouette by the
       // same 12 units and both tips sit at y 13, level with the shortened
-      // crown, which is what makes them horns rather than ears.
+      // crown, which is what makes them horns rather than ears. UNTOUCHED by
+      // the Bowser pass — see the revision note above.
       horn('38,18 15,9 33,27'),
       horn('74,18 97,12 79,27'),
-      D('M 28,20 C 28,10 84,10 84,20 L 84,44 C 84,54 73,58 56,58 C 39,58 28,54 28,44 Z', bodyColor, ink(3.4)),
+      // Widened 56 -> 60 units (28..84 -> 26..86); vertical reach is
+      // UNTOUCHED (still 20..58) since it owns the frame's y 3.7 ceiling.
+      D('M 26,20 C 26,10 86,10 86,20 L 86,44 C 86,54 76,58 56,58 C 38,58 26,54 26,44 Z', bodyColor, ink(3.4)),
       villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
     ]),
   ]
