@@ -211,21 +211,37 @@ CORPUS = [
     #
     # Third round: the gallery called these five "정확한 발음이긴한데 너무
     # 짧다" against `a`/`ee` (145-210ms) -- correct, but too brief to register
-    # as a held sound next to its neighbours. See NUCLEUS_STEADY_WINDOW_FRAC's
-    # own comment for the fix (0.55 -> 0.85, claiming more of the SAME real
-    # steady state -- not repetition). `aaa` alone also carries rate=60 here:
-    # at the shared 0.85 fraction and the default rate, "cat"'s edgeFluxRatio
-    # measured right at the 2.0 ceiling (its core span is short enough that
-    # 85% of it still touches onset residue); a slower source rate gives it a
-    # longer core to draw the same 85% from, and 155ms/selfsim .093/efr .82
-    # cleared both gates with margin. The other four needed no rate change --
-    # 0.85 alone put them at 130-150ms inside both gates (see the constant's
-    # comment for the per-sound numbers).
+    # as a held sound next to its neighbours. Raised NUCLEUS_STEADY_WINDOW_FRAC
+    # 0.55 -> 0.85 (see the constant's comment), plus rate=60 for `aaa` alone,
+    # whose short core span made 0.85 land right on the edgeFluxRatio ceiling
+    # at the default rate.
+    #
+    # Fourth round: graded NO again, this time against `oh`(264)/`eye`(210) --
+    # all six landed 115-155ms, still short next to those two. Two more turns
+    # of the SAME two levers, no new mechanism:
+    #   NUCLEUS_STEADY_WINDOW_FRAC raised again, 0.85 -> 0.95 (see its own
+    #   comment for why not the simpler 1.0), and four of these five rows
+    #   picked up a slower rate they didn't need before, because 0.95 alone
+    #   was not enough room for them at -r 88:
+    #     aaa -r60 (unchanged from round 3)   155 -> 175ms
+    #     ihh default rate (unchanged)        150 -> 165ms
+    #     eh  -r60 (new)                      140 -> 175ms
+    #     uh  -r42 (new)                      150 -> 239ms
+    #     awh -r42 (new) AND a reordered source list (see below)
+    #
+    # `awh` additionally needed its source words reordered, not just a rate.
+    # "got" tops out around 140-155ms across every rate/fraction tried --
+    # measured, not assumed: "got"'s own core span barely grows with a slower
+    # rate (135-155ms end to end), so there was no fraction of it left to
+    # claim. "hot" was already in this row's candidate list and had failed
+    # round 3's narrower 0.85 search (edgeFluxRatio 2.41) -- but at 0.95 and
+    # -r 42 it clears with margin (190ms/selfsim .144/efr .56) and is now
+    # listed first. "got"/"dog" stay as the cross-word evidence.
     ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], 60),
     ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None),
-    ('eh', 'vowel', 'nucleus-steady', ['bed', 'ten', 'net', 'egg'], None),
-    ('uh', 'vowel', 'nucleus-steady', ['gum', 'hug', 'bug'], None),
-    ('awh', 'vowel', 'nucleus-steady', ['got', 'dog', 'hot'], None),
+    ('eh', 'vowel', 'nucleus-steady', ['bed', 'ten', 'net', 'egg'], 60),
+    ('uh', 'vowel', 'nucleus-steady', ['gum', 'hug', 'bug'], 42),
+    ('awh', 'vowel', 'nucleus-steady', ['hot', 'dog', 'got'], 42),
     # Digraph long vowels. For these the letter name IS the target phoneme, so
     # the notation was not teaching the wrong sound -- but taking them from
     # words is what finally separates `a` from `eh`, which CLAUDE.md records as
@@ -317,7 +333,27 @@ CORPUS = [
     ('ee', 'vowel', 'nucleus', ['eel', 'east'], None),
     ('oh', 'vowel', 'nucleus', ['own', 'ohm'], 60),
     ('eye', 'vowel', 'nucleus', ['isle', 'eye'], None),
-    ('or', 'vowel', 'nucleus', ['or', 'ornate'], 60),
+    #
+    # Fourth round: `or` alone was graded NO again ("발음이 너무 짧게
+    # 느껴져"), at 115ms against oh/eye's 210-264ms -- and 115ms was already
+    # this round's own ceiling for a coda-free word: "or"/"oar"/"ore" only
+    # render at two bucket lengths, 45ms or 115ms (measured across rates 12
+    # through 88), because there is nothing after the vowel for a slower rate
+    # to lengthen INTO. No amount of further rate-lowering moves that number.
+    #
+    # "ornate" was already this row's second source and was measured clean
+    # last round (tail 1.41, well inside the 2.0 ceiling) -- promoted to
+    # primary instead of inventing a new word, because it does not have the
+    # defect that got `orb` rejected: the vowel is followed by /n/ (sonorant,
+    # gradual) before the word continues into "-ate", not by an obstruent
+    # closure right against the vowel the way `orb`'s /rb/ was. At the default
+    # rate it measures 289ms/selfsim.290/tail1.41 -- comfortably past the
+    # 200ms-ish target and inside every gate. "oral" replaces "ornate" as the
+    # SECOND source (dbright/dzcr agreement checked against the new primary);
+    # "or" itself is dropped from this row rather than kept as a third
+    # candidate, since at this row's rate it would only ever contribute the
+    # 115ms result the gallery just rejected.
+    ('or', 'vowel', 'nucleus', ['ornate', 'oral'], None),
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
@@ -692,24 +728,31 @@ def cut_nucleus(samples, sr):
 # how much of the span it is allowed to claim -- long enough to reach a real
 # steady state, short enough not to just re-select the whole span.
 #
-# 0.85, not the 0.55 this shipped with first. The gallery graded the 0.55
-# output "정확한 발음이긴한데... 조금만 더 천천히" -- correct, but too short to
-# register as a held sound. The fix is NOT repetition (that is exactly last
-# round's "메에에에에" defect returning) -- it is claiming more of the SAME
-# real, already-recorded steady state. Measured across all five sounds at
-# their default rate: every one of them has a wider flat region available than
-# 0.55 was using, and 0.85 stays inside it for four of the five (ihh 150ms/
-# selfsim .168/efr .18, eh 140ms/.188/.82, uh 150ms/.128/.76, awh 130ms/.152/
-# .70 -- all comfortably inside both gates). `aaa` is the one exception: at
-# the default rate 0.85 lands at efr ~2.0, right on the ceiling, because "cat"
-# 's core span is short enough that 85% of it still catches some onset
-# residue. That one sound's CORPUS row carries its own slower rate (see
-# below) rather than raising this constant further for everyone, since 0.85
-# already sits close to where the OTHER four stop being safe (0.55 step
-# increments were tried up to core-span coverage; each sound's own ceiling is
-# a different fraction, and pushing the shared constant past 0.85 to chase
-# `aaa` would have started failing sounds that are fine as they are).
-NUCLEUS_STEADY_WINDOW_FRAC = 0.85
+# 0.95, not the 0.55 this shipped with first (then 0.85 for one round). Two
+# gallery rounds pushed this the same direction:
+#   round 3: 0.55 output graded "정확한 발음이긴한데... 조금만 더 천천히" ->
+#            raised to 0.85.
+#   round 4: even 0.85 graded "짧게 느껴져" against the OTHER vowels (a/ee/oh/
+#            eye, all 145-264ms) -> raised again, here.
+# Both times the fix is NOT repetition (that is exactly the "메에에에에" defect
+# from two rounds ago returning) -- it is claiming more of the SAME real,
+# already-recorded steady state, which is why the fraction is the lever and
+# not a loop.
+#
+# 0.95 rather than 1.0 (i.e. the WHOLE core span, no narrowing at all): tried
+# 1.0 first, since it is the simplest possible answer, and it fails for `aaa`
+# specifically -- "cat" at 1.0 measures edgeFluxRatio 1.95-3.14 across every
+# rate tried, because at the full core span there is no longer any margin
+# between "the flattest 95%" and "the constant that would still include a
+# sliver of onset residue at either extreme". 0.95 is the largest fraction
+# that stays clear of that for every sound in this project's corpus, at some
+# rate:
+#   aaa(cat, -r60) 175ms/selfsim.123/efr1.10   ihh(ink, default) 165ms/.159/.18
+#   eh(bed, -r60)  175ms/selfsim.133/efr.88    uh(gum, -r42)     239ms/.094/.31
+#   awh(hot, -r42) 190ms/selfsim.144/efr.56
+# Each sound's own CORPUS row carries whatever rate reaches that fraction
+# safely (see the rows below); this constant itself does not encode rate.
+NUCLEUS_STEADY_WINDOW_FRAC = 0.95
 
 
 def steady_window(fr, a, b, win):

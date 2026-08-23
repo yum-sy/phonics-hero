@@ -214,74 +214,74 @@
    "bright": 0.416
   },
   "aaa": {
-   "ms": 155,
-   "naturalMs": 155,
+   "ms": 175,
+   "naturalMs": 175,
    "stretch": 1.0,
    "source": "cat",
    "pos": "nucleus-steady",
    "class": "vowel",
    "rate": 60,
    "pulses": 1,
-   "selfSim": 0.093,
-   "edgeFluxRatio": 0.818,
+   "selfSim": 0.123,
+   "edgeFluxRatio": 1.101,
    "tailFluxRatio": null,
-   "bright": 0.252
+   "bright": 0.236
   },
   "ihh": {
-   "ms": 150,
-   "naturalMs": 150,
+   "ms": 165,
+   "naturalMs": 165,
    "stretch": 1.0,
    "source": "ink",
    "pos": "nucleus-steady",
    "class": "vowel",
    "rate": 88,
    "pulses": 1,
-   "selfSim": 0.168,
-   "edgeFluxRatio": 0.183,
+   "selfSim": 0.159,
+   "edgeFluxRatio": 0.177,
    "tailFluxRatio": null,
-   "bright": 0.207
+   "bright": 0.202
   },
   "eh": {
-   "ms": 140,
-   "naturalMs": 140,
+   "ms": 175,
+   "naturalMs": 175,
    "stretch": 1.0,
    "source": "bed",
    "pos": "nucleus-steady",
    "class": "vowel",
-   "rate": 88,
+   "rate": 60,
    "pulses": 1,
-   "selfSim": 0.188,
-   "edgeFluxRatio": 0.818,
+   "selfSim": 0.133,
+   "edgeFluxRatio": 0.877,
    "tailFluxRatio": null,
-   "bright": 0.215
+   "bright": 0.211
   },
   "uh": {
-   "ms": 150,
-   "naturalMs": 150,
+   "ms": 239,
+   "naturalMs": 239,
    "stretch": 1.0,
    "source": "gum",
    "pos": "nucleus-steady",
    "class": "vowel",
-   "rate": 88,
+   "rate": 42,
    "pulses": 1,
-   "selfSim": 0.128,
-   "edgeFluxRatio": 0.756,
+   "selfSim": 0.094,
+   "edgeFluxRatio": 0.31,
    "tailFluxRatio": null,
-   "bright": 0.22
+   "bright": 0.21
   },
   "awh": {
-   "ms": 130,
-   "naturalMs": 130,
+   "ms": 190,
+   "naturalMs": 190,
    "stretch": 1.0,
-   "source": "got",
+   "source": "hot",
    "pos": "nucleus-steady",
    "class": "vowel",
-   "rate": 88,
+   "rate": 42,
    "pulses": 1,
-   "selfSim": 0.152,
-   "edgeFluxRatio": 0.702,
+   "selfSim": 0.144,
+   "edgeFluxRatio": 0.564,
    "tailFluxRatio": null,
-   "bright": 0.223
+   "bright": 0.254
   },
   "a": {
    "ms": 145,
@@ -340,18 +340,18 @@
    "bright": 0.25
   },
   "or": {
-   "ms": 115,
-   "naturalMs": 115,
+   "ms": 289,
+   "naturalMs": 289,
    "stretch": 1.0,
-   "source": "or",
+   "source": "ornate",
    "pos": "nucleus",
    "class": "vowel",
-   "rate": 60,
+   "rate": 88,
    "pulses": 1,
-   "selfSim": 0.293,
+   "selfSim": 0.29,
    "edgeFluxRatio": null,
-   "tailFluxRatio": 0.357,
-   "bright": 0.138
+   "tailFluxRatio": 1.405,
+   "bright": 0.148
   }
  }
 }
