@@ -42,6 +42,30 @@
      judged -- the "does it read in 1 second" test the design agents run. */
   body.silhouette .box svg * { fill: #6b6478 !important; stroke: #6b6478 !important; }
   body.silhouette .box svg [opacity] { opacity: 1 !important; }
+
+  .verdict { display: flex; gap: 4px; justify-content: center; margin-top: 6px; }
+  .verdict button {
+    font: 700 13px -apple-system, sans-serif;
+    padding: 6px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    min-width: 40px;
+  }
+  .verdict button.on-ok { background: #1f9d55; border-color: #1f9d55; color: #fff; }
+  .verdict button.on-no { background: #d64545; border-color: #d64545; color: #fff; }
+  .cell.judged-no .box { opacity: 0.55; }
+
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; background: #fffdf4;
+    border-top: 3px solid var(--ink); padding: 10px 16px; font-size: 14px;
+    display: flex; gap: 12px; align-items: center; z-index: 10;
+  }
+  .bar b { font-size: 16px; }
+  .bar button { font: 700 14px -apple-system, sans-serif; padding: 8px 12px;
+    border: 2px solid var(--ink); border-radius: 8px; background: #fff; }
+  body { padding-bottom: 64px; }
 </style>
 
 <h1>아트 갤러리</h1>
@@ -62,6 +86,13 @@
 </div>
 
 <div id="out"></div>
+
+<div class="bar">
+  <b id="tally">–</b>
+  <button id="reload">↻ 새로고침</button>
+  <button id="dumpno">NO 목록</button>
+</div>
+<pre id="diag" style="margin:8px 0 70px;font-size:12px;color:#6b6478;white-space:pre-wrap"></pre>
 
 <script type="module">
   // Resolve the same module specifier screens.js imports: Vite appends a
@@ -113,8 +144,10 @@
     for (const [label, group] of [['히어로', heroes], ['빌런', villains]]) {
       html += `<div class="note">${label}</div><div class="row">`
       for (const c of group) {
-        html += `<div class="cell"><div class="box art">${c.svg}</div>
-          <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div></div>`
+        const key = 'char:' + c.slug
+        html += `<div class="cell" data-vkey="${key}"><div class="box art">${c.svg}</div>
+          <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div>
+          <div class="verdict"><button data-v="ok">OK</button><button data-v="no">NO</button></div></div>`
       }
       html += `</div>`
     }
@@ -124,8 +157,10 @@
   html += `<div class="note">선택지 버튼에 실제로 쓰이는 크기는 150px입니다. 혼동되는 쌍이 있는지 확인해 주세요.</div><div class="row" id="iconrow">`
   for (const key of icons.wordIconKeys) {
     if (key === 'letterTile') continue
-    html += `<div class="cell"><div class="box icon">${icons.wordIcon(key, '')}</div>
-      <div class="cap"><b>${key}</b></div></div>`
+    const vkey = 'icon:' + key
+    html += `<div class="cell" data-vkey="${vkey}"><div class="box icon">${icons.wordIcon(key, '')}</div>
+      <div class="cap"><b>${key}</b></div>
+      <div class="verdict"><button data-v="ok">OK</button><button data-v="no">NO</button></div></div>`
   }
   html += `</div>`
 
@@ -153,4 +188,76 @@
   document.getElementById('blue').addEventListener('change', (e) => {
     document.documentElement.style.setProperty('--card', e.target.checked ? '#378add' : '#fffdf4')
   })
+
+  // ---- verdicts: OK/NO per character and per icon, POSTed to the same
+  // dev-server endpoint the sound gallery uses (art-verdicts.json store) ----
+  const diag = document.getElementById('diag')
+  const logDiag = (s) => { diag.textContent += s + '\n' }
+  const cells = [...document.querySelectorAll('[data-vkey]')]
+  let verdicts = {}
+
+  function paint() {
+    let ok = 0, no = 0, total = cells.length
+    for (const cell of cells) {
+      const v = verdicts[cell.dataset.vkey]
+      const okBtn = cell.querySelector('[data-v="ok"]')
+      const noBtn = cell.querySelector('[data-v="no"]')
+      okBtn.classList.toggle('on-ok', !!v && v.v === 'ok')
+      noBtn.classList.toggle('on-no', !!v && v.v === 'no')
+      cell.classList.toggle('judged-no', !!v && v.v === 'no')
+      if (v && v.v === 'ok') ok++
+      if (v && v.v === 'no') no++
+    }
+    document.getElementById('tally').textContent =
+      `OK ${ok} · NO ${no} · 미판정 ${total - ok - no} / ${total}`
+  }
+
+  async function loadVerdicts() {
+    // Vite's SPA fallback answers an unregistered path with index.html and a
+    // 200 -- `r.ok` alone would misread "endpoint missing" as "no verdicts
+    // yet". Check content-type, same guard as the sound gallery.
+    try {
+      const r = await fetch('/__verdict?store=art', { cache: 'no-store' })
+      const ct = r.headers.get('content-type') || ''
+      if (!r.ok || !ct.includes('json')) {
+        logDiag(`⚠️ /__verdict 이 없다 (${r.status} ${ct.split(';')[0]}) -- 판정이 저장되지 않는다.`)
+        logDiag('   dev 서버가 vite.config.js 없이 시작됐다. 서버를 재시작해라.')
+        verdicts = {}
+      } else {
+        verdicts = await r.json()
+      }
+    } catch (e) {
+      logDiag('⚠️ /__verdict 실패: ' + e)
+      verdicts = {}
+    }
+    paint()
+  }
+
+  async function save(key, value) {
+    verdicts[key] = { v: value, at: new Date().toISOString().slice(0, 19) }
+    paint()
+    try {
+      const r = await fetch('/__verdict?store=art', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ [key]: verdicts[key] }),
+      })
+      if (!r.ok) logDiag('save failed ' + r.status)
+    } catch (e) {
+      logDiag('save threw ' + e)
+    }
+  }
+
+  for (const cell of cells) {
+    for (const b of cell.querySelectorAll('.verdict button')) {
+      b.addEventListener('click', () => save(cell.dataset.vkey, b.dataset.v))
+    }
+  }
+  document.getElementById('reload').addEventListener('click', loadVerdicts)
+  document.getElementById('dumpno').addEventListener('click', () => {
+    const no = cells.filter((c) => verdicts[c.dataset.vkey] && verdicts[c.dataset.vkey].v === 'no')
+    logDiag('NO: ' + (no.length ? no.map((c) => c.dataset.vkey).join(' ') : '(없음)'))
+  })
+
+  await loadVerdicts()
 </script>
