@@ -13,30 +13,61 @@
 // pass changes the drawing language instead, and is the pattern to copy for
 // any future family that wants a cartoon/manga look.
 //
-// FOLLOW-UP PASS (minifigure-reference review). The user supplied a
+// FOLLOW-UP PASS #1 (minifigure-reference review). The user supplied a
 // Toy-Story minifigure render sheet and asked this family to be revisited.
-// Checked at the sizes that actually ship (66/96/132/250 px in
-// public/_art.html) plus a hard silhouette pass: the inked-cartoon grammar
-// above already carries Leo/Fifi/Bobo/Captain Big's genre reads well in
-// COLOUR at every render size -- this was verified, not assumed, and is why
-// the grammar itself (ink outlines, angular construction) was kept rather
-// than rewritten into the reference's flat vinyl-block look. The one
-// concrete gap the silhouette pass found: Bobo's third eye is a flat colour
-// disc sitting flush inside the head outline, so it carries zero silhouette
-// weight and vanishes under a hard cutout even though it reads fine in
-// colour -- fixed by giving it a real domed housing that pokes past the
-// cranium's flat top edge. Leo's shirt already had a check pattern but it
-// was faint at 96 px, and his buckle was a token square, so both got made
-// bigger and bolder (CLAUDE.md explicitly permits growing prop detail this
-// way). Fifi's four legs were plain paws with no prop distinguishing the
-// pair nearer the coil from the pair nearer the head, so the coil-side pair
-// got wind-up-toy wheels -- a generic pull-toy trait, not any specific
-// character's design, and matched to the coil's own STEEL/STEEL_DK so the
-// new prop reads as the same hardware. Captain Big was left untouched: of
-// the four heroes it already matches the reference sheet's identification
-// marks most closely (clear dome over a fully visible face, tri-colour hard
-// panels, a chest button row) and no gap was found worth the risk of
-// touching the file's most finished figure.
+// This pass concluded the inked-cartoon grammar already carried Leo/Fifi/
+// Bobo/Captain Big's genre reads well and left three of the four heroes
+// structurally untouched, fixing only Bobo's third-eye silhouette weight
+// and growing Leo's check/buckle detail. THAT CONCLUSION WAS WRONG: the
+// user's own OK/NO gallery verdicts (recorded in art-verdicts.json) came
+// back NO on Leo, Bobo, Captain Big AND the boss, and OK only on Fifi --
+// i.e. exactly the opposite of "already reads well" for three of five
+// figures. Left here as a record of what NOT to conclude from a silhouette
+// pass alone: a figure can carry its silhouette gimmick correctly and still
+// fail to read as the SPECIFIC reference character in colour, because the
+// two things a silhouette pass cannot check -- genre-identifying COLOUR
+// (is the shirt the right colour for this character) and props that only
+// exist as flat costume detail (a vest, a suit, a dome helmet's presence at
+// the right scale) -- are exactly what colour-only review catches instead.
+//
+// FOLLOW-UP PASS #2 (this pass). Fixes, cross-referenced to the reference
+// sheet's four minifigures (alien / Buzz / Jessie / Woody) and to Emperor
+// Zurg for the boss:
+//   - Leo: the shirt was rendered in `bodyColor`, which the palette sets to
+//     green, so the figure carried none of Woody's yellow at all -- the
+//     single most identifying colour on the reference. Shirt colour is now
+//     fixed (`SHIRT`, not `bodyColor`), and `bodyColor` drives a new OPEN
+//     VEST instead, which also gives the sheriff badge a chest to sit on
+//     (previously it had to move to the hat crown for lack of space there).
+//   - Bobo: the torso was the same flat `bodyColor` green as the head and
+//     limbs, so "space alien in a blue suit" read as "green robot" instead.
+//     Torso is now a fixed suit colour, plus a rocket mission patch, plus
+//     bigger/closer-together eyes (the reference's three eyes dominate the
+//     face; the old pair left visible cheek either side no reference alien
+//     has).
+//   - Captain Big: dome grown and given a visible neck-seal ring so the
+//     helmet reads as a bubble sitting ON the suit rather than a decal
+//     floating over the collar; control row widened to a genuine four
+//     buttons (the doc always claimed red/blue/green/amber; the row only
+//     ever drew three).
+//   - Wind-Down (the boss): TOTAL redesign per explicit instruction, not a
+//     touch-up -- the old jewelled-crown/frozen-clock space monarch had no
+//     connection to the requested Emperor Zurg motif. See the function's
+//     own doc comment for what replaced it.
+// Bobo's domed third eye and Leo's grown check/buckle from pass #1 are kept
+// (colour-pass review didn't contradict those). Fifi is untouched: it is
+// the one figure the user's own verdict already marked OK, and re-theming a
+// figure that already passed carries only downside risk. This does leave a
+// gap against the reference sheet -- of its four minifigures (alien / Buzz
+// / Jessie / Woody) this cast has no Jessie-shaped cowgirl analogue, Fifi
+// having been designed as the slinky-dog slot instead. That gap was left
+// open rather than closed by re-theming Fifi into a cowgirl, on the
+// reasoning that the reference sheet's job here is to teach this family
+// "toy-line costumes read as bold colour-blocked props", not to force a
+// 1:1 cast mapping onto four heroes that were never meant to be a set of
+// four specific characters. If a fifth Toy-Story-family character slot
+// opens later (chapter 13/20/27, the style cycle repeats every 7), a
+// Jessie-style cowgirl is the natural pick for it.
 //
 // DESIGN GRAMMAR -- inked cartoon. All nine figures follow all of it.
 //
@@ -247,13 +278,24 @@ function letterPlate(cx, cy, w, h, plateColor, textColor, label) {
 // HEROES
 // ---------------------------------------------------------------------------
 
-// Leo (L): cowboy. Six western props stacked on one inked figure -- curled
-// wide-brim hat, knotted bandana, woven plaid shirt, oversized buckle,
-// pointed boots with spur wheels, sheriff star -- and the manga-cut face the
-// reference sheet asked for: heavy angled brows, jawed hexagonal head, a
-// drawn nose and an open grin.
+// Leo (L): cowboy -- reworked against the reference sheet's Woody figure,
+// whose two clearest marks were missing before: an OPEN VEST worn over a
+// yellow check shirt (the shirt was rendered in `bodyColor`, which the
+// palette sets to green -- so the figure carried no yellow at all, the
+// single most identifying colour on the reference), and a SHERIFF BADGE
+// worn on the chest (the previous pass could only fit the star on the hat
+// crown because the chest was one uninterrupted `bodyColor` shirt panel
+// with no vest edge to pin a badge to). Both are fixed now: the shirt is a
+// stable fixed colour (`SHIRT`, not `bodyColor`) since a Woody-yellow shirt
+// is a genre-identifying colour the same way the hat leather and denim
+// already were, and the vest is `bodyColor` so the palette still has
+// something real to tint. Eight western props now: curled wide-brim hat,
+// knotted bandana, yellow plaid shirt, open vest, chest sheriff badge,
+// oversized buckle, pointed boots with spur wheels -- plus the manga-cut
+// face: heavy angled brows, jawed hexagonal head, a drawn nose and an open
+// grin.
 export function toyLeo({
-  bodyColor = '#4f9463',
+  bodyColor = '#7a4a26',
   accent = '#f0c33e',
   emblem = 'L',
   visorColor = '#fff6da',
@@ -263,6 +305,14 @@ export function toyLeo({
   const JEAN = '#4a6d9c'
   const CREAM = '#f6e9c6'
   const BANDANA = '#3f7fbf'
+  // Fixed, not bodyColor: Woody's shirt is yellow-check the same way the
+  // hat is brown leather and the jeans are denim -- a genre colour, not a
+  // free one. `bodyColor` now drives the vest instead (see grammar note
+  // above), which is also why the palette default moved from green to a
+  // vest-plausible brown.
+  const SHIRT = '#f2ce5a'
+  const SHIRT_DK = '#c9932e'
+  const VEST_DK = '#4e2f16'
 
   // Boot: shaft + kicked-out pointed toe + heel block + spur wheel, all
   // straight edges (grammar rule 2). `dir` mirrors the toe direction.
@@ -294,16 +344,16 @@ export function toyLeo({
       ${shadeP('48,98 53,98 52,122 47,122', 0.16)}
       ${shadeP('77,98 82,98 81,122 76,122', 0.16)}
 
-      <polygon points="34,74 24,76 12,98 24,104 37,84" fill="${bodyColor}" ${ol(3)}/>
+      <polygon points="34,74 24,76 12,98 24,104 37,84" fill="${SHIRT}" ${ol(3)}/>
       ${shadeP('24,101 37,84 34,80 21,99', 0.14)}
       <polygon points="12,96 26,102 23,110 9,104" fill="${CREAM}" ${ol(2.6)}/>
       ${glove(16, 104, -1)}
-      <polygon points="86,74 96,76 108,98 96,104 83,84" fill="${bodyColor}" ${ol(3)}/>
+      <polygon points="86,74 96,76 108,98 96,104 83,84" fill="${SHIRT}" ${ol(3)}/>
       ${shadeP('96,101 83,84 86,80 99,99', 0.14)}
       <polygon points="108,96 94,102 97,110 111,104" fill="${CREAM}" ${ol(2.6)}/>
       ${glove(104, 104, 1)}
 
-      <polygon points="34,70 86,70 89,104 31,104" fill="${bodyColor}" ${ol(3.4)}/>
+      <polygon points="34,70 86,70 89,104 31,104" fill="${SHIRT}" ${ol(3.4)}/>
       ${/* Check pattern boosted from 3v+3h at width 2.8/opacity 0.9 to 4v+3h
             at width 3.2/opacity 0.95 -- measured against the reference sheet's
             "체크 셔츠" the old grid read as a faint stripe at 96px, not a
@@ -311,22 +361,39 @@ export function toyLeo({
             it into a plaid a 5-year-old can name at chapter-card size. */ ''}
       <g>
         <path d="M 40,70 L 40,104" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
-        <path d="M 53,70 L 53,104" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 53,70 L 53,104" stroke="${SHIRT_DK}" stroke-width="1.8" opacity="0.55"/>
         <path d="M 67,70 L 67,104" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
-        <path d="M 80,70 L 80,104" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 80,70 L 80,104" stroke="${SHIRT_DK}" stroke-width="1.8" opacity="0.55"/>
         <path d="M 32,77 L 88,77" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
-        <path d="M 32,87 L 88,87" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 32,87 L 88,87" stroke="${SHIRT_DK}" stroke-width="1.8" opacity="0.55"/>
         <path d="M 31,97 L 89,97" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
       </g>
-      ${shadeP('76,70 86,70 89,104 78,104', 0.15)}
       <path d="M 34,70 L 86,70" ${ol(3.4)}/>
 
+      ${/* THE VEST. This is the one new prop the reference sheet's Woody
+            figure asked for that the previous pass didn't have any room for
+            -- a vest needs an edge to open along, and the old torso was one
+            uninterrupted shirt panel. Two outer lapels in `bodyColor`,
+            open down the front so the yellow check shirt and bandana still
+            show through the centre third (the same centre third the belt
+            buckle and nameplate already anchor to), plus a shoulder yoke
+            so the vest reads as one garment instead of two stray patches. */ ''}
+      <polygon points="34,70 46,73 44,104 31,104" fill="${bodyColor}" ${ol(3.2)}/>
+      ${shadeP('40,73 44,104 38,104 36,76', 0.16)}
+      <polygon points="86,70 74,73 76,104 89,104" fill="${bodyColor}" ${ol(3.2)}/>
+      ${litP('80,73 76,104 82,104 84,76', 0.2)}
+      <polygon points="40,70 80,70 79,76 41,76" fill="${bodyColor}" ${ol(3)}/>
+      <path d="M 44,79 L 42,101 M 80,79 L 82,101" stroke="${VEST_DK}" stroke-width="1.6" opacity="0.6"/>
+
+      ${/* Sheriff badge, restored to the chest -- the reference sheet's
+            clearest Woody mark and the one the previous pass had to give up
+            because the chest was solid shirt with nowhere to pin a badge.
+            The vest's left lapel is exactly that edge. Small enough (r=6)
+            that it sits inside the lapel with room to spare, so it can't
+            collide with the nameplate on the bandana below it. */ ''}
+      <polygon points="${starPoints(38, 82, 6.4, 2.8)}" fill="${accent}" ${ol(2.4)}/>
+
       <polygon points="30,102 90,102 90,112 30,112" fill="${DARK}" ${ol(3)}/>
-      ${/* Rodeo buckle: was a 20x16 token square. An oval bevel plus two
-            rivets is a bigger, simpler colour-block prop that reads as a
-            buckle rather than a badge placeholder, and doesn't compete with
-            the sheriff star (which lives on the hat crown, not the chest --
-            see the note below at the letterPlate call). */ ''}
       <ellipse cx="60" cy="107" rx="13" ry="9.5" fill="${accent}" ${ol(3)}/>
       ${litP('50,101 68,101 65,105 53,105', 0.3)}
       <ellipse cx="60" cy="107" rx="6.5" ry="4.6" fill="none" ${ol(2)}/>
@@ -337,17 +404,6 @@ export function toyLeo({
       ${shadeP('66,64 82,64 60,88 62,78', 0.16)}
       <polygon points="50,62 70,62 72,70 48,70" fill="${BANDANA}" ${ol(2.8)}/>
 
-      ${/* THE SHERIFF STAR MOVED TO THE HAT (see the crown, below), and this
-            is the one place in this round where a family prop had to be
-            relocated rather than resized. A nameplate wide enough for a
-            digraph is 34 units across; the star at its old 17 spanned exactly
-            34, so ANY digraph-capable plate hides it. Growing the star to 22
-            was tried and rendered: the badge became a cream panel with four
-            gold wedges beside it, which is not a star at any size. A star on
-            the crown of the hat is the other place a sheriff wears one, it
-            sits on solid brown instead of competing with the letter, and it
-            is more visible than the chest badge ever was at 96 px. Six
-            western props, still six. */ ''}
       ${letterPlate(60, 88, 34, 21, visorColor, HAT_DK, emblem)}
 
       <polygon points="45,28 75,28 79,48 73,66 60,74 47,66 41,48" fill="${FACE}" ${ol(3.4)}/>
@@ -355,7 +411,7 @@ export function toyLeo({
       <polygon points="46,24 74,24 80,30 40,30" fill="${HAT_DK}" ${ol(3)}/>
       <polygon points="44,26 43,8 52,2 60,8 68,2 77,8 76,26" fill="${HAT}" ${ol(3.4)}/>
       ${litP('47,24 46,10 52,6 54,8 50,12 51,24', 0.24)}
-      <polygon points="${starPoints(60, 16, 8, 3.6)}" fill="${accent}" ${ol(2.4)}/>
+      <path d="M 44,20 L 76,20" stroke="${HAT_DK}" stroke-width="3.4"/>
       ${shadeP('70,24 71,10 77,9 76,26', 0.16)}
       <path d="M 8,28 C 16,18 34,26 44,24 L 76,24 C 86,26 104,18 112,28
                C 98,38 76,40 60,40 C 44,40 22,38 8,28 Z" fill="${HAT}" ${ol(3.4)}/>
@@ -464,17 +520,28 @@ export function toyFifi({
   )
 }
 
-// Bobo (B): three-eyed alien. Oversized angular cranium (a wide flat top
-// tapering to a small chin) carrying three fully outlined eyes -- two big
-// ones with heavy brows plus one high on the forehead -- two ball antennae,
-// and a small body with a bolted belly plate. The head is roughly 55% of the
-// figure so the alien read survives being shrunk.
+// Bobo (B): three-eyed alien -- reworked against the reference sheet's
+// alien figure, whose whole face is dominated by three oversized black
+// eyes and whose torso is a BLUE space-suit jumpsuit distinct from the
+// green skin, with a rocket/space patch on the chest. Neither identity mark
+// survived the previous pass: the eyes were sized like an ordinary cartoon
+// pair and the torso was the same flat `bodyColor` green as the head and
+// limbs, so the figure read as "green robot" rather than "space alien in a
+// suit". Both are fixed: the torso is now a fixed suit colour (`SUIT`, the
+// same reasoning as Leo's shirt -- a colour the reference identifies the
+// genre by shouldn't be tintable away), and all three eyes are bigger, with
+// the two main ones pulled closer together so they crowd the lower face the
+// way the reference's do. Two ball antennae and a bolted belly plate stay.
 export function toyBobo({
   bodyColor = '#8ddba6',
   accent = '#2f7a52',
   emblem = 'B',
   visorColor = '#fff6da',
 } = {}) {
+  const SUIT = '#3f7fc9'
+  const SUIT_DK = '#265393'
+  const SUIT_LT = '#7fb2e8'
+
   const claw = (cx, cy, rot) => `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
       <polygon points="-7,-6 7,-6 5,6 -5,6" fill="${bodyColor}" ${ol(2.8)}/>
@@ -496,29 +563,40 @@ export function toyBobo({
       <polygon points="86,80 96,84 102,104 92,108 80,90" fill="${bodyColor}" ${ol(3)}/>
       ${claw(97, 112, 14)}
 
-      <polygon points="38,74 82,74 86,112 34,112" fill="${bodyColor}" ${ol(3.4)}/>
-      ${shadeP('72,74 82,74 86,112 74,112', 0.15)}
-      ${letterPlate(60, 92, 38, 24, visorColor, accent, emblem)}
-      ${/* Up to y=78, above the wider plate rather than on it -- these are
-            the belly panel's bolts and they were being drawn over the letter. */ ''}
-      <circle cx="48" cy="78" r="2" fill="${accent}" stroke="none"/>
-      <circle cx="72" cy="78" r="2" fill="${accent}" stroke="none"/>
+      ${/* Suit torso, fixed blue -- the reference's "파란 우주복 상의" -- so
+            the alien reads as a space traveller in a jumpsuit instead of a
+            uniformly green creature. A collar band ties it to the green
+            neck instead of the two colours meeting on a bare seam. */ ''}
+      <polygon points="38,74 82,74 86,112 34,112" fill="${SUIT}" ${ol(3.4)}/>
+      ${shadeP('72,74 82,74 86,112 74,112', 0.16)}
+      ${litP('38,76 48,74 44,110 36,110', 0.16)}
+      <polygon points="42,74 78,74 80,80 40,80" fill="${SUIT_DK}" ${ol(2.6)}/>
+
+      ${/* Rocket mission patch, top-left of the chest, clear of the
+            nameplate (now narrowed to 30 wide to make room). This is the
+            reference sheet's chest graphic -- a small embroidered patch
+            reads better at 66px than a literal rocket illustration would. */ ''}
+      <circle cx="42" cy="80" r="6.6" fill="${SUIT_DK}" ${ol(2.4)}/>
+      <path d="M 42,75.4 C 44.2,77.6 44.2,81.4 42.7,84.6 L 41.3,84.6 C 39.8,81.4 39.8,77.6 42,75.4 Z" fill="${WHITE}" stroke="none"/>
+      <path d="M 40.2,82.6 L 37.4,86.2 L 40.6,84.9 Z" fill="${accent}" stroke="none"/>
+      <path d="M 43.8,82.6 L 46.6,86.2 L 43.4,84.9 Z" fill="${accent}" stroke="none"/>
+      <circle cx="42" cy="78.6" r="1.1" fill="${SUIT_DK}" stroke="none"/>
+
+      ${letterPlate(63, 93, 30, 22, visorColor, accent, emblem)}
+      <circle cx="72" cy="80" r="2" fill="${accent}" stroke="none"/>
 
       <polygon points="30,26 90,26 96,52 84,70 60,78 36,70 24,52" fill="${bodyColor}" ${ol(3.6)}/>
       ${litP('34,30 52,28 46,44 34,44', 0.24)}
       ${shadeP('78,30 90,28 96,52 84,70 76,72 84,52', 0.14)}
       <path d="M 32,60 Q 60,68 88,60" fill="none" ${ol(2)}/>
 
-      ${/* Third-eye housing: a domed bump that pokes past the cranium's flat
-            top edge, drawn ON TOP of the head polygon so the head's own top
-            ink line only shows either side of the dome's span. The eye used
-            to sit flush inside the flat top at cy=34 -- fine in colour, but
-            a hard silhouette cutout showed it carries zero silhouette
-            weight there (a flat-fill disc inside another flat-fill shape).
-            The dome gives the three-eye trait real shape presence instead of
-            depending on colour contrast alone. */ ''}
-      <ellipse cx="60" cy="19" rx="12" ry="10" fill="${bodyColor}" ${ol(3.2)}/>
-      ${litP('50,11 60,9 63,18 52,20', 0.22)}
+      ${/* Third-eye housing, enlarged (rx/ry 12/10 -> 14/11.5) to match the
+            bigger main eyes below -- a small dome now reads as undersized
+            next to them. Still a domed bump poking past the cranium's flat
+            top edge rather than a flush disc (silhouette weight, see the
+            surrounding note history). */ ''}
+      <ellipse cx="60" cy="18" rx="14" ry="11.5" fill="${bodyColor}" ${ol(3.2)}/>
+      ${litP('48,9 60,7 64,17 50,20', 0.22)}
 
       <path d="M 42,26 L 26,8" ${ol(3.4)}/>
       <circle cx="24" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
@@ -527,11 +605,16 @@ export function toyBobo({
       <circle cx="96" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('92,3 96,1 98,4 94,6', 0.4)}
 
-      ${eye(60, 21, 7.5)}
-      ${brow(43, 42, 17, -14, 5.6)}
-      ${brow(78, 42, 17, 14, 5.6)}
-      ${eye(43, 53, 11, -0.2)}
-      ${eye(78, 53, 11, 0.2)}
+      ${/* Main eyes, r 11 -> 13.5 and pulled 3 units closer together (43/78
+            -> 44.5/76.5): the reference's three eyes cover most of the
+            face, and the old pair left visible cheek/jowl either side that
+            no alien in the reference has. Brow nudged up 2 units so it
+            still clears the bigger sclera instead of touching it. */ ''}
+      ${eye(60, 20, 9)}
+      ${brow(44.5, 40, 18, -14, 5.8)}
+      ${brow(76.5, 40, 18, 14, 5.8)}
+      ${eye(44.5, 53, 13.5, -0.2)}
+      ${eye(76.5, 53, 13.5, 0.2)}
       <path d="M 48,68 Q 60,76 72,68" fill="none" ${ol(3)}/>
       <path d="M 48,68 L 45,65 M 72,68 L 75,65" ${ol(2.4)}/>
     </g>
@@ -628,10 +711,17 @@ export function toyCaptainBig({
       <polygon points="76,60 90,60 90,80 76,80" fill="${bodyColor}" ${ol(2.8)}/>
       ${button(83, 65, '#e0503f')}
       ${button(83, 75, '#57c66e')}
-      <polygon points="40,82 80,82 80,90 40,90" fill="${bodyColor}" ${ol(2.8)}/>
-      ${button(49, 86, '#e0503f')}
-      ${button(60, 86, '#4a8fe0')}
-      ${button(71, 86, accent)}
+      ${/* Control row widened (40 -> 46 units) to fit a genuine fourth
+            button -- the doc block above always claimed red/blue/green/
+            amber but the row only ever drew three; a dedicated green
+            button (matching the suit's own GREEN, not a repeat of the
+            side panels' colour) closes that gap instead of leaving it as
+            a documented-but-missing prop. */ ''}
+      <polygon points="37,82 83,82 83,90 37,90" fill="${bodyColor}" ${ol(2.8)}/>
+      ${button(45, 86, '#e0503f')}
+      ${button(55, 86, '#4a8fe0')}
+      ${button(65, 86, GREEN)}
+      ${button(75, 86, accent)}
 
       <polygon points="44,12 76,12 80,32 74,48 60,56 46,48 40,32" fill="${FACE}" ${ol(3.2)}/>
       ${shadeP('72,16 80,32 74,48 68,51 74,32 68,14', 0.12)}
@@ -656,13 +746,26 @@ export function toyCaptainBig({
       <polygon points="40,52 80,52 78,59 42,59" fill="${panelColor}" ${ol(3.2)}/>
       <path d="M 47,53.5 L 47,57.5 M 60,53.5 L 60,57.5 M 73,53.5 L 73,57.5" ${ol(2)}/>
 
-      <circle cx="60" cy="32" r="29" fill="${visorColor}" opacity="0.18" stroke="none"/>
-      <circle cx="60" cy="32" r="29" fill="none" ${ol(3.8)}/>
-      <circle cx="60" cy="32" r="25" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
-      <path d="M 39,15 Q 49,5 62,4" fill="none" stroke="#fff" stroke-width="6" opacity="0.85" stroke-linecap="round"/>
-      <path d="M 34,23 Q 37,17 42,12" fill="none" stroke="#fff" stroke-width="3.2" opacity="0.65" stroke-linecap="round"/>
-      <path d="M 82,18 Q 88,26 88,34" fill="none" stroke="#fff" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
-      <path d="M 33,44 A 29,29 0 0 0 87,44" fill="none" ${ol(3.8)}/>
+      ${/* Dome grown 29 -> 31 and its collar sealed with a distinct hardware
+            ring -- the reference's helmet is visibly BIGGER than the head
+            inside it (a bubble, not a visor painted onto the face) and it
+            visibly clamps onto the suit at the neck, which a bare circle
+            floating over the collar plate didn't show. */ ''}
+      <ellipse cx="60" cy="59" rx="33" ry="7.2" fill="${panelColor}" ${ol(3.4)}/>
+      <ellipse cx="60" cy="57.4" rx="29" ry="5.4" fill="none" stroke="${accent}" stroke-width="2.4" opacity="0.85"/>
+      ${/* Dome centre dropped 32 -> 33.5 and radius trimmed 31 -> 30.5 --
+            the first size increase pushed the top ink stroke to y=-1.0
+            (measured by padded-viewBox alpha scan), a real clip against the
+            0-140 viewBox the app actually renders at. This keeps the
+            bigger, more bubble-like dome the reference asked for while
+            landing the top edge back at a safe y>=1. */ ''}
+      <circle cx="60" cy="33.5" r="30.5" fill="${visorColor}" opacity="0.18" stroke="none"/>
+      <circle cx="60" cy="33.5" r="30.5" fill="none" ${ol(3.8)}/>
+      <circle cx="60" cy="33.5" r="26.4" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+      <path d="M 38,15 Q 49,5 63,4" fill="none" stroke="#fff" stroke-width="6" opacity="0.85" stroke-linecap="round"/>
+      <path d="M 32,24 Q 35,17 41,11" fill="none" stroke="#fff" stroke-width="3.2" opacity="0.65" stroke-linecap="round"/>
+      <path d="M 83,18 Q 90,27 90,36" fill="none" stroke="#fff" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+      <path d="M 31,44 A 30.5,30.5 0 0 0 89,44" fill="none" ${ol(3.8)}/>
     </g>
   `
   )
@@ -919,65 +1022,118 @@ export function toyTumbles({ bodyColor = '#4f95d1', accent = '#245080' } = {}) {
   )
 }
 
-// Wind-Down, the chapter boss: stops every toy's key. A space emperor drawn
-// as the darkest, widest inked mass in the file -- jagged-hem cape, a spiked
-// gem crown, a high collar, gold epaulettes, and a sceptre whose finial is
-// the same wind-up key Wobbly's hangs loose (his is rigid and dead straight:
-// the gimmick made visual). The chest medallion keeps its frozen clock hands.
-export function toyWindDown({ bodyColor = '#3a3150', accent = '#7a63e0' } = {}) {
-  const GOLD = '#d1a94a'
+// Wind-Down, the chapter boss -- TOTAL REDESIGN against explicit direction
+// (user: "토이스토리의 보스는 저그 황제를 참고 해줘", Emperor Zurg). The
+// previous version was a jewelled-crown, frozen-clock space monarch with no
+// connection to that motif at all and was rejected outright. Every mark
+// below is one of the reference's own identification marks, not an
+// invention: a horned black helmet with a shadowed cowl opening instead of
+// a visible face (the villain grammar's usual four-mark face doesn't fit a
+// character whose whole design principle is a HIDDEN face, so the brow and
+// mouth stay -- family consistency -- but the eyes are glowing red slits
+// instead of the normal outlined sclera, since that is specifically what
+// reads as "menacing emperor" rather than "cartoon villain"); a red/gold
+// ring chest badge with a bolt; bat-wing angular shoulder armour in
+// bodyColor with an `accent` inner panel and a red trim edge (the
+// reference's "보라+빨강 트리밍"); a black cape with a red lining shown as
+// a thin sliver all the way round the jagged hem (two offset silhouettes,
+// not per-notch triangles, so the lining can't drift out of registration
+// if the hem shape is ever tuned again); and grey clawed gauntlets. No
+// clock, no crown, no sceptre survive from the old design -- this is a
+// different character wearing the same style name.
+export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) {
+  const HELMET = '#141019'
+  const HORN = '#2e2735'
+  const RED = '#c23b3b'
+  const GOLD = '#d9b24a'
+  const GAUNTLET = '#9096a1'
+  const EYE_RED = '#ff4444'
+  const FACE_SHADOW = '#5e5570'
+  const CAPE = '#171320'
+  const CAPE_LINING = '#8f2230'
+
+  const claw = (cx, cy, rot) => `
+    <g transform="translate(${cx},${cy}) rotate(${rot})">
+      <polygon points="-8,-7 8,-7 6,7 -6,7" fill="${GAUNTLET}" ${ol(3)}/>
+      <path d="M -4.5,7 L -6,14 M 0,7 L 0,15 M 4.5,7 L 6,14" ${ol(2.8)}/>
+    </g>`
 
   return svgWrap(
     `
     <g>
       ${shadow(60, 50)}
 
+      ${/* Cape: a red-lining silhouette drawn first, sized a few units
+            larger at every hem point, then the black cape on top at the
+            original points -- the lining shows as a thin band all round
+            the jagged edge instead of needing per-notch triangle math. */ ''}
+      <polygon points="30,48 6,85 2,136 18,126 28,137 40,124 60,135 80,124 92,137 102,126 118,136 114,85 90,48
+                       78,60 60,64 42,60" fill="${CAPE_LINING}" ${ol(3.4)}/>
       <polygon points="30,48 8,84 4,132 18,124 26,134 40,122 60,130 80,122 94,134 102,124 116,132 112,84 90,48
-                       78,60 60,64 42,60" fill="${bodyColor}" ${ol(3.8)}/>
-      ${litP('30,50 14,80 12,120 26,112 24,80 38,56', 0.12)}
-      ${shadeP('90,50 106,80 108,122 94,114 96,80 82,56', 0.2)}
-      <path d="M 22,120 L 40,116 L 60,122 L 80,116 L 98,120" fill="none" stroke="${GOLD}" stroke-width="2.4"/>
+                       78,60 60,64 42,60" fill="${CAPE}" ${ol(3.8)}/>
+      ${litP('30,50 14,80 12,120 26,112 24,80 38,56', 0.14)}
+      ${shadeP('90,50 106,80 108,122 94,114 96,80 82,56', 0.22)}
 
       <polygon points="46,116 58,116 58,130 45,130" fill="${DARK}" ${ol(3)}/>
       <polygon points="62,116 74,116 75,130 62,130" fill="${DARK}" ${ol(3)}/>
 
       <polygon points="34,50 86,50 90,104 30,104" fill="${bodyColor}" ${ol(3.8)}/>
-      ${shadeP('74,52 86,50 90,104 76,103', 0.18)}
-      <polygon points="32,72 88,72 88,80 32,80" fill="${accent}" ${ol(2.4)}/>
+      ${shadeP('74,52 86,50 90,104 76,103', 0.2)}
+      <polygon points="32,50 88,50 88,56 32,56" fill="${GOLD}" ${ol(2.4)}/>
+      <polygon points="32,74 88,74 88,80 32,80" fill="${RED}" ${ol(2.6)}/>
 
-      <polygon points="34,48 12,52 10,68 34,64" fill="${GOLD}" ${ol(3.2)}/>
-      <path d="M 14,66 L 12,78 M 22,65 L 21,78 M 30,64 L 30,77" ${ol(3)}/>
-      <polygon points="86,48 108,52 110,68 86,64" fill="${GOLD}" ${ol(3.2)}/>
-      <path d="M 106,66 L 108,78 M 98,65 L 99,78 M 90,64 L 90,77" ${ol(3)}/>
+      ${/* Bat-wing shoulder armour -- the reference's "박쥐 날개 같은 각진
+            견장": an angular flared plate in `bodyColor`, an `accent`
+            (purple) inner panel, and a red trim edge, replacing the old
+            gold epaulettes entirely. */ ''}
+      <polygon points="8,40 34,50 28,70 14,75 3,60" fill="${bodyColor}" ${ol(3.4)}/>
+      <polygon points="11,44 30,52 25,66 15,70 6,58" fill="${accent}" ${ol(2.2)}/>
+      <path d="M 8,40 L 3,60 L 14,75" fill="none" stroke="${RED}" stroke-width="2.6"/>
+      <polygon points="112,40 86,50 92,70 106,75 117,60" fill="${bodyColor}" ${ol(3.4)}/>
+      <polygon points="109,44 90,52 95,66 105,70 114,58" fill="${accent}" ${ol(2.2)}/>
+      <path d="M 112,40 L 117,60 L 106,75" fill="none" stroke="${RED}" stroke-width="2.6"/>
 
-      <polygon points="16,66 30,64 34,90 20,94" fill="${bodyColor}" ${ol(3.2)}/>
-      <polygon points="14,88 32,86 32,100 12,100" fill="${accent}" ${ol(3)}/>
-      <polygon points="16,36 22,36 21,96 15,96" fill="${GOLD}" ${ol(2.8)}/>
-      <polygon points="12,32 26,32 24,20 14,20" fill="${GOLD}" ${ol(2.8)}/>
-      <circle cx="19" cy="11.4" r="8" fill="none" ${ol(6)}/>
-      <circle cx="19" cy="11.4" r="8" fill="none" stroke="${GOLD}" stroke-width="3.6"/>
+      ${claw(14, 92, -12)}
+      ${claw(106, 92, 12)}
 
-      <circle cx="60" cy="88" r="16" fill="${GOLD}" ${ol(3.2)}/>
-      <circle cx="60" cy="88" r="11.5" fill="${WHITE}" ${ol(2.4)}/>
-      <path d="M 60,88 L 60,80" ${ol(2.6)}/>
-      <path d="M 60,88 L 66,91" ${ol(2.6)}/>
-      <circle cx="60" cy="88" r="2" fill="${INK}" stroke="none"/>
+      ${/* Chest badge: red/gold ring round a dark bolt -- the reference's
+            "가슴에 원형 배지 (빨강/노랑 테두리, 안에 번개꼴 도안)". */ ''}
+      <circle cx="60" cy="82" r="14.5" fill="${RED}" ${ol(3.2)}/>
+      <circle cx="60" cy="82" r="10.4" fill="${GOLD}" ${ol(2.4)}/>
+      <circle cx="60" cy="82" r="7.2" fill="${HELMET}" ${ol(2)}/>
+      <path d="M 63.5,75.5 L 55.5,83.5 L 59.5,83.5 L 56.5,89 L 65,80 L 60,80 Z" fill="${GOLD}" stroke="none"/>
 
-      <polygon points="38,44 42,52 78,52 82,44 74,50 68,38 60,50 52,38 46,50" fill="${accent}" ${ol(3)}/>
+      ${/* Horned helmet -- the reference's "뿔 달린 검은 투구". A first pass
+            with smooth symmetric bezier lobes read as rabbit ears, not
+            horns (measured by eye against the rendered sheet, not assumed)
+            -- the fix is the same one the family's own grammar already
+            prescribes for everything else: ANGULAR construction. A bent
+            polygon tapering to a sharp point reads as a horn at any size a
+            smooth ear-shaped lobe never did. Tip held to y>=2 so the
+            3-unit ink stroke can't clip the top edge. */ ''}
+      <polygon points="38,23 26,11 15,2 24,17 41,20" fill="${HORN}" ${ol(3)}/>
+      <polygon points="82,23 94,11 105,2 96,17 79,20" fill="${HORN}" ${ol(3)}/>
+      ${litP('38,23 26,11 15,2 22,13', 0.14)}
+      ${litP('82,23 94,11 105,2 98,13', 0.14)}
+      <polygon points="42,10 78,10 84,30 76,48 60,56 44,48 36,30" fill="${HELMET}" ${ol(3.6)}/>
+      ${shadeP('72,14 84,30 76,48 68,52 76,30 68,12', 0.22)}
+      ${litP('40,12 48,10 44,26 38,24', 0.1)}
 
-      <polygon points="42,14 78,14 82,32 74,46 60,52 46,46 38,32" fill="${bodyColor}" ${ol(3.6)}/>
-      ${shadeP('72,18 82,32 74,46 68,49 74,32 68,16', 0.16)}
-      <polygon points="36,19 44,3.5 52,14 60,2 68,14 76,3.5 84,19" fill="${GOLD}" ${ol(3.2)}/>
-      <circle cx="51" cy="10.5" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
-      <circle cx="60" cy="6" r="2.8" fill="#4ab0d1" ${ol(1.8)}/>
-      <circle cx="69" cy="10.5" r="2.6" fill="#d14a8a" ${ol(1.8)}/>
+      ${/* Cowl opening: a shadowed panel instead of visible skin -- this is
+            the "카울 아래" the eyes glow out of, not a face. */ ''}
+      <polygon points="44,32 76,32 72,49 60,55 48,49" fill="${FACE_SHADOW}" ${ol(2.6)}/>
 
-      ${brow(50, 24, 17, 24, 6)}
-      ${brow(72, 24, 17, -24, 6)}
-      ${eye(51, 33, 7.4, 0.4)}
-      ${eye(71, 33, 7.4, -0.4)}
-      ${nose(61, 39, 4, 3)}
-      ${snarl(61, 44, 9, 7)}
+      ${brow(51, 38, 15, 22, 5.4)}
+      ${brow(69, 38, 15, -22, 5.4)}
+      ${/* Glowing red eye slits replace the family's usual outlined sclera
+            -- deliberately, see the doc note above: a hidden-face emperor
+            reads as threatening through glow, not through cartoon eyes. */ ''}
+      <ellipse cx="51" cy="42" rx="6.4" ry="3.6" fill="${EYE_RED}" opacity="0.32" stroke="none"/>
+      <ellipse cx="69" cy="42" rx="6.4" ry="3.6" fill="${EYE_RED}" opacity="0.32" stroke="none"/>
+      <path d="M 45,42 Q 51,38 57,42 Q 51,44.6 45,42 Z" fill="${EYE_RED}" ${ol(2)}/>
+      <path d="M 63,42 Q 69,38 75,42 Q 69,44.6 63,42 Z" fill="${EYE_RED}" ${ol(2)}/>
+      ${nose(60, 46, 3.6, 3)}
+      ${snarl(60, 50.5, 8, 6)}
     </g>
   `
   )
