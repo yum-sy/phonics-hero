@@ -3327,7 +3327,12 @@
 
   const names = only ? only.split(',') : Object.keys(CASES)
   for (const n of names) {
-    if (!CASES[n]) continue
+    // An unknown ?only= name used to be skipped silently, which reported
+    // "0/0 PASS" -- a typo read as a clean run. Make it a failure instead.
+    if (!CASES[n]) {
+      check(n, false, 'no such case')
+      continue
+    }
     try {
       await CASES[n]()
     } catch (e) {
