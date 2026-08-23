@@ -735,10 +735,10 @@ export function villainShadowKing({
 // Where an entry below is darker than its family's body colour, that is the
 // rule at work: the same hue pushed deep, never black, never a hue change.
 const HERO_PALETTES = {
-  'sammy': { bodyColor: '#3b9922', accent: '#27500a', emblem: 'S' },
+  'sammy': { bodyColor: '#3b9922', accent: '#27500a', emblem: 'S', variant: 'wedge' },
   // 6.02 -> 8.23. Same brown, deeper; it also paints Ace's trim.
-  'ace': { bodyColor: '#ef9f27', accent: '#6b3d07', emblem: 'A' },
-  'turbo': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T' },
+  'ace': { bodyColor: '#ef9f27', accent: '#6b3d07', emblem: 'A', variant: 'crest-double' },
+  'turbo': { bodyColor: '#378add', accent: '#0c447c', emblem: 'T', variant: 'spoiler-wide' },
   'carbon': { style: 'robot-deluxe' },
   'inky': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
   'pip': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
@@ -790,9 +790,9 @@ const HERO_PALETTES = {
   // O=짧은 /o/ 챕터5). 그래서 판이 두 글자를 못 담던 동안은 '★' 를 썼다.
   // `e81a1ae` 가 robots.js 의 엠블럼 판을 5계열 전부 두 글자 대응으로
   // 넓혔다(IE/EE/OR 포함 16/16 클리핑 0, 재확인됨) -- 이제 실제 다이그래프를 새긴다.
-  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: 'IE' },
-  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: 'EE' },
-  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: 'OR' },
+  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: 'IE', variant: 'vent-slats' },
+  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: 'EE', variant: 'spoiler-wide' },
+  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: 'OR', variant: 'crest-double' },
   'nitrostorm': { style: 'robot-deluxe', bodyColor: '#2f7fd6', accent: '#12406e' },
 }
 

@@ -105,17 +105,96 @@ function carPlate(cx, cy, w, h, bezel, bezelColor, plateColor, inkColor, label) 
         font-size="${t.size.toFixed(1)}" font-weight="800" fill="${inkColor}">${t.text}</text>`
 }
 
+// Structural silhouette variants for heroRobot -- the user reported that
+// chapter 1/8's six heroes (새미/에이스/터보, 나이트로/스피디/스토머) all render
+// through this one function and only differ by bodyColor/accent, i.e. "color
+// play" with zero silhouette variety. Each variant below only touches the
+// BACK FIN, SHOULDER WEDGE, EAR BLOCK and HEAD CREST -- the chest car-front,
+// torso taper, emblem plate, arms, legs and boots are left byte-identical to
+// the original geometry across every variant, so the plate sizing and
+// clipping math already verified for those parts (see the long comments
+// above `carPlate` and the torso polygon) does not need re-deriving per
+// variant. `crest`/`grille` are functions of the fixed neutrals (never
+// bodyColor/accent) so they read the same module consts the base shape did.
+const HERO_VARIANTS = {
+  // The original heroRobot silhouette, kept as the default so any existing
+  // caller that omits `variant` renders pixel-identical to before this file
+  // grew variants.
+  wedge: {
+    fin: '38,44 10,20 6,34 34,56',
+    shoulder: '37,42 19,47 15,68 35,64',
+    shoulderFacet: '37,42 21,46 22,53 37,49',
+    ear: '38,21 42,19 42,33 38,31',
+    crest: (CHROME) => `<polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>`,
+    grille: (STEEL) => `
+      <rect x="53" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="58.2" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="63.4" y="56" width="3.6" height="8" fill="${STEEL}"/>`,
+  },
+  // A wide, low shoulder wing plus a flat back spoiler blade instead of the
+  // base's tall bat-fin -- reads as a racing spoiler bolted low across the
+  // back rather than a fin sweeping up past the head.
+  'spoiler-wide': {
+    fin: '34,48 6,44 4,50 30,58',
+    shoulder: '37,44 14,44 10,66 35,62',
+    shoulderFacet: '37,44 16,44 18,52 37,50',
+    ear: '38,21 42,19 42,33 38,31',
+    crest: (CHROME) => `<polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>`,
+    grille: (STEEL) => `
+      <rect x="53" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="58.2" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="63.4" y="56" width="3.6" height="8" fill="${STEEL}"/>`,
+    strut: true,
+  },
+  // Twin V crest (two chevrons) instead of one, with the ear block pulled up
+  // and out a touch to balance the wider crown.
+  'crest-double': {
+    fin: '38,44 10,20 6,34 34,56',
+    shoulder: '37,42 19,47 15,68 35,64',
+    shoulderFacet: '37,42 21,46 22,53 37,49',
+    ear: '36,20 44,15 44,33 36,30',
+    crest: (CHROME) => `
+      <polygon points="42,17 51,2 60,17 51,10" fill="${CHROME}"/>
+      <polygon points="60,17 69,2 78,17 69,10" fill="${CHROME}"/>`,
+    grille: (STEEL) => `
+      <rect x="53" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="58.2" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      <rect x="63.4" y="56" width="3.6" height="8" fill="${STEEL}"/>`,
+  },
+  // Horizontal grille bands (the base's grille is narrow vertical bars) plus
+  // a stepped, louvred shoulder silhouette -- the outer edge itself notches
+  // down in three stairs (unlike the other variants' smooth wedge), so this
+  // reads as an air-intake vent panel by OUTLINE, not just by an added
+  // internal line, and its silhouette is genuinely distinct from `wedge`'s.
+  'vent-slats': {
+    fin: '38,44 10,20 6,34 34,56',
+    shoulder: '37,42 20,42 20,48 16,48 16,54 14,54 14,68 35,64',
+    shoulderFacet: '36,42 22,42 22,47 36,47',
+    ear: '38,21 42,19 42,33 38,31',
+    crest: (CHROME) => `<polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>`,
+    grille: (STEEL) => `
+      <rect x="52" y="57" width="16" height="2.8" fill="${STEEL}"/>
+      <rect x="52" y="61.5" width="16" height="2.8" fill="${STEEL}"/>`,
+    vents: true,
+  },
+}
+
 // Standard hero: 새미 / 에이스 / 터보. Car front on the chest, door-wedge
-// shoulders with exposed wheels, one oversized emblem plate.
+// shoulders with exposed wheels, one oversized emblem plate. `variant` picks
+// a structural silhouette from HERO_VARIANTS (see its comment) -- callers
+// that omit it keep the original 'wedge' shape.
 export function heroRobot({
   bodyColor = '#378add',
   accent = '#0c447c',
   emblem = 'S',
   visorColor = '#eafcff',
+  variant = 'wedge',
 } = {}) {
-  const fin = '38,44 10,20 6,34 34,56'
-  const shoulder = '37,42 19,47 15,68 35,64'
-  const shoulderFacet = '37,42 21,46 22,53 37,49'
+  const V = HERO_VARIANTS[variant] || HERO_VARIANTS.wedge
+  const fin = V.fin
+  const shoulder = V.shoulder
+  const shoulderFacet = V.shoulderFacet
+  const ear = V.ear
   const upperArm = '18,66 34,63 33,80 20,84'
   const armPlate = '16,68 26,66 25,80 15,82'
   const forearm = '17,80 32,78 33,94 19,96'
@@ -128,7 +207,6 @@ export function heroRobot({
   const boot = '36,124 60,124 61,132 35,132'
   const sole = '35,130 61,130 61,133 35,133'
   const headlight = '42,56 51,56 50,64 43,64'
-  const ear = '38,21 42,19 42,33 38,31'
 
   return svgWrap(
     `
@@ -137,6 +215,12 @@ export function heroRobot({
 
       <polygon points="${fin}" fill="${accent}"/>
       <polygon points="${mirror(fin)}" fill="${accent}"/>
+      ${
+        V.strut
+          ? `<polygon points="32,48 35,48 34,54 31,53" fill="${accent}"/>
+      <polygon points="${mirror('32,48 35,48 34,54 31,53')}" fill="${accent}"/>`
+          : ''
+      }
 
       <polygon points="54,34 66,34 65,44 55,44" fill="${MECH}"/>
 
@@ -176,15 +260,23 @@ export function heroRobot({
       <polygon points="40,54 80,54 80,66 40,66" fill="${MECH_DEEP}"/>
       <polygon points="${headlight}" fill="#eafcff"/>
       <polygon points="${mirror(headlight)}" fill="#eafcff"/>
-      <rect x="53" y="56" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="58.2" y="56" width="3.6" height="8" fill="${STEEL}"/>
-      <rect x="63.4" y="56" width="3.6" height="8" fill="${STEEL}"/>
+      ${V.grille(STEEL)}
       ${carPlate(60, 79.5, 36, 25, 2.2, accent, CHROME, accent, emblem)}
 
       <polygon points="${shoulder}" fill="${bodyColor}"/>
       <polygon points="${mirror(shoulder)}" fill="${bodyColor}"/>
       <polygon points="${shoulderFacet}" fill="#fff" opacity="0.24"/>
       <polygon points="${mirror(shoulderFacet)}" fill="#fff" opacity="0.24"/>
+      ${
+        V.vents
+          ? `<rect x="19" y="50" width="11" height="2" fill="${MECH_DEEP}"/>
+      <rect x="18" y="55" width="12" height="2" fill="${MECH_DEEP}"/>
+      <rect x="17" y="60" width="13" height="2" fill="${MECH_DEEP}"/>
+      <rect x="90" y="50" width="11" height="2" fill="${MECH_DEEP}"/>
+      <rect x="90" y="55" width="12" height="2" fill="${MECH_DEEP}"/>
+      <rect x="90" y="60" width="13" height="2" fill="${MECH_DEEP}"/>`
+          : ''
+      }
       <circle cx="20" cy="63" r="9" fill="${MECH_DEEP}"/>
       <circle cx="20" cy="63" r="4.6" fill="${STEEL}"/>
       <circle cx="20" cy="63" r="1.8" fill="${CHROME}"/>
@@ -210,7 +302,7 @@ export function heroRobot({
       <polygon points="45,24 75,24 73,32 47,32" fill="${visorColor}"/>
       <polygon points="49,33 71,33 69,40 51,40" fill="${MECH}"/>
       <rect x="52" y="34" width="16" height="1.8" fill="${STEEL}"/>
-      <polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>
+      ${V.crest(CHROME)}
       <polygon points="43,15 33,7 41,18" fill="${accent}"/>
       <polygon points="${mirror('43,15 33,7 41,18')}" fill="${accent}"/>
     </g>
