@@ -875,7 +875,7 @@ const VILLAIN_PALETTES = {
   'crashbot': { bodyColor: '#4f6b8a', accent: '#243546', variant: 'twin-horn' },
   'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16', variant: 'spike-back' },
   'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c', variant: 'saw-crown' },
-  'iron-wreck': { style: 'robot-deluxe', bodyColor: '#5a5f68', accent: '#25282e' },
+  'iron-wreck': { style: 'robot-deluxe', bodyColor: '#8a2e2e', accent: '#3d1414' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
