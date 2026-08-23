@@ -119,15 +119,15 @@
    "ms": 110,
    "naturalMs": 110,
    "stretch": 1.0,
-   "source": "pig",
+   "source": "pool",
    "pos": "onset",
    "class": "plosive",
-   "rate": 88,
+   "rate": 42,
    "pulses": 1,
-   "selfSim": 0.15,
+   "selfSim": 0.083,
    "edgeFluxRatio": null,
    "tailFluxRatio": null,
-   "bright": 0.155
+   "bright": 0.125
   },
   "kuh": {
    "ms": 110,
@@ -352,6 +352,48 @@
    "edgeFluxRatio": 0.902,
    "tailFluxRatio": 0.144,
    "bright": 0.134
+  },
+  "ngh": {
+   "ms": 125,
+   "naturalMs": 125,
+   "stretch": 1.0,
+   "source": "ring",
+   "pos": "coda",
+   "class": "nasal",
+   "rate": 88,
+   "pulses": 1,
+   "selfSim": 0.66,
+   "edgeFluxRatio": null,
+   "tailFluxRatio": null,
+   "bright": 0.058
+  },
+  "uuu": {
+   "ms": 160,
+   "naturalMs": 160,
+   "stretch": 1.0,
+   "source": "ooze",
+   "pos": "nucleus",
+   "class": "vowel",
+   "rate": 88,
+   "pulses": 1,
+   "selfSim": 0.578,
+   "edgeFluxRatio": null,
+   "tailFluxRatio": 0.624,
+   "bright": 0.091
+  },
+  "uuh": {
+   "ms": 145,
+   "naturalMs": 145,
+   "stretch": 1.0,
+   "source": "foot",
+   "pos": "nucleus-steady",
+   "class": "vowel",
+   "rate": 88,
+   "pulses": 1,
+   "selfSim": 0.217,
+   "edgeFluxRatio": 1.696,
+   "tailFluxRatio": null,
+   "bright": 0.139
   }
  }
 }

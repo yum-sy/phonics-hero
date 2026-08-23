@@ -102,6 +102,9 @@ const SOUND_ASSETS = new Set([
   'sss', 'fff', 'nnn', 'mmm', 'lll', 'rrr', 'zz', 'aaa', 'ihh', 'awh',
   'eh', 'uh', 'oh', 'a', 'ee', 'or', 'eye',
   'tuh', 'puh', 'kuh', 'buh', 'duh', 'guh', 'huh', 'juh',
+  // Group 5 (chapter 9+): NG and both OO vowels. See the CORPUS list in
+  // scripts/gen-sounds.py for the cut recipe and why V and W are not here yet.
+  'ngh', 'uuu', 'uuh',
 ])
 
 // `null` = not tried yet, `false` = no Web Audio on this engine (never retried,

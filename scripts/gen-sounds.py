@@ -165,18 +165,45 @@ PLOSIVE_VOWEL_MS = 130
 # window, which is the same direction as the fix even though "less bright"
 # is a proxy, not a listening test.
 #
-# puh, still NO at 110ms ("pig", vowel_ms=50): swept every /p/-onset word
+# puh, was NO at 110ms ("pig", vowel_ms=50): swept every /p/-onset word
 # tried (pig/pen/pot/put/pit/path/pod) at vowel_ms 20-50 and none produces a
 # result both under 150ms-ish AND above the 100ms floor with headroom --
 # "pig"/"pit" hit the floor at vowel_ms=40 already (measured 100ms, i.e. AT
-# the boundary), and every word's bright at vowel_ms=50 clusters tightly
+# the boundary), and every word's bright at vowel_ms=50 clustered tightly
 # (0.13-0.18, no outlier the way kuh had one). /p/'s burst is also the
 # weakest of the three (pbright 0.76-0.87 vs tuh/kuh's 1.18-1.48), which may
-# be why there is less room to trade vowel for consonant here. NOT CHANGED --
-# no further lever was found that clears the gates with margin, and nothing
-# in this file's measurements identifies what else could be wrong.
+# be why there was less room to trade vowel for consonant here.
+#
+# Round 7: the outlier kuh had (front/back vowel color) turned out to exist
+# for puh too -- it was just outside the 7-word set every prior round swept,
+# which was all SHORT lax vowels (pig/pen/pot/put/pit/path/pod). Measured on
+# a batch of /p/ + back-rounded/tense-vowel words never tried before
+# (pony/pool/poodle/pooch/poop/poke/pose/post/push): every one of them scores
+# bright 0.10-0.13 at vowel_ms=40, a clean, consistent step down from the old
+# cluster's 0.13-0.18 floor -- the same "back vowel = more neutral" direction
+# already validated for kuh (cat->cot). Two shapes of that family were
+# checked and they pull in OPPOSITE directions on pbright (burst strength),
+# which is the reason "pool" was picked over "poke"/"pose"/"post":
+#   poke/pose/post (short /oU/, obstruent coda): bright 0.10 (best of all),
+#     but pbright drops to 0.65-0.74 -- WEAKER than pig's own 0.87, and P's
+#     burst was already this project's weakest of the three plosives. Lower
+#     bright bought here at the cost of a less crisp burst is not obviously a
+#     win, so these were not shipped.
+#   pool/poodle/pooch/poop/push (/u:/ or /U/, four independent source words):
+#     bright 0.12-0.13 (still well below the old 0.13-0.18 floor) AND pbright
+#     0.92 -- STRONGER than pig's 0.87, not weaker. Both axes move the right
+#     way at once, which none of the other candidates managed, and rate=42
+#     (see "the words that replace them all" note on awh/or below for why a
+#     slower source rate is a legitimate lever, not the rejected repetition)
+#     gets vowel_ms=40 to 110ms, clearly clear of the 100ms floor rather than
+#     sitting AT it the way the old "pig" cut did. Shipped: source "pool",
+#     cross-word evidence "poodle"/"pooch" (both independently clean, same
+#     bright/pbright cluster). NOT YET HEARD ON A REAL DEVICE -- this is a
+#     measured direction, not a listening-test confirmation; if the gallery
+#     rejects it again, "pig"-family words are the fallback and pbright
+#     should be weighted over bright next round rather than the reverse.
 PLOSIVE_VOWEL_MS_OVERRIDE = {
-    'tuh': 50, 'puh': 50, 'kuh': 20, 'juh': 50,
+    'tuh': 50, 'puh': 40, 'kuh': 20, 'juh': 50,
     'buh': 100, 'duh': 100, 'guh': 100, 'huh': 100,
 }
 
@@ -244,7 +271,11 @@ CORPUS = [
     # Plosives: burst + vowel onset. See PLOSIVE_VOWEL_MS_OVERRIDE for the
     # per-key vowel_ms values and the round-by-round reasoning.
     ('tuh', 'plosive', 'onset', ['top', 'tap'], None, None, None),
-    ('puh', 'plosive', 'onset', ['pig', 'pen'], None, None, None),
+    # Round 7: source words changed pig/pen -> pool (back/tense vowel, rate 42
+    # -- see PLOSIVE_VOWEL_MS_OVERRIDE's comment for the measured reasoning).
+    # poodle/pooch are the cross-word evidence; both independently clean at
+    # the same settings.
+    ('puh', 'plosive', 'onset', ['pool', 'poodle', 'pooch'], 42, None, None),
     # Round 6: word swapped "cat" -> "cot" alongside the vowel_ms cut to 20 --
     # measured less bright (more neutral) at that window than any front-vowel
     # /k/ word tried. "cop" is the cross-word check (near-identical back-vowel
@@ -519,6 +550,70 @@ CORPUS = [
     # far more stable than "oral" was, and it is only used for cross-word
     # confirmation -- what actually ships is "ornate".
     ('or', 'vowel', 'nucleus-steady', ['ornate', 'organic'], None, 0.65, 0.75),
+    #
+    # ---------- Group 5 (Jolly: z w ng v oo oo) -- feasibility round ----------
+    # Chapter 9+ needs 18 more phonemes and none had a word-based asset before
+    # this round (SOUND_TABLE's Group 5-7 rows are TTS-fallback notations
+    # only, collision-tested but not cut from real words). These three clear
+    # every existing gate with an UNCHANGED mechanism (no new CLASSES entry,
+    # no new cut function) -- the same reason "just a different word" was
+    # preferred throughout this file over inventing new code. V and W are
+    # NOT here; see the comment after the `uuh` row below for why. Z is also
+    # not a new row here -- see the report for this round for why (an
+    # existing shipped asset already covers it under a different key).
+    #
+    # NG /ng/: coda-only in English (no word starts with it), so this is
+    # exactly the mmm/nnn recipe (nasal, pos='coda') and nothing new. All four
+    # candidates pass outright at the default rate -- ring/sing/song/long
+    # bright 0.06-0.08, well inside the nasal band, selfsim 0.28-0.66 (under
+    # the 0.90 'coda' ceiling; the 0.30 ceiling is 'nucleus-steady'-only and
+    # does not apply here). "ring" ships; sing/song are the cross-word
+    # evidence, both independently clean.
+    ('ngh', 'nasal', 'coda', ['ring', 'sing', 'song', 'long'], None, None, None),
+    #
+    # OO /u:/ (long): same recipe as a/ee/oh/eye/or -- a vowel-initial word
+    # so there is no onset consonant for cut_nucleus to blend in, no
+    # narrowing needed. "ooze" and "oodles" both clean at the default rate
+    # (bright 0.09/0.11, well inside the vowel band) with no rate lever
+    # needed -- unlike a/oh/eh/uh, this vowel's own natural core span (150-
+    # 160ms) already clears comfortably without slowing the source down.
+    ('uuu', 'vowel', 'nucleus', ['ooze', 'oodles'], None, None, None),
+    #
+    # OO /u/ (short): no English word starts with this vowel, so unlike its
+    # long counterpart it needs the aaa/ihh/eh/uh/awh recipe (nucleus-steady,
+    # narrows away the onset consonant's transition) rather than the vowel-
+    # initial-word trick. Same swept-and-discarded shape as those rows:
+    # "book" keeps 20ms of leftover onset transition (edgeFluxRatio 2.29,
+    # over the 2.0 ceiling) and "look" keeps an /l/ murmur (selfsim 0.648,
+    # over the stricter 0.30 nucleus-steady ceiling) -- both rejected the
+    # same way those rows already document, not a new failure shape.
+    # "foot"/"put"/"good" are all clean at the default rate and default
+    # 0.95 fraction, no override needed. "foot" ships; put/good are the
+    # cross-word evidence.
+    ('uuh', 'vowel', 'nucleus-steady', ['foot', 'put', 'good'], None, None, None),
+    #
+    # V /v/ and W /w/: tried and NOT shipped this round, for two different
+    # reasons, neither of which a different word fixes.
+    #
+    # V: attempted with the exact fff recipe (sibilant, pos='onset',
+    # van/vet/vase). All three fail the SAME way: bright 0.29-0.34, under the
+    # sibilant class's 0.70 floor, and ms caps at 75-85ms regardless of rate.
+    # /v/ is a voiced fricative -- weakly turbulent compared to /f/'s
+    # voiceless noise -- so it simply does not have sibilant-class brightness;
+    # it is closer to the nasal/liquid band acoustically (voiced, dark) but
+    # with more high-frequency energy than either. This needs a genuinely new
+    # CLASSES entry (something between 'liquid' and 'sibilant') tuned and
+    # cross-checked against real /v/-onset words, not a word swap within the
+    # existing classes -- out of scope for a "different word" pass.
+    #
+    # W: not attempted. /w/ is a pure glide -- no closure, no frication, no
+    # steady state of its own, just a lip-rounding formant transition into
+    # whatever vowel follows. Every cut function in this file finds a REGION
+    # (a burst, a murmur, a steady span) and none of those exist for a glide;
+    # a decontextualized slice of one either catches silence (before the lips
+    # start moving) or the following vowel (after). This is a new
+    # segmentation problem, not a word-choice one, and needs its own cut
+    # function before any word is worth trying.
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
