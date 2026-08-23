@@ -183,6 +183,17 @@
     boss7: () => clickStage('chapter-7', 4),
     boss6after: async () => { await clickStage('chapter-6', 4); await wait(1700); await dismissIntro() },
     boss7after: async () => { await clickStage('chapter-7', 4); await wait(1700); await dismissIntro() },
+    // Chapter 8 (world 2, Jolly group 5: IE/EE/OR) had zero coverage --
+    // exactly the gap this file's own comments warn about for 5-7 before they
+    // got shots. It is also the app's first TWO-WORD boss with TWO two-slot
+    // digraph targets (T+IE=TIE, C+OR+N=CORN), so boss8after exercises a case
+    // the other six chapters don't: two stacked equations where one target
+    // has a digraph in a non-first slot.
+    map8: () => renderMap('chapter-8'),
+    battle8: () => isolate('c8-stage-2', 'teach'),
+    boss8: () => clickStage('chapter-8', 4),
+    boss8after: async () => { await clickStage('chapter-8', 4); await wait(1700); await dismissIntro() },
+    build8: () => isolate('c8-stage-5', 'drag-build', 1),
     // The screen right after the 합체 intro is the boss stage's teach beat,
     // which is the only place the letter equation ("S + A + T = SAT") renders.
     // Chapters 3-7 build two words there, so the equation is two lines and is
@@ -354,8 +365,29 @@
     // animation, not a layout defect. The intro's RESTING state is the
     // `invite` shot (5.3% landscape / 6.4% portrait), which is the one to
     // compare against the baseline.
+    //
+    // A single red HUD on a boss*/boss*after shot is NOT evidence of a
+    // regression by itself: EXPECT-FAIL[-.mini-bot] on these was reproduced
+    // by re-running the SAME shot back to back with nothing else changed,
+    // firing on roughly a third of runs across all seven (now eight)
+    // chapters and BOTH orientations (not just landscape, not just one art
+    // family) -- e.g. boss3/boss5/boss6/boss7 landscape and boss5/boss7
+    // portrait all flipped to EXPECT-FAIL on a repeat with no code changed in
+    // between. Headless Chrome's virtual-time-budget clock and the mini-bot's
+    // real CSS transform animation (mini-slide-left/right, 0.28s + up to
+    // 260ms of --slide-delay stagger) are not the same clock, so the fixed
+    // `wait(260)` before measuring sometimes lands the sample squarely inside
+    // a frame where the sliding bot's transform has not resolved to a
+    // nonzero, in-bounds box yet. A `.mini-bot` this catches mid-transform
+    // can measure as small as 40x40 (vs. its 132px CSS size) or with no
+    // client rects at all, both of which are exactly what `visible()`/`seen()`
+    // are supposed to catch on a REAL defect -- there is no cheap signal here
+    // that tells the two cases apart. Treat one flagged boss*/boss*after run
+    // as inconclusive and re-run it 2-3x before calling it a regression; a
+    // repeated failure on the SAME chapter+orientation while every other
+    // chapter passes repeatedly would be the actual signal.
     ...Object.fromEntries(
-      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+      [1, 2, 3, 4, 5, 6, 7, 8].map((n) => [
         `boss${n}`,
         { has: ['#boss-intro', '.boss-intro-hero', '.mini-bot'], not: ['.beat-equation'] },
       ])
@@ -365,13 +397,13 @@
     // coverage. `not: ['#boss-intro']` is the assertion that dismissIntro()
     // actually did something.
     ...Object.fromEntries(
-      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+      [1, 2, 3, 4, 5, 6, 7, 8].map((n) => [
         `boss${n}after`,
         { has: ['.beat-equation', '#continue-btn', '.beat-instruction'], not: ['#boss-intro', '.mini-bot'] },
       ])
     ),
     ...Object.fromEntries(
-      [1, 2, 3, 4, 5, 6, 7].map((n) => [
+      [1, 2, 3, 4, 5, 6, 7, 8].map((n) => [
         `map${n}`,
         { has: ['.map-screen', '.stage-node', '#back-to-chapters'], not: ['.beat'] },
       ])
