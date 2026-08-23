@@ -116,9 +116,7 @@ SILENCE_GATE = 0.04
 # asking the engine for. The user approved every one of these.
 PLOSIVE_VOWEL_MS = 130
 
-# Per-sound override of PLOSIVE_VOWEL_MS, keyed by CORPUS key. Left empty for
-# buh/duh/guh/huh/juh -- unchanged, still 130, still the bytes the gallery
-# already approved.
+# Per-sound override of PLOSIVE_VOWEL_MS, keyed by CORPUS key.
 #
 # tuh/puh/kuh were graded NO with the shared 130: "tuh 발음이 아니라 top 의
 # toh... 니가 계획하는 단어의 발음을 그대로 가져오고 있어". Measured cause,
@@ -129,21 +127,58 @@ PLOSIVE_VOWEL_MS = 130
 # after that boundary starts from a much later, more settled point in the
 # vowel for the three that got rejected, capturing more of that specific
 # word's fully-formed target formants rather than the transition into them.
-# That fully explains both complaints from one measurement: the length
-# (top/cat 220ms = 90ms aspiration + 130ms vowel, vs bag 145ms = 15ms + 130ms)
-# and the colour (a vowel window that starts later is a vowel window that is
-# more committed to that word's specific vowel).
+# 50ms (down from 130) was chosen by sweeping top/tap, pig/pen, cat/key/cake
+# at 20ms steps -- the value that lands tuh at 140ms while puh lands at
+# 110ms, both inside every gate.
 #
-# Shortening the shared constant would also shorten buh/duh/guh/huh/juh --
-# forbidden, they are out of scope and already approved -- so this is a
-# per-key override instead. 50ms (down from 130) was chosen by sweeping top/
-# tap, pig/pen, cat/key/cake at 20ms steps: it is the value that lands
-# tuh/kuh at 140ms (matching buh/duh/guh's 145-155ms band) while puh lands
-# at 110ms (shorter, but still inside CLASSES['plosive']'s 100ms floor and
-# still one pulse) -- one shared number that clears every gate for all three,
-# rather than three different numbers for a difference this project cannot
-# otherwise justify.
-PLOSIVE_VOWEL_MS_OVERRIDE = {'tuh': 50, 'puh': 50, 'kuh': 50}
+# Round 6: buh/duh/guh/huh/juh were graded NO too -- and these five had NOT
+# been regenerated even once since round 1 (confirmed: their bytes were
+# identical across every intervening round's diff). The gallery timestamps
+# show all five judged within the same two minutes, right after `tuh`
+# (freshly cleaned this same session) -- consistent with a CONTRAST effect
+# (a cleaner tuh makes an unchanged buh's own vowel content newly noticeable
+# by comparison), which this file has no way to measure directly. What IS
+# measured: onset_end() for bag/dog/gap/hat is 15-30ms (voiced stops have
+# near-zero VOT, unlike t/p/k) -- so these do NOT share t/p/k's "long
+# aspiration" mechanism, and 90%+ of their 145-160ms was always that word's
+# vowel, at the SAME proportion since round 1. The old assumption that a
+# short onset_end meant "this one is fine" conflated two different questions
+# -- how long the release takes, and how much of a specific word's vowel gets
+# captured -- and only the first one differs between voiced and voiceless
+# stops. Shortened by the same lever as tuh/puh/kuh (a smaller `vowel_ms`),
+# just to a milder degree, since these DON'T need to escape a long aspiration
+# prefix the way tuh/kuh do -- 100ms (from 130) lands them at 115-130ms,
+# comfortably inside CLASSES['plosive']'s 100ms floor with room to spare.
+#
+# juh's onset_end (75-80ms, "jam"/"jog") in fact DOES match the t/p/k
+# pattern -- /dʒ/ is an affricate, and its own frication release is long the
+# same way aspiration is -- so juh got the SAME 50ms treatment as tuh/kuh,
+# not the milder one, landing it at 125-130ms.
+#
+# kuh, still NO even at the round-5 fix (140ms, vowel_ms=50, "cat"): shortened
+# further to vowel_ms=20 (110ms) -- "cat" has a long onset_end (90ms) and
+# plenty of room before the 100ms floor. The source word also changed,
+# "cat" -> "cot": measured across every /k/-onset word tried at vowel_ms=20,
+# the back-vowel words ("cot"/"cop"/"cut", bright 0.38) render distinctly
+# LESS bright than the front-vowel ones ("cat"/"key"/"cake"/"kit", bright
+# 0.48-0.61) -- i.e. objectively less sharp/identifiable at this short a
+# window, which is the same direction as the fix even though "less bright"
+# is a proxy, not a listening test.
+#
+# puh, still NO at 110ms ("pig", vowel_ms=50): swept every /p/-onset word
+# tried (pig/pen/pot/put/pit/path/pod) at vowel_ms 20-50 and none produces a
+# result both under 150ms-ish AND above the 100ms floor with headroom --
+# "pig"/"pit" hit the floor at vowel_ms=40 already (measured 100ms, i.e. AT
+# the boundary), and every word's bright at vowel_ms=50 clusters tightly
+# (0.13-0.18, no outlier the way kuh had one). /p/'s burst is also the
+# weakest of the three (pbright 0.76-0.87 vs tuh/kuh's 1.18-1.48), which may
+# be why there is less room to trade vowel for consonant here. NOT CHANGED --
+# no further lever was found that clears the gates with margin, and nothing
+# in this file's measurements identifies what else could be wrong.
+PLOSIVE_VOWEL_MS_OVERRIDE = {
+    'tuh': 50, 'puh': 50, 'kuh': 20, 'juh': 50,
+    'buh': 100, 'duh': 100, 'guh': 100, 'huh': 100,
+}
 
 # ---------------------------------------------------------------------------
 # CLASSES. The cut rule and the accept ranges both key off these.
@@ -206,10 +241,15 @@ CORPUS = [
     ('lll', 'liquid', 'coda', ['bell', 'ball'], None, None, None),
     ('rrr', 'liquid', 'coda', ['car', 'four'], None, None, None),
     ('zz', 'sibilant', 'coda', ['buzz', 'fizz'], None, None, None),
-    # Plosives: burst + vowel onset, all approved on the device at 145-220ms.
+    # Plosives: burst + vowel onset. See PLOSIVE_VOWEL_MS_OVERRIDE for the
+    # per-key vowel_ms values and the round-by-round reasoning.
     ('tuh', 'plosive', 'onset', ['top', 'tap'], None, None, None),
     ('puh', 'plosive', 'onset', ['pig', 'pen'], None, None, None),
-    ('kuh', 'plosive', 'onset', ['cat', 'key', 'cake'], None, None, None),
+    # Round 6: word swapped "cat" -> "cot" alongside the vowel_ms cut to 20 --
+    # measured less bright (more neutral) at that window than any front-vowel
+    # /k/ word tried. "cop" is the cross-word check (near-identical back-vowel
+    # profile); "cut" stays as a third candidate.
+    ('kuh', 'plosive', 'onset', ['cot', 'cop', 'cut'], None, None, None),
     ('buh', 'plosive', 'onset', ['bag', 'bed', 'big'], None, None, None),
     ('duh', 'plosive', 'onset', ['dog', 'dad'], None, None, None),
     ('guh', 'plosive', 'onset', ['gap', 'gum', 'gift'], None, None, None),
@@ -277,11 +317,24 @@ CORPUS = [
     # it. `eh`/`uh` moved out of this block entirely -- see the vowel-initial
     # word swap below, the same fix already used for a/ee/oh/eye/or, which
     # removes the onset consonant rather than trying to cut around it more
-    # cleverly. Left here: `aaa`/`ihh`/`awh`, unchanged, not in this round's
-    # scope.
+    # cleverly. Left here: `aaa`/`ihh`, unchanged, not in this round's scope
+    # (see `awh` below for why it moved).
     ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], 60, None, None),
     ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None, None, None),
-    ('awh', 'vowel', 'nucleus-steady', ['hot', 'dog', 'got'], 42, None, None),
+    #
+    # Round 6: `awh` graded NO. Its tailFluxRatio had never actually been
+    # gated -- `tail_max` only existed as a per-row opt-in (added for `or`
+    # last round) and this row never set one. Measured for the first time:
+    # "hot" at this row's own shipped settings (frac 0.95, -r 42) scores
+    # tailFluxRatio 3.4 -- far past even the loose 2.0 ceiling, i.e. the SAME
+    # coda-transition defect `oat`/`orb` had, just never caught here because
+    # nothing was checking. Fixed the same way as `or`: a narrower frac (0.95
+    # -> 0.70) plus a `tail_max` that actually enforces it. At 0.70, "hot"
+    # measures 140ms/selfsim.127/efr.74/tail.12 -- clean on every axis, and a
+    # large tail improvement (3.4 -> 0.12) for a real length cost (190 ->
+    # 140ms). "dog"/"got" stay as the cross-word evidence (both also clean at
+    # 0.70: tail 0.07 and 0.16).
+    ('awh', 'vowel', 'nucleus-steady', ['hot', 'dog', 'got'], 42, 0.70, 1.0),
     # Digraph long vowels. For these the letter name IS the target phoneme, so
     # the notation was not teaching the wrong sound -- but taking them from
     # words is what finally separates `a` from `eh`, which CLAUDE.md records as
@@ -391,7 +444,21 @@ CORPUS = [
     # Both are pos == 'nucleus' now, so cut_nucleus (unchanged) applies -- no
     # narrowing, no new mechanism, just a different word.
     ('eh', 'vowel', 'nucleus', ['end', 'egg'], 60, None, None),
-    ('uh', 'vowel', 'nucleus', ['under', 'ugly'], None, None, None),
+    #
+    # Round 6: `uh` graded NO again. "under"'s own frame data explains why --
+    # its vowel_core_span is 205ms, 45% of the WHOLE 455ms word, versus 28-35%
+    # for every other multi-syllable /vh/-initial word checked (utter/usher/
+    # upper/ugly/oven all land at 140-145ms, 28-31% of their word). The reason
+    # is structural: vowel_core_span keeps expanding through a second syllable
+    # as long as it stays loud and non-bright, and "under"'s second syllable
+    # (/n/-/d/-/er/) is ALL sonorant/voiced -- nothing in it is bright enough
+    # to stop the span the way a stop or fricative onset does in "usher"(/S/)
+    # or "utter"(/t/). So "under" was never a clean /uh/ cut; it was /uh/ +
+    # /n/ + /d/ + most of the r-coloured second syllable, all captured as one
+    # span by an algorithm that has no notion of a syllable boundary. Replaced
+    # with "usher" (clean 28% span, selfsim 0.083, the lowest of the group).
+    # "utter" is the cross-word check; "ugly" stays as a third candidate.
+    ('uh', 'vowel', 'nucleus', ['usher', 'utter', 'ugly'], None, None, None),
     #
     # Fourth round: `or` alone was graded NO again ("발음이 너무 짧게
     # 느껴져"), at 115ms against oh/eye's 210-264ms -- and 115ms was already
@@ -433,7 +500,25 @@ CORPUS = [
     # 200ms-ish target from two rounds ago, which the user explicitly said was
     # an acceptable trade ("길이가 조금 줄어도 된다... 정확한 소리가 우선").
     # "oral" stays as the second source, unchanged.
-    ('or', 'vowel', 'nucleus-steady', ['ornate', 'oral'], None, 0.70, 1.0),
+    #
+    # Round 6: graded NO again, alongside a batch that ALSO turned out to have
+    # never actually had tailFluxRatio enforced against them (see `awh`) --
+    # so the 1.0 ceiling this row set for itself last round was retested
+    # rather than trusted. It was too loose: "ornate" at 0.70/1.0 measured
+    # 0.455, which is what the gallery had just rejected. Narrowed further,
+    # 0.70 -> 0.65, and tightened the ceiling to match, 1.0 -> 0.75. At 0.65,
+    # "ornate" measures 190ms/tailFluxRatio 0.14 -- a 3x cleaner tail than the
+    # rejected cut, for 15ms less length.
+    #
+    # The second source changed too: "oral"'s tailFluxRatio swings wildly
+    # across nearby fractions (0.14 at 0.70, 1.50 at 0.60, 8.98 at 0.65) --
+    # its own core span is only 90-120ms, so a 20ms tail window is a large,
+    # noisy fraction of it, and it could not be found to agree with "ornate"
+    # at any single shared frac. Replaced with "organic": less stable than
+    # "ornate" itself (tail 0.67 at 0.65, still above what "ornate" gets) but
+    # far more stable than "oral" was, and it is only used for cross-word
+    # confirmation -- what actually ships is "ornate".
+    ('or', 'vowel', 'nucleus-steady', ['ornate', 'organic'], None, 0.65, 0.75),
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
