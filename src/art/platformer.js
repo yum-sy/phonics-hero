@@ -1620,11 +1620,26 @@ const MAGNET_BLUE = '#2f5fb0'
 // replaced by a heavy brow angled down toward the nose, and the smile becomes
 // a fanged mouth. `tilt` skews the brows further for the nastier ones.
 function villainFaceParts(cx, cy, opts = {}) {
-  const { s = 1, dx = 10.5, ex = 6.2, tilt = 1, mouthY = cy + 16, mouthW = 10, fangs = 2, mouth = true } = opts
+  const {
+    s = 1,
+    dx = 10.5,
+    ex = 6.2,
+    tilt = 1,
+    mouthY = cy + 16,
+    mouthW = 10,
+    fangs = 2,
+    mouth = true,
+    // Iris colour, LINE (near-black) by default -- every villain but Bug King
+    // keeps that default untouched. Bug King passes FIRE_RED: the Bowser
+    // reference photos all show red eyes, and the pupil is the only part of
+    // this shared face that can carry it without touching the other four
+    // villains' calls.
+    eyeColor = LINE,
+  } = opts
   const ey = ex * 1.06
   const eye = (px, k) => [
     E(px, cy, ex * s, ey * s, '#fff', ink(2.2)),
-    C(px + k * ex * 0.22 * s, cy + ey * 0.16 * s, ex * 0.56 * s, LINE, { nohalo: true }),
+    C(px + k * ex * 0.22 * s, cy + ey * 0.16 * s, ex * 0.56 * s, eyeColor, { nohalo: true }),
     C(px + k * ex * 0.22 * s - ex * 0.24 * s, cy - ey * 0.18 * s, ex * 0.2 * s, '#fff', { nohalo: true }),
   ]
   const brow = (px, k) =>
@@ -2024,6 +2039,39 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
   return sticker(backdrop, body)
 }
 
+// Wrist spike band -- Bug King only. Bowser's reference photos all show a
+// black wristlet with white spikes on both arms ("라이엇 건틀릿" read); none
+// of the other four villains grow one. Drawn AFTER `villainArm` and seated on
+// the limb's OWN last joint (`pts[pts.length-1]`), not the further-out point
+// `wristSeat()` hands the glove -- so the band sits between forearm and
+// glove instead of colliding with the glove's own cuff badge.
+function wristSpikeBand(pts) {
+  const j = pts[pts.length - 1]
+  const prev = pts[pts.length - 2]
+  const deg = (Math.atan2(j.y - prev.y, j.x - prev.x) * 180) / Math.PI
+  const r = j.w * 0.62
+  const spike = (a, len) => {
+    const rad = (a * Math.PI) / 180
+    const ux = Math.cos(rad)
+    const uy = Math.sin(rad)
+    const px = -uy
+    const py = ux
+    const baseR = r * 0.9
+    const bw = r * 0.34
+    return P(
+      `${(ux * baseR + px * bw).toFixed(1)},${(uy * baseR + py * bw).toFixed(1)} ${(ux * (baseR + len)).toFixed(1)},${(uy * (baseR + len)).toFixed(1)} ${(ux * baseR - px * bw).toFixed(1)},${(uy * baseR - py * bw).toFixed(1)}`,
+      '#fff',
+      ink(1.4)
+    )
+  }
+  return G(`translate(${j.x.toFixed(1)},${j.y.toFixed(1)}) rotate(${deg.toFixed(1)})`, [
+    E(0, 0, r * 1.05, r * 0.74, '#000', { stroke: LINE, 'stroke-width': 1.8 }),
+    spike(90, r),
+    spike(-90, r),
+    spike(180, r * 0.8),
+  ])
+}
+
 // Bug King (plat-glitch), the chapter boss: deliberately the biggest and
 // heaviest figure in the family. Its jaw is a dark void wide enough to pull a
 // checkerboard block halfway in, and it is shedding itself along one flank —
@@ -2069,7 +2117,18 @@ export function platBrick({ bodyColor = '#a8763a', accent = '#5c3d18' } = {}) {
 // clips.
 export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   const bit = (x, y, s, fill, op) => R(x, y, s, s, 0, fill, { opacity: op })
-  const horn = (points) => P(points, accent, ink(2.6))
+  // Shell green, not `accent` -- the reference photos' shell/horn/spike
+  // material is consistently green regardless of the villain's own accent
+  // slot (`accent` stays in charge of the legs and the glove cuff badge,
+  // where the reference gives no directive). Reuses LEAF/LEAF_DEEP verbatim:
+  // they already exist in this file for the fire-flower petals, so this is
+  // zero new module-level colour surface.
+  const SHELL = LEAF
+  const SHELL_TIP = GLOVE
+  // `tip` is the outermost vertex of `points`, given separately because a
+  // horn's silhouette point list has no reliable "last point is the tip"
+  // convention and guessing wrong would put the highlight on the ROOT.
+  const horn = (points, tip) => [P(points, SHELL, ink(2.6)), C(tip[0], tip[1], 2.1, SHELL_TIP, { opacity: 0.9, nohalo: true })]
   // Shell shoulder spike, left side; mirrored for the right. Anchored on the
   // torso's own widened top edge (see the torso path below) so the ink reads
   // as a plate riveted to the shell, not a shape floating beside the figure.
@@ -2080,7 +2139,14 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   // Wrapped in arrays (not bare part objects) because `mirror()` needs an
   // array for its own children -- every other mirror() call site in this
   // file passes one (see `legoFist`'s own note on the same requirement).
-  const shoulderSpike = [P('27,64 12,44 37,59', accent, ink(3))]
+  const shoulderSpike = [
+    P('27,64 12,44 37,59', SHELL, ink(3)),
+    // White-tipped horn-spike, per the reference: a root colour and a light
+    // tip in two flat layers (no gradient). Inset a hair from the true vertex
+    // (12,44) so the highlight sits ON the ink mass rather than riding its
+    // own stroke.
+    C(15.2, 47, 2.3, SHELL_TIP, { opacity: 0.92, nohalo: true }),
+  ]
   // Three-tooth flank ridge, left side; mirrored for the right. Kept to
   // y 62..90 -- the shoulder deltoid ball's own vertical span -- rather than
   // running the full torso height: lower than that, the arm's forearm and
@@ -2091,7 +2157,11 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
   // units outside the deltoid ball's own x 19 reach at its widest (y 74), so
   // the middle tooth clears the arm rather than disappearing into it.
   const flankRidge = [
-    P('25,62 9,67 25,72 9,76 25,81 9,85 25,90', accent, ink(2.8)),
+    P('25,62 9,67 25,72 9,76 25,81 9,85 25,90', SHELL, ink(2.8)),
+    // Same white tip treatment on all three teeth.
+    C(9, 67, 1.5, SHELL_TIP, { opacity: 0.9, nohalo: true }),
+    C(9, 76, 1.5, SHELL_TIP, { opacity: 0.9, nohalo: true }),
+    C(9, 85, 1.5, SHELL_TIP, { opacity: 0.9, nohalo: true }),
   ]
   // Anchor points identical to v4's — only `w` (tube width) grew, so the
   // thickening happens around the existing centreline instead of pushing any
@@ -2142,12 +2212,24 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // Re-verified after the widen with the same alpha scan (see the
       // revision note above) rather than assumed safe by proximity to the
       // old arm/horn extremes.
+      // BELLY PLATE IS CREAM, NOT `bodyColor` — the reference's underbelly is
+      // reliably cream/beige regardless of the villain's own body tone, the
+      // same reasoning `DENIM`/`FIRE_TONE` already use elsewhere in this
+      // file for a garment the genre needs to read a specific way. Reuses
+      // GLOVE/GLOVE_SHADE verbatim (already this file's cream-white), so
+      // this costs no new colour constant either.
       D(
         `M 25,75 C 25,60 36,60 48,60 L 72,60 C 84,60 95,60 95,75
          L 92,94 Q 92,99 84,99 L 36,99 Q 28,99 25,94 Z`,
-        bodyColor,
+        GLOVE,
         ink(3.4)
       ),
+      // Rib stripes. Most of this plate's area is claimed by the void below,
+      // so the only cream left to carry them is the thin margin above and
+      // below it — two short strokes is what that margin can hold without
+      // crossing into the void's own outline.
+      S('M 33,63.5 L 87,63.5', GLOVE_SHADE, 1.8, { opacity: 0.55, nohalo: true }),
+      S('M 38,97 L 82,97', GLOVE_SHADE, 1.6, { opacity: 0.5, nohalo: true }),
 
       shoulderSpike,
       mirror(shoulderSpike),
@@ -2184,19 +2266,44 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
 
       villainArm(armL, bodyColor, accent, 12),
       villainArm(armR, bodyColor, accent, 12),
+      // Wristlets. Drawn after each arm (and so after that arm's own glove),
+      // at the joint the arm itself defines -- see `wristSpikeBand`'s note.
+      wristSpikeBand(armL),
+      wristSpikeBand(armR),
+
+      // Flame-crest hair. Drawn BEFORE the horns and the head box, same
+      // layering `legoHead` uses for its own hair tufts: the base (y 18..20)
+      // is hidden under the head box below (its own top edge runs from y 20
+      // at the sides to y ~12.5 at the crown, a cubic with both control
+      // points at y 10), so only the three licks that clear that edge
+      // survive as "hair peeking out". First draft peaked at y 3, which
+      // alone pushed the whole figure's alpha-scan ceiling to y -2 (CLIP);
+      // walked back to y 6.5..8 so the ceiling lands at y 1.3, inside the
+      // frame with the same order of margin the horns' own tip (y 9) used
+      // to hold it at y 3.7 before this hair existed.
+      D(
+        `M 39,18 L 44,8 L 49,15 L 55,6.5 L 61,15 L 67,8 L 74,17 L 76,20 L 39,20 Z`,
+        FLAME_OUT,
+        ink(2.2)
+      ),
+      D('M 45,19 L 48,13 L 51,18 L 55,11.5 L 59,18 L 63,13 L 67,19 Z', FLAME_MID, { nohalo: true }),
 
       // v4's left horn had its tip at x 23 against a head whose left edge is
       // x 28 — it was drawn INSIDE the skull and read as nothing at all, while
       // the right one read as a triangle. Now both break the silhouette by the
       // same 12 units and both tips sit at y 13, level with the shortened
       // crown, which is what makes them horns rather than ears. UNTOUCHED by
-      // the Bowser pass — see the revision note above.
-      horn('38,18 15,9 33,27'),
-      horn('74,18 97,12 79,27'),
+      // the Bowser pass — see the revision note above. (Fill and tip highlight
+      // ARE new -- see `horn`'s own note.)
+      horn('38,18 15,9 33,27', [15, 9]),
+      horn('74,18 97,12 79,27', [97, 12]),
       // Widened 56 -> 60 units (28..84 -> 26..86); vertical reach is
       // UNTOUCHED (still 20..58) since it owns the frame's y 3.7 ceiling.
       D('M 26,20 C 26,10 86,10 86,20 L 86,44 C 86,54 76,58 56,58 C 38,58 26,54 26,44 Z', bodyColor, ink(3.4)),
-      villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false }),
+      // eyeColor: red irises, per every one of the four reference photos --
+      // see `villainFaceParts`'s own note. Every other villain's call is
+      // unchanged and keeps the LINE default.
+      villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false, eyeColor: FIRE_RED }),
     ]),
   ]
   return sticker(backdrop, body)
