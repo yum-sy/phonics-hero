@@ -784,16 +784,15 @@ const HERO_PALETTES = {
   // 겹치지 않게 청록·자주·황토를 골랐다 -- 같은 계열이 두 번 나오므로 배색이
   // 유일한 구분 수단이다.
   //
-  // emblem 이 '★' 인 이유: 챕터 8 은 IE/EE/OR 셋 다 다이그래프인데 카봇의
-  // 엠블럼 판이 두 글자를 못 담는다(실측: IE +3.65 여유, EE +0.52, OR -2.04 초과).
-  // 첫 글자만 새기는 우회는 **축약이 아니라 모순**이다 -- 세 다이그래프가 하필
-  // 전부 앱이 이미 다른 소리로 가르친 모음으로 시작한다(I=짧은 /i/ 챕터2,
-  // E=짧은 /e/ 챕터3, O=짧은 /o/ 챕터5). 가슴에 'I' 만 새기면 /ai/ 히어로가
-  // /i/ 의 글자를 달고 나온다. 정보 0 인 '★' 가 틀린 정보보다 낫다.
-  // robots.js 의 판이 넓어지면 'IE'/'EE'/'OR' 로 바꾼다.
-  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: '★' },
-  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: '★' },
-  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: '★' },
+  // 챕터 8 은 IE/EE/OR 셋 다 다이그래프다. 첫 글자만 새기는 우회는
+  // **축약이 아니라 모순**이었다 -- 세 다이그래프가 하필 전부 앱이 이미
+  // 다른 소리로 가르친 모음으로 시작한다(I=짧은 /i/ 챕터2, E=짧은 /e/ 챕터3,
+  // O=짧은 /o/ 챕터5). 그래서 판이 두 글자를 못 담던 동안은 '★' 를 썼다.
+  // `e81a1ae` 가 robots.js 의 엠블럼 판을 5계열 전부 두 글자 대응으로
+  // 넓혔다(IE/EE/OR 포함 16/16 클리핑 0, 재확인됨) -- 이제 실제 다이그래프를 새긴다.
+  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: 'IE' },
+  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: 'EE' },
+  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: 'OR' },
   'nitrostorm': { style: 'robot-deluxe', bodyColor: '#2f7fd6', accent: '#12406e' },
 }
 
