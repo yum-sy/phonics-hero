@@ -208,7 +208,20 @@ CORPUS = [
     # (0.000) despite the same onset, so the fix is the word choice, not just
     # the check. "gum"/"hug"/"bug" all onset on a stop or fricative, which the
     # brightness-based span detector already handles correctly (see "cat").
-    ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], None),
+    #
+    # Third round: the gallery called these five "정확한 발음이긴한데 너무
+    # 짧다" against `a`/`ee` (145-210ms) -- correct, but too brief to register
+    # as a held sound next to its neighbours. See NUCLEUS_STEADY_WINDOW_FRAC's
+    # own comment for the fix (0.55 -> 0.85, claiming more of the SAME real
+    # steady state -- not repetition). `aaa` alone also carries rate=60 here:
+    # at the shared 0.85 fraction and the default rate, "cat"'s edgeFluxRatio
+    # measured right at the 2.0 ceiling (its core span is short enough that
+    # 85% of it still touches onset residue); a slower source rate gives it a
+    # longer core to draw the same 85% from, and 155ms/selfsim .093/efr .82
+    # cleared both gates with margin. The other four needed no rate change --
+    # 0.85 alone put them at 130-150ms inside both gates (see the constant's
+    # comment for the per-sound numbers).
+    ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], 60),
     ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None),
     ('eh', 'vowel', 'nucleus-steady', ['bed', 'ten', 'net', 'egg'], None),
     ('uh', 'vowel', 'nucleus-steady', ['gum', 'hug', 'bug'], None),
@@ -255,14 +268,56 @@ CORPUS = [
     # `ee`/`or` are not true diphthongs by the same test -- English /i:/ and
     # /o:r/-with-rhotic-coloring are usually described as a single target with
     # at most a glide-like offset, not two vowel qualities -- but the safer fix
-    # applied regardless: eel/east and orb/ornate are vowel-initial too, so the
+    # applied regardless: eel/east and or/ornate are vowel-initial too, so the
     # question of whether narrowing would clip a glide never has to be
     # answered for them either.
+    #
+    # Third round: `a`/`ee` were graded OK; `oh`/`eye`/`or` were graded NO
+    # again even though their length is in the same 145-210ms band as `a`
+    # (165/145/155ms) -- so length was not the (or at least not the whole)
+    # cause for these three, and the fix below is a MEASURED cause, not a
+    # guess standing in for one.
+    #
+    # Checked with a new tail-side edge_flux_ratio (same metric as the onset
+    # check, computed over the LAST 20ms instead of the first): oat scored
+    # 2.09 and orb scored 2.08, both above the 2.0 ceiling this project already
+    # treats as "still transitioning" at the front -- i.e. the coda's own
+    # formant transition was bleeding into the BACK of the cut, the mirror of
+    # the defect the first round fixed at the front. "ice" (old eye source)
+    # scored a more moderate 1.11.
+    #
+    # The words that replace them all remove the offending coda rather than
+    # trying to cut around it (a word swap is still the safer fix -- see the
+    # comment above this block):
+    #   oh:  oat(/t/, tail 2.09) -> own(/n/, tail 0.44 at -r 60). A nasal coda
+    #        is voiced and gradual like the vowel itself, the same reason a
+    #        sonorant onset was gentler than a stop's burst in the first
+    #        round's fix -- and it measures that way at the tail too.
+    #   eye: ice(/s/, tail 1.11) -> isle (no coda at all -- the "isle" in
+    #        "aisle" is a closed syllable ending in the vowel itself, /l/
+    #        having gone silent). tail 0.15, the lowest of any candidate
+    #        tried. `eye` (the word) is kept as the second source: it also has
+    #        no coda (tail 0.33) and is literally the letter name.
+    #   or:  orb(/rb/, tail 2.08) -> or (the word itself -- open syllable, the
+    #        r-vowel IS the end of the word, nothing after it to transition
+    #        into). tail 0.36 at -r 60; needed the slower rate because "or" at
+    #        the default rate renders as a 10ms sliver (measured), too short
+    #        for any gate. "ornate" stays as the second source -- its coda is
+    #        much further from the vowel (an unstressed syllable away) and it
+    #        already measured clean.
+    #
+    # One head-side number looks alarming and is NOT evidence of anything:
+    # vowel-initial "eye"/"isle" measure edgeFluxRatio 5.99/2.20 at the FRONT.
+    # That is the diphthong's own glide starting from silence, not a
+    # consonant -- a diphthong's formants are supposed to be moving right from
+    # its onset, and there is no onset consonant left to blame it on. The
+    # gate that would fire on that (NUCLEUS_STEADY_EDGE_FLUX_MAX) is not even
+    # applied to pos == 'nucleus', which is the other reason this is safe.
     ('a', 'vowel', 'nucleus', ['aim', 'ate'], 60),
     ('ee', 'vowel', 'nucleus', ['eel', 'east'], None),
-    ('oh', 'vowel', 'nucleus', ['oat', 'oath'], None),
-    ('eye', 'vowel', 'nucleus', ['ice', 'eye'], None),
-    ('or', 'vowel', 'nucleus', ['orb', 'ornate'], None),
+    ('oh', 'vowel', 'nucleus', ['own', 'ohm'], 60),
+    ('eye', 'vowel', 'nucleus', ['isle', 'eye'], None),
+    ('or', 'vowel', 'nucleus', ['or', 'ornate'], 60),
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
@@ -440,6 +495,37 @@ def edge_flux_ratio(seg, sr):
     return edge_mean / body_mean
 
 
+def tail_flux_ratio(seg, sr):
+    """Mirror of edge_flux_ratio, measured at the LAST EDGE_MS instead of the
+    first. This is what confirmed the round-3 "oh/eye/or" defect: a cut whose
+    front is clean can still carry the following consonant's formant
+    transition at the BACK, if the source word has a coda. Measured directly
+    against the words this project shipped and rejected:
+        oat (old 'oh' source, coda /t/)   tail 2.09
+        orb (old 'or' source, coda /rb/)  tail 2.08
+        ice (old 'eye' source, coda /s/)  tail 1.11
+        own/isle/or (their replacements, no obstruent coda)  tail 0.15-0.44
+    Diagnostic only for now, not gated in failures_for: it is not applied to
+    pos == 'nucleus' generally because that pos also covers a/ee, which this
+    round did not re-examine and must not regress just because a new check
+    started looking at them. Called from probe()/generate()'s report so the
+    numbers above stay reproducible from this file instead of living only in
+    a comment.
+    """
+    fr, step = frames(seg, sr)
+    edge_n = max(2, EDGE_MS // FRAME_MS)
+    deltas = [abs(fr[i][1] - fr[i - 1][1]) for i in range(1, len(fr))]
+    if not deltas:
+        return 0.0
+    tail = deltas[-(edge_n - 1):] if len(deltas) >= edge_n - 1 else deltas
+    body = deltas[:-(edge_n - 1)] if len(deltas) > (edge_n - 1) else deltas
+    tail_mean = sum(tail) / len(tail) if tail else 0.0
+    body_mean = sum(body) / len(body) if body else tail_mean
+    if body_mean <= 1e-6:
+        return 0.0 if tail_mean <= 1e-6 else 99.0
+    return tail_mean / body_mean
+
+
 def pulses(samples, sr):
     step = max(1, sr * PULSE_FRAME_MS // 1000)
     env = []
@@ -605,7 +691,25 @@ def cut_nucleus(samples, sr):
 # flattest window regardless of where it falls, and the length below decides
 # how much of the span it is allowed to claim -- long enough to reach a real
 # steady state, short enough not to just re-select the whole span.
-NUCLEUS_STEADY_WINDOW_FRAC = 0.55
+#
+# 0.85, not the 0.55 this shipped with first. The gallery graded the 0.55
+# output "정확한 발음이긴한데... 조금만 더 천천히" -- correct, but too short to
+# register as a held sound. The fix is NOT repetition (that is exactly last
+# round's "메에에에에" defect returning) -- it is claiming more of the SAME
+# real, already-recorded steady state. Measured across all five sounds at
+# their default rate: every one of them has a wider flat region available than
+# 0.55 was using, and 0.85 stays inside it for four of the five (ihh 150ms/
+# selfsim .168/efr .18, eh 140ms/.188/.82, uh 150ms/.128/.76, awh 130ms/.152/
+# .70 -- all comfortably inside both gates). `aaa` is the one exception: at
+# the default rate 0.85 lands at efr ~2.0, right on the ceiling, because "cat"
+# 's core span is short enough that 85% of it still catches some onset
+# residue. That one sound's CORPUS row carries its own slower rate (see
+# below) rather than raising this constant further for everyone, since 0.85
+# already sits close to where the OTHER four stop being safe (0.55 step
+# increments were tried up to core-span coverage; each sound's own ceiling is
+# a different fraction, and pushing the shared constant past 0.85 to chase
+# `aaa` would have started failing sounds that are fine as they are).
+NUCLEUS_STEADY_WINDOW_FRAC = 0.85
 
 
 def steady_window(fr, a, b, win):
@@ -654,8 +758,13 @@ def extract(word, klass, pos, rate=None):
     raw, sr = say_pcm(word, rate)
     body = trim_word(raw, sr)
     edge_flux = None
+    tail_flux = None
     if pos == 'nucleus':
         seg = cut_nucleus(body, sr)
+        # Diagnostic only (see tail_flux_ratio's docstring) -- not gated, so
+        # this cannot turn into a surprise regression on a/ee, which this
+        # round did not re-examine.
+        tail_flux = tail_flux_ratio(seg, sr)
     elif pos == 'nucleus-steady':
         seg = cut_nucleus_steady(body, sr)
         # Measured on the RAW cut, before fade(): the 15ms cosine taper zeros
@@ -676,6 +785,7 @@ def extract(word, klass, pos, rate=None):
                 pbright=peak_bright(seg, sr),
                 selfsim=self_similarity(seg),
                 edgeFluxRatio=edge_flux,
+                tailFluxRatio=tail_flux,
                 pulses=p, gaps=gaps)
 
 
@@ -807,18 +917,19 @@ def bait():
 
 
 def probe():
-    print('%-5s %-9s %-8s %-7s %7s %7s %7s %7s %7s %6s %6s  %s'
-          % ('key', 'class', 'pos', 'word', 'word', 'seg', 'bright', 'pbrt',
-             'zcr', 'selfs', 'efr', 'reject'))
+    print('%-5s %-9s %-8s %-7s %4s %7s %7s %7s %7s %7s %6s %6s %6s  %s'
+          % ('key', 'class', 'pos', 'word', 'rate', 'word', 'seg', 'bright', 'pbrt',
+             'zcr', 'selfs', 'efr', 'tfr', 'reject'))
     for key, klass, pos, words, rate in CORPUS:
         spec = CLASSES['vowel-steady'] if pos == 'nucleus-steady' else CLASSES[klass]
         for w in words:
             e = extract(w, klass, pos, rate)
             bad = failures_for(e, klass, pos, spec)
             efr = '%6.2f' % e['edgeFluxRatio'] if e['edgeFluxRatio'] is not None else '     -'
-            print('%-5s %-9s %-8s %-7s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f %s  %s'
-                  % (key, klass, pos, w, e['word_ms'], e['ms'], e['bright'],
-                     e['pbright'], e['zcr'], e['selfsim'], efr, '; '.join(bad)))
+            tfr = '%6.2f' % e['tailFluxRatio'] if e['tailFluxRatio'] is not None else '     -'
+            print('%-5s %-9s %-8s %-7s %4s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f %s %s  %s'
+                  % (key, klass, pos, w, rate or '-', e['word_ms'], e['ms'], e['bright'],
+                     e['pbright'], e['zcr'], e['selfsim'], efr, tfr, '; '.join(bad)))
     return []
 
 
@@ -871,6 +982,10 @@ def collisions(keys):
 
 def generate():
     rows = [build_one(*row) for row in CORPUS]
+    # rate actually used per key, keyed by CORPUS's own declaration -- read
+    # back here rather than threaded through build_one/extract, which return
+    # per-WORD dicts that don't carry the row's rate at all.
+    rate_by_key = {row[0]: (row[4] or RATE) for row in CORPUS}
     written = []
     for r in rows:
         if r['chosen'] is None or r['bad']:
@@ -896,6 +1011,7 @@ def generate():
             # proof that nothing is lengthened.
             naturalMs=ms, stretch=1.0,
             source=c['word'], pos=r['pos'], klass=r['klass'], pulses=p,
+            rate=rate_by_key[r['key']],
             selfSim=round(c['selfsim'], 3), bright=round(c['bright'], 3),
             # None for every pos except 'nucleus-steady' -- it is only computed
             # (and only means anything) for that cut. Recorded so the gallery
@@ -903,6 +1019,10 @@ def generate():
             # word, which check() no longer has access to.
             edgeFluxRatio=(round(c['edgeFluxRatio'], 3)
                           if c['edgeFluxRatio'] is not None else None),
+            # Diagnostic only (see tail_flux_ratio's docstring) -- None for
+            # every pos except 'nucleus'.
+            tailFluxRatio=(round(c['tailFluxRatio'], 3)
+                          if c['tailFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
     bad = report(rows)
     manifest = {
@@ -912,8 +1032,10 @@ def generate():
         'sounds': {w['key']: {'ms': w['ms'], 'naturalMs': w['naturalMs'],
                               'stretch': w['stretch'], 'source': w['source'],
                               'pos': w['pos'], 'class': w['klass'],
+                              'rate': w['rate'],
                               'pulses': w['pulses'], 'selfSim': w['selfSim'],
                               'edgeFluxRatio': w['edgeFluxRatio'],
+                              'tailFluxRatio': w['tailFluxRatio'],
                               'bright': w['bright']}
                    for w in written},
     }
