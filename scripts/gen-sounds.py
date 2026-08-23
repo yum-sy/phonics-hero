@@ -4,8 +4,8 @@
 WHY NOT TTS, AND WHY NOT A PHONEME SPELLING EITHER
 --------------------------------------------------
 Web Speech cannot say a bare phoneme, and the reason is worse than "it sounds
-wrong". Measured with `say -v Samantha -r 88`, comparing md5 of the rendered
-audio against the letter name spelled out the same number of times:
+wrong". Comparing md5 of the rendered audio against the letter name spelled out
+the same number of times (`say -v Samantha -r 88`, reproducible with --bait):
 
   sss  922ms == "ess ess ess"       BYTE-IDENTICAL
   mmm  736ms == "em em em"          BYTE-IDENTICAL
@@ -15,54 +15,58 @@ audio against the letter name spelled out the same number of times:
   ihh 1049ms == "eye aitch aitch"   BYTE-IDENTICAL
   (Alex adds fff == "eff eff eff" and aaa == "ay ay ay")
 
-So the very first sound of the app was not /s/. It was "에스 에스 에스" -- the
-letter name, three times. That is the actual identity of the user's complaint,
-and no rate, gap or repeat-count change could ever have touched it.
+So the first sound of the app was never /s/. It was the letter name, three
+times. A word is dictionary pronunciation, so the phoneme is guaranteed and a
+letter-name spell-out is impossible by construction.
 
-A PULSE COUNT CANNOT SEE THIS, which is why the first version of this script
-passed it. /s/ frication bridges the syllable boundaries, so the RMS envelope
-of "ess ess ess" never drops below threshold and it reads as ONE pulse -- the
-same reading a genuine drawn-out /s/ gives. Pulse counting is still worth
-keeping (it catches stutter), but it is NOT a criterion on its own. It is used
-here only alongside the md5 bait test and the spectral class check below.
+NOTHING IS EVER LENGTHENED. READ THIS BEFORE ADDING A TARGET DURATION.
+----------------------------------------------------------------------
+An earlier version of this script padded every non-plosive to a 260ms target --
+sibilants by repeating the frication, voiced sounds by repeating whole pitch
+periods. It passed every check here and was rejected on the real device:
 
-THE FIX: TAKE THE PHONEME FROM A WORD
--------------------------------------
-Once the sound is an asset there is no reason to ask TTS to read a notation as
-a phoneme. `say sun` is dictionary pronunciation: the /s/ in it is guaranteed
-to be /s/, a letter-name spell-out is impossible by construction, and the
-invented notations that were teaching ghost phonemes (`ough`, `awh`, `eh` for
-/e/ when the engine says /ei/) disappear as a category.
+    "ihh eh uh 이것도 세번 반복해서 불편해. 마치 양이 메에에에에 하는 것 같아"
 
-Segmenting without a forced aligner is the real work, and it is done with three
-cheap per-frame descriptors instead of guesses:
-  rms     loudness
-  bright  RMS(first difference) / RMS(signal) -- a high-pass ratio, so it is
-          ~1.4 for sibilant noise and ~0.15 for a vowel. This is what separates
-          a fricative from the vowel after it, which loudness cannot do (a
-          sibilant can be as loud as the vowel).
-  zcr     zero crossings per sample -- a second, independent read on the same
-          axis, used for verification rather than for cutting.
+The manifest confirmed it exactly: everything the user liked was at its natural
+length (tuh 220, puh 190, buh 145) and everything they disliked was at exactly
+260ms. Repeating a pitch period freezes the formants, and a vowel with frozen
+formants is a bleat. The task was to remove repetition and the fix reintroduced
+repetition one layer down.
 
-VERIFICATION, because a cutter nobody checks is worse than no cutter
---------------------------------------------------------------------
-Every generated segment must satisfy all of:
-  1. exactly one audible pulse;
-  2. a length inside its class's measured range;
-  3. materially shorter than the source word (it is a phoneme, not the word);
-  4. spectral descriptors inside the range measured for its class -- this is
-     what says "this is the fricative" rather than "this is some 260ms of
-     something";
-  5. AGREEMENT ACROSS TWO SOURCE WORDS. The same phoneme is cut from a second
-     word and the two descriptor sets must match within tolerance. A cutting
-     artifact does not reproduce across words; a phoneme does.
-Anything that fails is reported by name and makes the script exit non-zero.
-Nothing is shipped on a "close enough".
+So: no stretching, no target duration, natural length only. If a phoneme comes
+out too short, the levers are, in order --
+  1. A SLOWER SOURCE RATE. Real articulation, not repetition. Measured, it is a
+     weak lever: +10-30% across the corpus (/s/ in "sun" 130 -> 150ms at
+     -r 40), which matches what CLAUDE.md already records about rate.
+  2. A WORD WHERE THE PHONEME IS LONGER. This is the strong lever, and the
+     measurement is dramatic: a word-final consonant runs 2-5x its word-initial
+     self. /m/ is 40ms in "mat" and 195ms in "gum"; /n/ 50ms in "net", 220ms in
+     "moon"; /l/ 75 -> 190 ("bell"); /r/ 65 -> 160 ("car"); /s/ 130 -> 155
+     ("bus"). The source word need not be in the curriculum -- the child only
+     ever hears the extracted phoneme.
+  3. SHIP IT SHORT. "buh" is 145ms and the user approved it. Short beats
+     repeated.
+
+ONE PULSE IS NECESSARY BUT NOT SUFFICIENT
+-----------------------------------------
+The pulse count passed the bleating vowels, exactly as it passed
+`sss` == "ess ess ess" a round earlier. Both are the same failure: an RMS
+envelope cannot see what a sound IS. So the accept gates are five independent
+things (length, class, cross-word agreement, not-the-whole-word, and
+self-similarity), and none of them is trusted alone.
+
+`selfSim` is the direct guard against a return of the stretch: a spliced signal
+contains a literally repeated block, so its long-lag autocorrelation is ~1.
+Measured against the rejected build: the four period-repeated sounds scored
+mmm 0.963, nnn 0.994, lll 0.960, rrr 0.972, against 0.094-0.147 for the eight
+natural plosives. Its blind spot is named rather than papered over -- a
+crossfaded NOISE loop does not correlate with itself (the rejected sss scored
+0.170), so this catches the voiced splice, not every splice.
 
 USAGE
   python3 scripts/gen-sounds.py            # generate + verify
-  python3 scripts/gen-sounds.py --bait     # md5 spell-out test on notations
   python3 scripts/gen-sounds.py --probe    # per-word descriptor dump (tuning)
+  python3 scripts/gen-sounds.py --bait     # md5 spell-out test on notations
   python3 scripts/gen-sounds.py --check    # re-verify the committed assets
 """
 
@@ -77,19 +81,20 @@ import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, os.pardir, 'public', 'sounds')
-TMP_DIR = os.path.join(HERE, os.pardir, 'public', 'sounds', '.tmp')
+TMP_DIR = os.path.join(OUT_DIR, '.tmp')
 
 # Samantha is the iOS en-US default and the voice every duration constant in
-# src/audio.js is fitted to. -r 88 is where Web Speech's rate 0.5 (audio.js
-# EN_RATE) lands on Apple's coarse rate buckets, and a slower word is also an
-# easier word to segment.
+# src/audio.js is fitted to.
 VOICE = 'Samantha'
+
+# Default source rate. -r 88 is where Web Speech's rate 0.5 (audio.js EN_RATE)
+# lands on Apple's coarse rate buckets. Per-sound overrides live in CORPUS; it
+# is a real lever but a weak one, so word choice does most of the work.
 RATE = 88
 
 # 22050 mono 16-bit PCM. WAV rather than AAC on purpose: an AAC encoder adds
 # priming silence and does not round-trip a duration exactly, and these clips
-# are 200-400ms where ~50ms of encoder padding is a defect the ear can hear.
-# The whole corpus is ~350KB either way.
+# are 100-250ms where ~50ms of encoder padding is a defect the ear can hear.
 SR = 22050
 EXT = 'wav'
 
@@ -103,85 +108,98 @@ FADE_MS = 15
 # next to the vowel, and a 0.12 gate cuts the consonant off entirely.
 SILENCE_GATE = 0.04
 
+# How much of the following vowel a plosive keeps. A word-initial voiced plosive
+# is almost pure burst -- measured 15ms for /b/ in "bag", 25ms for /d/ in "dog"
+# -- and 15ms of anything is inaudible to a 5-year-old. So a plosive ships as
+# the burst plus the start of the real vowel next to it: a genuine CV fragment
+# ("ba" out of "bag") rather than the invented schwa the `buh` notation was
+# asking the engine for. The user approved every one of these.
+PLOSIVE_VOWEL_MS = 130
+
 # ---------------------------------------------------------------------------
 # CLASSES. The cut rule and the accept ranges both key off these.
 #
-# The `bright` bands are MEASURED (run --probe), not guessed. Every source word
-# in the corpus, Samantha -r 88:
-#   sibilant  1.69 - 1.89     nasal 0.06 - 0.09     liquid 0.06 - 0.09
-#   vowel     0.12 - 0.25     plosive burst (pbright) 0.52 - 1.48
-# The bands here are those ranges opened up enough to survive a different word,
-# and they are what turns "I cut 260ms out of a word" into "I cut the /s/".
+# The `bright` bands are MEASURED (run --probe), not guessed. Samantha -r 88:
+#   sibilant  1.29 - 1.89     nasal 0.06 - 0.12     liquid 0.08 - 0.20
+#   vowel     0.12 - 0.25     plosive burst (pbright) 0.48 - 1.48
+# The bands below are those ranges opened up enough to survive a different
+# word. They are what turns "I cut 150ms out of a word" into "I cut the /s/".
+#
+# The `ms` bands are the NATURAL lengths this corpus actually produces, with a
+# little air. They are deliberately loose at the bottom: a gate that demands a
+# length nature does not supply is a gate that demands a stretch, and that is
+# how the bleating vowels got shipped. If a sound fails one of these, the fix
+# is a different word, never a longer file.
 CLASSES = {
-    #                    ms range      bright range   zcr range
-    'sibilant': dict(ms=(150, 340), bright=(0.70, 2.00), zcr=(0.20, 0.90)),
-    'nasal':    dict(ms=(150, 340), bright=(0.03, 0.45), zcr=(0.00, 0.25)),
-    'liquid':   dict(ms=(150, 340), bright=(0.03, 0.55), zcr=(0.00, 0.30)),
-    # A plosive ships as burst + vowel onset (see PLOSIVE_VOWEL_MS), so its
-    # MEAN brightness is a vowel's. `pbright` is the burst itself.
+    'sibilant': dict(ms=(80, 320), bright=(0.70, 2.00), zcr=(0.20, 0.90)),
+    'nasal':    dict(ms=(90, 320), bright=(0.03, 0.45), zcr=(0.00, 0.25)),
+    'liquid':   dict(ms=(90, 320), bright=(0.03, 0.55), zcr=(0.00, 0.30)),
     'plosive':  dict(ms=(100, 340), bright=(0.05, 2.00), zcr=(0.02, 0.90),
                      pbright=(0.40, 3.00)),
-    # 120 rather than 260: a diphthong that legitimately refuses to stretch
-    # (its identity is the glide, not a steady state) still ships at its
-    # natural length instead of being dropped.
-    'vowel':    dict(ms=(120, 400), bright=(0.02, 0.45), zcr=(0.00, 0.25)),
+    'vowel':    dict(ms=(80, 340), bright=(0.02, 0.45), zcr=(0.00, 0.25)),
 }
 
 # ---------------------------------------------------------------------------
 # THE CORPUS.
 #
-# key      the exact spoken string in the chapter data -- the asset key, which
-#          is why none of this needs a chapter-data change
-# klass    segmentation rule + accept ranges
-# words    source words, best first. The FIRST one that passes every check is
-#          shipped; the others are the cross-word agreement evidence, so there
-#          must always be at least two.
-# ms       target segment length
+# key    the exact spoken string in the chapter data -- the asset key, which is
+#        why none of this needs a chapter-data change
+# klass  segmentation rule + accept ranges
+# pos    where in the word the phoneme sits: 'onset' | 'coda' | 'nucleus'.
+#        This is the main tuning knob, because a coda consonant is 2-5x its
+#        onset self (see the header).
+# words  source words, best first. The FIRST one that passes every check is
+#        shipped; the others are the cross-word agreement evidence, so there
+#        must always be at least two.
+# rate   optional source-rate override.
 #
-# Words are taken from the strings the chapters already speak wherever one
-# exists (extracted from src/data/chapters/**, read-only), so the phoneme the
-# child drills is the phoneme they then hear in the app's own words.
+# Words come from the strings the chapters already speak wherever one works, so
+# the phoneme the child drills is the phoneme they hear in the app's own words.
+# Where the corpus has no word long enough (every coda below), an ordinary
+# English word is used instead -- only the extracted phoneme is ever heard.
 CORPUS = [
-    ('sss', 'sibilant', ['sun', 'sat', 'sock'], 260),
-    ('fff', 'sibilant', ['fit', 'fan'], 260),
-    ('mmm', 'nasal', ['mat', 'man', 'moon'], 260),
-    ('nnn', 'nasal', ['net', 'nut', 'nose'], 260),
-    ('lll', 'liquid', ['lap', 'lid'], 260),
-    ('rrr', 'liquid', ['rat', 'red', 'ring'], 260),
-    # /z/ is not taught in chapters 1-8, so there is no corpus word for it and
-    # these are ordinary English words instead.
-    ('zz', 'sibilant', ['zip', 'zoo'], 260),
-    ('tuh', 'plosive', ['top', 'tap'], 200),
-    ('puh', 'plosive', ['pig', 'pen'], 200),
-    ('kuh', 'plosive', ['cat', 'key', 'cake'], 200),
-    ('buh', 'plosive', ['bag', 'bed', 'big'], 200),
-    ('duh', 'plosive', ['dog', 'dad'], 200),
-    ('guh', 'plosive', ['gap', 'gum', 'gift'], 200),
-    ('huh', 'plosive', ['hat', 'hen', 'hand'], 200),
-    ('juh', 'plosive', ['jam', 'jog'], 200),
+    # Continuants ship from CODA position: word-initial /m/ is 40ms, which is
+    # why the rejected build felt it had to pad them.
+    ('sss', 'sibilant', 'coda', ['bus', 'miss', 'hiss'], None),
+    # /f/ is the exception -- a word-final /f/ is so weak the coda cut finds
+    # 5-15ms of it ("off", "puff"), so /f/ stays word-initial.
+    ('fff', 'sibilant', 'onset', ['fit', 'fan'], None),
+    ('mmm', 'nasal', 'coda', ['gum', 'ham'], None),
+    ('nnn', 'nasal', 'coda', ['moon', 'man'], None),
+    ('lll', 'liquid', 'coda', ['bell', 'ball'], None),
+    ('rrr', 'liquid', 'coda', ['car', 'four'], None),
+    ('zz', 'sibilant', 'coda', ['buzz', 'fizz'], None),
+    # Plosives: burst + vowel onset, all approved on the device at 145-220ms.
+    ('tuh', 'plosive', 'onset', ['top', 'tap'], None),
+    ('puh', 'plosive', 'onset', ['pig', 'pen'], None),
+    ('kuh', 'plosive', 'onset', ['cat', 'key', 'cake'], None),
+    ('buh', 'plosive', 'onset', ['bag', 'bed', 'big'], None),
+    ('duh', 'plosive', 'onset', ['dog', 'dad'], None),
+    ('guh', 'plosive', 'onset', ['gap', 'gum', 'gift'], None),
+    ('huh', 'plosive', 'onset', ['hat', 'hen', 'hand'], None),
+    ('juh', 'plosive', 'onset', ['jam', 'jog'], None),
     # Short vowels. Taking these from words is also the fix for a bug CLAUDE.md
     # records as open: A's target is /ae/ (apple) and the notation made the
     # engine say /ei/.
-    ('aaa', 'vowel', ['cat', 'ant', 'apple'], 260),
-    ('ihh', 'vowel', ['pin', 'ink', 'insect'], 260),
-    ('eh', 'vowel', ['egg', 'ten', 'net'], 260),
-    ('uh', 'vowel', ['nut', 'gum', 'sun'], 260),
-    ('awh', 'vowel', ['dog', 'got'], 260),
+    ('aaa', 'vowel', 'nucleus', ['cat', 'ant', 'apple'], None),
+    ('ihh', 'vowel', 'nucleus', ['ink', 'pin', 'insect'], None),
+    ('eh', 'vowel', 'nucleus', ['bed', 'ten', 'net', 'egg'], None),
+    ('uh', 'vowel', 'nucleus', ['mud', 'gum', 'nut'], None),
+    ('awh', 'vowel', 'nucleus', ['got', 'dog', 'hot'], None),
     # Digraph long vowels. For these the letter name IS the target phoneme, so
     # the notation was not teaching the wrong sound -- but taking them from
     # words is what finally separates `a` from `eh`, which CLAUDE.md records as
     # a confirmed collision that broke a scored question.
-    ('a', 'vowel', ['rain', 'cake', 'aim'], 260),
-    ('ee', 'vowel', ['bee', 'tree'], 260),
-    ('oh', 'vowel', ['boat', 'coat'], 260),
-    ('eye', 'vowel', ['tie', 'pie'], 260),
-    ('or', 'vowel', ['fork', 'corn'], 260),
+    ('a', 'vowel', 'nucleus', ['rain', 'cake', 'aim'], None),
+    ('ee', 'vowel', 'nucleus', ['bee', 'tree'], None),
+    ('oh', 'vowel', 'nucleus', ['boat', 'coat'], None),
+    ('eye', 'vowel', 'nucleus', ['tie', 'pie'], None),
+    ('or', 'vowel', 'nucleus', ['corn', 'fork'], None),
 ]
 
-# The notation each key USED to be spoken as, and the letter-name spell-out it
+# The notation each key used to be spoken as, and the letter-name spell-out it
 # turned out to be byte-identical to. Kept as a live test (--bait) rather than a
-# comment: it is the evidence for why this script exists, and if a future voice
-# stops folding them the decision can be revisited on measurement.
+# comment: it is the evidence for why this script exists.
 BAIT = {
     'sss': 'ess ess ess', 'fff': 'eff eff eff', 'nnn': 'en en en',
     'mmm': 'em em em', 'lll': 'el el el', 'rrr': 'ar ar ar',
@@ -194,12 +212,13 @@ BAIT = {
 # ---------------------------------------------------------------------------
 # audio plumbing
 
-def say_pcm(text):
+def say_pcm(text, rate=None):
+    rate = RATE if rate is None else rate
     os.makedirs(TMP_DIR, exist_ok=True)
-    tag = hashlib.md5(text.encode()).hexdigest()[:10]
+    tag = hashlib.md5(('%s@%d' % (text, rate)).encode()).hexdigest()[:10]
     aiff = os.path.join(TMP_DIR, tag + '.aiff')
     wav = os.path.join(TMP_DIR, tag + '.wav')
-    subprocess.run(['say', '-v', VOICE, '-r', str(RATE), '-o', aiff, text],
+    subprocess.run(['say', '-v', VOICE, '-r', str(rate), '-o', aiff, text],
                    check=True)
     subprocess.run(['afconvert', '-f', 'WAVE', '-d', 'LEI16', '-c', '1',
                     '-r', str(SR), aiff, wav],
@@ -245,7 +264,13 @@ def write_wav(path, samples, sr):
 
 
 def frames(samples, sr, ms=FRAME_MS):
-    """Per-frame (rms, bright, zcr)."""
+    """Per-frame (rms, bright, zcr).
+
+    `bright` is RMS(first difference) / RMS(signal) -- a high-pass ratio, so it
+    is ~1.9 for sibilant noise and ~0.15 for a vowel. It is what separates a
+    fricative from the vowel next to it, which loudness cannot do: a sibilant
+    can be as loud as the vowel.
+    """
     step = max(1, sr * ms // 1000)
     out = []
     for i in range(0, len(samples) - step + 1, step):
@@ -260,7 +285,6 @@ def frames(samples, sr, ms=FRAME_MS):
 
 
 def descriptors(seg):
-    """Whole-segment (rms, bright, zcr) -- what the class check reads."""
     if not seg:
         return 0.0, 0.0, 0.0
     rms = math.sqrt(sum(x * x for x in seg) / len(seg))
@@ -277,6 +301,40 @@ def peak_bright(seg, sr):
     the CV fragment's vowel outweighs the burst 10:1 by duration."""
     fr, _ = frames([int(x) for x in seg], sr)
     return max((f[1] for f in fr), default=0.0)
+
+
+# Lags shorter than this are pitch periods, which every voiced sound has and
+# which are not evidence of anything. A splice repeats a whole loop unit, and
+# the units this script's rejected version used were 60ms and up.
+SELFSIM_MIN_LAG_MS = 40
+SELFSIM_DOWNSAMPLE = 5
+
+
+def self_similarity(seg):
+    """Peak long-lag normalised autocorrelation: ~1 means a literal repeat.
+
+    The direct test for the defect that got the previous build rejected. See
+    the module header for the measured separation and for the blind spot.
+    """
+    x = [float(v) for v in seg][::SELFSIM_DOWNSAMPLE]
+    fs = float(SR) / SELFSIM_DOWNSAMPLE
+    n = len(x)
+    lo, hi = int(fs * SELFSIM_MIN_LAG_MS / 1000), n // 2
+    best = 0.0
+    for lag in range(lo, hi):
+        m = n - lag
+        num = ea = eb = 0.0
+        for i in range(m):
+            a, b = x[i], x[i + lag]
+            num += a * b
+            ea += a * a
+            eb += b * b
+        den = math.sqrt(ea * eb)
+        if den:
+            v = num / den
+            if v > best:
+                best = v
+    return best
 
 
 def pulses(samples, sr):
@@ -342,40 +400,21 @@ def trim_word(samples, sr):
 
 # ---------------------------------------------------------------------------
 # segmentation
-
-# How much of the following vowel a plosive keeps. A word-initial voiced
-# plosive is almost pure burst -- measured 15ms for /b/ in "bag", 25ms for /d/
-# in "dog", 20ms for /g/ in "gap" -- and 15ms of anything is inaudible to a
-# 5-year-old. So a plosive ships as the burst plus the start of the real vowel
-# next to it, which is a genuine CV fragment ("ba" out of "bag") rather than the
-# invented schwa the old `buh` notation was asking the engine for. Plosives are
-# the one class that cannot be lengthened any other way: their duration is
-# articulation-bound, which is the same fact EN_RATE's comment in audio.js
-# records from the other direction.
-PLOSIVE_VOWEL_MS = 130
-
+#
+# The discriminator differs by class, and getting it wrong is SILENT -- an
+# earlier version used the brightness rule for everything and cut /m/ at 10ms,
+# because a nasal is already dark, so "brightness has collapsed" was true at the
+# nasal's own first frame. Then loudness was tried and was wrong too: `say`
+# renders a word-initial nasal loud enough to clear any "the vowel has arrived"
+# energy gate on its own first frame.
+#
+#   sibilant / plosive  noise or burst, much BRIGHTER than the vowel
+#   nasal / liquid      voiced and dark like the vowel, but much QUIETER
 
 def onset_end(fr, peak, klass):
-    """Frame index where the onset consonant gives way to the vowel.
-
-    The discriminator has to differ by class, and getting this wrong is silent:
-    the first version used the brightness rule for everything and cut /m/ at
-    10ms, because a nasal is ALREADY dark, so "brightness has collapsed" was
-    true at the nasal's own first frame.
-      * sibilant / plosive -- noise or burst, much BRIGHTER than the vowel, so
-        the boundary is where brightness collapses while the signal is loud.
-      * nasal / liquid -- voiced and dark like the vowel, but much QUIETER, so
-        the boundary is where loudness arrives.
-    """
+    """Frame index where a word-initial consonant gives way to the vowel."""
     pk = max(range(len(fr)), key=lambda i: fr[i][0])
     if klass in ('nasal', 'liquid'):
-        # Loudness does NOT work here either, and that was the second wrong
-        # guess: `say` renders a word-initial nasal loud enough to clear any
-        # "the vowel has arrived" energy gate on its own first frame (measured:
-        # /m/ in "mat" cut at 15ms). Brightness separates them after all --
-        # just in the opposite direction from a sibilant. A nasal or liquid is
-        # DARKER than the vowel that follows (0.06 against 0.21), so the
-        # boundary is the first bright-enough frame, not the first loud one.
         for i in range(2, pk + 1):
             if fr[i][1] > 0.13 and fr[i][0] > peak * 0.35:
                 return i
@@ -386,137 +425,43 @@ def onset_end(fr, peak, klass):
     return max(1, pk)
 
 
-def stretch_noise(seg, sr, target_ms):
-    """Lengthen aperiodic frication by repeating its steady middle.
-
-    Only ever called for sibilants, and that restriction is the whole
-    justification: /s/ and /f/ are noise with no pitch, so a splice has no
-    period to be out of step with and the join is inaudible -- sustaining /s/
-    for longer is physically the same steady noise. A voiced sound cannot be
-    treated this way (the splice would land mid-period and buzz), which is why
-    nasals, liquids and vowels ship at whatever length the word gave them.
-    """
-    want = int(sr * target_ms / 1000)
-    if len(seg) >= want:
-        return seg
-    a, b = len(seg) // 5, len(seg) - len(seg) // 5
-    unit = seg[a:b]
-    if len(unit) < sr // 100:
-        return seg
-    xf = min(len(unit) // 3, int(sr * 0.010))
-    out = list(seg)
-    while len(out) < want:
-        nxt = list(unit)
-        for i in range(xf):
-            g = 0.5 - 0.5 * math.cos(math.pi * i / xf)
-            out[-xf + i] = out[-xf + i] * (1 - g) + nxt[i] * g
-        out.extend(nxt[xf:])
-    return out[:want]
+def coda_start(fr, peak, klass):
+    """Frame index where a word-final consonant begins, scanning after the
+    vowel peak. The mirror of onset_end, and the reason the continuants are
+    usable at all."""
+    pk = max(range(len(fr)), key=lambda i: fr[i][0])
+    for i in range(pk, len(fr)):
+        if klass in ('nasal', 'liquid'):
+            if fr[i][0] < peak * 0.45:
+                return i
+        elif fr[i][1] > 0.60:
+            return i
+    return None
 
 
-# Pitch is estimated over a short window in the MIDDLE of the segment, not over
-# the whole of it. A vowel carved out of a word carries the word's intonation
-# contour, so autocorrelation across the full nucleus is smeared by the pitch
-# drift and reports "not periodic" for a perfectly ordinary vowel (measured:
-# confidence 0.26-0.47 on the short vowels, against 0.98 on the nasals, whose
-# segments are short enough that they cannot drift). A 60ms window is several
-# periods at any speaking pitch and short enough to be locally steady.
-PITCH_WINDOW_MS = 60
-
-
-def period_of(seg, sr):
-    """(period in samples, normalised autocorrelation confidence)."""
-    full = [float(v) for v in seg]
-    win = int(sr * PITCH_WINDOW_MS / 1000)
-    if len(full) > win:
-        a = (len(full) - win) // 2
-        x = full[a:a + win]
-    else:
-        x = full
-    n = len(x)
-    lo, hi = int(sr / 400), min(int(sr / 60), n // 2)
-    if hi <= lo:
-        return 0, 0.0
-    best, bestv = 0, 0.0
-    for lag in range(lo, hi):
-        m = n - lag
-        num = ea = eb = 0.0
-        for i in range(m):
-            a, b = x[i], x[i + lag]
-            num += a * b
-            ea += a * a
-            eb += b * b
-        den = math.sqrt(ea * eb)
-        v = (num / den) if den else 0.0
-        if v > bestv:
-            bestv, best = v, lag
-    return best, bestv
-
-
-# Below this the signal is not periodic enough for the splice to be inaudible,
-# so the sound ships at its natural length and fails the length check instead
-# of being quietly faked longer.
-PERIODIC_MIN_CONF = 0.5
-
-
-def stretch_periodic(seg, sr, target_ms):
-    """Lengthen a VOICED sound by repeating whole pitch periods.
-
-    Nasals, liquids and vowels come out of a word far shorter than a phonics
-    drill wants (measured: /m/ in "mat" is 40ms, /r/ in "rat" 65ms), and the
-    noise-repeat trick used for sibilants cannot be reused: a voiced sound has
-    a period, and a splice that lands mid-period is a phase discontinuity, i.e.
-    a buzz. So the loop unit here is an INTEGER NUMBER OF PITCH PERIODS and it
-    is inserted at an exact multiple of the period from its own start -- the
-    waveform continues in phase and there is nothing to cross-fade.
-
-    Returns (segment, confidence). A low confidence means "not periodic", and
-    the caller must not treat an unstretched segment as a success.
-    """
-    want = int(sr * target_ms / 1000)
-    if len(seg) >= want:
-        return seg, 1.0
-    T, conf = period_of(seg, sr)
-    if not T or conf < PERIODIC_MIN_CONF or len(seg) < 2 * T:
-        return seg, conf
-    # The loop unit comes from the steady middle for the same reason the pitch
-    # estimate does, and it matters more for a diphthong: repeating a unit taken
-    # from the glide would stutter the glide instead of holding the vowel.
-    win = min(len(seg), max(2 * T, int(sr * PITCH_WINDOW_MS / 1000)))
-    reps = max(1, win // T)
-    unit_len = reps * T
-    start = max(0, (len(seg) - unit_len) // 2)
-    unit = list(seg[start:start + unit_len])
-    out = list(seg)
-    ins = start + unit_len
-    while len(out) < want:
-        out[ins:ins] = unit
-        ins += unit_len
-    return out[:want], conf
-
-
-def cut_onset(samples, sr, target_ms, klass):
-    """The word-initial consonant. Returns (segment, natural_ms)."""
+def cut_onset(samples, sr, klass):
     fr, step = frames(samples, sr)
     if not fr:
-        return [], 0.0
+        return []
     peak = max(f[0] for f in fr)
-    end = onset_end(fr, peak, klass)
-    hi = end * step
+    hi = onset_end(fr, peak, klass) * step
     if klass == 'plosive':
         hi = min(len(samples), hi + int(sr * PLOSIVE_VOWEL_MS / 1000))
-        return fade(samples[0:hi]), hi / sr * 1000.0
-    want = int(sr * target_ms / 1000)
-    if hi <= want:
-        seg = samples[0:hi]
-    else:
-        # Keep the part adjacent to the vowel: that is the fully-formed end of
-        # the constriction, and where a natural /s/ or /m/ actually sits.
-        seg = samples[hi - want:hi]
-    return seg, len(seg) / sr * 1000.0
+    return samples[0:hi]
 
 
-def cut_nucleus(samples, sr, target_ms):
+def cut_coda(samples, sr, klass):
+    fr, step = frames(samples, sr)
+    if not fr:
+        return []
+    peak = max(f[0] for f in fr)
+    start = coda_start(fr, peak, klass)
+    if start is None:
+        return []
+    return samples[start * step:]
+
+
+def cut_nucleus(samples, sr):
     """The steady part of the vowel: expand around the loudest frame."""
     fr, step = frames(samples, sr)
     if not fr:
@@ -529,36 +474,27 @@ def cut_nucleus(samples, sr, target_ms):
     b = pk
     while b + 1 < len(fr) and fr[b + 1][0] > peak * 0.55 and fr[b + 1][1] < 0.45:
         b += 1
-    lo, hi = a * step, (b + 1) * step
-    want = int(sr * target_ms / 1000)
-    if hi - lo > want:
-        mid = (lo + hi) // 2
-        lo = max(lo, mid - want // 2)
-        hi = lo + want
-    return samples[lo:hi]
+    return samples[a * step:(b + 1) * step]
 
 
-def extract(word, klass, target_ms):
-    raw, sr = say_pcm(word)
+def extract(word, klass, pos, rate=None):
+    raw, sr = say_pcm(word, rate)
     body = trim_word(raw, sr)
-    if klass == 'vowel':
-        seg = cut_nucleus(body, sr, target_ms)
-        natural = len(seg) / sr * 1000.0
+    if pos == 'nucleus':
+        seg = cut_nucleus(body, sr)
+    elif pos == 'coda':
+        seg = cut_coda(body, sr, klass)
     else:
-        seg, natural = cut_onset(body, sr, target_ms, klass)
-    conf = 1.0
-    if klass == 'sibilant':
-        seg = stretch_noise(seg, sr, target_ms)
-    elif klass in ('nasal', 'liquid', 'vowel'):
-        seg, conf = stretch_periodic(seg, sr, target_ms)
+        seg = cut_onset(body, sr, klass)
     seg = fade(seg)
     rms, bright, zcr = descriptors(seg)
-    pb = peak_bright(seg, sr)
     p, gaps = pulses([int(x) for x in seg], sr)
-    return dict(word=word, sr=sr, seg=seg,
+    return dict(word=word, sr=sr, seg=seg, pos=pos,
                 word_ms=len(body) / sr * 1000.0,
-                ms=len(seg) / sr * 1000.0, natural_ms=natural,
-                rms=rms, bright=bright, zcr=zcr, pbright=pb, conf=conf,
+                ms=len(seg) / sr * 1000.0,
+                rms=rms, bright=bright, zcr=zcr,
+                pbright=peak_bright(seg, sr),
+                selfsim=self_similarity(seg),
                 pulses=p, gaps=gaps)
 
 
@@ -570,19 +506,22 @@ def extract(word, klass, target_ms):
 AGREE_BRIGHT = 0.45
 AGREE_ZCR = 0.20
 
+# Above this the segment contains a literally repeated block. Set well clear of
+# both measured populations: 0.147 was the worst natural sound, 0.960 the best
+# spliced one.
+SELFSIM_MAX = 0.90
+
 
 def failures_for(e, klass, spec):
     bad = []
     if e['pulses'] != 1:
         bad.append('pulses=%d (gaps %s)' % (e['pulses'], e['gaps']))
     if not spec['ms'][0] <= e['ms'] <= spec['ms'][1]:
-        bad.append('ms=%.0f outside %s' % (e['ms'], spec['ms']))
-    # Measured on the NATURAL cut, before any noise stretch: a stretched /s/ is
-    # legitimately longer than the word it came from, and comparing the
-    # stretched length here rejected a correct extraction ("fit" -> 85%).
-    if e['natural_ms'] > e['word_ms'] * 0.8:
-        bad.append('natural cut %.0fms is %.0f%% of the whole word'
-                   % (e['natural_ms'], 100 * e['natural_ms'] / e['word_ms']))
+        bad.append('ms=%.0f outside %s -- pick a different WORD, never a '
+                   'longer file' % (e['ms'], spec['ms']))
+    if e['ms'] > e['word_ms'] * 0.8:
+        bad.append('%.0fms is %.0f%% of the whole word'
+                   % (e['ms'], 100 * e['ms'] / e['word_ms']))
     if not spec['bright'][0] <= e['bright'] <= spec['bright'][1]:
         bad.append('bright=%.2f outside %s (not a %s)'
                    % (e['bright'], spec['bright'], klass))
@@ -591,18 +530,21 @@ def failures_for(e, klass, spec):
     if 'pbright' in spec and not spec['pbright'][0] <= e['pbright'] <= spec['pbright'][1]:
         bad.append('pbright=%.2f outside %s (no burst -> not a plosive)'
                    % (e['pbright'], spec['pbright']))
+    if e['selfsim'] > SELFSIM_MAX:
+        bad.append('selfsim=%.3f > %.2f -- contains a repeated block'
+                   % (e['selfsim'], SELFSIM_MAX))
     return bad
 
 
-def build_one(key, klass, words, target_ms):
+def build_one(key, klass, pos, words, rate):
     spec = CLASSES[klass]
     tried = []
     for w in words:
-        e = extract(w, klass, target_ms)
+        e = extract(w, klass, pos, rate)
         e['bad'] = failures_for(e, klass, spec)
         tried.append(e)
     clean = [e for e in tried if not e['bad']]
-    row = dict(key=key, klass=klass, tried=tried, chosen=None,
+    row = dict(key=key, klass=klass, pos=pos, tried=tried, chosen=None,
                agree=None, bad=[])
     if not clean:
         row['bad'] = ['no source word produced an acceptable %s: %s' % (
@@ -653,36 +595,35 @@ def bait():
 
 
 def probe():
-    print('%-5s %-9s %-7s %7s %7s %7s %7s %7s %7s %6s  %s'
-          % ('key', 'class', 'word', 'word', 'seg', 'nat', 'bright', 'pbrt',
-             'zcr/conf', 'puls', 'reject'))
-    for key, klass, words, ms in CORPUS:
+    print('%-5s %-9s %-8s %-7s %7s %7s %7s %7s %7s %6s  %s'
+          % ('key', 'class', 'pos', 'word', 'word', 'seg', 'bright', 'pbrt',
+             'zcr', 'selfs', 'reject'))
+    for key, klass, pos, words, rate in CORPUS:
         for w in words:
-            e = extract(w, klass, ms)
+            e = extract(w, klass, pos, rate)
             bad = failures_for(e, klass, CLASSES[klass])
-            print('%-5s %-9s %-7s %6.0fms %6.0fms %6.0fms %7.2f %7.2f %.3f/%.2f %5d  %s'
-                  % (key, klass, w, e['word_ms'], e['ms'], e['natural_ms'],
-                     e['bright'], e['pbright'], e['zcr'], e['conf'],
-                     e['pulses'], '; '.join(bad)))
+            print('%-5s %-9s %-8s %-7s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f  %s'
+                  % (key, klass, pos, w, e['word_ms'], e['ms'], e['bright'],
+                     e['pbright'], e['zcr'], e['selfsim'], '; '.join(bad)))
     return []
 
 
 def report(rows):
-    print('%-5s %-9s %-7s %7s %8s %7s %6s  %s'
-          % ('key', 'class', 'source', 'ms', 'bright', 'zcr', 'pulses',
+    print('%-5s %-9s %-8s %-7s %7s %7s %6s %6s  %s'
+          % ('key', 'class', 'pos', 'source', 'ms', 'bright', 'selfs', 'puls',
              'cross-word agreement'))
     bad = []
     for r in rows:
         c = r['chosen']
         if c is None:
-            print('%-5s %-9s %-7s %7s %8s %7s %6s  --' % (
-                r['key'], r['klass'], '-', '-', '-', '-', '-'))
+            print('%-5s %-9s %-8s %-7s %7s %7s %6s %6s  --'
+                  % (r['key'], r['klass'], r['pos'], '-', '-', '-', '-', '-'))
             bad.append(r)
             continue
         a = r['agree']
-        print('%-5s %-9s %-7s %6.0fms %8.2f %7.3f %6d  %s'
-              % (r['key'], r['klass'], c['word'], c['ms'], c['bright'],
-                 c['zcr'], c['pulses'],
+        print('%-5s %-9s %-8s %-7s %6.0fms %7.2f %6.3f %6d  %s'
+              % (r['key'], r['klass'], r['pos'], c['word'], c['ms'],
+                 c['bright'], c['selfsim'], c['pulses'],
                  ('%s dbright=%.2f dzcr=%.3f' % (a['word'], a['dbright'], a['dzcr']))
                  if a else 'NONE'))
         if r['bad']:
@@ -695,9 +636,8 @@ def report(rows):
 
 
 def collisions(keys):
-    """Byte-identical assets are one sound to the ear. There should be none now
-    -- two different words cannot render identically -- so any hit is a real
-    failure rather than a known condition to be waived."""
+    """Byte-identical assets are one sound to the ear. Two different words
+    cannot render identically, so any hit here is a real failure."""
     by_hash = {}
     for k in keys:
         path = os.path.join(OUT_DIR, '%s.%s' % (k, EXT))
@@ -733,17 +673,26 @@ def generate():
         if p != 1:
             r['bad'] = ['written file re-reads as %d pulses' % p]
             continue
-        written.append(dict(key=r['key'], ms=ms, source=c['word'],
-                            pulses=p, klass=r['klass'],
-                            bright=round(c['bright'], 3),
-                            bytes=os.path.getsize(path)))
+        written.append(dict(
+            key=r['key'], ms=ms,
+            # naturalMs and stretch exist so that "is this one padded?" is
+            # answerable from outside the audio. The rejected build could only
+            # be diagnosed by noticing that every bad sound was exactly 260ms,
+            # which cost a round. stretch == 1.0 on every line is the standing
+            # proof that nothing is lengthened.
+            naturalMs=ms, stretch=1.0,
+            source=c['word'], pos=r['pos'], klass=r['klass'], pulses=p,
+            selfSim=round(c['selfsim'], 3), bright=round(c['bright'], 3),
+            bytes=os.path.getsize(path)))
     bad = report(rows)
     manifest = {
         'ext': EXT,
         'voice': VOICE,
         'rate': RATE,
-        'sounds': {w['key']: {'ms': w['ms'], 'source': w['source'],
-                              'pulses': w['pulses'], 'class': w['klass'],
+        'sounds': {w['key']: {'ms': w['ms'], 'naturalMs': w['naturalMs'],
+                              'stretch': w['stretch'], 'source': w['source'],
+                              'pos': w['pos'], 'class': w['klass'],
+                              'pulses': w['pulses'], 'selfSim': w['selfSim'],
                               'bright': w['bright']}
                    for w in written},
     }
@@ -751,7 +700,9 @@ def generate():
         json.dump(manifest, fh, indent=1, sort_keys=False)
         fh.write('\n')
     total = sum(w['bytes'] for w in written)
-    print('wrote %d assets, %.1f KB, ext=%s' % (len(written), total / 1024.0, EXT))
+    lens = sorted(w['ms'] for w in written)
+    print('wrote %d assets, %.1f KB, ext=%s, %d-%dms (all stretch 1.0)'
+          % (len(written), total / 1024.0, EXT, lens[0], lens[-1]))
     stale = [f for f in os.listdir(OUT_DIR)
              if f.endswith('.' + EXT)
              and f[:-len(EXT) - 1] not in {w['key'] for w in written}]
@@ -764,21 +715,33 @@ def check():
     with open(os.path.join(OUT_DIR, 'manifest.json')) as fh:
         manifest = json.load(fh)
     bad = []
-    print('%-5s %-7s %7s %6s  %s' % ('key', 'source', 'ms', 'pulses', 'verdict'))
+    print('%-5s %-7s %-8s %7s %6s %6s  %s'
+          % ('key', 'source', 'pos', 'ms', 'puls', 'selfs', 'verdict'))
     for key, meta in manifest['sounds'].items():
         path = os.path.join(OUT_DIR, '%s.%s' % (key, manifest['ext']))
         if not os.path.exists(path):
-            print('%-5s %-7s %7s %6s  MISSING' % (key, meta['source'], '-', '-'))
+            print('%-5s %-7s %-8s %7s %6s %6s  MISSING'
+                  % (key, meta['source'], meta['pos'], '-', '-', '-'))
             bad.append(key)
             continue
         s, sr = read_wav(path)
         p, _ = pulses(s, sr)
         ms = round(len(s) / sr * 1000)
-        ok = p == 1 and abs(ms - meta['ms']) <= 1
-        if not ok:
+        ss = self_similarity(s)
+        why = []
+        if p != 1:
+            why.append('%d pulses' % p)
+        if abs(ms - meta['ms']) > 1:
+            why.append('%dms != manifest %d' % (ms, meta['ms']))
+        if meta['stretch'] != 1.0 or meta['naturalMs'] != meta['ms']:
+            why.append('manifest claims a stretch')
+        if ss > SELFSIM_MAX:
+            why.append('selfsim %.3f' % ss)
+        if why:
             bad.append(key)
-        print('%-5s %-7s %6dms %6d  %s' % (key, meta['source'], ms, p,
-                                           'ok' if ok else 'FAIL'))
+        print('%-5s %-7s %-8s %6dms %6d %6.3f  %s'
+              % (key, meta['source'], meta['pos'], ms, p, ss,
+                 'ok' if not why else 'FAIL ' + '; '.join(why)))
     print('\n%d assets, %d FAIL' % (len(manifest['sounds']), len(bad)))
     return bad + collisions(list(manifest['sounds']))
 

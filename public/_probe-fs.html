@@ -3380,6 +3380,17 @@
       // sss and tuh have assets; cat does not.
       obs.assetsPlayed = sndPlays.length
       obs.assetMs = sndPlays.map((p) => p.ms)
+      // Compared against the MANIFEST, not against literals. These durations
+      // are natural phoneme lengths and they move whenever a source word is
+      // re-picked; two hardcoded numbers here would fail the next regeneration
+      // for no reason, and the interesting property is "the queue played the
+      // shipped file", not "the file is 155ms".
+      const mf = (await (await fetch('/sounds/manifest.json')).json()).sounds
+      obs.expectMs = [mf.sss.ms, mf.tuh.ms]
+      obs.msMatchManifest =
+        obs.assetMs.length === 2 &&
+        obs.assetMs[0] === mf.sss.ms &&
+        obs.assetMs[1] === mf.tuh.ms
       obs.notSpokenByTts = !spoken.includes('sss') && !spoken.includes('tuh')
       obs.wordWentToTts = spoken.includes('cat')
       // The invariant: nothing starts before the previous thing stopped
@@ -3401,8 +3412,7 @@
       !threw &&
         obs.warm === true &&
         obs.assetsPlayed === 2 &&
-        obs.assetMs[0] === 260 &&
-        obs.assetMs[1] === 220 &&
+        obs.msMatchManifest === true &&
         obs.notSpokenByTts === true &&
         obs.wordWentToTts === true &&
         obs.noOverlap === true &&
@@ -3527,8 +3537,18 @@
       // makes a verdict in the listening gallery mean something -- "the /s/ is
       // wrong" is unactionable without knowing it came from "sun".
       obs.missingSource = Object.entries(sounds)
-        .filter(([, v]) => !v.source)
+        .filter(([, v]) => !v.source || !v.pos)
         .map(([k]) => k)
+      // NOTHING MAY BE LENGTHENED. A build that padded every non-plosive to a
+      // 260ms target passed every check this harness had and was rejected on
+      // the real device -- "마치 양이 메에에에에 하는 것 같아" -- because
+      // repeating a pitch period freezes the formants. It was only diagnosable
+      // by noticing from the outside that every disliked sound was exactly
+      // 260ms, so the manifest now carries naturalMs/stretch and this asserts
+      // on them. `stretch: 1.0` on all 25 lines is the standing evidence.
+      obs.stretched = Object.entries(sounds)
+        .filter(([, v]) => v.stretch !== 1 || v.naturalMs !== v.ms)
+        .map(([k, v]) => `${k} ${v.naturalMs}->${v.ms} x${v.stretch}`)
       // A regex that stopped matching would report an empty set as "no
       // difference", which is the false-pass shape this project keeps hitting.
       obs.parsed = declared.length >= 20
@@ -3601,6 +3621,7 @@
         obs.parsed === true &&
         obs.declared === obs.generated &&
         obs.missingSource.length === 0 &&
+        obs.stretched.length === 0 &&
         obs.missingFromAudioJs.length === 0 &&
         obs.missingFromDisk.length === 0 &&
         obs.undecodable.length === 0,
