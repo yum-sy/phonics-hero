@@ -13,6 +13,31 @@
 // pass changes the drawing language instead, and is the pattern to copy for
 // any future family that wants a cartoon/manga look.
 //
+// FOLLOW-UP PASS (minifigure-reference review). The user supplied a
+// Toy-Story minifigure render sheet and asked this family to be revisited.
+// Checked at the sizes that actually ship (66/96/132/250 px in
+// public/_art.html) plus a hard silhouette pass: the inked-cartoon grammar
+// above already carries Leo/Fifi/Bobo/Captain Big's genre reads well in
+// COLOUR at every render size -- this was verified, not assumed, and is why
+// the grammar itself (ink outlines, angular construction) was kept rather
+// than rewritten into the reference's flat vinyl-block look. The one
+// concrete gap the silhouette pass found: Bobo's third eye is a flat colour
+// disc sitting flush inside the head outline, so it carries zero silhouette
+// weight and vanishes under a hard cutout even though it reads fine in
+// colour -- fixed by giving it a real domed housing that pokes past the
+// cranium's flat top edge. Leo's shirt already had a check pattern but it
+// was faint at 96 px, and his buckle was a token square, so both got made
+// bigger and bolder (CLAUDE.md explicitly permits growing prop detail this
+// way). Fifi's four legs were plain paws with no prop distinguishing the
+// pair nearer the coil from the pair nearer the head, so the coil-side pair
+// got wind-up-toy wheels -- a generic pull-toy trait, not any specific
+// character's design, and matched to the coil's own STEEL/STEEL_DK so the
+// new prop reads as the same hardware. Captain Big was left untouched: of
+// the four heroes it already matches the reference sheet's identification
+// marks most closely (clear dome over a fully visible face, tri-colour hard
+// panels, a chest button row) and no gap was found worth the risk of
+// touching the file's most finished figure.
+//
 // DESIGN GRAMMAR -- inked cartoon. All nine figures follow all of it.
 //
 //  1. EVERY MAJOR SHAPE IS OUTLINED IN INK. `ol(w)` puts
@@ -279,20 +304,34 @@ export function toyLeo({
       ${glove(104, 104, 1)}
 
       <polygon points="34,70 86,70 89,104 31,104" fill="${bodyColor}" ${ol(3.4)}/>
+      ${/* Check pattern boosted from 3v+3h at width 2.8/opacity 0.9 to 4v+3h
+            at width 3.2/opacity 0.95 -- measured against the reference sheet's
+            "체크 셔츠" the old grid read as a faint stripe at 96px, not a
+            check. Denser lines plus the added ink cross-lines are what turns
+            it into a plaid a 5-year-old can name at chapter-card size. */ ''}
       <g>
-        <path d="M 46,70 L 46,104" stroke="${CREAM}" stroke-width="2.8" opacity="0.9"/>
-        <path d="M 60,70 L 60,104" stroke="${INK}" stroke-width="1.8" opacity="0.3"/>
-        <path d="M 74,70 L 74,104" stroke="${CREAM}" stroke-width="2.8" opacity="0.9"/>
-        <path d="M 32,80 L 88,80" stroke="${CREAM}" stroke-width="2.8" opacity="0.9"/>
-        <path d="M 32,90 L 88,90" stroke="${INK}" stroke-width="1.8" opacity="0.3"/>
-        <path d="M 31,99 L 89,99" stroke="${CREAM}" stroke-width="2.8" opacity="0.9"/>
+        <path d="M 40,70 L 40,104" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
+        <path d="M 53,70 L 53,104" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 67,70 L 67,104" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
+        <path d="M 80,70 L 80,104" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 32,77 L 88,77" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
+        <path d="M 32,87 L 88,87" stroke="${INK}" stroke-width="1.8" opacity="0.32"/>
+        <path d="M 31,97 L 89,97" stroke="${CREAM}" stroke-width="3.2" opacity="0.95"/>
       </g>
       ${shadeP('76,70 86,70 89,104 78,104', 0.15)}
       <path d="M 34,70 L 86,70" ${ol(3.4)}/>
 
       <polygon points="30,102 90,102 90,112 30,112" fill="${DARK}" ${ol(3)}/>
-      <polygon points="50,99 70,99 70,115 50,115" fill="${accent}" ${ol(3)}/>
-      <polygon points="55,103 65,103 65,111 55,111" fill="none" ${ol(2)}/>
+      ${/* Rodeo buckle: was a 20x16 token square. An oval bevel plus two
+            rivets is a bigger, simpler colour-block prop that reads as a
+            buckle rather than a badge placeholder, and doesn't compete with
+            the sheriff star (which lives on the hat crown, not the chest --
+            see the note below at the letterPlate call). */ ''}
+      <ellipse cx="60" cy="107" rx="13" ry="9.5" fill="${accent}" ${ol(3)}/>
+      ${litP('50,101 68,101 65,105 53,105', 0.3)}
+      <ellipse cx="60" cy="107" rx="6.5" ry="4.6" fill="none" ${ol(2)}/>
+      <circle cx="51" cy="107" r="1.7" fill="${HAT_DK}" stroke="none"/>
+      <circle cx="69" cy="107" r="1.7" fill="${HAT_DK}" stroke="none"/>
 
       <polygon points="38,64 82,64 60,88" fill="${BANDANA}" ${ol(3.2)}/>
       ${shadeP('66,64 82,64 60,88 62,78', 0.16)}
@@ -363,14 +402,25 @@ export function toyFifi({
     })
     .join('')
 
-  // Straight-cut dog leg: thigh quad + a paw block with three toe ticks.
-  const leg = (x, top, w) => `
+  // Straight-cut dog leg: thigh quad + a paw block, then either three toe
+  // ticks (front pair) or a wind-up-toy wheel (rear pair, `wheel = true`).
+  // Real Slinky-style pull toys roll on the back pair only -- giving both
+  // pairs the same paw made the four legs interchangeable filler instead of
+  // a prop that identifies the toy, which is exactly the reference sheet's
+  // complaint. The wheel's hub uses the coil's own STEEL/STEEL_DK so it
+  // reads as the same wind-up hardware, not a mismatched new material.
+  const leg = (x, top, w, wheel = false) => `
     <polygon points="${x},${top} ${x + w},${top} ${x + w + 2},${top + 24} ${x - 2},${top + 24}" fill="${bodyColor}" ${ol(3)}/>
     ${shadeP(`${x + w * 0.6},${top} ${x + w},${top} ${x + w + 2},${top + 24} ${x + w * 0.6},${top + 24}`, 0.14)}
     <polygon points="${x - 6},${top + 22} ${x + w + 6},${top + 22} ${x + w + 7},${top + 31} ${x - 7},${top + 31}"
       fill="${accent}" ${ol(3)}/>
-    <path d="M ${x - 2},${top + 31} L ${x - 2},${top + 35} M ${x + w / 2},${top + 32} L ${x + w / 2},${top + 36}
-             M ${x + w + 2},${top + 31} L ${x + w + 2},${top + 35}" ${ol(2)}/>`
+    ${wheel
+      ? `<circle cx="${x + w / 2}" cy="${top + 32}" r="6" fill="${STEEL}" ${ol(2.6)}/>
+         <circle cx="${x + w / 2}" cy="${top + 32}" r="2.1" fill="${STEEL_DK}" stroke="none"/>
+         <path d="M ${x + w / 2},${top + 27} L ${x + w / 2},${top + 37} M ${x + w / 2 - 5},${top + 32} L ${x + w / 2 + 5},${top + 32}"
+           stroke="${STEEL_DK}" stroke-width="1.4"/>`
+      : `<path d="M ${x - 2},${top + 31} L ${x - 2},${top + 35} M ${x + w / 2},${top + 32} L ${x + w / 2},${top + 36}
+             M ${x + w + 2},${top + 31} L ${x + w + 2},${top + 35}" ${ol(2)}/>`}`
 
   return svgWrap(
     `
@@ -381,13 +431,13 @@ export function toyFifi({
       <circle cx="109" cy="53" r="4.6" fill="${accent}" ${ol(2.4)}/>
 
       ${leg(44, 96, 10)}
-      ${leg(84, 96, 10)}
+      ${leg(84, 96, 10, true)}
       ${coil}
 
       <polygon points="92,64 110,70 112,104 94,102" fill="${bodyColor}" ${ol(3.4)}/>
       ${shadeP('104,67 110,70 112,104 105,103', 0.15)}
       ${leg(60, 100, 11)}
-      ${leg(96, 100, 11)}
+      ${leg(96, 100, 11, true)}
 
       <polygon points="21,58 51,52 55,102 23,104" fill="${bodyColor}" ${ol(3.4)}/>
       ${litP('23,60 33,58 35,102 25,103', 0.2)}
@@ -459,6 +509,17 @@ export function toyBobo({
       ${shadeP('78,30 90,28 96,52 84,70 76,72 84,52', 0.14)}
       <path d="M 32,60 Q 60,68 88,60" fill="none" ${ol(2)}/>
 
+      ${/* Third-eye housing: a domed bump that pokes past the cranium's flat
+            top edge, drawn ON TOP of the head polygon so the head's own top
+            ink line only shows either side of the dome's span. The eye used
+            to sit flush inside the flat top at cy=34 -- fine in colour, but
+            a hard silhouette cutout showed it carries zero silhouette
+            weight there (a flat-fill disc inside another flat-fill shape).
+            The dome gives the three-eye trait real shape presence instead of
+            depending on colour contrast alone. */ ''}
+      <ellipse cx="60" cy="19" rx="12" ry="10" fill="${bodyColor}" ${ol(3.2)}/>
+      ${litP('50,11 60,9 63,18 52,20', 0.22)}
+
       <path d="M 42,26 L 26,8" ${ol(3.4)}/>
       <circle cx="24" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('20,3 24,1 26,4 22,6', 0.4)}
@@ -466,7 +527,7 @@ export function toyBobo({
       <circle cx="96" cy="7.6" r="6" fill="${accent}" ${ol(3)}/>
       ${litP('92,3 96,1 98,4 94,6', 0.4)}
 
-      ${eye(60, 34, 7)}
+      ${eye(60, 21, 7.5)}
       ${brow(43, 42, 17, -14, 5.6)}
       ${brow(78, 42, 17, 14, 5.6)}
       ${eye(43, 53, 11, -0.2)}
