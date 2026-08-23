@@ -176,8 +176,16 @@ export function heroSuperhero({
       <rect x="84" y="76" width="16" height="10" rx="5" fill="${accent}"/>
       <circle cx="60" cy="32" r="27" fill="${bodyColor}"/>
       <path d="M35 30 Q60 18 85 30 Q83 40 60 38 Q37 40 35 30 Z" fill="${maskColor}"/>
-      <circle cx="49" cy="30" r="3.4" fill="#fff"/>
-      <circle cx="71" cy="30" r="3.4" fill="#fff"/>
+      ${/* Domino-mask eye holes used to be plain round dots -- neutral, no
+            attitude, and read as droopy/sleepy against the sagging mask band
+            around them. Cowl-slit quads instead: each eye's outer (temple)
+            corner sits higher than its inner (nose) corner, the upward-angled
+            slit language a masked hero's eyes should carry (user reference:
+            LEGO Batman cowl -- bright slit, outer end swept up). Superman-type
+            bare-faced heroes are the stated exception; this hero wears a
+            mask, so it takes the slit. */ ''}
+      <polygon points="38.7,25.5 56.8,34 59.3,28.5 41.2,20" fill="#fff"/>
+      <polygon points="81.3,25.5 63.2,34 60.7,28.5 78.8,20" fill="#fff"/>
     </g>
   `,
     '0 0 120 140'
@@ -242,6 +250,16 @@ export function heroAcrobat({
       <circle cx="75" cy="61" r="8.5" fill="${bodyColor}"/>
       <rect x="76" y="56" width="32" height="11" rx="5" fill="${bodyColor}"/>
       <circle cx="106" cy="61" r="8" fill="${accent}"/>
+      ${/* Measured gap before this patch: head bottom (cy32+r19=51) to chest
+            top (58) is 7 units at center, widening to ~17 at the chest's own
+            x43/x77 edges since the head is round and the chest top is flat --
+            "머리가 붕 떠있어" was a real gap, not a rendering artifact. This
+            rect's top edge (y32) sits at the head circle's own equator, which
+            spans x41-79 there -- wider than the chest's x43-77, so the whole
+            top edge is hidden under the head (drawn next, on top) with margin
+            at both corners; only the strip below the head's actual curve
+            shows, as a filled neck, down to y61 (3 units into the chest). */ ''}
+      <rect x="43" y="32" width="34" height="29" fill="${bodyColor}"/>
       <circle cx="60" cy="32" r="19" fill="${maskColor}"/>
       <g stroke="${webColor}" stroke-width="1.6" fill="none" opacity="0.85">
         <line x1="60" y1="13" x2="60" y2="51"/>
@@ -298,12 +316,25 @@ export function heroShield({
       <rect x="36" y="70" width="15" height="24" rx="6" fill="${bodyColor}"/>
       <rect x="84" y="70" width="15" height="26" rx="6" fill="${bodyColor}"/>
       <circle cx="91" cy="98" r="8" fill="${accent}"/>
+      ${/* Head (cx67,cy32,r19) bottom is y51; chest top is y58 -- a 7-unit gap
+            at center, same floating-head defect as the other three archetypes
+            (measured the same way: see heroAcrobat's note). This head sits at
+            the chest's own x-center, so its equator (y32) spans exactly
+            x48-86 -- the chest polygon's own top width -- so a patch flush
+            with those edges would land exactly tangent to the head circle.
+            Inset 1 unit per side (x49-85) to keep the patch's top corners
+            strictly inside the head disc instead of razor-tangent to it. */ ''}
+      <rect x="49" y="32" width="36" height="29" fill="${bodyColor}"/>
       <circle cx="67" cy="32" r="19" fill="${bodyColor}"/>
       <polygon points="50,22 38,26 50,31" fill="${accent}"/>
       <polygon points="84,22 96,26 84,31" fill="${accent}"/>
       <rect x="54" y="27" width="26" height="10" rx="5" fill="${maskColor}"/>
-      <circle cx="61" cy="32" r="3" fill="#fff"/>
-      <circle cx="74" cy="32" r="3" fill="#fff"/>
+      ${/* Mask-bar eye holes were plain round dots -- flat, no expression.
+            Angled cowl-slit quads instead, outer (temple) corner raised above
+            the inner (nose) corner on both eyes -- same fix and same
+            reasoning as heroSuperhero's mask. */ ''}
+      <polygon points="55.6,31.7 64.7,35.9 66.4,32.3 57.3,28.1" fill="#fff"/>
+      <polygon points="79.4,31.7 70.3,35.9 68.6,32.3 77.7,28.1" fill="#fff"/>
       <circle cx="34" cy="76" r="25" fill="${capeColor}"/>
       <circle cx="34" cy="76" r="18" fill="#f5f2ea"/>
       ${/* The nameplate rides the shield instead of the chest, because the
@@ -361,6 +392,13 @@ export function heroThunder({
       <circle cx="76" cy="62" r="9" fill="${bodyColor}"/>
       <polygon points="42,28 24,18 28,34 38,36" fill="${maskColor}"/>
       <polygon points="78,28 96,18 92,34 82,36" fill="${maskColor}"/>
+      ${/* Same floating-head defect and same fix as heroAcrobat/heroShield:
+            head bottom y51 to chest top y58 is a real 7-unit gap at center,
+            wider at the chest polygon's own x44/x78 edges. Patch top edge
+            sits at the head's own equator (y32, spans x41-79 there), inside
+            the chest's x44-78 width with margin, so it stays fully hidden
+            under the head and only shows as the strip below its curve. */ ''}
+      <rect x="44" y="32" width="34" height="29" fill="${bodyColor}"/>
       <circle cx="60" cy="32" r="19" fill="${bodyColor}"/>
       <path d="M41 32 A19 19 0 0 1 79 32 Z" fill="${maskColor}"/>
       <circle cx="53" cy="38" r="3.6" fill="#fff"/>
