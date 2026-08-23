@@ -1,6 +1,78 @@
 // Platformer-family character art — chapter 5, the jump-platformer genre slot
 // in the world order.
 //
+// REVISION NOTE (v9): LEGO CONVERSION. User decision, final, not a
+// prototype: "지금 마이로는 너무 조잡해 보인다. 레고 마리오 이미지를 참고해."
+// v6-v8 spent three rounds getting a HUMAN skeleton right (joints, leg
+// ratio, mass) and the user's complaint survived all of it — the genre
+// itself was wrong, not the proportions inside it. v9 replaces the heroes
+// with the LEGO Super Mario interactive-figure grammar: a head block near
+// parity with the shoulder width instead of a third of it, a separate cap
+// MODULE (dome + brim + a peek of hair) instead of a hat painted onto a
+// human head, mitten fists instead of five-fingered gloves, and — the
+// point of the whole exercise — VISIBLE PEG JOINTS at the shoulder, hip and
+// knee instead of an inked crease standing in for a bend.
+//
+// SCOPE: heroes only (platJumper, platSpring, platBlock, platPowerup). The
+// villains are explicitly out of scope for this round (lower priority, "나중에
+// 돌려쓴다") and every low-level primitive they call — deltoid, neck,
+// limbCrease, limbOutline, limbBand, wristSeat, towardBody, villainArm,
+// villainGlove, villainShoe, plainLimb, villainFaceParts — is UNCHANGED.
+// None of v9's new code touches those names; it adds a parallel set (box,
+// tube, pegDisc, legoFist, legoLeg, legoBoot, legoHead/legoCap/legoFace) and
+// deletes the hero-only v3-v8 primitives nothing else referenced (heroArm,
+// heroGlove, heroBoot, denimLimb, cap, face, heroHead, bibPanel, pocket,
+// strapPiece, heroShirt) — confirmed by grep before deletion that villains
+// never called them.
+//
+// THREE DECISIVE DIFFERENCES FROM v8's human skeleton:
+//  1. HEAD:BODY RATIO. v8 head 34 wide against 46-64 shoulders (0.53-0.74x).
+//     v9 head 58 wide against a 54-wide shoulder block (1.07x) — the head is
+//     now the widest mass on the figure, which is the single biggest read
+//     in every reference image and the thing three rounds of joint-fixing
+//     never touched.
+//  2. THE CAP IS A MODULE, NOT A HAT PAINTED ON A HEAD. v8's `cap()` was a
+//     dome-plus-brim glued to the top of a face that had no room left for a
+//     brow (the brim doubled as one). v9's head block is tall enough that
+//     the cap sits on top of it with a full face visible underneath — brow,
+//     eyes, nose, mouth — and two tufts of hair break the cap's silhouette
+//     at the temples, which is the detail every reference image has and no
+//     prior version of this file ever drew.
+//  3. PEG JOINTS ARE GEOMETRY THE FIGURE IS PROUD OF, NOT A CREASE HIDING A
+//     BEND. `pegDisc` paints a distinct grey-plastic disc (ring + inset +
+//     highlight) OVER the limb at the shoulder, hip and knee — the exact
+//     three joints the reference images show as moulded pin caps. v4-v8
+//     spent real effort making an elbow crease read as a joint at 132 px;
+//     v9 does not need the trick because the joint is now its own drawn
+//     object, not an inference from shading.
+//
+// WHAT DID NOT SURVIVE THE CONVERSION, on purpose: the jointed elbow-taper
+// limb (`limbOutline`/`limbBand` on a 3-point polyline) is gone from the
+// heroes, replaced by `tube()` — one or two straight trapezoid segments.
+// LEGO limbs do not taper toward the wrist the way a human forearm does;
+// keeping the taper would have fought the module read the whole conversion
+// is for. The five-fingered `heroGlove` (thumb + two palm seams) is gone
+// too, replaced by `legoFist` (block knuckles, no thumb seam) — a LEGO hand
+// is a fist, not an anatomical glove, and the reference images agree.
+//
+// EMBLEM PLATE, UNCHANGED: `emblemPlate`/`plateType`/`PLATE_PAD` and
+// `bigButton` survive the conversion untouched and are reused as-is — both
+// were already generic rectangles/circles with no v8-specific geometry
+// baked in, so the phonics letter's hard-won sizing math (star vs one-glyph
+// vs two-glyph, corner-bite refinement) did not need to be re-derived. The
+// plate stays on the BIB, not the cap: the instruction explicitly warns off
+// putting a circular logo badge or a letter on the cap front (too close to
+// the source's own cap emblem), and the curriculum letter has to be legible
+// content regardless, which the chest already does well.
+//
+// ===========================================================================
+// OLDER REVISION HISTORY (v2-v8) — describes the HUMAN skeleton the heroes
+// used before this conversion. Kept for the villains, who still use it in
+// full: deltoid, neck, limbCrease and the jointed-polyline limb system below
+// are exactly what v4-v8 describe, and every villain in this file still
+// calls them. Do not re-derive their numbers; they are validated.
+// ===========================================================================
+//
 // REVISION NOTE (v6): PROPORTION. v5 gave the family joints; the user's
 // objection survived them, and it was never about joints — "몸과 팔다리가 너무
 // 부자연스러워. 저런 비율이 세상에는 존재하지 않아서." Measured, v5's heroes had
@@ -347,7 +419,6 @@ const GLOVE = '#f7f0e0'
 const GLOVE_SHADE = '#cbb99c'
 const SHOE = '#4d3018'
 const SOLE = '#241608'
-const SOLE_MID = '#7d5330'
 const MOUTH = '#5e1c2c'
 
 // Dungarees. Fixed rather than palette-driven on purpose — see casting rule 2.
@@ -508,20 +579,6 @@ function deltoid(cx, cy, r, color, dark) {
   ]
 }
 
-// A sleeved hero arm: deltoid ball, tapered limb, elbow crease, and the glove
-// seated on the wrist. `dark` shades the strip instead of lighting it, for
-// arms on the figure's shadowed side.
-function heroArm(pts, color, cuffColor, gloveR, dark) {
-  const [hx, hy] = wristSeat(pts)
-  return [
-    deltoid(pts[0].x, pts[0].y - 1, pts[0].w, color, dark),
-    P(limbOutline(pts), color, ink(3)),
-    P(limbBand(pts, 0.96, 0.3), dark ? '#000' : '#fff', { opacity: dark ? 0.16 : 0.2, nohalo: true }),
-    limbCrease(pts, 1),
-    heroGlove(hx, hy, gloveR, cuffColor, towardBody(pts, hx, hy)),
-  ]
-}
-
 // Villain arm: same skeleton, plainer hand, no lit strip on the deltoid crown
 // (villains are shaded rather than lit — the family's hero/villain split).
 function villainArm(pts, color, cuffColor, gloveR) {
@@ -531,24 +588,6 @@ function villainArm(pts, color, cuffColor, gloveR) {
     P(limbOutline(pts), color, ink(2.8)),
     limbCrease(pts, 1),
     villainGlove(hx, hy, gloveR, cuffColor, towardBody(pts, hx, hy)),
-  ]
-}
-
-// A trouser leg with a knee. `pts` is [hip, knee, cuffTop, ankle]: the crease
-// lands on the knee, the turn-up is the last segment only, and the boot is
-// drawn after so it swallows the ankle.
-function denimLimb(pts, t = DENIM_TONE) {
-  const tail = pts.slice(pts.length - 2)
-  return [
-    P(limbOutline(pts), t.base, ink(3)),
-    P(limbBand(pts, 0.95, 0.25), t.lit, { opacity: 0.5, nohalo: true }),
-    limbCrease(pts, 1, 1.7, 0.45),
-    P(limbBand(tail, 1.05, -1.05), t.deep, {
-      opacity: 0.9,
-      stroke: LINE,
-      'stroke-width': 1.6,
-      nohalo: true,
-    }),
   ]
 }
 
@@ -576,49 +615,6 @@ function neck(cx, top, bottom, halfTop, halfBot, color = SKIN, shade = SKIN_SHAD
 // Shared body parts
 // ---------------------------------------------------------------------------
 
-// Hero glove: outlined white lobe, a thumb, and a cuff band laid across the
-// wrist as an absolute-coordinate quad (a rotated <g> would have to be
-// duplicated in the halo pass). `bodyDeg` points from the glove back at the
-// body, so the cuff lands on the wrist side and the finger seams on the far
-// edge. The seams stay short and near the rim: an earlier pass ran three long
-// creases into the palm centre and the result read as a chevron arrow.
-function heroGlove(cx, cy, r, cuffColor, bodyDeg) {
-  const a = (bodyDeg * Math.PI) / 180
-  const away = a + Math.PI
-  const at = (ang, d) => [cx + Math.cos(ang) * d, cy + Math.sin(ang) * d]
-  const [wx, wy] = at(a, r * 0.86)
-  const ux = Math.cos(a)
-  const uy = Math.sin(a)
-  const px = -uy
-  const py = ux
-  const half = r * 0.86
-  const thick = r * 0.46
-  const corner = (sp, st) => `${(wx + px * sp * half + ux * st * thick).toFixed(1)},${(wy + py * sp * half + uy * st * thick).toFixed(1)}`
-  const [tx, ty] = at(away - 1.5, r * 0.88)
-  const seam = (k) => {
-    const g = away + k * 0.44
-    const [x1, y1] = at(g, r * 0.55)
-    const [x2, y2] = at(g, r * 0.9)
-    return S(`M ${x1.toFixed(1)},${y1.toFixed(1)} L ${x2.toFixed(1)},${y2.toFixed(1)}`, GLOVE_SHADE, r * 0.16, {
-      nohalo: true,
-    })
-  }
-  return [
-    P(`${corner(-1, -1)} ${corner(1, -1)} ${corner(1, 1)} ${corner(-1, 1)}`, cuffColor, ink(2.4)),
-    C(tx, ty, r * 0.46, GLOVE, ink(2.2)),
-    C(cx, cy, r, GLOVE, ink(3)),
-    // Interior shading. Without it an outlined white circle on the app's
-    // near-white surfaces reads as an empty hoop, not a hand.
-    D(
-      `M ${(cx - r * 0.95).toFixed(1)},${(cy + r * 0.3).toFixed(1)} A ${r},${r} 0 0 0 ${(cx + r * 0.95).toFixed(1)},${(cy + r * 0.3).toFixed(1)} A ${r * 1.3},${r * 1.3} 0 0 1 ${(cx - r * 0.95).toFixed(1)},${(cy + r * 0.3).toFixed(1)} Z`,
-      GLOVE_SHADE,
-      { opacity: 0.5, nohalo: true }
-    ),
-    seam(-1),
-    seam(1),
-  ]
-}
-
 // Villain glove: the same lobe without the thumb or seams, so hero hands and
 // villain hands differ on sight even in silhouette.
 function villainGlove(cx, cy, r, cuffColor, bodyDeg) {
@@ -631,30 +627,6 @@ function villainGlove(cx, cy, r, cuffColor, bodyDeg) {
       GLOVE_SHADE,
       { opacity: 0.5, nohalo: true }
     ),
-  ]
-}
-
-// Hero boot: one outlined mass, then a sole whose bottom arc coincides with
-// the boot's so the inner outline reads as a welt rather than a stray ellipse,
-// then a lit toe cap. Drawn wider than the shin it hangs off, and placed so
-// the shin's end sits INSIDE the dome — a boot butted against a leg's tip is
-// the same "floating" mistake the gloves used to make.
-function heroBoot(cx, cy, rx, ry) {
-  const wy = cy + ry * 0.3
-  const bot = cy + ry
-  return [
-    // A domed upper on a FLAT sole, not an ellipse: a shoe is only round on
-    // top, and the straight bottom edge is what makes the figure stand on the
-    // ground instead of balancing on a bead.
-    D(
-      `M ${cx - rx},${wy.toFixed(1)} C ${cx - rx},${(cy - ry * 1.02).toFixed(1)} ${cx + rx},${(cy - ry * 1.02).toFixed(1)} ${cx + rx},${wy.toFixed(1)}
-       L ${cx + rx},${bot.toFixed(1)} L ${cx - rx},${bot.toFixed(1)} Z`,
-      SHOE,
-      ink(3)
-    ),
-    R(cx - rx, wy, rx * 2, ry * 0.44, 0, SOLE_MID, { stroke: LINE, 'stroke-width': 2, nohalo: true }),
-    R(cx - rx, bot - ry * 0.28, rx * 2, ry * 0.28, 0, SOLE, { nohalo: true }),
-    E(cx + rx * 0.24, cy - ry * 0.44, rx * 0.4, ry * 0.26, '#fff', { opacity: 0.2, nohalo: true }),
   ]
 }
 
@@ -672,156 +644,245 @@ function villainShoe(cx, cy, rx, ry) {
   ]
 }
 
-// Cap: dome, panel seams, a brim wider than the shoulders with a dark
-// underside, and a bright front disc. The brim is drawn thin and high on the
-// head (0.86 of halfW) because the big v3 eyes need the room underneath it.
-// `discColor` is skipped on the boss, whose cap already carries a star.
-function cap(cx, top, halfW, domeColor, brimColor, discColor) {
-  const brimY = top + halfW * 0.86
-  // The dome is a cubic whose control points sit at `top`, so its actual crown
-  // is at top + 0.215*halfW, not at `top`. Seams authored up to `top` poked out
-  // of the cap as two grey arcs floating above the head. They now stop below
-  // the crown.
-  const crown = top + halfW * 0.3
-  const seam = (k) =>
-    S(
-      `M ${cx + k * halfW * 0.5},${brimY} C ${cx + k * halfW * 0.55},${top + halfW * 0.6}
-       ${cx + k * halfW * 0.34},${crown} ${cx + k * halfW * 0.12},${crown}`,
-      LINE,
-      1.5,
-      { opacity: 0.3, nohalo: true }
-    )
+// ---------------------------------------------------------------------------
+// LEGO HERO PRIMITIVES (v9). See the v9 revision note above. Nothing in this
+// section is called by any villain — grep confirmed before each v3-v8 hero
+// primitive below was deleted.
+// ---------------------------------------------------------------------------
+
+// A grey-plastic joint disc: ring, inset cap, corner highlight. Painted AFTER
+// the limb parts it sits on, at the shoulder, hip and knee — the three
+// joints the reference images show as a moulded pin cap, not an inked crease
+// standing in for one.
+const PEG = '#e7e1d2'
+const PEG_DEEP = '#b6ab90'
+function pegDisc(cx, cy, r) {
   return [
-    D(`M ${cx - halfW},${brimY} C ${cx - halfW},${top} ${cx + halfW},${top} ${cx + halfW},${brimY} Z`, domeColor, ink(3.2)),
-    D(
-      `M ${cx - halfW * 0.9},${brimY} C ${cx - halfW * 0.88},${top + halfW * 0.42}
-       ${cx - halfW * 0.16},${crown} ${cx - halfW * 0.04},${crown}
-       C ${cx - halfW * 0.55},${top + halfW * 0.5} ${cx - halfW * 0.66},${top + halfW * 0.78} ${cx - halfW * 0.62},${brimY} Z`,
-      '#fff',
-      { opacity: 0.22, nohalo: true }
-    ),
-    seam(-1),
-    seam(1),
-    // A lens with pointed tips rather than an ellipse: the drawn tips are what
-    // make it read as the stiff peak of a cap instead of a disc behind a head.
-    D(
-      `M ${cx - halfW * 1.3},${brimY} Q ${cx},${brimY - halfW * 0.44} ${cx + halfW * 1.3},${brimY}
-       Q ${cx},${brimY + halfW * 0.34} ${cx - halfW * 1.3},${brimY} Z`,
-      brimColor,
-      ink(2.8)
-    ),
-    D(
-      `M ${cx - halfW * 1.24},${brimY + halfW * 0.02} Q ${cx},${brimY + halfW * 0.32} ${cx + halfW * 1.24},${brimY + halfW * 0.02}
-       Q ${cx},${brimY + halfW * 0.16} ${cx - halfW * 1.24},${brimY + halfW * 0.02} Z`,
-      '#000',
-      { opacity: 0.3, nohalo: true }
-    ),
-    discColor
-      ? [
-          C(cx, brimY - halfW * 0.4, halfW * 0.27, discColor, ink(2.4)),
-          S(
-            `M ${cx - halfW * 0.17},${brimY - halfW * 0.48} A ${halfW * 0.22},${halfW * 0.22} 0 0 1 ${cx + halfW * 0.06},${brimY - halfW * 0.58}`,
-            '#fff',
-            1.7,
-            { opacity: 0.75, nohalo: true }
-          ),
-        ]
-      : null,
+    C(cx, cy, r, PEG, ink(2.2)),
+    C(cx, cy, r * 0.62, PEG_DEEP, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    C(cx - r * 0.22, cy - r * 0.24, r * 0.22, '#fff', { opacity: 0.55, nohalo: true }),
   ]
 }
 
-// Hero face. Big outlined eyes with a heavy eyelid stroke standing in for a
-// brow (the cap brim leaves no room above the eye), a big round nose over the
-// top of them, blushed cheeks, and an open smile with a teeth strip. `s`
-// scales every offset from one number so the boss's larger head needs no
-// re-tuning.
-function face(cx, cy, s = 1) {
-  const dx = 9 * s
-  const ex = 5.9 * s
-  const ey = 6.7 * s
-  const nr = 6 * s
-  const ny = cy + 7.6 * s
-  const my = ny + 6.6 * s
-  const mw = 8 * s
-  // A big white sclera under a thin outline plus a small pupil reads as
-  // SPECTACLES. The fix is a dominant pupil (0.72 of the sclera) under a heavy
-  // lid wedge that sits ON the sclera rather than floating above it as a rim.
-  const eye = (px, k) => [
-    E(px, cy, ex, ey, '#fff', ink(2 * s)),
-    C(px + k * ex * 0.14, cy + ey * 0.2, ex * 0.72, LINE, { nohalo: true }),
-    C(px + k * ex * 0.14 - ex * 0.3, cy - ey * 0.14, ex * 0.26, '#fff', { nohalo: true }),
-    D(
-      `M ${px - ex * 1.05},${cy - ey * 0.42} Q ${px + k * ex * 0.2},${cy - ey * 1.5} ${px + ex * 1.05},${cy - ey * 0.36}
-       Q ${px},${cy - ey * 0.62} ${px - ex * 1.05},${cy - ey * 0.42} Z`,
+// A rounded box with independently-flat top/bottom edges (`flat` containing
+// 't' and/or 'b'). LEGO masses are boxes with a small radius, not the
+// tapered/curved masses the human skeleton used — a big radius on a 58-unit
+// head would turn it back into the pill v4 already fought free of.
+function box(x0, y0, x1, y1, r, fill, extra, flat = '') {
+  const rt = flat.includes('t') ? 0 : r
+  const rb = flat.includes('b') ? 0 : r
+  return D(
+    `M ${x0 + rt},${y0} L ${x1 - rt},${y0} Q ${x1},${y0} ${x1},${y0 + rt}
+     L ${x1},${y1 - rb} Q ${x1},${y1} ${x1 - rb},${y1}
+     L ${x0 + rb},${y1} Q ${x0},${y1} ${x0},${y1 - rb}
+     L ${x0},${y0 + rt} Q ${x0},${y0} ${x0 + rt},${y0} Z`,
+    fill,
+    extra
+  )
+}
+
+// A straight tapered trapezoid between two joint points. LEGO limbs are
+// moulded tubes with at most one bend, not a human forearm's continuous
+// taper — this replaces `limbOutline`/`limbBand` for the heroes only; the
+// villains keep the polyline system untouched.
+function tube(x0, y0, w0, x1, y1, w1, fill, extra) {
+  const a = Math.atan2(y1 - y0, x1 - x0)
+  const nx = -Math.sin(a)
+  const ny = Math.cos(a)
+  const pts = [
+    [x0 + (nx * w0) / 2, y0 + (ny * w0) / 2],
+    [x1 + (nx * w1) / 2, y1 + (ny * w1) / 2],
+    [x1 - (nx * w1) / 2, y1 - (ny * w1) / 2],
+    [x0 - (nx * w0) / 2, y0 - (ny * w0) / 2],
+  ]
+  return P(pts.map((p) => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(' '), fill, extra)
+}
+
+// A mitten fist: block knuckles plus a thumb bump plus two knuckle creases,
+// no thumb seam. A round lobe with a seam is a GLOVE; a block with a bump is
+// a FIST, which is what every reference image is holding up. `deg` points the
+// fist away from the body so the cuff band lands on the wrist side.
+function legoFist(cx, cy, r, deg, cuffColor) {
+  return G(`translate(${cx.toFixed(2)},${cy.toFixed(2)}) rotate(${deg.toFixed(1)})`, [
+    R(-r * 1.05, -r * 0.9, r * 0.5, r * 1.82, r * 0.24, cuffColor, {
+      stroke: LINE,
+      'stroke-width': 2.2,
+      nohalo: true,
+    }),
+    box(-r * 0.62, -r * 0.94, r * 0.86, r * 0.94, r * 0.42, GLOVE, ink(3)),
+    C(r * 0.52, r * 0.32, r * 0.4, GLOVE, ink(2.4)),
+    S(
+      `M ${(r * 0.18).toFixed(1)},${(-r * 0.6).toFixed(1)} L ${(r * 0.18).toFixed(1)},${(-r * 0.02).toFixed(1)}
+       M ${(-r * 0.28).toFixed(1)},${(-r * 0.6).toFixed(1)} L ${(-r * 0.28).toFixed(1)},${(-r * 0.02).toFixed(1)}`,
       LINE,
+      1.5,
+      { opacity: 0.4, nohalo: true }
+    ),
+    E(-r * 0.05, -r * 0.6, r * 0.36, r * 0.13, '#fff', { opacity: 0.55, nohalo: true }),
+    E(-r * 0.05, r * 0.68, r * 0.4, r * 0.13, GLOVE_SHADE, { opacity: 0.5, nohalo: true }),
+  ])
+}
+
+// A dungaree leg segment: a denim box with a lit stripe and a dashed
+// topstitch hem — the box replaces the tapered `denimLimb` polyline, and a
+// `pegDisc` at the knee (drawn by the caller, between two `legoLeg` calls) is
+// what used to be `limbCrease`.
+function legoLeg(x0, x1, top, bot, t = DENIM_TONE) {
+  return [
+    box(x0, top, x1, bot, 3.6, t.base, ink(3.2)),
+    R(x0 + 1.4, top + 1.4, (x1 - x0) * 0.36, bot - top - 2.8, 2.6, t.lit, { opacity: 0.5, nohalo: true }),
+    S(`M ${x0 + 2},${bot - 5} L ${x1 - 2},${bot - 5}`, t.stitch, 1.6, {
+      'stroke-dasharray': '4,3',
+      opacity: 0.85,
+      nohalo: true,
+    }),
+  ]
+}
+
+// A chunky boot box, flat on top (it swallows the shin's end) and rounded at
+// the toe and heel, with a flat sole slab.
+function legoBoot(x0, x1, top, bot, color = SHOE) {
+  return [
+    box(x0, top, x1, bot, 4.6, color, ink(3.2), 't'),
+    R(x0, bot - (bot - top) * 0.32, x1 - x0, (bot - top) * 0.32, 0, SOLE, { nohalo: true }),
+    S(`M ${x0 + 2.4},${top + 3} L ${x1 - 2.4},${top + 3}`, '#fff', 1.7, { opacity: 0.28, nohalo: true }),
+  ]
+}
+
+// A tuft of hair, authored pointing down-and-outward from `(x,y)`. Two of
+// these sit at the temples, just below the brim's outer ends, where the
+// reference images show hair breaking the cap's silhouette; drawing them
+// BEFORE the head box and cap means only the part that pokes past those two
+// masses survives — a true "peeking out" rather than a hand-placed sliver.
+const HAIR = '#3a2417'
+const HAIR_LIT = '#5c3d26'
+function hairTuft(x, y, k) {
+  return [
+    D(
+      `M ${x},${y} Q ${x + k * 7},${y - 1.5} ${x + k * 9},${y + 6.5}
+       Q ${x + k * 4.5},${y + 10} ${x - k * 1},${y + 5.5} Z`,
+      HAIR,
+      ink(2.2)
+    ),
+    S(`M ${x + k * 1},${y + 1.5} Q ${x + k * 5},${y + 3} ${x + k * 5.5},${y + 7}`, HAIR_LIT, 1.4, {
+      opacity: 0.7,
+      nohalo: true,
+    }),
+  ]
+}
+
+// LEGO face. Big tall-oval eyes (a straight-edged lid stands in for the lash
+// line, not the old cap-brim-as-brow trick — this head has room for a real
+// brow above it), a heavy separate eyebrow, blushed cheeks, a big round nose,
+// and an open smile with a teeth strip. `s` scales every offset from one
+// number so the boss's bigger head needs no re-tuning.
+function legoFace(cx, g, s = 1) {
+  const dx = 15 * s
+  const ex = 6.6 * s
+  const ey = 8.6 * s
+  const eyeCy = g.eyeCy
+  const nr = 6.4 * s
+  const noseCy = g.noseCy
+  const my = g.mouthY
+  const mw = 8.6 * s
+  const eye = (px, k) => [
+    E(px, eyeCy, ex, ey, '#fff', ink(2.2 * s)),
+    C(px + k * ex * 0.1, eyeCy + ey * 0.18, ex * 0.62, LINE, { nohalo: true }),
+    C(px + k * ex * 0.1 - ex * 0.28, eyeCy - ey * 0.14, ex * 0.24, '#fff', { nohalo: true }),
+    // A straight-edged lid clipped to the sclera's own top third — a curved
+    // rim wedge here (the v3-v8 hero eye) reads as a thin spectacle frame at
+    // this much larger size, not a lid.
+    D(
+      `M ${px - ex},${eyeCy - ey * 0.5} L ${px + ex},${eyeCy - ey * 0.5}
+       L ${px + ex * 0.86},${eyeCy - ey * 0.98} Q ${px},${eyeCy - ey * 1.18} ${px - ex * 0.86},${eyeCy - ey * 0.98} Z`,
+      LINE,
+      { nohalo: true }
+    ),
+    // The brow itself, sitting clear ABOVE the lid with a visible strip of
+    // skin between the two — the thing v3-v8's heroes could never have
+    // because the brim occupied this exact band. First-draft offsets (1.32/
+    // 1.62/1.3) put the brow's own stroke width touching the lid's peak
+    // (measured gap ~0.1 units, read as one merged blob); these clear it by
+    // about 1.9 units.
+    S(
+      `M ${px - ex * 1.05},${eyeCy - ey * 1.38} Q ${px},${eyeCy - ey * 1.7} ${px + ex * 1.05},${eyeCy - ey * 1.36}`,
+      LINE,
+      2.6 * s,
       { nohalo: true }
     ),
   ]
   return [
-    E(cx - dx * 1.72, cy + 5.6 * s, 5 * s, 3.2 * s, CHEEK, { opacity: 0.6, nohalo: true }),
-    E(cx + dx * 1.72, cy + 5.6 * s, 5 * s, 3.2 * s, CHEEK, { opacity: 0.6, nohalo: true }),
+    E(cx - dx * 1.55, eyeCy + ey * 0.85, 5 * s, 3.2 * s, CHEEK, { opacity: 0.55, nohalo: true }),
+    E(cx + dx * 1.55, eyeCy + ey * 0.85, 5 * s, 3.2 * s, CHEEK, { opacity: 0.55, nohalo: true }),
     eye(cx - dx, 1),
     eye(cx + dx, -1),
     D(
-      `M ${cx - mw},${my} Q ${cx},${my + 2.4 * s} ${cx + mw},${my} Q ${cx},${my + 8 * s} ${cx - mw},${my} Z`,
+      `M ${cx - mw},${my} Q ${cx},${my + 2.6 * s} ${cx + mw},${my} Q ${cx},${my + 8.4 * s} ${cx - mw},${my} Z`,
       MOUTH,
       ink(2.2 * s)
     ),
     D(
-      `M ${cx - mw * 0.78},${my + 0.6 * s} Q ${cx},${my + 2.4 * s} ${cx + mw * 0.78},${my + 0.6 * s}
-       Q ${cx},${my + 4 * s} ${cx - mw * 0.78},${my + 0.6 * s} Z`,
+      `M ${cx - mw * 0.78},${my + 0.6 * s} Q ${cx},${my + 2.6 * s} ${cx + mw * 0.78},${my + 0.6 * s}
+       Q ${cx},${my + 4.2 * s} ${cx - mw * 0.78},${my + 0.6 * s} Z`,
       '#fff',
       { nohalo: true }
     ),
-    // Corner ticks. Without them an inked mouth shape reads as a scratch
-    // rather than a smile — lifted from the toy family's `grin`.
     S(
       `M ${cx - mw},${my} L ${cx - mw - 2.2 * s},${my - 2.4 * s} M ${cx + mw},${my} L ${cx + mw + 2.2 * s},${my - 2.4 * s}`,
       LINE,
       2.4 * s,
       { nohalo: true }
     ),
-    C(cx, ny, nr, NOSE, ink(2.6 * s)),
-    E(cx, ny + nr * 0.44, nr * 0.7, nr * 0.4, NOSE_SHADE, { opacity: 0.65, nohalo: true }),
-    C(cx - nr * 0.32, ny - nr * 0.36, nr * 0.28, '#fff', { opacity: 0.8, nohalo: true }),
+    C(cx, noseCy, nr, NOSE, ink(2.6 * s)),
+    E(cx, noseCy + nr * 0.44, nr * 0.7, nr * 0.4, NOSE_SHADE, { opacity: 0.65, nohalo: true }),
+    C(cx - nr * 0.32, noseCy - nr * 0.36, nr * 0.28, '#fff', { opacity: 0.8, nohalo: true }),
   ]
 }
 
-// Head assembly in draw order: ears behind, face mass, the brim's cast shadow
-// on the forehead, the cap, then the features. Shared by all four heroes so
-// the cast has one face.
-function heroHead(cx, capTop, faceTop, faceW, faceH, capHalf, bodyColor, accent, discColor, s = 1) {
-  const fx = cx - faceW / 2
-  const earY = faceTop + faceH * 0.52
-  const er = 4.6 * s
-  const ear = (px) => [
-    E(px, earY, er, er * 1.3, SKIN, ink(2.4)),
-    // A crescent, not a filled inner ellipse: filled, the pair read as dark
-    // ear-muffs clamped to the head at 132 px.
-    S(`M ${px},${earY - er * 0.6} Q ${px + er * 0.5},${earY} ${px},${earY + er * 0.6}`, SKIN_SHADE, 1.8, {
-      nohalo: true,
-    }),
-  ]
-  // A JAWED head, not a pill. Round cranium (it is under a cap anyway), then
-  // straight cheeks tapering to a narrower chin. The genre's face is round
-  // enough that a full hexagon would fight it, but a pill reads as a bean —
-  // the taper is the compromise that keeps the genre and loses the bean.
-  const jaw = faceW * 0.4
+// The cap MODULE: a flat-bottomed dome sitting on the head block, a wide flat
+// brim (a slab, not the v3-v8 pointed lens — a pointed peak this wide reads
+// as a bird's beak) with a dark underside and a light top band, and a small
+// plain accent disc at the front. The disc carries NO letter and NO ring —
+// deliberately, per the instruction not to reproduce a circular logo badge on
+// the cap; the phonics letter lives on the chest plate, unchanged from v3-v8.
+function legoCap(cx, g, headHalf, brimHalf, domeColor, brimColor, discColor) {
+  const bx0 = cx - brimHalf
+  const bx1 = cx + brimHalf
+  const by0 = g.brimY
+  const by1 = g.brimY + g.brimH
   return [
-    ear(fx + 1),
-    ear(fx + faceW - 1),
-    D(
-      `M ${fx},${faceTop + faceH * 0.34} C ${fx},${faceTop} ${fx + faceW},${faceTop} ${fx + faceW},${faceTop + faceH * 0.34}
-       L ${cx + jaw},${faceTop + faceH * 0.78} Q ${cx + jaw},${faceTop + faceH} ${cx},${faceTop + faceH}
-       Q ${cx - jaw},${faceTop + faceH} ${cx - jaw},${faceTop + faceH * 0.78} Z`,
-      SKIN,
-      ink(3.2)
-    ),
-    // No jaw shade plane here: at 132 px a soft patch under the mouth read as
-    // a goatee. The jaw's own ink line carries the chin.
-    E(cx, capTop + capHalf * 0.86 + 3, faceW * 0.44, 4.6 * s, '#000', { opacity: 0.16, nohalo: true }),
-    cap(cx, capTop, capHalf, bodyColor, accent, discColor),
-    face(cx, faceTop + faceH * 0.5, s),
+    box(cx - headHalf - 2, g.capTop, cx + headHalf + 2, g.domeBot, 10, domeColor, ink(3.2), 'b'),
+    R(cx - headHalf + 2, g.capTop + 3, (headHalf + 2) * 2 - 4, 6, 4, '#fff', { opacity: 0.2, nohalo: true }),
+    R(cx + headHalf - 7, g.capTop + 4, 9, g.domeBot - g.capTop - 4, 4, '#000', { opacity: 0.14, nohalo: true }),
+    box(bx0, by0, bx1, by1, 4.6, brimColor, ink(3)),
+    R(bx0 + 1, by0 + g.brimH * 0.58, bx1 - bx0 - 2, g.brimH * 0.38, 2, '#000', { opacity: 0.32, nohalo: true }),
+    R(bx0 + 4, by0 + 1.5, (bx1 - bx0) * 0.4, 2.4, 1.4, '#fff', { opacity: 0.26, nohalo: true }),
+    discColor ? C(cx, by0 - 3.5, 6.6, discColor, ink(2.2)) : null,
+    discColor
+      ? S(`M ${cx - 3.6},${by0 - 6.4} A 4.6,4.6 0 0 1 ${cx + 0.8},${by0 - 10.4}`, '#fff', 1.5, {
+          opacity: 0.7,
+          nohalo: true,
+        })
+      : null,
+  ]
+}
+
+// The full head assembly: hair (drawn first so the head/cap cover its inner
+// mass), the head block, the cap module, then the face. Shared by the three
+// standing heroes; the boss calls it with a scaled-up `g`/`headHalf`.
+function legoHead(g, headHalf, brimHalf, bodyColor, accent, discColor, s = 1) {
+  const cx = 60
+  return [
+    // Positioned OUTSIDE both the head box (x < cx-headHalf) and below the
+    // brim (y > brimY+brimH) — the first-draft position sat inside the
+    // brim's own box and was painted over completely; measured on a render,
+    // zero hair pixels survived. This position is confirmed visible.
+    hairTuft(cx - headHalf - 3, g.brimY + g.brimH + 2, -1),
+    hairTuft(cx + headHalf + 3, g.brimY + g.brimH + 2, 1),
+    box(cx - headHalf, g.faceTop, cx + headHalf, g.chin, 9, SKIN, ink(3.4)),
+    R(cx + headHalf - 9, g.faceTop + 4, 9, g.chin - g.faceTop - 8, 5, SKIN_SHADE, { opacity: 0.4, nohalo: true }),
+    legoCap(cx, g, headHalf, brimHalf, bodyColor, accent, discColor),
+    legoFace(cx, g, s),
   ]
 }
 
@@ -920,53 +981,6 @@ function emblemPlate(x, y, w, h, plateColor, textColor, label, round = false) {
   ]
 }
 
-// The bib-and-hips denim mass: inked body, a lit plane down the left, a dashed
-// topstitch border and two patch pockets. Always drawn WIDER than the shirt
-// above it — see casting rule 3, the outline step is what carries "wearing
-// dungarees" into a flat silhouette.
-function bibPanel(x, y, w, h, r = 10, flare = 4, t = DENIM_TONE) {
-  return [
-    // Flared: a trapezoid widening downward, so the widest point of the whole
-    // figure is the hips and the waist step is a real angle rather than a
-    // rectangle edge.
-    D(`M ${x},${y} L ${x + w},${y} L ${x + w + flare},${y + h - r} Q ${x + w + flare},${y + h} ${x + w + flare - r},${y + h}
-       L ${x - flare + r},${y + h} Q ${x - flare},${y + h} ${x - flare},${y + h - r} Z`, t.base, ink(3.2)),
-    R(x + 1, y + 1, w * 0.38, h - 2, r, t.lit, { opacity: 0.5, nohalo: true }),
-    R(x + 4, y + 4, w - 8, h - 8, r * 0.8, 'none', {
-      stroke: t.stitch,
-      'stroke-width': 1.6,
-      'stroke-dasharray': '4.5,3.5',
-      opacity: 0.9,
-      nohalo: true,
-    }),
-    // Pushed right out to the bib's flared corners: v4's narrower hips left no
-    // room between the emblem plate and the pockets, and the plate is drawn
-    // after, so a centred pocket was simply painted over.
-    pocket(x - 0.5, y + h * 0.5, h, t),
-    pocket(x + w - 8.5, y + h * 0.5, h, t),
-  ]
-}
-
-// Patch pocket, at the bib's lower corners rather than its middle, where the
-// emblem plate always sits.
-function pocket(px, py, h, t = DENIM_TONE) {
-  return [
-    R(px, py, 9, h * 0.34, 2.5, t.deep, { opacity: 0.55, stroke: LINE, 'stroke-width': 1.5, nohalo: true }),
-    S(`M ${px + 1},${py + 3} L ${px + 8},${py + 3}`, t.stitch, 1.5, { opacity: 0.75, nohalo: true }),
-  ]
-}
-
-// One shoulder strap, authored for the left side and mirrored for the right.
-// It deliberately runs past the shoulder line: the two strap tops are knobs on
-// the silhouette, which is how the dungarees survive a colour-stripped read.
-// v4 keeps them INBOARD of the deltoid balls so the new arms cannot cover them.
-function strapPiece(outer, stitch, t = DENIM_TONE) {
-  return [
-    P(outer, t.base, ink(2.8)),
-    S(stitch, t.stitch, 1.6, { 'stroke-dasharray': '4.5,3.5', opacity: 0.85, nohalo: true }),
-  ]
-}
-
 // A dungaree button, centred ON the bib's outer edge so half of it sticks out
 // of the body outline (casting rule 3). Big enough to read as a button and not
 // a rivet: r=7..8.5 against the robots' 1.8-unit wheel centres.
@@ -980,292 +994,255 @@ function bigButton(cx, cy, r = 7.5) {
 }
 
 // ---------------------------------------------------------------------------
-// HEROES
+// HEROES (v9 — LEGO). See the v9 revision note at the top of the file for
+// why. Standing geometry shared by the three non-boss heroes:
 //
-// Standing skeleton shared by all four (the jumper swaps the legs for a tuck):
-//   head    cap 4, face 10..47, width 34, brim half 20   (UNCHANGED in v6)
-//   neck    43..56, 7 units of it visible under the jaw
-//   shirt   collar 54, shoulders 46 @ y 62, waist 38 @ y 72
-//   bib     46 wide @ 70, flaring to 50 @ 92
-//   arm     shoulder {37,62,9} elbow {22,74,7.6} wrist {19,89,6}
-//   leg     hip {51,90,10} knee {45,108,8.2} cuff {42.5,116,7} ankle {41,120,6.8}
-//   boot    centred 3 units outboard of the ankle, sole at y 131..132
+//   head   cap 3..26, brim 23..32, face 15..58, width 58, brim half 37
+//   neck   58..70
+//   shirt  33..87 (width 54) @ y 68..102, mostly covered by the bib
+//   bib    39..81 (width 42) @ y 76..102 — matches the emblem plate width
+//   arm    single straight tube, shoulder -> wrist, peg at the shoulder only
+//          (the reference figure's arm is one rigid piece that pivots at the
+//          shoulder — there is no elbow to peg)
+//   leg    hip {_,102} -> knee {_,118} -> ankle {_,128}, pegs at hip AND knee,
+//          boot 124..136
 //
-// The v6 numbers are one budget, not four independent choices. Chin 47 and
-// sole ~131 are both fixed (the head is not shrinking, and the sole cannot
-// pass ~132 without the halo leaving the frame), so the 84 units between them
-// are split torso-against-leg and nothing else. 18 + 22 for shirt and bib is
-// the floor: the shirt has to be at least as tall as the 18-unit deltoid ball
-// sitting in it, and the bib has to hold a 21-unit emblem plate. What is left
-// — 40 units — is the leg, and that is the whole of v6's leg gain.
-//
-// The KNEE-OUT, ANKLE-OUT splay (hip 51 -> knee 45 -> ankle 41) is not a
-// stance idea, it is the only cutout hole this family can have: at the ankle
-// the two legs leave 22 units of background and the two boots 20, which clears
-// the 9 units two halos eat. Straight-down legs measured 13 and merged.
-//
-// v5's note on arm length still holds — the glove sits beside the hip, not in
-// the armpit — but in v6 it also has to CLEAR the bib rather than overlap it,
-// which is what the narrower torso buys.
+// `legoOveralls`/`legoLegsStanding`/`legoArm`/`legoHead` are shared by all
+// three; only the limb points, backdrop and (for Umo) a crate overlay differ
+// per hero, the same division v3-v8 used for `heroHead`/`bibPanel`/`neck`.
 // ---------------------------------------------------------------------------
 
-const HERO_ARM_L = [
-  { x: 37, y: 62, w: 9 },
-  { x: 22, y: 74, w: 7.6 },
-  { x: 19, y: 89, w: 6 },
-]
+// capTop/domeBot/brimY/brimH sit 4 units lower than the first-draft numbers
+// (3/26/23/9). Measured with a padded-viewBox alpha scan (the authority, not
+// getBBox): at capTop 3 the dome's halo edge landed at y -3.1..-3.3, outside
+// the frame. `capTop + stroke/2 + HALO_W/2` has to clear 0, i.e.
+// capTop >= 6.1 for this box's 3.2 stroke — 7 leaves a hair of margin. The
+// face zone (faceTop/chin/eyeCy/noseCy/mouthY) did NOT move: the cap simply
+// covers a little less of the head box than the first draft assumed, which
+// costs nothing since that region was hidden under the dome either way.
+const G_STD = {
+  capTop: 7,
+  domeBot: 28,
+  brimY: 26,
+  brimH: 8,
+  faceTop: 15,
+  chin: 58,
+  eyeCy: 40,
+  noseCy: 48.5,
+  mouthY: 53,
+}
+const HEAD_HALF = 29
+const BRIM_HALF = 37
 
-const HERO_LEG_L = [
-  { x: 51, y: 90, w: 10 },
-  { x: 45, y: 108, w: 8.2 },
-  { x: 42.5, y: 116, w: 7 },
-  { x: 41, y: 120, w: 6.8 },
-]
-
-// Shirt with sloped shoulders and a dropped collar. The slope is what lets the
-// neck exist and what stops the shoulder from being a corner.
-function heroShirt(bodyColor) {
+// Neck, shirt block, straps, bib and rivets, and the phonics plate. Shared by
+// all three standing heroes — only the arms/legs/backdrop differ per hero.
+function legoOveralls(bodyColor, accent, visorColor, emblem, tone = DENIM_TONE) {
+  const strapL = [
+    P('35,68 44,68 41,80 34,80', tone.base, ink(2.6)),
+    S('M 38,70 L 36,78', tone.stitch, 1.4, { 'stroke-dasharray': '3,2.5', opacity: 0.85, nohalo: true }),
+  ]
   return [
-    D('M 37,62 C 37,56 43,54 50,54 L 70,54 C 77,54 83,56 83,62 L 79,72 L 41,72 Z', bodyColor, ink(3.2)),
-    P('70,55 83,62 79,72 71,72', '#000', { opacity: 0.14, nohalo: true }),
-    P('44,57 68,57 66,62 46,62', '#fff', { opacity: 0.22, nohalo: true }),
+    neck(60, 58, 70, 7, 8),
+    box(33, 68, 87, 102, 8, bodyColor, ink(3.2)),
+    R(35, 70, 14, 10, 5, '#fff', { opacity: 0.18, nohalo: true }),
+    strapL,
+    mirror(strapL),
+    box(39, 76, 81, 102, 7, tone.base, ink(3.2)),
+    R(40, 77, 14, 22, 5, tone.lit, { opacity: 0.5, nohalo: true }),
+    R(42, 80, 36, 18, 4, 'none', {
+      stroke: tone.stitch,
+      'stroke-width': 1.5,
+      'stroke-dasharray': '4,3',
+      opacity: 0.85,
+      nohalo: true,
+    }),
+    // Rivets at the bib's TOP corners, where the strap meets it — not the
+    // lower corners v3-v8 used. That is the one placement every reference
+    // image agrees on, and it is a straight coordinate move, not a redesign
+    // of `bigButton` itself.
+    bigButton(35, 80, 7),
+    mirror(bigButton(35, 80, 7)),
+    emblemPlate(39, 79, 42, 21, visorColor, accent, emblem),
   ]
 }
 
-// The jumper: the only figure in the family with both feet off the ground. One
-// arm punches above the cap, the legs are split — one knee tucked up, the other
-// trailing straight — and the ground shadow is left small and far below so the
-// air gap is unmistakable. The split legs are also the clearest knee read in
-// the family, since the two bends go opposite ways.
+// Both standing legs: thigh, knee peg, shin, boot, hip peg — mirrored from one
+// authored side. `pegDisc` is drawn LAST in each side's list so it sits on top
+// of both the bib (hip peg) and the leg's own seam (knee peg).
+// Thigh/shin/boot heights come in 4 units shorter than the first-draft
+// numbers (102..118 / 118..128 / 124..136), for the matching reason at the
+// OTHER end of the frame: bootBot 136 put the halo edge at y 142.1..142.3
+// (measured), and `bootBot + stroke/2 + HALO_W/2 <= 140` caps bootBot at
+// 133.9 for this box's 3.2 stroke. 131 leaves a hair of margin.
+function legoLegsStanding(tone = DENIM_TONE, bootColor = SHOE) {
+  const side = [
+    legoLeg(37, 53, 102, 114, tone),
+    legoLeg(38, 52, 114, 122, tone),
+    legoBoot(35, 55, 118, 131, bootColor),
+    pegDisc(45, 102, 8),
+    pegDisc(45, 114, 7),
+  ]
+  return [side, mirror(side)]
+}
+
+// One straight rigid arm: a single tapered tube from shoulder to wrist, a
+// peg at the shoulder (the only joint this genre's arm has), and a fist
+// seated just past the wrist. Pose comes entirely from where `shoulder` and
+// `wrist` are — there is no elbow to bend.
+function legoArm(shoulder, wrist, bodyColor, cuffColor, handR) {
+  const pts = [shoulder, wrist]
+  const [hx, hy] = wristSeat(pts, 6)
+  const deg = towardBody(pts, hx, hy) + 180
+  return [
+    tube(shoulder.x, shoulder.y, shoulder.w, wrist.x, wrist.y, wrist.w, bodyColor, ink(3.2)),
+    S(
+      `M ${((shoulder.x + wrist.x) / 2 - 2).toFixed(1)},${((shoulder.y + wrist.y) / 2 - 2).toFixed(1)} L ${((shoulder.x + wrist.x) / 2 + 2).toFixed(1)},${((shoulder.y + wrist.y) / 2 + 2).toFixed(1)}`,
+      '#fff',
+      shoulder.w * 0.22,
+      { opacity: 0.22, nohalo: true }
+    ),
+    pegDisc(shoulder.x, shoulder.y, shoulder.w * 0.58),
+    legoFist(hx, hy, handR, deg, cuffColor),
+  ]
+}
+
+// The jumper: the only figure in the family with both feet off the ground.
+// One arm punches above the cap, the legs are split — one knee tucked up, the
+// other trailing straight — and the ground shadow is left small and far below
+// so the air gap is unmistakable. The tucked knee is still a `pegDisc`, same
+// as a standing figure's — the joint does not stop being a peg because the
+// pose bent it.
 export function platJumper({
   bodyColor = '#e03a3a',
   accent = '#1f3f8f',
   emblem = 'R',
   visorColor = '#fff3c4',
 } = {}) {
-  const strapL = strapPiece('40,47 49,51 47,78 39,78', 'M 45,55 L 43,74')
+  // Ankle y kept low enough that the boot (ankle+2 .. ankle+13) clears the
+  // same bootBot<=131 limit `legoLegsStanding` measured its own boots
+  // against (see that function's note) — a bent leg's halo obeys the same
+  // frame-edge arithmetic a straight one does.
   const legTuck = [
-    { x: 51, y: 90, w: 10 },
-    { x: 39, y: 101, w: 8.2 },
-    { x: 36, y: 109, w: 7 },
-    { x: 35, y: 113, w: 6.8 },
+    { x: 47, y: 102, w: 16 },
+    { x: 38, y: 108, w: 13 },
+    { x: 35, y: 113, w: 11 },
   ]
   const legTrail = [
-    { x: 69, y: 90, w: 10 },
-    { x: 79, y: 105, w: 8.2 },
-    { x: 83, y: 114, w: 7 },
-    { x: 85, y: 118, w: 6.8 },
+    { x: 73, y: 102, w: 16 },
+    { x: 81, y: 110, w: 13 },
+    { x: 85, y: 116, w: 11 },
   ]
-  const armPunch = [
-    { x: 83, y: 61, w: 9 },
-    { x: 94, y: 47, w: 7.6 },
-    { x: 97, y: 33, w: 6 },
+  const bentLeg = (pts) => [
+    tube(pts[0].x, pts[0].y, pts[0].w, pts[1].x, pts[1].y, pts[1].w, DENIM_TONE.base, ink(3.2)),
+    tube(pts[1].x, pts[1].y, pts[1].w, pts[2].x, pts[2].y, pts[2].w, DENIM_TONE.base, ink(3.2)),
+    legoBoot(pts[2].x - 10, pts[2].x + 10, pts[2].y + 2, pts[2].y + 13),
+    pegDisc(pts[0].x, pts[0].y, 8),
+    pegDisc(pts[1].x, pts[1].y, 7),
   ]
   const backdrop = [
-    E(60, 136, 12, 2.6, '#000', { opacity: 0.14 }),
-    // Trailing speed lines in the air the tucked legs just left. They and the
-    // small far-below shadow are the whole "airborne" cue, so they sit in the
-    // gap between boot and ground rather than beside the torso, where they
-    // read as scratches on the character.
-    // Held at y <= 136: at v4's y 139 the 3.8-wide round cap reached y 140.9
-    // and the bottom line was shaved off by the viewBox edge.
-    S(
-      'M 12,130 L 24,122 M 108,130 L 98,124 M 44,136 L 52,128 M 78,136 L 70,129 M 60,136 L 60,129',
-      accent,
-      3.8,
-      { opacity: 0.7 }
-    ),
+    E(60, 136, 12, 2.4, '#000', { opacity: 0.14 }),
+    S('M 12,128 L 24,120 M 108,128 L 98,122 M 44,136 L 52,128 M 78,136 L 70,129', accent, 3.6, { opacity: 0.65 }),
   ]
   const body = [
-    strapL,
-    mirror(strapL),
-    neck(60, 43, 56, 7, 8),
-
-    denimLimb(legTuck),
-    heroBoot(32, 115, 12, 7),
-    denimLimb(legTrail),
-    heroBoot(88, 121, 12, 7),
-
-    heroShirt(bodyColor),
-
-    bibPanel(37, 70, 46, 22, 10, 2),
-    bigButton(36, 81, 6.5),
-    mirror(bigButton(36, 81, 6.5)),
-    emblemPlate(43, 70.5, 34, 21, visorColor, accent, emblem),
-
-    heroArm(HERO_ARM_L, bodyColor, accent, 9),
-    heroArm(armPunch, bodyColor, accent, 10, true),
-
-    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
+    ...legoOveralls(bodyColor, accent, visorColor, emblem),
+    bentLeg(legTuck),
+    bentLeg(legTrail),
+    legoArm({ x: 34, y: 76, w: 15 }, { x: 22, y: 96, w: 11 }, bodyColor, accent, 10),
+    legoArm({ x: 84, y: 72, w: 15 }, { x: 97, y: 42, w: 11 }, bodyColor, accent, 10),
+    legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
 
-// The spring: the shirt is replaced by a stack of coil turns, so this one is
-// the tallest and narrowest of the four. The turns are fat and few — thin
-// coils turn to mush at small sizes — and each carries its own lit crescent so
-// the stack reads as a helix rather than a pile of rings. The coil's collar
-// block is where the neck lands, and the shoulders sit on the widest turn, so
-// the arms leave the coil on a curve like everyone else's.
+// The spring: the shirt is replaced by a stack of coil turns, and one arm
+// stays raised — the same "bounce" identity v3-v8 gave this slot, kept
+// because it is a torso substitution, not a skeleton choice, and survives the
+// LEGO conversion unchanged in concept.
 export function platSpring({
   bodyColor = '#2f9e5c',
   accent = '#16522f',
   emblem = 'M',
   visorColor = '#fff3c4',
 } = {}) {
-  const turn = (cy, rx, cx) => [
-    E(cx, cy, rx, 8.5, bodyColor, ink(3)),
-    E(cx - rx * 0.3, cy - 3, rx * 0.44, 2.6, '#fff', { opacity: 0.26, nohalo: true }),
+  const turn = (cy, rx, ry = 9) => [
+    E(60, cy, rx, ry, bodyColor, ink(3)),
+    E(60 - rx * 0.3, cy - ry * 0.32, rx * 0.4, ry * 0.28, '#fff', { opacity: 0.24, nohalo: true }),
+    E(60 + rx * 0.24, cy + ry * 0.3, rx * 0.32, ry * 0.2, '#000', { opacity: 0.12, nohalo: true }),
   ]
-  const seam = (cy, rx) => E(60, cy, rx, 3.2, accent, ink(2.2))
-  const strapL = strapPiece('40,47 49,52 47,80 39,80', 'M 45,56 L 43,76')
-  const armL = [
-    { x: 45, y: 65, w: 9 },
-    { x: 23, y: 75, w: 7.6 },
-    { x: 20, y: 89, w: 6 },
-  ]
-  // Deliberately not a mirror, and v6's biggest silhouette change in the
-  // family: the right arm is RAISED. A hanging arm cannot separate from a
-  // 46-unit bib inside a 120-unit frame once both masses carry a 4.5-unit
-  // halo — measured, the best a hanging pair gets is an 8-unit slot, which
-  // reads on screen and vanishes in a hard cutout. Raised, the background
-  // between forearm and neck measures 18 units, so the armpit is a real hole
-  // in the cutout. One arm up also gives the spring its bounce.
-  const armR = [
-    { x: 74, y: 66, w: 9 },
-    { x: 90, y: 58, w: 7.6 },
-    { x: 96, y: 45, w: 6 },
-  ]
-  const legL = [
-    { x: 51, y: 94, w: 10 },
-    { x: 45, y: 111, w: 8.2 },
-    { x: 42.5, y: 119, w: 7 },
-    { x: 41, y: 123, w: 6.8 },
-  ]
-  const backdrop = [E(60, 135, 22, 3.2, '#000', { opacity: 0.14 })]
+  const seam = (cy, rx) => E(60, cy, rx, 2.6, accent, ink(2.2))
+  const backdrop = [E(60, 135, 22, 3, '#000', { opacity: 0.14 })]
   const body = [
-    strapL,
-    mirror(strapL),
-    neck(60, 43, 56, 7, 8),
+    neck(60, 58, 68, 7, 8),
+    turn(64, 26, 8),
+    turn(73, 29, 9),
+    turn(82, 26, 8),
+    seam(69, 27.5),
+    seam(78, 27.5),
 
-    denimLimb(legL),
-    mirror(denimLimb(legL)),
-    heroBoot(38, 125, 12, 7),
-    mirror(heroBoot(38, 125, 12, 7)),
+    box(39, 88, 81, 106, 7, DENIM, ink(3.2)),
+    R(40, 89, 14, 15, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
+    bigButton(37, 91, 7),
+    mirror(bigButton(37, 91, 7)),
+    // Ollie keeps the family's one round plate — a stadium, not a disc, so
+    // the letter O is not fighting square corners while still being full
+    // width down the whole middle.
+    emblemPlate(41, 90, 38, 16, visorColor, accent, emblem, true),
 
-    R(52, 53, 16, 7, 3, accent, ink(2.6)),
-    turn(60, 15, 58),
-    turn(66, 18, 62),
-    turn(72, 15, 58),
-    seam(63, 17),
-    seam(69, 17),
+    legoLegsStanding(),
 
-    bibPanel(37, 74, 46, 22, 10, 2),
-    bigButton(36, 85, 6.5),
-    mirror(bigButton(36, 85, 6.5)),
+    legoArm({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, bodyColor, accent, 10),
+    legoArm({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, bodyColor, accent, 10),
 
-    // Ollie's plate stays THE ROUND ONE in the family -- but a stadium, not a
-    // disc. The disc was 29 units across and could not hold two glyphs at
-    // any size: measured, `OA` inked 36.7 units and left the plate by 9.8 a
-    // side. A stadium keeps every edge a curve, so the letter O still is not
-    // fighting square corners, while being full width down the whole middle.
-    emblemPlate(41, 74.5, 38, 21, visorColor, accent, emblem, true),
-
-    heroArm(armL, bodyColor, accent, 9),
-    heroArm(armR, bodyColor, accent, 9, true),
-
-    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
+    legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
 
-// The block: the squarest silhouette in the family and the widest. The shirt is
-// a crate — a framed box with plank courses down each side of the emblem — and
-// the dungarees hang below it, so the boxy chest and the denim hips read as two
-// stacked masses. Limbs stay stubby and boots wide: a boxy body on long legs
-// read as a chimney. The crate has no collar to drop, so the neck is short
-// here and the deltoid balls do more of the head-to-torso separation.
+// The block: the squarest, widest figure — a crate panel riveted onto the
+// shirt, plank courses and corner brackets standing in for the shirt's own
+// flat colour, dungarees below.
 export function platBlock({
   bodyColor = '#e08a1e',
   accent = '#7a3d0c',
   emblem = 'D',
   visorColor = '#fff3c4',
 } = {}) {
-  const course = (y) => [
-    R(42, y, 36, 3.2, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true }),
-  ]
-  const bracket = (x, y) => R(x, y, 8, 8, 2, '#000', { opacity: 0.22, stroke: LINE, 'stroke-width': 1.5, nohalo: true })
-  const strapL = strapPiece('41,46 50,50 48,80 40,80', 'M 46,54 L 44,76')
-  const armL = [
-    { x: 37, y: 58, w: 9.5 },
-    { x: 22, y: 70, w: 8 },
-    { x: 19, y: 85, w: 6.3 },
-  ]
-  const legL = [
-    { x: 51, y: 92, w: 10 },
-    { x: 45, y: 109, w: 8.2 },
-    { x: 42.5, y: 117, w: 7 },
-    { x: 41, y: 121, w: 6.8 },
-  ]
-  const backdrop = [E(60, 135, 34, 3.6, '#000', { opacity: 0.14 })]
+  const course = (y) => R(42, y, 36, 3, 0.8, accent, { opacity: 0.85, stroke: LINE, 'stroke-width': 1.4, nohalo: true })
+  const bracket = (x, y) => R(x, y, 7, 7, 2, '#000', { opacity: 0.22, stroke: LINE, 'stroke-width': 1.4, nohalo: true })
+  const backdrop = [E(60, 136, 32, 3.4, '#000', { opacity: 0.14 })]
   const body = [
-    strapL,
-    mirror(strapL),
-    neck(60, 42, 55, 7, 8),
+    ...legoOveralls(bodyColor, accent, visorColor, emblem),
+    // The crate overlay sits on the shirt, ABOVE the bib (drawn after
+    // `legoOveralls` here would cover the bib — so this hero calls the two
+    // in the opposite order from the others: overalls first, crate painted
+    // on the shirt margins the bib leaves exposed).
+    box(35, 69, 85, 79, 4, accent, ink(2.6)),
+    R(37, 71, 46, 6, 2, bodyColor, ink(2)),
+    course(73.5),
+    bracket(35.5, 70.5),
+    bracket(80.5, 70.5),
 
-    denimLimb(legL),
-    mirror(denimLimb(legL)),
-    heroBoot(38, 124, 13, 7),
-    mirror(heroBoot(38, 124, 13, 7)),
+    legoLegsStanding(),
 
-    R(37, 52, 46, 26, 7, accent, ink(3.2)),
-    R(42, 57, 36, 17, 4, bodyColor, ink(2.2)),
-    R(43, 58, 34, 5, 3, '#fff', { opacity: 0.2, nohalo: true }),
-    course(65),
-    course(70),
-    R(58.4, 57, 3.2, 8, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(49, 68, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    R(67, 68, 3.2, 6, 0.8, accent, { opacity: 0.85, nohalo: true }),
-    bracket(38, 53),
-    bracket(75, 53),
-    bracket(38, 69),
-    bracket(75, 69),
+    legoArm({ x: 34, y: 76, w: 15.5 }, { x: 22, y: 92, w: 11.5 }, bodyColor, accent, 10),
+    legoArm({ x: 86, y: 76, w: 15.5 }, { x: 98, y: 92, w: 11.5 }, bodyColor, accent, 10),
 
-    bibPanel(37, 74, 46, 22, 10, 2),
-    bigButton(36, 85, 6.5),
-    mirror(bigButton(36, 85, 6.5)),
-    emblemPlate(43, 74.5, 34, 21, visorColor, accent, emblem),
-
-    heroArm(armL, bodyColor, accent, 9.5),
-    mirror(heroArm(armL, bodyColor, accent, 9.5)),
-
-    heroHead(60, 4, 10, 34, 37, 20, bodyColor, accent, visorColor),
+    legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
   ]
   return sticker(backdrop, body)
 }
 
-// The power-up form, chapter boss: deliberately the heaviest figure in the
-// family, and the only one whose cap is winged. It carries one visible trace of
-// each earlier hero — the jumper's gloves grown to their largest, the spring's
-// coil turns as rings around the shins, the block's plank slabs as the bib's
-// side panels — the same "trace, never louder than the combined form" rule the
-// other families' bosses follow. The glow is a flat ray burst: translucent
-// discs behind the figure are painted straight over by the white sticker halo,
-// so rays reaching past the silhouette are the only kind of glow that survives.
-// THE FIRE POWERUP BOSS. The colourway is INVERTED against the everyday
-// figure — white cap with a red mark, white shirt, red dungarees — because the
-// brief for "the combined form has to look special" has already spent every
-// other lever: v6 bought bigness with mass (head 38->42 wide, shoulders 56->64,
-// hips 60->72, limbs +20 %) and v5 spent the whole 84-unit chin-to-sole budget
-// on human leg proportion. A colourway swap is the one change that reads as
-// "powered up" at 96 px and costs the silhouette nothing — this figure's hard
-// cutout is unchanged from v7 except for the fireballs.
+// The power-up form, chapter boss: deliberately the biggest figure in the
+// family and the only one whose cap is winged. It keeps every decorative
+// trace v3-v8 gave it — the fire-flower colour inversion, the aura ray burst,
+// the wings, the fireballs, the spring's coil rings on the shins, the block's
+// plank panels on the bib flanks — none of which are skeleton geometry, so
+// none of them needed to change for the LEGO conversion. Only the body
+// underneath (head, torso, limbs) is rebuilt in the new grammar, bigger.
 //
-// `bodyColor` IS ACCEPTED AND IGNORED. art.js's palette entry for `captain-gum`
-// still passes the old pink #e05a9e, and the palette overrides a function
-// default, so a default could not ship this. The wardrobe is fixed here for the
-// same reason DENIM is (casting rule 2): it is the reference's colourway, not a
-// slot. accent / panelColor / inkColor / visorColor all stay live.
+// `bodyColor` IS ACCEPTED AND IGNORED, same as before: the wardrobe is fixed
+// (casting rule 2's reasoning for DENIM applies here too) and the palette
+// entry for `captain-gum` still does not pass one.
 export function platPowerup({
   bodyColor = '#f8f8f2',
   panelColor = '#fff6e2',
@@ -1380,40 +1357,19 @@ export function platPowerup({
   // to edge and the denim — half of the family's two-tone — disappeared on the
   // one figure that most needs to look like the others.
   const plankPanel = (x) => [
-    R(x, 75, 11, 19, 2.5, accent, ink(2.4)),
-    S(`M ${x + 1},${81} L ${x + 10},${81}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
-    S(`M ${x + 1},${87} L ${x + 10},${87}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    R(x, 86, 10, 20, 2.5, accent, ink(2.4)),
+    S(`M ${x + 1},${92} L ${x + 9},${92}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
+    S(`M ${x + 1},${99} L ${x + 9},${99}`, LINE, 1.6, { opacity: 0.5, nohalo: true }),
   ]
   // The spring's trace, moved from the ankles to the shins so it sits ON the
   // new tapered leg instead of floating between leg and boot.
   const coilRing = (cx, cy) => E(cx, cy, 11, 3, accent, ink(2.2))
-  const strapL = strapPiece('35,47 47,52 45,80 34,80', 'M 41,56 L 39,76', FIRE_TONE)
-  // v6: BOTH ARMS RAISED, and thicker than any other figure's. Two problems at
-  // once. (a) Silhouette: this figure is 64 units across the hips, so a hanging
-  // arm has nowhere to be except against the flank — measured, the glove
-  // overlapped the bib's flared corner by 5 units and the boss was the most
-  // fused shape of the nine. Raised, the background between forearm and jaw is
-  // an open notch instead. (b) Size: arms up push the figure's mass to the top
-  // corners of a frame the minibots leave empty, which is most of what makes
-  // this one read as the bigger, combined form. v8 also gives the pose its job:
-  // the fists are where the fireballs are.
-  // Hand height is set by the HEAD's jaw taper, not by the arm: at y 42+ the
-  // 42-unit head narrows to 43.2..76.8, so a fist parked there clears the face
-  // by 12 units of background instead of 8. And the binding clip is not the
-  // glove lobe but its THUMB, which sits r*0.88 out from the centre and adds
-  // r*0.46 of its own — 14 units before ink and halo. Measured, wrist x 18.5
-  // put the thumb's halo at x -1.0.
-  const armL = [
-    { x: 30, y: 70, w: 12 },
-    { x: 22.5, y: 62, w: 10.2 },
-    { x: 21.5, y: 52, w: 8.5 },
-  ]
-  const legL = [
-    { x: 52, y: 93, w: 12.5 },
-    { x: 46, y: 109, w: 10 },
-    { x: 42, y: 117, w: 8.6 },
-    { x: 40, y: 121, w: 8.4 },
-  ]
+  // v9: BOTH ARMS RAISED, unchanged in concept from v6-v8 — the reasoning
+  // (a hanging arm has nowhere to be beside a wide hip block once both carry
+  // a halo; raised, the mass pushes into the frame's empty top corners, which
+  // is most of what reads as "the bigger, combined form") did not depend on
+  // the human skeleton, so it survives untouched. Only the arm ITSELF is now
+  // a single rigid `legoArm` tube instead of a jointed elbow taper.
   // Rays reach as far as the frame allows in their own direction rather than
   // sharing one radius: at a fixed radius the diagonals stopped well short of
   // the corners, which is the only place a ray has room to be seen past the
@@ -1441,63 +1397,81 @@ export function platPowerup({
     sparkle(11, 70, 4.4),
     sparkle(108, 76, 4.4),
   ]
+  // Boss geometry: the same three-block skeleton as the standing heroes
+  // (shirt/bib/legs/head), scaled up — head half 33 against the standard 29,
+  // shirt half 33 against 27 — so the boss reads as heavier without changing
+  // the family's grammar.
+  // capTop/domeBot/brimY shifted +6 from the first draft for the same reason
+  // G_STD's did (measured padded-viewBox scan: capTop 1 put the halo edge at
+  // y -5.2..-5.3). The face zone is untouched.
+  const G_BOSS = {
+    capTop: 7,
+    domeBot: 30,
+    brimY: 27,
+    brimH: 9,
+    faceTop: 16,
+    chin: 62,
+    eyeCy: 44,
+    noseCy: 53,
+    mouthY: 58,
+  }
+  const strapL = [
+    P('29,75 40,75 37,88 28,88', FIRE_TONE.base, ink(2.8)),
+    S('M 33,77 L 31,86', FIRE_TONE.stitch, 1.5, { 'stroke-dasharray': '3.5,3', opacity: 0.85, nohalo: true }),
+  ]
   const body = [
+    neck(60, 62, 75, 9, 10),
+    box(27, 75, 93, 110, 9, FIRE_WHITE, ink(3.4)),
+    R(29, 77, 15, 12, 5, '#000', { opacity: 0.06, nohalo: true }),
     strapL,
     mirror(strapL),
-    neck(60, 44, 59, 10, 11),
-
-    denimLimb(legL, FIRE_TONE),
-    mirror(denimLimb(legL, FIRE_TONE)),
-    coilRing(44, 110),
-    coilRing(42.5, 117),
-    mirror([coilRing(44, 110), coilRing(42.5, 117)]),
-    heroBoot(36, 124, 16, 8),
-    mirror(heroBoot(36, 124, 16, 8)),
-
-    D('M 28,67 C 28,58 38,56 46,56 L 74,56 C 82,56 92,58 92,67 L 87,77 L 33,77 Z', FIRE_WHITE, ink(3.4)),
-    P('74,57 92,67 87,77 75,77', '#000', { opacity: 0.15, nohalo: true }),
-    // Was a #fff lit plane, which on a white shirt is a no-op — measured, #fff
-    // at 0.22 over #f8f8f2 moves the pixel by under half a percent. Same
-    // polygon, inverted into the collar's cast shadow, which is where the light
-    // actually leaves a mark on a white shirt.
-    P('40,59 72,59 70,64 42,64', '#000', { opacity: 0.09, nohalo: true }),
-
-    bibPanel(28, 74, 64, 21, 12, 4, FIRE_TONE),
-    plankPanel(27),
+    box(35, 84, 85, 110, 8, FIRE_TONE.base, ink(3.4)),
+    R(37, 86, 15, 22, 5, FIRE_TONE.lit, { opacity: 0.4, nohalo: true }),
+    bigButton(35, 88, 8),
+    mirror(bigButton(35, 88, 8)),
+    emblemPlate(39, 86, 42, 20, panelColor, inkColor, emblem),
+    plankPanel(28),
     plankPanel(82),
-    bigButton(26, 84.5, 8),
-    mirror(bigButton(26, 84.5, 8)),
-    emblemPlate(43, 74.5, 34, 20, panelColor, inkColor, emblem),
 
-    // Red cuffs on white sleeves. Not decoration: the sleeve, the glove and the
-    // halo are all near-whites within 1.07:1 of each other, so the wrist is the
-    // one boundary on this figure with three whites meeting at it. The cuff is
-    // 4.4:1 against both of its neighbours and settles it.
-    heroArm(armL, FIRE_WHITE, FIRE_RED, 10.5),
-    mirror(heroArm(armL, FIRE_WHITE, FIRE_RED, 10.5)),
+    // Leg heights come in shorter than the first draft (110..123/123..131,
+    // boot to 137) for the same bootBot<=131-ish reason `legoLegsStanding`
+    // measured its own boots against — this boss's boot carries the same
+    // 3.2 stroke.
+    legoLeg(36, 56, 110, 119, FIRE_TONE),
+    legoLeg(37, 55, 119, 125, FIRE_TONE),
+    legoBoot(33, 59, 122, 131, SHOE),
+    coilRing(46, 122),
+    pegDisc(46, 110, 9),
+    pegDisc(46, 119, 8),
+    mirror([
+      legoLeg(36, 56, 110, 119, FIRE_TONE),
+      legoLeg(37, 55, 119, 125, FIRE_TONE),
+      legoBoot(33, 59, 122, 131, SHOE),
+      coilRing(46, 122),
+      pegDisc(46, 110, 9),
+      pegDisc(46, 119, 8),
+    ]),
+
+    // Red cuffs on white sleeves. Not decoration: the sleeve, the fist and
+    // the halo are all near-whites within 1.07:1 of each other, so the wrist
+    // is the one boundary on this figure with three whites meeting at it.
+    legoArm({ x: 27, y: 80, w: 16 }, { x: 21, y: 54, w: 12 }, FIRE_WHITE, FIRE_RED, 11),
+    mirror(legoArm({ x: 27, y: 80, w: 16 }, { x: 21, y: 54, w: 12 }, FIRE_WHITE, FIRE_RED, 11)),
 
     wing,
     mirror(wing),
     // AFTER the wings on purpose: the licks rise into the wing's serrated edge
-    // and the two flames read as one. Before them, the wing simply covered the
-    // licks (the wing's own mass ends at y 29, the licks reach y 24).
-    fireball(18.5, 40),
-    mirror(fireball(18.5, 40)),
-    heroHead(60, 3, 10, 42, 41, 24, FIRE_WHITE, FIRE_BRIM, null, 1.108),
-    // Sits in the same slot as the other three heroes' cap disc. Higher and
-    // larger, its top point pushed through the dome's crown and left a stray
-    // nub of ink and halo above the cap.
-    // Ink 2.2 -> 1.7 and the inner pip 3.4 -> 2.6, because a five-pointed star of
-    // r 7.5 with a valley at 0.44r has arms THINNER THAN ITS OWN OUTLINE:
-    // measured, the 2.2 stroke left the red fill at 10.0 units2 against 14.1 for
-    // the gold pip, so the mark read gold, not red. That was survivable while the
-    // ring was gold on a pink dome; against the reference's red-on-white cap it
-    // inverts the one detail the whole colourway is built on. Measured after:
-    // 24.5 units2 red against 8.1 gold, and the figure's top edge backs off from
-    // y 0.8 to y 1.0. The ink is now thinner than the family's 2.4 cap disc —
-    // accepted, because the alternative is a mark whose own outline eats it.
-    star(60, 14, 7.5, FIRE_MARK, ink(1.7)),
-    star(60, 14, 2.6, accent, { nohalo: true }),
+    // and the two flames read as one.
+    fireball(18, 41),
+    mirror(fireball(18, 41)),
+    legoHead(G_BOSS, 33, 43, FIRE_WHITE, FIRE_BRIM, null, 1.14),
+    // Sits in the same slot as the other three heroes' cap disc, but a star:
+    // `legoHead` was called with `discColor = null` so its own plain accent
+    // disc is skipped, and this figure gets the mark instead — the phonics
+    // plate stays on the chest either way, so this is not the badge the
+    // instruction warns off (it carries no letter, no logo, no ring).
+    star(60, 23.5, 7.5, FIRE_MARK, ink(1.7)),
+    star(60, 23.5, 2.6, accent, { nohalo: true }),
   ]
   return sticker(backdrop, body)
 }
