@@ -463,6 +463,23 @@ const EMBLEM_BOX = {
 // an earlier attempt at this fix pushed the whole hem outward starting right
 // at the shoulder and cost 55.5 -> 47.3, because it ate directly into the
 // hand-ring clearance zone the old build depended on. Widen only below y=104.
+//
+// SIZE PASS: the user asked for the cape bigger after the above round fixed
+// only its attachment (it was reading as detached, not as small). The
+// pre-widen point (37,104 / 83,104) is UNCHANGED -- that is still the C-hand
+// ring boundary from the paragraph above and moving it costs the same 47.3
+// regression. Everything below y=104 is free to grow, so both wing tips
+// swing out from x=20/100 to x=14/106 (six units per side, tip-to-tip 92 of
+// the 120-unit frame, 14 units of margin on each side -- nowhere near clip)
+// and the hem drops from y=128 to y=133 (the scallop's own curve peaks at
+// y=133.2, checked by sampling the quadratic bezier at 1000 steps rather than
+// trusting the endpoint, and the shadow ellipse at cy=136 still clears it by
+// 2.8 units). Lining and shade share the same path string with the family's
+// usual inset (the lining point is the outer point plus the fixed offset that
+// already existed between the two paths here, e.g. the tip offset was
+// +4/-6 and stays +4/-6 off the new outer tip) so the two-tone edge and the
+// dark wash keep tracking the bigger shape instead of the old one peeking out
+// from under it.
 export function dcRay({
   bodyColor = '#4a5466',
   accent = '#12151d',
@@ -476,9 +493,9 @@ export function dcRay({
     <g>
       <ellipse cx="60" cy="136" rx="34" ry="3.4" fill="#000" opacity="0.13"/>
 
-      <path d="M 28,48 L 34,80 L 37,104 L 20,122 ${scallop(20, 122, 33, 128, 1, 4)} L 60,100 L 87,128 ${scallop(87, 128, 100, 122, 1, 4)} L 83,104 L 86,80 L 92,48 Z" fill="${capeColor}"/>
-      <path d="M 34,51 L 39,80 L 41,100 L 24,116 ${scallop(24, 116, 35, 122, 1, 3)} L 60,96 L 85,122 ${scallop(85, 122, 96, 116, 1, 3)} L 79,100 L 81,80 L 86,51 Z" fill="${liningColor}"/>
-      ${shade(`M 34,51 L 39,80 L 41,100 L 24,116 ${scallop(24, 116, 35, 122, 1, 3)} L 60,96 L 85,122 ${scallop(85, 122, 96, 116, 1, 3)} L 79,100 L 81,80 L 86,51 Z`, 0.3)}
+      <path d="M 28,48 L 34,80 L 37,104 L 14,126 ${scallop(14, 126, 28, 133, 1, 5)} L 60,100 L 92,133 ${scallop(92, 133, 106, 126, 1, 5)} L 83,104 L 86,80 L 92,48 Z" fill="${capeColor}"/>
+      <path d="M 34,51 L 39,80 L 41,100 L 18,120 ${scallop(18, 120, 30, 127, 1, 4)} L 60,96 L 90,127 ${scallop(90, 127, 102, 120, 1, 4)} L 79,100 L 81,80 L 86,51 Z" fill="${liningColor}"/>
+      ${shade(`M 34,51 L 39,80 L 41,100 L 18,120 ${scallop(18, 120, 30, 127, 1, 4)} L 60,96 L 90,127 ${scallop(90, 127, 102, 120, 1, 4)} L 79,100 L 81,80 L 86,51 Z`, 0.3)}
       <polygon points="43,41 77,41 92,58 28,58" fill="${capeColor}"/>
 
       ${legoArm(31, 60, 16, 80, 24, 94, bodyColor, 11)}
