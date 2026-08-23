@@ -210,6 +210,11 @@ export const chapter3 = {
           // (renderMultiselectBeat -> speakTap). 말로 하는 주장보다 강한 시연이고,
           // c3s3-r4 에서 한 번 더 반복되며, 스테이지 recapAudio.ko 가 한국어로
           // 명시한다. instructionKo 는 발화되지 않는 표시 전용 필드다.
+          //
+          // **소문자 교육 도입(이 라운드) 예외.** 다른 7개 챕터의 break beat 는
+          // 이제 소문자 글자꼴을 띄우지만, 여기는 그대로 대문자 'K' 를 유지한다 --
+          // 이 자리가 챕터 3 안에서 K 의 글자꼴이 나오는 유일한 곳이라(위 문단),
+          // 소문자로 바꾸면 K 가 대문자로 단 한 번도 화면에 나오지 않는다.
           instructionKo: 'C와 쌍둥이인 K예요! 손가락으로 K를 그리면서 함께 외쳐요.',
           art: 'hero',
           letter: 'K',
@@ -337,9 +342,9 @@ export const chapter3 = {
         {
           id: 'c3s3-break',
           kind: 'break',
-          instructionKo: '손가락으로 E를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 e를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'E',
+          letter: 'e',
           repeatAudio: ['E', 'eh'],
         },
         {
@@ -491,9 +496,9 @@ export const chapter3 = {
         {
           id: 'c3s4-break',
           kind: 'break',
-          instructionKo: '손가락으로 H를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 h를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'H',
+          letter: 'h',
           repeatAudio: ['H', 'huh'],
         },
         {

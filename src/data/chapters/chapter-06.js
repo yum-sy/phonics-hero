@@ -210,6 +210,16 @@ export const chapter6 = {
         {
           id: 'c6s2-break',
           kind: 'break',
+          // **소문자 교육 도입(이 라운드)에서 L 은 제외한다.** 렌더로 실제 확인했다
+          // (probe `?iso=c6-stage-2:break`, San Francisco Rounded 계열): 소문자 'l'
+          // 은 세로 막대 하나로 렌더되어 이미 챕터 2 에서 가르친 대문자 'I' 와
+          // 화면상 구별이 안 된다(둘 다 순수 수직선). "이건 소문자 l 이에요" 라고
+          // 말하면서 아이가 이미 아는 I 와 똑같이 생긴 것을 보여주면 가르치기는커녕
+          // L/I 를 헷갈리게 만든다 -- 안 가르치느니만 못하다. 챕터 3 의 K 예외와
+          // 같은 자리지만 원인이 다르다(K 는 커리큘럼상 유일 노출 자리라 보존,
+          // L 은 이 폰트에서 소문자 글자꼴 자체가 모호해서 보류). 폰트를 바꾸거나
+          // 세리프가 있는 대체 렌더링을 쓸 수 있으면 재검토하되, 그건 style.css
+          // 소유자의 판단이다.
           instructionKo: '손가락으로 L을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'L',
@@ -341,9 +351,9 @@ export const chapter6 = {
         {
           id: 'c6s3-break',
           kind: 'break',
-          instructionKo: '손가락으로 F를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 f를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'F',
+          letter: 'f',
           repeatAudio: ['F', 'fff'],
         },
         {
@@ -476,9 +486,9 @@ export const chapter6 = {
         {
           id: 'c6s4-break',
           kind: 'break',
-          instructionKo: '손가락으로 B를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 b를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'B',
+          letter: 'b',
           repeatAudio: ['B', 'buh'],
         },
         {

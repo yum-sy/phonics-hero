@@ -175,9 +175,9 @@ export const chapter2 = {
         {
           id: 'c2s2-break',
           kind: 'break',
-          instructionKo: '손가락으로 I를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 i를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'I',
+          letter: 'i',
           repeatAudio: ['I', 'ihh'],
         },
         {
@@ -299,9 +299,9 @@ export const chapter2 = {
         {
           id: 'c2s3-break',
           kind: 'break',
-          instructionKo: '손가락으로 P를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 p를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'P',
+          letter: 'p',
           repeatAudio: ['puh'],
         },
         {
@@ -423,9 +423,9 @@ export const chapter2 = {
         {
           id: 'c2s4-break',
           kind: 'break',
-          instructionKo: '손가락으로 N을 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 n을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'N',
+          letter: 'n',
           repeatAudio: ['N', 'nnn'],
         },
         {

@@ -273,9 +273,9 @@ export const chapter7 = {
         {
           id: 'c7s2-break',
           kind: 'break',
-          instructionKo: '손가락으로 AI를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 ai를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'AI',
+          letter: 'ai',
           repeatAudio: ['a'],
         },
         {
@@ -418,9 +418,9 @@ export const chapter7 = {
         {
           id: 'c7s3-break',
           kind: 'break',
-          instructionKo: '손가락으로 J를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 j를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'J',
+          letter: 'j',
           repeatAudio: ['J', 'juh'],
         },
         {
@@ -550,9 +550,9 @@ export const chapter7 = {
         {
           id: 'c7s4-break',
           kind: 'break',
-          instructionKo: '손가락으로 OA를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 oa를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'OA',
+          letter: 'oa',
           repeatAudio: ['oh'],
         },
         {

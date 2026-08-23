@@ -597,7 +597,14 @@ export const SOUND_TABLE = [
     alt: ['oyy', 'oyuh'],
     note: '`oi`==`oih`==`oyh` 이고 `oyhh`==`oy`(감탄사, /oi/) 다 -- 즉 oi/oy 철자 군집 ' +
       '전체가 /oi/ 로 렌더된다는 것이 증명된다. **`oy` 와의 일치는 결함이 아니다**: ' +
-      'Jolly 가 oi 와 oy 를 같은 소리의 두 철자로 가르치므로 일치하는 것이 맞다',
+      'Jolly 가 oi 와 oy 를 같은 소리의 두 철자로 가르치므로 일치하는 것이 맞다. ' +
+      '**정정(이번 재검증)**: 이 등가는 **Samantha 에서만** 확인된다 -- ' +
+      'Alex 는 `oi`(622ms)와 `oih`/`oyh`(390ms)가 md5 도 다르고(diff bytes 16958/~18000) ' +
+      '바이트도 크게 다르다. 이 파일이 이전에 "두 음성" 검증을 표방한 다른 phoneme ' +
+      '항목들과 달리 여기서는 실제로 한 음성만 확인된 채로 적혀 있었다. `oi` 자체의 ' +
+      '채택은 안전하다(글자 이름·숫자·어휘 미끼 어디와도 안 겹친다는 별도 스윕 결과는 ' +
+      '유효), 다만 "oi/oy 군집 전체가 /oi/ 로 수렴한다"는 추가 증명은 Alex 로 확장되지 ' +
+      '않는다 -- proof 등급 자체는 유지하되 실기기 청취 시 Alex 보이스로도 들어볼 것',
     rejected: [
       ['oyh', [442, 390], '같은 음소이고 Alex 390ms 로 `oi`(622) 보다 짧다'],
       ['oyeh', [396, 575], 'Samantha 396ms'],
@@ -611,7 +618,17 @@ export const SOUND_TABLE = [
       '리더의 발주는 "`yoo`/`yooh`/`yu` 가 전부 `you` 와 동일이므로 UE 후보 셋이 전부 ' +
       '탈락" 이라고 봤는데, **그 일치가 곧 증명이다** -- 탈락 사유가 아니다. ' +
       '길이(384/331)가 짧은 것이 유일한 약점이고 그건 `a`(399/413)·`oh`(419/355)· ' +
-      '`or`(384/413) 와 같은 등급이다',
+      '`or`(384/413) 와 같은 등급이다. ' +
+      '**정정(이번 재검증, md5 재스윕으로 발견) -- "두 음성 바이트 동일" 은 틀렸다.** ' +
+      'Samantha 는 맞다(`u`==`you`==`ewe`==`yew`==`yoo`==`yooh`==`yu`, md5 7개 전부 동일, ' +
+      '재확인됨). **Alex 는 다르다**: `u` 는 `you`/`yew`/`yoo`/`yooh`/`yu` 군집과 md5 가 ' +
+      '다르고(diff bytes 13180/18682, 약 70%), 대신 바로 아래 `rejected` 의 `yuh` 와 ' +
+      '**정확히 같다**(md5 동일, diff 0) -- 그런데 `yuh` 는 Y 항목에서 "Y 자리에서 UE ' +
+      '소리가 난다" 며 이미 탈락시킨 후보다. 즉 Alex 에서 이 앱이 내는 `u` 는 `you` 계열이 ' +
+      '아니라 그 탈락 후보와 같은 소리이고, 그게 실제로 /ju:/ 인지는 확인되지 않았다 -- ' +
+      '**proof 등급의 근거 절반(Alex)이 무너진다.** 표기 자체(`u`)는 그대로 두되(Samantha ' +
+      '증거와 짧은 길이 등급은 여전히 유효), UE 를 실제로 가르치는 챕터에서는 Alex 기기로 ' +
+      '반드시 귀로 재확인해라 -- 필요하면 Alex 전용 대체 표기를 새로 스윕해야 할 수 있다',
     rejected: [
       ['yuh', [546, 331], 'Alex 에서 `u` 와 동일인데 Y 의 표기 후보였다 -- Y 와 UE 가 겹친다'],
       ['uueh', [477, 413], '두 음성 모두 짧고 음소 미증명'],
@@ -962,7 +979,27 @@ const MISPLACED_KEY_HINTS = {
 // 글자꼴은 대문자 1~2자다(다이그래프 'AI'/'OA' 가 한 글자소다). 이건
 // TTS 가 글자 **이름**("에스")으로 읽는 것이 의도인 유일한 자리다 --
 // 글자꼴 스테이지의 teach/break 는 화면에 그 글자를 띄우고 있다.
+// **대문자 전용이어야 한다** -- checkSpeechNotation 의 LETTER_NAME_ONLY 안전망은
+// "말할 자리에 소문자 낱자 하나가 들어오면 글자 이름으로 오독된다" 는 실수를
+// 잡는데, 이 exemption 이 소문자까지 허용하면 그 안전망이 통째로 무력화된다
+// (예: option.say 에 실수로 's' 를 쓴 것도 "의도된 글자꼴"로 통과해버린다).
 const LETTERFORM = /^[A-Z]{1,2}$/
+
+// break beat 의 두 번째 노출이 **소문자** 글자꼴을 보여주기 시작하면서
+// (아래 소문자 교육 도입) `beat.letter` 에 소문자가 들어온다. 이건 화면
+// 표시일 뿐 발화가 아니므로 LETTER_NAME_ONLY 안전망과는 무관하고, 위 LETTERFORM
+// 을 대문자 전용으로 유지해야 하는 이유(안전망 유지)도 여기엔 적용되지 않는다.
+//
+// **단일 소문자는 애초에 면제가 필요 없다** -- SOUND_NOTATION(`/^(.)\1+$/i`)이
+// 최소 2글자 반복을 요구하므로 한 글자('s','p','g'...)는 절대 걸리지 않는다.
+// 서로 다른 두 글자 다이그래프('ai','oa','ie','or'...)도 반복이 아니므로 마찬가지로
+// 걸리지 않는다. **문제는 정확히 '같은 글자가 두 번' 인 소문자 다이그래프뿐이다**
+// (대문자 'EE' 는 LETTERFORM 으로 이미 면제되는데 소문자 'ee' 만 SOUND_NOTATION 에
+// 걸리는 비대칭). 그래서 정규식으로 뭉뚱그리지 않고 **이 커리큘럼이 실제로 가르치는
+// 반복형 다이그래프만 이름을 나열한다** -- 'ss'/'mm'/'nn'/'ll'/'ff' 같은 진짜 오탈자
+// (소리 표기가 화면으로 새는 사고)까지 통째로 면제해버리는 사고를 막기 위해서다.
+// Jolly group 5 의 `OO` 가 작성되면 여기에 'oo' 를 추가해라.
+const REPEATED_LETTER_DIGRAPHS_DISPLAY = new Set(['ee'])
 // 소리 토큰 **상한**. 직전 라운드는 이걸 하한 2개로 두고 있었는데, 사용자가
 // 실기기 QA 2차에서 반복 형식 전체를 반려했다 -- "전체적으로 3번 2번 빠르게
 // 반복하는건 다 지우자 한번만 똑바로 읽어 주는게 좋겠어, 어짜피 반복해서 들을
@@ -1079,7 +1116,15 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           )
         }
         // 한 스테이지의 teach 와 break 가 같은 letter 를 띄우므로 중복을 뺀다.
-        if (beat.letter && !taughtSoFar.includes(beat.letter)) taughtSoFar.push(beat.letter)
+        // 대소문자 정규화가 필요하다 -- break beat 가 소문자 글자꼴을 띄우기
+        // 시작하면서(아래 소문자 교육 도입) 같은 글자가 'S'(teach)와 's'(break)로
+        // 따로 들어와 taughtSoFar 에 두 항목이 생긴다. reviewTargets 는 전부
+        // 대문자로 적혀 있으므로 대문자로 정규화해 저장한다 -- 대소문자는 표시
+        // 형태일 뿐 커리큘럼상 같은 글자소다.
+        if (beat.letter) {
+          const canonicalLetter = beat.letter.toUpperCase()
+          if (!taughtSoFar.includes(canonicalLetter)) taughtSoFar.push(canonicalLetter)
+        }
 
         if (beat.scored) {
           if (typeof beat.hits !== 'number' || beat.hits < 1) {
@@ -1492,8 +1537,15 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
         // -- 챕터 8 의 `EE`, Jolly group 5 의 `OO` 두 개가 정확히 여기 걸린다.
         // 챕터 1~7 은 다이그래프가 `AI`/`OA` 라서 우연히 통과하고 있었고, 그래서
         // 이 결함은 group 4 후반에 처음 드러났다. 검사의 목적은 `sss` 같은 소문자
-        // 소리 표기가 화면으로 새는 것이고, 대문자 1~2자는 정의상 글자꼴이다.
+        // 소리 표기가 화면으로 새는 것이다. LETTERFORM(대문자 글자꼴)에 더해,
+        // 소문자 교육 도입 이후 break beat 가 소문자 글자꼴도 띄우므로 그것도
+        // 면제한다 -- 다만 '같은 글자 반복' 다이그래프만 이름을 나열해 면제한다
+        // (REPEATED_LETTER_DIGRAPHS_DISPLAY 위 주석 참조). 그 외 소문자
+        // (단일 문자, 또는 서로 다른 두 글자 다이그래프)는 애초에 SOUND_NOTATION 에
+        // 걸리지 않으므로 별도 면제가 필요 없다 -- 아래 두 조건 모두 통과해야만
+        // (즉 '같은 글자 반복'인데도 알려진 다이그래프 목록에 없어야만) 문제로 남는다.
         if (LETTERFORM.test(text)) continue
+        if (REPEATED_LETTER_DIGRAPHS_DISPLAY.has(text)) continue
         if (SOUND_NOTATION.test(text) || CHOPPED_NOTATION.test(text)) {
           problems.push(`${field}: 화면에 소리 표기 '${text}' 노출 -- 표시는 실제 글자·단어여야 함`)
         }

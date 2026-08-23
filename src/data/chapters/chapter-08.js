@@ -388,9 +388,9 @@ export const chapter8 = {
         {
           id: 'c8s2-break',
           kind: 'break',
-          instructionKo: '손가락으로 IE를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 ie를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'IE',
+          letter: 'ie',
           repeatAudio: ['eye'],
         },
         {
@@ -533,9 +533,9 @@ export const chapter8 = {
         {
           id: 'c8s3-break',
           kind: 'break',
-          instructionKo: '손가락으로 EE를 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 ee를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'EE',
+          letter: 'ee',
           repeatAudio: ['ee'],
         },
         {
@@ -680,9 +680,9 @@ export const chapter8 = {
         {
           id: 'c8s4-break',
           kind: 'break',
-          instructionKo: '손가락으로 OR을 그려볼까요? 함께 외쳐요!',
+          instructionKo: '손가락으로 소문자 or을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
-          letter: 'OR',
+          letter: 'or',
           repeatAudio: ['or'],
         },
         {
