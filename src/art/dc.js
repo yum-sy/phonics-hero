@@ -218,11 +218,22 @@ function slit(cx, cy, w, h, tilt, color) {
 
 // Hero mask: two pale angular lenses, outer ends lifted. No pupils and no
 // mouth -- a cowl reads as a cowl because the face is unreadable.
+//
+// TILT SIGN, checked against `slit()`'s own point order (not assumed): for
+// the left lens (cx - off), `l` is the OUTER point and `r` is the INNER one,
+// and `slit` puts `+tilt` on `l`'s corners and `-tilt` on `r`'s -- so a
+// POSITIVE tilt here lowers the outer corner and raises the inner one, i.e.
+// droops outward. This function used to pass +1.5*scale to the left lens and
+// -1.5*scale to the right one, which is that droop on both eyes (confirmed
+// by rendering it before this fix -- both lenses sloped down toward the
+// temples, a sad-eyed read, not the angled-up cowl slit the comment always
+// claimed). The signs below are swapped from that original so the OUTER
+// corner is raised on both sides instead.
 function lenses(cx, cy, color = CREAM, scale = 1) {
   const w = 9 * scale
   const h = 5.6 * scale
   const off = 6.2 * scale
-  return slit(cx - off, cy, w, h, 1.5 * scale, color) + slit(cx + off, cy, w, h, -1.5 * scale, color)
+  return slit(cx - off, cy, w, h, -1.5 * scale, color) + slit(cx + off, cy, w, h, 1.5 * scale, color)
 }
 
 // Villain eyes. Three layers, because a villain has to glow AND be legible
@@ -409,13 +420,12 @@ const EMBLEM_BOX = {
 // one place where the minifig build fights the silhouette, and it measured:
 // a cape wide at the shoulders AND wide at the hem swallows both arms, and the
 // fragmentation index came back at 32.5 -- the lowest in the file, below even
-// Gridlock's 34.3, on the figure the child sees for two whole stages. A minifig
-// has only two natural holes (the 8-unit leg gap and the C-hand rings, and the
-// rings are under the index's 6-unit threshold), so a cape that covers the arms
-// leaves the leg gap as the ONLY articulation. Two changes bought it back:
-//   - the cape is 64 wide at the collar and tapers to 46 at the hem, which is
-//     the shape of the actual LEGO cape piece anyway. It still shows 5 units
-//     outboard of the torso at the top, so it reads as a cape from the front.
+// Gridlock's 34.3, on the figure the child sees for two whole stages. A
+// minifig has only two natural holes (the 8-unit leg gap and the C-hand
+// rings, and the rings are under the index's 6-unit threshold), so a cape
+// that covers the arms leaves the leg gap as the ONLY articulation. Two
+// changes bought it back:
+//   - the cape is 64 wide at the collar, unchanged from the original fix.
 //   - the elbows swing out to x=16/104, clear of the tapering cape edge, so
 //     twenty-five rows carry real background between each arm and the body.
 // The hem keeps a DEEP CENTRE NOTCH with its apex at (60,100): earlier rounds
@@ -423,6 +433,36 @@ const EMBLEM_BOX = {
 // y=100 fills the gap between the legs and the figure reads "in a dress". The
 // notch lines the open channel up with the leg gap for 26 rows. Do not close
 // either one, and do not widen the hem back out.
+//
+// THE HEM WAS RE-CUT: it used to taper INWARD as it fell (64 wide at the
+// collar narrowing to a hem that ended up level with -- in places narrower
+// than -- the torso and legs beneath it), so from the shoulders down the cape
+// contributed nothing to the front silhouette at all: no peekout beside the
+// torso, no peekout beside the legs, just a plain suit with a dark collar
+// flare at the neck. That is the exact user complaint ("the cape doesn't
+// look attached to the back") and it is why RENDERING THE FUNCTION AND
+// LOOKING AT IT matters more than trusting this comment block -- the
+// previous round's claim that it "still shows 5 units outboard of the torso"
+// was checked here and was wrong; the arms' own shoulder caps (drawn right at
+// the torso edge) swallowed that sliver every time.
+// The hem now WIDENS instead of narrowing below y=104 (safely under the
+// C-hand ring, whose outer radius reaches x=~31/89 at worst -- push the
+// widen point higher than that and the cape overlaps the ring, which turns
+// the hand's open "hole" into filled cape colour in a hard cut-out and the
+// ring stops reading as a ring), flaring out to x=20/100 and running down to
+// y=128, well outside the legs (x=37/83). That is the only part of the
+// figure below the shoulders where the cape was ever going to be visible
+// beside a hero built this narrow, and it is now the dominant read: two dark
+// wings flanking the legs in both colour and hard cut-out.
+// MEASURED COST: fragmentation index 55.5 -> 54.0 (rasterised via
+// `_dc-scan.html`, gapUnits=6, k=4) -- filling part of the old arm/hip
+// background with cape trades away a little of that gap's credit. Clipping
+// stayed clean (0 overflow, `_dc-scan.html` section 1) and the cape's own
+// mid-section (y 80-104, beside the hand) is DELIBERATELY LEFT CLOSE TO THE
+// OLD POSITION (x 34->37, barely tapering) rather than swung wide there too --
+// an earlier attempt at this fix pushed the whole hem outward starting right
+// at the shoulder and cost 55.5 -> 47.3, because it ate directly into the
+// hand-ring clearance zone the old build depended on. Widen only below y=104.
 export function dcRay({
   bodyColor = '#4a5466',
   accent = '#12151d',
@@ -436,9 +476,9 @@ export function dcRay({
     <g>
       <ellipse cx="60" cy="136" rx="34" ry="3.4" fill="#000" opacity="0.13"/>
 
-      <path d="M 28,48 L 34,80 L 40,118 ${scallop(40, 118, 48, 120, 1, 4)} L 60,100 L 72,120 ${scallop(72, 120, 80, 118, 1, 4)} L 86,80 L 92,48 Z" fill="${capeColor}"/>
-      <path d="M 34,51 L 39,80 L 44,112 ${scallop(44, 112, 50, 114, 1, 3)} L 60,96 L 70,114 ${scallop(70, 114, 76, 112, 1, 3)} L 81,80 L 86,51 Z" fill="${liningColor}"/>
-      ${shade(`M 34,51 L 39,80 L 44,112 ${scallop(44, 112, 50, 114, 1, 3)} L 60,96 L 70,114 ${scallop(70, 114, 76, 112, 1, 3)} L 81,80 L 86,51 Z`, 0.3)}
+      <path d="M 28,48 L 34,80 L 37,104 L 20,122 ${scallop(20, 122, 33, 128, 1, 4)} L 60,100 L 87,128 ${scallop(87, 128, 100, 122, 1, 4)} L 83,104 L 86,80 L 92,48 Z" fill="${capeColor}"/>
+      <path d="M 34,51 L 39,80 L 41,100 L 24,116 ${scallop(24, 116, 35, 122, 1, 3)} L 60,96 L 85,122 ${scallop(85, 122, 96, 116, 1, 3)} L 79,100 L 81,80 L 86,51 Z" fill="${liningColor}"/>
+      ${shade(`M 34,51 L 39,80 L 41,100 L 24,116 ${scallop(24, 116, 35, 122, 1, 3)} L 60,96 L 85,122 ${scallop(85, 122, 96, 116, 1, 3)} L 79,100 L 81,80 L 86,51 Z`, 0.3)}
       <polygon points="43,41 77,41 92,58 28,58" fill="${capeColor}"/>
 
       ${legoArm(31, 60, 16, 80, 24, 94, bodyColor, 11)}
@@ -553,6 +593,13 @@ export function dcJett({
 // No cape and no gold; the trim hue is the tech cyan, which is also the plate
 // border, and gold staying absent here is fine -- axis (b) says no VILLAIN has
 // gold, not that every hero must.
+//
+// THE HUMAN EYE DOES NOT GO THROUGH `lenses()` -- it is one asymmetric slit,
+// drawn by hand -- so it carried the same droop bug independently and had to
+// be fixed independently. Outward (toward the temple, x=44) used to sit lower
+// than inward (toward the seam, x=57), on both the eyebrow and the eye slit;
+// both are flipped now so the outward corner is the raised one, matching the
+// fix in `lenses()`.
 export function dcCloak({
   bodyColor = '#9aa6b8',
   accent = '#242c3a',
@@ -611,8 +658,8 @@ export function dcCloak({
       <circle cx="69" cy="32" r="4.9" fill="${opticColor}"/>
       <circle cx="69" cy="32" r="1.8" fill="#ffe9cf"/>
       <circle cx="75.5" cy="40" r="1.9" fill="${accent}"/>
-      <polygon points="44,23 57,21 57,25 44,27" fill="#2b1a12"/>
-      ${slit(50, 32, 11, 6.4, 1.6, '#efe7dc')}
+      <polygon points="44,21 57,23 57,27 44,25" fill="#2b1a12"/>
+      ${slit(50, 32, 11, 6.4, -1.6, '#efe7dc')}
       <circle cx="50" cy="32" r="2.1" fill="#2b1a12"/>
       <rect x="59" y="14" width="2.2" height="34" fill="${accent}"/>
       <rect x="49" y="41.4" width="22" height="2.6" rx="1.2" fill="${accent}"/>
