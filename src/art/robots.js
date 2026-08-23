@@ -166,12 +166,28 @@ const HERO_VARIANTS = {
   // down in three stairs (unlike the other variants' smooth wedge), so this
   // reads as an air-intake vent panel by OUTLINE, not just by an added
   // internal line, and its silhouette is genuinely distinct from `wedge`'s.
+  //
+  // The crest is a flat-topped hood with two dark slat cutouts -- rectangular,
+  // not another triangular V -- so it echoes the horizontal grille bands and
+  // vent rects instead of leaving the head byte-identical to `wedge`/
+  // `crest-double`. It was measured identical to `wedge` from the neck up
+  // (fin+ear+crest all shared) until this pass: a padded-canvas silhouette
+  // diff of Sammy(wedge) vs Nitro(vent-slats) came back at 0.24% of the
+  // canvas, an order of magnitude below every other pair (1.6-7.5%), because
+  // the only thing that differed was a few small shoulder step-notches. Never
+  // shown side by side in the app (different chapters), so it was not a
+  // player-visible bug, but it undercuts this file's own stated point of
+  // HERO_VARIANTS (color play was the original defect) and it would compound
+  // once chapter 15/22/29 reuse these same 4 variants. Fixed here.
   'vent-slats': {
     fin: '38,44 10,20 6,34 34,56',
     shoulder: '37,42 20,42 20,48 16,48 16,54 14,54 14,68 35,64',
     shoulderFacet: '36,42 22,42 22,47 36,47',
     ear: '38,21 42,19 42,33 38,31',
-    crest: (CHROME) => `<polygon points="49,17 60,0 71,17 60,9" fill="${CHROME}"/>`,
+    crest: (CHROME) =>
+      `<polygon points="46,17 50,3 70,3 74,17" fill="${CHROME}"/>
+      <rect x="56" y="5" width="3" height="10" fill="${MECH_DEEP}"/>
+      <rect x="61" y="5" width="3" height="10" fill="${MECH_DEEP}"/>`,
     grille: (STEEL) => `
       <rect x="52" y="57" width="16" height="2.8" fill="${STEEL}"/>
       <rect x="52" y="61.5" width="16" height="2.8" fill="${STEEL}"/>`,
