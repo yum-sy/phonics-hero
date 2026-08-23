@@ -37,6 +37,12 @@
 
 <div id="list"></div>
 
+<h2>결함 확인 · 대체안 비교</h2>
+<p class="note">가운데 버튼이 <b>증거</b>다. 지금 표기와 <i>글자 이름을 여러 번 읽은 것</i>이
+같은 소리로 들리면(파일이 바이트 동일이다) 아이는 소리가 아니라 글자 이름을 듣고 있는 것이다.
+오른쪽이 대체안이고, 그것에 대해 OK/NO 를 눌러라.</p>
+<div id="compare"></div>
+
 <h2>RAW rate 확인</h2>
 <p class="note">엔진 합성만 해당. 파일 소리는 rate 와 무관하다.</p>
 <div id="rates"></div>
@@ -176,7 +182,7 @@ for (const key of keys) {
 
 function paint() {
   let ok = 0, no = 0
-  for (const row of list.children) {
+  for (const row of [...list.children, ...cmp.children]) {
     const v = verdicts[row.dataset.key]
     for (const b of row.querySelectorAll('.v')) {
       b.classList.toggle('on-ok', !!v && v.v === 'ok' && b.dataset.v === 'ok')
@@ -186,7 +192,7 @@ function paint() {
     if (v && v.v === 'no') no++
   }
   document.getElementById('tally').textContent =
-    `OK ${ok} · NO ${no} · 미판정 ${keys.length - ok - no} / ${keys.length}`
+    `OK ${ok} · NO ${no} · 미판정 ${keys.length + COMPARE.length - ok - no} / ${keys.length + COMPARE.length}`
 }
 
 document.getElementById('reload').onclick = () => loadVerdicts()
@@ -194,6 +200,41 @@ document.getElementById('dump').onclick = () => {
   const no = keys.filter((k) => verdicts[k] && verdicts[k].v === 'no')
   log('NO: ' + (no.length ? no.join(' ') : '(없음)'))
   log('미판정: ' + (keys.filter((k) => !verdicts[k]).join(' ') || '(없음)'))
+}
+
+// ---- the seven confirmed misreads, each with its proof and its candidate ---
+// `proof` is byte-identical to `now` (md5, say -r 88, both voices unless noted).
+// Hearing them back to back is the only way a parent can confirm what the app
+// has actually been teaching; the candidate is measured but phoneme-unproven,
+// which is exactly what an ear has to settle.
+const COMPARE = [
+  { letter: 'S', now: 'sss', proof: 'ess ess ess',     alt: 'sse',  where: '두 음성' },
+  { letter: 'I', now: 'ihh', proof: 'eye aitch aitch', alt: 'ieh',  where: '두 음성' },
+  { letter: 'A', now: 'aaa', proof: 'ay ay ay',        alt: 'aae',  where: 'Alex' },
+  { letter: 'F', now: 'fff', proof: 'eff eff eff',     alt: 'ffe',  where: 'Alex' },
+  { letter: 'R', now: 'rrr', proof: 'ar ar ar',        alt: 'rruh', where: 'Samantha' },
+  { letter: 'M', now: 'mmm', proof: 'em em em',        alt: 'mmh',  where: 'Samantha' },
+  { letter: 'L', now: 'lll', proof: 'el el el',        alt: 'lleh', where: 'Samantha' },
+]
+const cmp = document.getElementById('compare')
+for (const c of COMPARE) {
+  const row = document.createElement('div')
+  row.className = 'row'
+  row.dataset.key = 'alt:' + c.alt
+  row.innerHTML =
+    `<span class="key">${c.letter}</span>` +
+    `<button class="play">지금 “${c.now}”</button>` +
+    `<button class="play proof">= “${c.proof}”</button>` +
+    `<button class="play cand">대신 “${c.alt}”</button>` +
+    `<span class="src">${c.where}</span>` +
+    `<button class="v" data-v="ok">OK</button>` +
+    `<button class="v" data-v="no">NO</button>`
+  const btns = row.querySelectorAll('.play')
+  btns[0].onclick = () => play(c.now)
+  btns[1].onclick = () => playTts(c.proof)
+  btns[2].onclick = () => playTts(c.alt)
+  for (const b of row.querySelectorAll('.v')) b.onclick = () => save('alt:' + c.alt, b.dataset.v)
+  cmp.appendChild(row)
 }
 
 // ---- raw rate ladder + engine diagnostics ----------------------------------
@@ -232,4 +273,5 @@ window.speechSynthesis.addEventListener?.('voiceschanged', () => dumpVoices('voi
 document.addEventListener('pointerdown', () => audioCtx(), { once: true })
 
 await loadVerdicts()
+paint()
 </script>
