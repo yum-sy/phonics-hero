@@ -242,11 +242,81 @@ function smirk(cx, cy, w) {
 // `ring` exists for one figure: Rocket's body went vivid YELLOW, whose value
 // sits close enough to a white plate on a cream belly that the plate's only
 // separation is the ring itself, so Rocket asks for a heavier one.
-function emblemBadge(cx, cy, r, plateColor, label, size, ring = SW_BADGE) {
-  return `
+//
+// SINGLE-GLYPH PATH IS FROZEN, BYTE FOR BYTE. Chapter 4 (this whole file) is
+// shipped and approved -- "아주 좋아 더 이상 변경할게 없어 보여" -- so the
+// four calls this file already makes (`R`/`M`/`D`/`★`) must render exactly
+// the markup they did before. Everything below `text.length <= 1` is
+// untouched from the pre-digraph version; the digraph branch is new and
+// additive, and no existing call site's numbers changed to make room for it.
+//
+// DIGRAPH PATH: chapters 11/18/25/32 repeat this family and Jolly groups 5-7
+// are entirely two-letter, so a hero drawn here with `emblem: 'R'` today may
+// be redrawn in a later chapter's palette entry with `emblem: 'OA'` -- same
+// shape function, longer label, and that call has nowhere else to grow into
+// except this function.
+//
+// THE PLATE WIDENS INTO AN ELLIPSE, NOT A ROUNDED RECT. Every other family
+// that solved this (art/robots.js, art/dinosaurs.js, art/toys.js,
+// art/platformer.js) went rectangular, but their plates sit on flat armour
+// panels or scutes; this family's rule 7 names the badge explicitly ("a
+// tinted badge... ringed in the sepia outline") and its whole grammar is
+// round bodies, round ears, dot eyes (rule 6, "ROUND ENDS EVERYWHERE") --  a
+// license-plate rectangle would be the one squared-off shape in the file. A
+// wider ellipse keeps the "chest badge" identity a rounded rect cannot.
+//
+// SIZING IS THE CLOSED-FORM "RECTANGLE INSCRIBED IN AN ELLIPSE" -- NOT the
+// other families' two-independent-limits split, because an ellipse's width
+// budget and height budget are not independent: a rectangle's CORNER is what
+// has to stay inside the curve, and that is a single combined constraint,
+// (wx/a)^2 + (hy/b)^2 <= 1, not two separate ones. Solved for the largest
+// font size `s` such that a two-glyph ink box of half-width s*ADV/2 and
+// half-height s*INK/2 still clears both semi-axes (a, b) with PAD held back
+// from each:
+//   s_max = 1 / sqrt( (ADV / (2*(a-PAD)))^2 + (INK / (2*(b-PAD)))^2 )
+// ADV/INK are this project's own measured em factors for a two-capital label
+// at font-weight 800 (public/_emb4.html: advance 1.43em, inked height
+// 0.75em) -- the same numbers art/robots.js's `plateType` uses, because it
+// is the same font.
+const DIGRAPH_ADV = 1.43
+const DIGRAPH_INK = 0.75
+const DIGRAPH_PAD = 1.3
+// The single-glyph ring (3/3.6, sized for a 28-unit circle) was measured to
+// fail its own job on a small digraph ellipse: the sepia ring's own contrast
+// against the ink is only ~2.6:1 (both are warm browns), so it was never a
+// safe surface for a glyph to touch, and a thick ring eats a much bigger
+// FRACTION of a small ellipse's interior than of the old circle's. Pixel
+// measurement (public/_crt-emb.html) confirmed this directly: at the
+// original ring width Rocket's `QU` inked onto the ring on all four sides
+// (28 off-contrast pixels). Capping the digraph ring at 2 and SUBTRACTING
+// its half-width from the fitting math (not just the padding) fixed it to 0
+// across all sixteen curriculum digraphs on all four figures.
+const DIGRAPH_RING_MAX = 2
+
+function emblemBadge(cx, cy, r, plateColor, label, size, ring = SW_BADGE, digraph = null) {
+  const text = String(label)
+  if (text.length <= 1) {
+    return `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}" ${ol(ring)}/>
     <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
       font-size="${size}" font-weight="800" fill="${INK}">${label}</text>`
+  }
+  // `digraph` is a per-character { cx, cy, rx, ry } override: each figure's
+  // other painted parts (a cheek disc, a drill, a pair of feet) sit at fixed
+  // distances from the plate and were never designed with a wider badge in
+  // mind, so the safe ellipse is not a uniform scale-up of `r` and has to be
+  // measured per figure (see the call sites). Falling back to a modest
+  // uniform widen keeps this function safe to call without one.
+  const { cx: dcx = cx, cy: dcy = cy, rx: a = r * 1.4, ry: b = r } = digraph || {}
+  const ringW = Math.min(ring, DIGRAPH_RING_MAX)
+  const aa = a - ringW / 2 - DIGRAPH_PAD
+  const bb = b - ringW / 2 - DIGRAPH_PAD
+  const s = 1 / Math.sqrt((DIGRAPH_ADV / (2 * aa)) ** 2 + (DIGRAPH_INK / (2 * bb)) ** 2)
+  const base = s * 0.36
+  return `
+    <ellipse cx="${dcx}" cy="${dcy}" rx="${a}" ry="${b}" fill="${plateColor}" ${ol(ringW)}/>
+    <text x="${dcx}" y="${(dcy + base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
+      font-size="${s.toFixed(1)}" font-weight="800" fill="${INK}">${text}</text>`
 }
 
 // The shared mass: one outlined body ellipse plus an outlined belly patch.
@@ -399,7 +469,20 @@ export function creatureRocket({
            belly on a yellow body is three high-value shapes stacked, so the
            ring is the only thing separating the plate. The LETTER's contrast
            is unaffected either way -- near-black ink on white. -->
-      ${emblemBadge(60, 107, 14, visorColor, emblem, 20, 3.6)}
+      <!-- DIGRAPH OVERRIDE, measured against this figure's own neighbours
+           (public/_crt-emb.html, public/_crt-emb-view.html): the cheek
+           discs (cx 36.5/83.5, cy 93, r 10.5) sit directly above the single
+           badge and their own bottom edge is y=103.5, so the digraph
+           ellipse is centred lower (cy 112, was 107) rather than widened in
+           place -- an ellipse widened around the OLD centre reaches nearly
+           full width within a unit of its own top pole, which would have
+           clipped straight into the cheeks. The bottom pole (119) lands
+           exactly on the feet's own top pole (y=119, cx 44/76), so it does
+           not reach them either. rx=19 clears the body ellipse's (cx 60,
+           cy 88, rx 36, ry 36) own edge at every row in range with margin
+           to spare. Zero off-plate ink and zero cheek/feet collision across
+           all sixteen curriculum digraphs, measured. -->
+      ${emblemBadge(60, 107, 14, visorColor, emblem, 20, 3.6, { cy: 112, rx: 19, ry: 7 })}
     `)
   )
 }
@@ -537,7 +620,16 @@ export function creatureMagno({
       ${sleepyEyes(43, 77, 40, 7)}
       ${mouth(60, 58, 5)}
 
-      ${emblemBadge(60, 97, 14, visorColor, emblem, 20)}
+      <!-- DIGRAPH OVERRIDE: Magno's belly patch is this file's biggest light
+           shape (92x46, cx 60 cy 102), and the nearest painted neighbours --
+           the arm's palm (cx 18, cy 92, r 11x9.5) and the feet (cx 27/93,
+           cy 122, rx 20 ry 13) -- sit far enough from the badge's own centre
+           (cx 60) that widening does not reach either one (measured,
+           public/_crt-emb.html: zero off-plate ink and zero collision
+           across all sixteen curriculum digraphs). This is the one figure
+           in the file with real room to spare, so rx/ry went up a lot
+           rather than being squeezed like the other three. -->
+      ${emblemBadge(60, 97, 14, visorColor, emblem, 20, SW_BADGE, { cy: 100, rx: 24, ry: 12 })}
     `)
   )
 }
@@ -661,7 +753,12 @@ export function creatureDrillo({
       <g transform="translate(60,79) rotate(68) scale(1.1)">${drill}</g>
       ${mouth(63, 86, 4)}
 
-      ${emblemBadge(64, 110, 14, visorColor, emblem, 20)}
+      <!-- DIGRAPH OVERRIDE, checked against the drill: the cone's exposed
+           length runs up out of the body toward the tip at (7,100.4), well
+           left of this widened ellipse's own left edge (measured on render,
+           see public/_crt-emb.html), so widening rightward-symmetric from
+           cx=64 does not reach it. -->
+      ${emblemBadge(64, 110, 14, visorColor, emblem, 20, SW_BADGE, { cy: 112, rx: 17, ry: 11 })}
     `)
   )
 }
@@ -768,6 +865,13 @@ export function creatureCaptainRed({
   panelColor = '#ffdca6',
   accent = '#c94409',
   visorColor = BADGE,
+  // Boss slots across every family default their badge to `★` (the letters
+  // belong to the pre-boss heroes; the boss chapter's badge is decorative),
+  // but the param exists -- matching art/robots.js `heroDeluxeRobot` and
+  // art/dinosaurs.js `dinoHorned` -- so a chapter data entry COULD override
+  // it with a digraph and still hit the emblemBadge digraph path rather than
+  // a hardcoded string that can only ever be one glyph.
+  emblem = '★',
 } = {}) {
   const WING_MEM = '#1a9ea8' // teal membrane
   const WING_ARM = '#d9490f' // arm bone and finger struts
@@ -960,7 +1064,13 @@ export function creatureCaptainRed({
       ${dot(71.9, 30.5, 5.4)}
       ${dot(52.9, 29.4, 4.5)}
 
-      ${emblemBadge(60, 117.5, 13.5, visorColor, '★', 21)}
+      <!-- DIGRAPH OVERRIDE, checked against the feet (cx 46/74, cy 129,
+           rx 12.5 ry 8, top pole y=121): the digraph ellipse's own bottom
+           pole is pulled up to y=119.5, clear of the feet, rather than left
+           at the single badge's 117.5+13.5=131, which would already sit
+           inside them. Measured (public/_crt-emb.html): zero off-plate ink
+           and zero collision across all sixteen curriculum digraphs. -->
+      ${emblemBadge(60, 117.5, 13.5, visorColor, emblem, 21, SW_BADGE, { cy: 111, rx: 19, ry: 8.5 })}
     `)
   )
 }
