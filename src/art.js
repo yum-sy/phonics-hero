@@ -834,10 +834,10 @@ const HERO_PALETTES = {
 }
 
 const VILLAIN_PALETTES = {
-  'noisebot': { bodyColor: '#888780', accent: '#444441' },
-  'hushbot': { bodyColor: '#7f77dd', accent: '#3c3489' },
-  'shadowbot': { bodyColor: '#5f5e5a', accent: '#2c2c2a' },
-  'tickbot': { bodyColor: '#d85a30', accent: '#712b13' },
+  'noisebot': { bodyColor: '#888780', accent: '#444441', variant: 'saw-crown' },
+  'hushbot': { bodyColor: '#7f77dd', accent: '#3c3489', variant: 'spike-back' },
+  'shadowbot': { bodyColor: '#5f5e5a', accent: '#2c2c2a', variant: 'twin-horn' },
+  'tickbot': { bodyColor: '#d85a30', accent: '#712b13', variant: 'hook-claw' },
   'dark-spark': { style: 'robot-deluxe' },
   'blurry': { style: 'supervillain-fog', bodyColor: '#7a8b99', accent: '#3d4852', collarColor: '#222a30' },
   'eraser-man': { style: 'supervillain-eraser', bodyColor: '#c96a9b', accent: '#6b2f4c', collarColor: '#2a1420' },
@@ -871,10 +871,10 @@ const VILLAIN_PALETTES = {
   'floodlight': { style: 'dc-floodlight' },
   'nightfall': { style: 'dc-nightfall' },
   // 챕터 8 빌런. 챕터 1 의 회색/보라/암회색/주황/검정과 갈리게.
-  'rustbot': { bodyColor: '#a1552e', accent: '#4f2513' },
-  'crashbot': { bodyColor: '#4f6b8a', accent: '#243546' },
-  'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16' },
-  'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c' },
+  'rustbot': { bodyColor: '#a1552e', accent: '#4f2513', variant: 'hook-claw' },
+  'crashbot': { bodyColor: '#4f6b8a', accent: '#243546', variant: 'twin-horn' },
+  'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16', variant: 'spike-back' },
+  'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c', variant: 'saw-crown' },
   'iron-wreck': { style: 'robot-deluxe', bodyColor: '#5a5f68', accent: '#25282e' },
 }
 

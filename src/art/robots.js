@@ -435,15 +435,109 @@ export function heroDeluxeRobot({
   )
 }
 
+// Structural silhouette variants for villainRobot -- the user singled out
+// shadowbot (chapter 1) and rustbot/slowbot (chapter 8) as NO in the art
+// gallery, and noted the rest ride on the same function so they read
+// identical too. Same fix as HERO_VARIANTS (see its comment): only the
+// EAR-FINS, SHOULDER WEDGE, SHOULDER SPIKES and HEAD CROWN change per
+// variant. The chest crack/reactor core, eye housing, arms, claw/fist pair
+// and legs stay byte-identical to the original geometry, because those are
+// the villain's shared identity (horn, clawed hand, cracked-plate reactor
+// chest) that must survive every variant, not just its accent colour.
+//
+// The shoulder is deliberately asymmetric in every variant here (one spike
+// mirrored to both sides, one left-only) -- that lopsidedness is itself part
+// of the villain identity established by the base figure (it already pairs
+// a clawed left hand with a plain right fist), so variants lean into it
+// rather than symmetrising it away.
+const VILLAIN_VARIANTS = {
+  // The original villainRobot silhouette, kept as the default so any
+  // existing caller that omits `variant` renders pixel-identical to before
+  // this file grew variants.
+  'spike-back': {
+    finL: '34,46 4,20 16,44 34,54',
+    finR: '86,48 108,30 98,46 86,54',
+    shoulder: '37,42 19,47 15,68 35,64',
+    spikes: (accent) => `
+      <polygon points="19,47 5,31 25,44" fill="${accent}"/>
+      <polygon points="${mirror('19,47 5,31 25,44')}" fill="${accent}"/>
+      <polygon points="15,68 1,60 16,55" fill="${accent}"/>`,
+    crown: (accent) => `
+      <polygon points="41,18 34,0 51,16" fill="${accent}"/>
+      <polygon points="${mirror('41,18 34,0 51,16')}" fill="${accent}"/>
+      <polygon points="53,16 60,0 67,16" fill="${accent}"/>`,
+  },
+  // Wide ram horns swept out from the crown instead of the base's
+  // one-center-plus-two-side triangles, and a single flared shoulder wing
+  // (instead of two thin blades) with a wide crash-guard hook underneath --
+  // reads as a bull/battering silhouette. Recommended for crashbot/shadowbot.
+  'twin-horn': {
+    finL: '30,50 2,40 12,58 30,62',
+    finR: '90,50 118,40 108,58 90,62',
+    shoulder: '35,40 14,44 8,70 33,66',
+    spikes: (accent) => `
+      <polygon points="17,44 1,20 29,40" fill="${accent}"/>
+      <polygon points="${mirror('17,44 1,20 29,40')}" fill="${accent}"/>
+      <polygon points="15,70 2,64 18,58" fill="${accent}"/>`,
+    crown: (accent) => `
+      <polygon points="42,20 18,2 50,15" fill="${accent}"/>
+      <polygon points="${mirror('42,20 18,2 50,15')}" fill="${accent}"/>`,
+  },
+  // A serrated sawtooth ridge across the crown and a stepped, tooth-edged
+  // shoulder (four small notches instead of two long blades) -- the outer
+  // edge itself is jagged, so this reads as a grinder/buzzsaw silhouette by
+  // OUTLINE, the same fix vent-slats needed on the hero side. Recommended
+  // for grindbot/noisebot.
+  'saw-crown': {
+    finL: '36,48 20,38 24,50 36,54',
+    finR: '84,48 100,38 96,50 84,54',
+    shoulder: '37,42 19,46 16,54 20,54 17,62 21,62 16,68 35,64',
+    spikes: (accent) => `
+      <polygon points="19,44 13,46 19,49" fill="${accent}"/>
+      <polygon points="${mirror('19,44 13,46 19,49')}" fill="${accent}"/>
+      <polygon points="17,50 11,52 17,55" fill="${accent}"/>
+      <polygon points="16,56 10,58 16,61" fill="${accent}"/>
+      <polygon points="15,62 9,64 15,67" fill="${accent}"/>`,
+    crown: (accent) => `
+      <polygon points="40,18 44,4 48,18" fill="${accent}"/>
+      <polygon points="48,18 52,4 56,18" fill="${accent}"/>
+      <polygon points="56,18 60,4 64,18" fill="${accent}"/>
+      <polygon points="64,18 68,4 72,18" fill="${accent}"/>
+      <polygon points="72,18 76,4 80,18" fill="${accent}"/>`,
+  },
+  // A single large hook sweeping from the left shoulder down past the hip
+  // (in place of the base's short out-spike) plus one plain center horn
+  // (no side horns) -- pushes the base figure's lopsided-build identity
+  // further rather than adding a new element, so this reads as the same
+  // villain with one arm built into a scorpion-tail hook. Recommended for
+  // rustbot/tickbot.
+  'hook-claw': {
+    finL: '33,48 14,42 20,52 33,56',
+    finR: '87,48 106,42 100,52 87,56',
+    shoulder: '37,42 19,47 15,68 35,64',
+    spikes: (accent) => `
+      <polygon points="19,46 9,42 21,52" fill="${accent}"/>
+      <polygon points="${mirror('19,46 9,42 21,52')}" fill="${accent}"/>
+      <polygon points="15,68 1,58 7,100 20,90" fill="${accent}"/>`,
+    crown: (accent) => `
+      <polygon points="52,16 60,0 68,16" fill="${accent}"/>`,
+  },
+}
+
 // Standard villain: the same angular plating language as the heroes so the two
 // belong in one battle scene, inverted in character — a cracked armour plate
 // and a glowing core where the car front would be, spikes and a saw blade
 // where the wheels would be, and a deliberately lopsided build (one clawed
-// arm, one fist) against the heroes' strict symmetry.
-export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {}) {
-  const shoulder = '37,42 19,47 15,68 35,64'
-  const spikeUp = '19,47 5,31 25,44'
-  const spikeOut = '15,68 1,60 16,55'
+// arm, one fist) against the heroes' strict symmetry. `variant` picks a
+// structural silhouette from VILLAIN_VARIANTS (see its comment) -- callers
+// that omit it keep the original 'spike-back' shape.
+export function villainRobot({
+  bodyColor = '#e24b4a',
+  accent = '#791f1f',
+  variant = 'spike-back',
+} = {}) {
+  const V = VILLAIN_VARIANTS[variant] || VILLAIN_VARIANTS['spike-back']
+  const shoulder = V.shoulder
   const upperArm = '18,66 34,63 33,80 20,84'
   const armPlate = '16,68 26,66 25,80 15,82'
   const forearm = '17,80 32,78 33,94 19,96'
@@ -455,15 +549,14 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
   const eyeHousing = '42,21 60,28 60,38 42,33'
   const eye = '45,24 58,30 58,36 45,31'
   const claw = '38,131 44,131 41,139'
-  const horn = '41,18 34,0 51,16'
 
   return svgWrap(
     `
     <g>
       <polygon points="36,136 84,136 78,140 42,140" fill="#000" opacity="0.1"/>
 
-      <polygon points="34,46 4,20 16,44 34,54" fill="${accent}"/>
-      <polygon points="86,48 108,30 98,46 86,54" fill="${accent}"/>
+      <polygon points="${V.finL}" fill="${accent}"/>
+      <polygon points="${V.finR}" fill="${accent}"/>
 
       <polygon points="54,34 66,34 65,44 55,44" fill="${MECH}"/>
 
@@ -494,9 +587,7 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
 
       <polygon points="${shoulder}" fill="${bodyColor}"/>
       <polygon points="${mirror(shoulder)}" fill="${bodyColor}"/>
-      <polygon points="${spikeUp}" fill="${accent}"/>
-      <polygon points="${mirror(spikeUp)}" fill="${accent}"/>
-      <polygon points="${spikeOut}" fill="${accent}"/>
+      ${V.spikes(accent)}
       <circle cx="21" cy="62" r="9.5" fill="${STEEL}"/>
       <polygon points="21,49 26,55 16,55" fill="${STEEL}"/>
       <polygon points="21,75 26,69 16,69" fill="${STEEL}"/>
@@ -518,9 +609,6 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
       <polygon points="103,100 111,96 108,110 101,109" fill="${STEEL}"/>
       <polygon points="93,101 100,99 97,112 91,110" fill="${STEEL}"/>
 
-      <polygon points="${horn}" fill="${accent}"/>
-      <polygon points="${mirror(horn)}" fill="${accent}"/>
-      <polygon points="53,16 60,0 67,16" fill="${accent}"/>
       <polygon points="43,16 77,16 79,29 70,40 50,40 41,29" fill="${bodyColor}"/>
       <polygon points="${eyeHousing}" fill="${MECH_DEEP}"/>
       <polygon points="${mirror(eyeHousing)}" fill="${MECH_DEEP}"/>
@@ -529,6 +617,7 @@ export function villainRobot({ bodyColor = '#e24b4a', accent = '#791f1f' } = {})
       <polygon points="50,34 70,34 68,41 52,41" fill="${MECH_DEEP}"/>
       <polygon points="52,34 56,40 60,34" fill="${CHROME}"/>
       <polygon points="61,34 65,40 69,34" fill="${CHROME}"/>
+      ${V.crown(accent)}
     </g>
   `
   )
