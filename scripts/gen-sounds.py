@@ -116,6 +116,35 @@ SILENCE_GATE = 0.04
 # asking the engine for. The user approved every one of these.
 PLOSIVE_VOWEL_MS = 130
 
+# Per-sound override of PLOSIVE_VOWEL_MS, keyed by CORPUS key. Left empty for
+# buh/duh/guh/huh/juh -- unchanged, still 130, still the bytes the gallery
+# already approved.
+#
+# tuh/puh/kuh were graded NO with the shared 130: "tuh 발음이 아니라 top 의
+# toh... 니가 계획하는 단어의 발음을 그대로 가져오고 있어". Measured cause,
+# not assumed: onset_end() (which finds where the burst/aspiration ends and
+# the fixed vowel window starts) lands at 90ms into "top"/"cat" and only
+# 15-25ms into "bag"/"dog"/"gap", because /t/ /p/ /k/ are ASPIRATED voiceless
+# stops in English and /b/ /d/ /g/ are not -- so the SAME fixed 130ms window
+# after that boundary starts from a much later, more settled point in the
+# vowel for the three that got rejected, capturing more of that specific
+# word's fully-formed target formants rather than the transition into them.
+# That fully explains both complaints from one measurement: the length
+# (top/cat 220ms = 90ms aspiration + 130ms vowel, vs bag 145ms = 15ms + 130ms)
+# and the colour (a vowel window that starts later is a vowel window that is
+# more committed to that word's specific vowel).
+#
+# Shortening the shared constant would also shorten buh/duh/guh/huh/juh --
+# forbidden, they are out of scope and already approved -- so this is a
+# per-key override instead. 50ms (down from 130) was chosen by sweeping top/
+# tap, pig/pen, cat/key/cake at 20ms steps: it is the value that lands
+# tuh/kuh at 140ms (matching buh/duh/guh's 145-155ms band) while puh lands
+# at 110ms (shorter, but still inside CLASSES['plosive']'s 100ms floor and
+# still one pulse) -- one shared number that clears every gate for all three,
+# rather than three different numbers for a difference this project cannot
+# otherwise justify.
+PLOSIVE_VOWEL_MS_OVERRIDE = {'tuh': 50, 'puh': 50, 'kuh': 50}
+
 # ---------------------------------------------------------------------------
 # CLASSES. The cut rule and the accept ranges both key off these.
 #
@@ -168,24 +197,24 @@ CLASSES = {
 CORPUS = [
     # Continuants ship from CODA position: word-initial /m/ is 40ms, which is
     # why the rejected build felt it had to pad them.
-    ('sss', 'sibilant', 'coda', ['bus', 'miss', 'hiss'], None),
+    ('sss', 'sibilant', 'coda', ['bus', 'miss', 'hiss'], None, None, None),
     # /f/ is the exception -- a word-final /f/ is so weak the coda cut finds
     # 5-15ms of it ("off", "puff"), so /f/ stays word-initial.
-    ('fff', 'sibilant', 'onset', ['fit', 'fan'], None),
-    ('mmm', 'nasal', 'coda', ['gum', 'ham'], None),
-    ('nnn', 'nasal', 'coda', ['moon', 'man'], None),
-    ('lll', 'liquid', 'coda', ['bell', 'ball'], None),
-    ('rrr', 'liquid', 'coda', ['car', 'four'], None),
-    ('zz', 'sibilant', 'coda', ['buzz', 'fizz'], None),
+    ('fff', 'sibilant', 'onset', ['fit', 'fan'], None, None, None),
+    ('mmm', 'nasal', 'coda', ['gum', 'ham'], None, None, None),
+    ('nnn', 'nasal', 'coda', ['moon', 'man'], None, None, None),
+    ('lll', 'liquid', 'coda', ['bell', 'ball'], None, None, None),
+    ('rrr', 'liquid', 'coda', ['car', 'four'], None, None, None),
+    ('zz', 'sibilant', 'coda', ['buzz', 'fizz'], None, None, None),
     # Plosives: burst + vowel onset, all approved on the device at 145-220ms.
-    ('tuh', 'plosive', 'onset', ['top', 'tap'], None),
-    ('puh', 'plosive', 'onset', ['pig', 'pen'], None),
-    ('kuh', 'plosive', 'onset', ['cat', 'key', 'cake'], None),
-    ('buh', 'plosive', 'onset', ['bag', 'bed', 'big'], None),
-    ('duh', 'plosive', 'onset', ['dog', 'dad'], None),
-    ('guh', 'plosive', 'onset', ['gap', 'gum', 'gift'], None),
-    ('huh', 'plosive', 'onset', ['hat', 'hen', 'hand'], None),
-    ('juh', 'plosive', 'onset', ['jam', 'jog'], None),
+    ('tuh', 'plosive', 'onset', ['top', 'tap'], None, None, None),
+    ('puh', 'plosive', 'onset', ['pig', 'pen'], None, None, None),
+    ('kuh', 'plosive', 'onset', ['cat', 'key', 'cake'], None, None, None),
+    ('buh', 'plosive', 'onset', ['bag', 'bed', 'big'], None, None, None),
+    ('duh', 'plosive', 'onset', ['dog', 'dad'], None, None, None),
+    ('guh', 'plosive', 'onset', ['gap', 'gum', 'gift'], None, None, None),
+    ('huh', 'plosive', 'onset', ['hat', 'hen', 'hand'], None, None, None),
+    ('juh', 'plosive', 'onset', ['jam', 'jog'], None, None, None),
     # Short vowels. Taking these from words is also the fix for a bug CLAUDE.md
     # records as open: A's target is /ae/ (apple) and the notation made the
     # engine say /ei/.
@@ -237,11 +266,22 @@ CORPUS = [
     # round 3's narrower 0.85 search (edgeFluxRatio 2.41) -- but at 0.95 and
     # -r 42 it clears with margin (190ms/selfsim .144/efr .56) and is now
     # listed first. "got"/"dog" stay as the cross-word evidence.
-    ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], 60),
-    ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None),
-    ('eh', 'vowel', 'nucleus-steady', ['bed', 'ten', 'net', 'egg'], 60),
-    ('uh', 'vowel', 'nucleus-steady', ['gum', 'hug', 'bug'], 42),
-    ('awh', 'vowel', 'nucleus-steady', ['hot', 'dog', 'got'], 42),
+    #
+    # Fifth round: `eh`/`uh` were graded NO for a DIFFERENT reason than length
+    # this time -- "b 와 g 발음이 선행되는게 도드라져" -- audible onset-
+    # consonant colour surviving the flatness search. `nucleus-steady` narrows
+    # to the flattest sub-window, but flatness does not certify silence: a
+    # released voiced stop's formant transition can itself be locally smooth
+    # (small frame-to-frame steps, see round 3's note on "rain" for the same
+    # blind spot with a liquid onset), so the search can and did keep some of
+    # it. `eh`/`uh` moved out of this block entirely -- see the vowel-initial
+    # word swap below, the same fix already used for a/ee/oh/eye/or, which
+    # removes the onset consonant rather than trying to cut around it more
+    # cleverly. Left here: `aaa`/`ihh`/`awh`, unchanged, not in this round's
+    # scope.
+    ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], 60, None, None),
+    ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None, None, None),
+    ('awh', 'vowel', 'nucleus-steady', ['hot', 'dog', 'got'], 42, None, None),
     # Digraph long vowels. For these the letter name IS the target phoneme, so
     # the notation was not teaching the wrong sound -- but taking them from
     # words is what finally separates `a` from `eh`, which CLAUDE.md records as
@@ -329,10 +369,29 @@ CORPUS = [
     # its onset, and there is no onset consonant left to blame it on. The
     # gate that would fire on that (NUCLEUS_STEADY_EDGE_FLUX_MAX) is not even
     # applied to pos == 'nucleus', which is the other reason this is safe.
-    ('a', 'vowel', 'nucleus', ['aim', 'ate'], 60),
-    ('ee', 'vowel', 'nucleus', ['eel', 'east'], None),
-    ('oh', 'vowel', 'nucleus', ['own', 'ohm'], 60),
-    ('eye', 'vowel', 'nucleus', ['isle', 'eye'], None),
+    ('a', 'vowel', 'nucleus', ['aim', 'ate'], 60, None, None),
+    ('ee', 'vowel', 'nucleus', ['eel', 'east'], None, None, None),
+    ('oh', 'vowel', 'nucleus', ['own', 'ohm'], 60, None, None),
+    ('eye', 'vowel', 'nucleus', ['isle', 'eye'], None, None, None),
+    #
+    # Fifth round: `eh`(bed)/`uh`(gum) moved here from the 'nucleus-steady'
+    # block above -- see that block's own note. The fix is the same word-swap
+    # already used for a/ee/oh/eye: remove the onset consonant instead of
+    # trying to trim around its transition.
+    #   eh:  bed(/b/) -> end. Vowel-initial (nothing for an onset consonant to
+    #        colour). "end"'s own coda is /nd/ -- a nasal then a stop -- and it
+    #        measured clean anyway (tailFluxRatio 0.93 at -r60), so it was not
+    #        worth trading away 180ms of real length over a coda class that
+    #        didn't actually cause trouble here. "egg" is the second source
+    #        (tail 0.84), also vowel-initial.
+    #   uh:  gum(/g/) -> under. Vowel-initial, and long enough (205ms) at the
+    #        DEFAULT rate that no rate lever was needed at all -- the removed
+    #        onset consonant bought more length by itself than the previous
+    #        round's rate/fraction tuning had. "ugly" is the second source.
+    # Both are pos == 'nucleus' now, so cut_nucleus (unchanged) applies -- no
+    # narrowing, no new mechanism, just a different word.
+    ('eh', 'vowel', 'nucleus', ['end', 'egg'], 60, None, None),
+    ('uh', 'vowel', 'nucleus', ['under', 'ugly'], None, None, None),
     #
     # Fourth round: `or` alone was graded NO again ("발음이 너무 짧게
     # 느껴져"), at 115ms against oh/eye's 210-264ms -- and 115ms was already
@@ -348,12 +407,33 @@ CORPUS = [
     # gradual) before the word continues into "-ate", not by an obstruent
     # closure right against the vowel the way `orb`'s /rb/ was. At the default
     # rate it measures 289ms/selfsim.290/tail1.41 -- comfortably past the
-    # 200ms-ish target and inside every gate. "oral" replaces "ornate" as the
-    # SECOND source (dbright/dzcr agreement checked against the new primary);
-    # "or" itself is dropped from this row rather than kept as a third
-    # candidate, since at this row's rate it would only ever contribute the
-    # 115ms result the gallery just rejected.
-    ('or', 'vowel', 'nucleus', ['ornate', 'oral'], None),
+    # 200ms-ish target and inside every gate.
+    #
+    # Fifth round: graded NO anyway -- "or 은 ornat 까지 발음 하더라" -- the
+    # gate passed (1.41 < 2.0) but the ear still caught the /n/ starting.
+    # THIS IS THE PROOF THAT A GATE PASSING DOES NOT MEAN THE TRIM IS CLEAN,
+    # and it is the reason tailFluxRatio gets a per-sound override (see
+    # `tail_max` below) instead of a global tightening: retesting the 2.0
+    # ceiling against the currently-shipping nucleus-steady sounds found
+    # `awh`("hot") at tailFluxRatio 3.4 -- tightening the ceiling everywhere
+    # would have failed an already-approved, out-of-scope sound.
+    #
+    # The fix reuses 'nucleus-steady' -- the SAME flatness search already
+    # validated for aaa/ihh/eh/uh/awh -- rather than inventing a new trim
+    # mechanism, just pointed at a MUCH narrower fraction than that shared
+    # constant (0.95) uses: 0.70. (This needed a per-row override, `frac`,
+    # threaded through cut_nucleus_steady -- the shared
+    # NUCLEUS_STEADY_WINDOW_FRAC constant is untouched, so aaa/ihh/awh above
+    # are unaffected.) Measured on "ornate" at -r88: frac 0.95 (this row's old
+    # behaviour under 'nucleus') gives 274ms but tailFluxRatio 2.83 -- already
+    # over the loose ceiling, consistent with what the gallery heard. Frac
+    # 0.70 gives 205ms, tailFluxRatio 0.45, selfsim 0.202 -- comfortably inside
+    # even the STRICTER 1.0 ceiling this row sets for itself via `tail_max`.
+    # 205ms is shorter than 289ms but still lands at the low end of the
+    # 200ms-ish target from two rounds ago, which the user explicitly said was
+    # an acceptable trade ("길이가 조금 줄어도 된다... 정확한 소리가 우선").
+    # "oral" stays as the second source, unchanged.
+    ('or', 'vowel', 'nucleus-steady', ['ornate', 'oral'], None, 0.70, 1.0),
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
@@ -664,14 +744,14 @@ def coda_start(fr, peak, klass):
     return None
 
 
-def cut_onset(samples, sr, klass):
+def cut_onset(samples, sr, klass, vowel_ms=PLOSIVE_VOWEL_MS):
     fr, step = frames(samples, sr)
     if not fr:
         return []
     peak = max(f[0] for f in fr)
     hi = onset_end(fr, peak, klass) * step
     if klass == 'plosive':
-        hi = min(len(samples), hi + int(sr * PLOSIVE_VOWEL_MS / 1000))
+        hi = min(len(samples), hi + int(sr * vowel_ms / 1000))
     return samples[0:hi]
 
 
@@ -773,9 +853,9 @@ def steady_window(fr, a, b, win):
     return best
 
 
-def cut_nucleus_steady(samples, sr):
-    """Narrower than cut_nucleus: the flattest NUCLEUS_STEADY_WINDOW_FRAC of
-    the core span, not the whole span.
+def cut_nucleus_steady(samples, sr, frac=None):
+    """Narrower than cut_nucleus: the flattest `frac` of the core span (default
+    NUCLEUS_STEADY_WINDOW_FRAC), not the whole span.
 
     This exists because the whole span was rejected on the real device: "cat"
     -> aaa read as "ca(t)", because the core span starts right where the RMS/
@@ -784,6 +864,14 @@ def cut_nucleus_steady(samples, sr):
     gate is loudness+noise, not formant tracking, which this project cannot do
     without an FFT). Searching for the flattest sub-window finds the part of
     the vowel that has actually settled.
+
+    `frac` is a per-CORPUS-row override (see `or`'s row, fifth round): the
+    shared constant is tuned for the five short vowels this cut was built for,
+    and turned out to be too wide when reused for a coda-transition problem
+    ("ornate" needed a much narrower fraction to trim the /n/ at the far end,
+    not the onset at the near end). Passing None preserves the exact behaviour
+    every other caller already has -- aaa/ihh/awh's bytes do not move because
+    of this parameter existing.
     """
     fr, step = frames(samples, sr)
     if not fr:
@@ -791,33 +879,44 @@ def cut_nucleus_steady(samples, sr):
     peak = max(f[0] for f in fr)
     a, b = vowel_core_span(fr, peak)
     span = b - a + 1
-    win = max(8, int(round(span * NUCLEUS_STEADY_WINDOW_FRAC)))
+    use_frac = NUCLEUS_STEADY_WINDOW_FRAC if frac is None else frac
+    win = max(8, int(round(span * use_frac)))
     win = min(win, span)
     s, e = steady_window(fr, a, b, win)
     return samples[s * step:(e + 1) * step]
 
 
-def extract(word, klass, pos, rate=None):
+def extract(word, klass, pos, rate=None, key=None, frac=None, tail_max=None):
     raw, sr = say_pcm(word, rate)
     body = trim_word(raw, sr)
     edge_flux = None
     tail_flux = None
     if pos == 'nucleus':
         seg = cut_nucleus(body, sr)
-        # Diagnostic only (see tail_flux_ratio's docstring) -- not gated, so
-        # this cannot turn into a surprise regression on a/ee, which this
-        # round did not re-examine.
+        # Diagnostic only (see tail_flux_ratio's docstring) -- not gated
+        # unless `tail_max` says otherwise, so this cannot turn into a
+        # surprise regression on the sounds this round did not re-examine.
         tail_flux = tail_flux_ratio(seg, sr)
     elif pos == 'nucleus-steady':
-        seg = cut_nucleus_steady(body, sr)
+        seg = cut_nucleus_steady(body, sr, frac)
         # Measured on the RAW cut, before fade(): the 15ms cosine taper zeros
         # out most of the very edge this metric exists to look at, which would
         # silently disable the check rather than fail it loudly.
         edge_flux = edge_flux_ratio(seg, sr)
+        # Only computed when a row actually asks for the stricter check (via
+        # `tail_max`) -- see `or`'s CORPUS row. Computing this unconditionally
+        # for every 'nucleus-steady' sound would have been harmless to their
+        # AUDIO (it is read-only), but would have added a manifest field to
+        # aaa/ihh/awh that this round never asked for and never verified;
+        # narrower is safer.
+        if tail_max is not None:
+            tail_flux = tail_flux_ratio(seg, sr)
     elif pos == 'coda':
         seg = cut_coda(body, sr, klass)
     else:
-        seg = cut_onset(body, sr, klass)
+        vowel_ms = (PLOSIVE_VOWEL_MS_OVERRIDE.get(key, PLOSIVE_VOWEL_MS)
+                   if klass == 'plosive' else PLOSIVE_VOWEL_MS)
+        seg = cut_onset(body, sr, klass, vowel_ms)
     seg = fade(seg)
     rms, bright, zcr = descriptors(seg)
     p, gaps = pulses([int(x) for x in seg], sr)
@@ -867,7 +966,7 @@ NUCLEUS_STEADY_SELFSIM_MAX = 0.30
 NUCLEUS_STEADY_EDGE_FLUX_MAX = 2.0
 
 
-def failures_for(e, klass, pos, spec):
+def failures_for(e, klass, pos, spec, tail_max=None):
     bad = []
     if e['pulses'] != 1:
         bad.append('pulses=%d (gaps %s)' % (e['pulses'], e['gaps']))
@@ -898,15 +997,26 @@ def failures_for(e, klass, pos, spec):
     elif e['selfsim'] > SELFSIM_MAX:
         bad.append('selfsim=%.3f > %.2f -- contains a repeated block'
                    % (e['selfsim'], SELFSIM_MAX))
+    # Opt-in, per-CORPUS-row (`tail_max`), not a blanket policy: a global
+    # tightening of the informal 2.0 ceiling was tried first and immediately
+    # failed an out-of-scope, already-approved sound ("awh"<-"hot" measures
+    # tailFluxRatio 3.4). A gate passing is not proof a trim is clean --
+    # "or"<-"ornate" passed the loose 2.0 ceiling at 1.41 and the ear still
+    # caught "-nate" -- but the fix for THAT is a tighter number for THAT
+    # sound, not a tighter number for every sound that happens to share this
+    # code path.
+    if tail_max is not None and e['tailFluxRatio'] is not None and e['tailFluxRatio'] > tail_max:
+        bad.append('tailFluxRatio=%.2f > %.2f -- the coda consonant is still '
+                   'audible at the end of the cut' % (e['tailFluxRatio'], tail_max))
     return bad
 
 
-def build_one(key, klass, pos, words, rate):
+def build_one(key, klass, pos, words, rate, frac=None, tail_max=None):
     spec = CLASSES['vowel-steady'] if pos == 'nucleus-steady' else CLASSES[klass]
     tried = []
     for w in words:
-        e = extract(w, klass, pos, rate)
-        e['bad'] = failures_for(e, klass, pos, spec)
+        e = extract(w, klass, pos, rate, key=key, frac=frac, tail_max=tail_max)
+        e['bad'] = failures_for(e, klass, pos, spec, tail_max=tail_max)
         tried.append(e)
     clean = [e for e in tried if not e['bad']]
     row = dict(key=key, klass=klass, pos=pos, tried=tried, chosen=None,
@@ -963,11 +1073,11 @@ def probe():
     print('%-5s %-9s %-8s %-7s %4s %7s %7s %7s %7s %7s %6s %6s %6s  %s'
           % ('key', 'class', 'pos', 'word', 'rate', 'word', 'seg', 'bright', 'pbrt',
              'zcr', 'selfs', 'efr', 'tfr', 'reject'))
-    for key, klass, pos, words, rate in CORPUS:
+    for key, klass, pos, words, rate, frac, tail_max in CORPUS:
         spec = CLASSES['vowel-steady'] if pos == 'nucleus-steady' else CLASSES[klass]
         for w in words:
-            e = extract(w, klass, pos, rate)
-            bad = failures_for(e, klass, pos, spec)
+            e = extract(w, klass, pos, rate, key=key, frac=frac, tail_max=tail_max)
+            bad = failures_for(e, klass, pos, spec, tail_max=tail_max)
             efr = '%6.2f' % e['edgeFluxRatio'] if e['edgeFluxRatio'] is not None else '     -'
             tfr = '%6.2f' % e['tailFluxRatio'] if e['tailFluxRatio'] is not None else '     -'
             print('%-5s %-9s %-8s %-7s %4s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f %s %s  %s'
@@ -1062,8 +1172,9 @@ def generate():
             # word, which check() no longer has access to.
             edgeFluxRatio=(round(c['edgeFluxRatio'], 3)
                           if c['edgeFluxRatio'] is not None else None),
-            # Diagnostic only (see tail_flux_ratio's docstring) -- None for
-            # every pos except 'nucleus'.
+            # Diagnostic for 'nucleus' (always computed there); for
+            # 'nucleus-steady' only when the row's `tail_max` asked for it
+            # (see 'or'). None otherwise -- see tail_flux_ratio's docstring.
             tailFluxRatio=(round(c['tailFluxRatio'], 3)
                           if c['tailFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
@@ -1100,6 +1211,7 @@ def generate():
 def check():
     with open(os.path.join(OUT_DIR, 'manifest.json')) as fh:
         manifest = json.load(fh)
+    tail_max_by_key = {row[0]: row[6] for row in CORPUS}
     bad = []
     print('%-5s %-7s %-14s %7s %6s %6s %6s  %s'
           % ('key', 'source', 'pos', 'ms', 'puls', 'selfs', 'efr', 'verdict'))
@@ -1139,6 +1251,16 @@ def check():
                 ' (murmur ceiling)' if steady else ''))
         if efr is not None and efr > NUCLEUS_STEADY_EDGE_FLUX_MAX:
             why.append('edgeFluxRatio %.2f > %.2f' % (efr, NUCLEUS_STEADY_EDGE_FLUX_MAX))
+        # Same non-recomputation reasoning as edgeFluxRatio above: this trusts
+        # the manifest's own tailFluxRatio (measured at generation time on the
+        # pre-fade cut) rather than re-deriving it from the shipped, faded
+        # file. Only checked when this key's CORPUS row actually set a
+        # `tail_max` (currently just `or`) -- everyone else's tailFluxRatio is
+        # informational only, matching failures_for().
+        tail_max = tail_max_by_key.get(key)
+        tfr = meta.get('tailFluxRatio')
+        if tail_max is not None and tfr is not None and tfr > tail_max:
+            why.append('tailFluxRatio %.2f > %.2f' % (tfr, tail_max))
         if why:
             bad.append(key)
         print('%-5s %-7s %-14s %6dms %6d %6.3f %6s  %s'
