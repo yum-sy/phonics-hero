@@ -137,6 +137,14 @@ CLASSES = {
     'plosive':  dict(ms=(100, 340), bright=(0.05, 2.00), zcr=(0.02, 0.90),
                      pbright=(0.40, 3.00)),
     'vowel':    dict(ms=(80, 340), bright=(0.02, 0.45), zcr=(0.00, 0.25)),
+    # Only for pos == 'nucleus-steady' (see cut_nucleus_steady). The floor is
+    # lower than plain 'vowel' -- 60 instead of 80 -- because the true steady
+    # state of a short lax vowel inside a CVC word is legitimately shorter than
+    # the whole nucleus these five sounds used to ship as (that whole-nucleus
+    # cut is exactly what got rejected: it read as consonant + vowel, e.g.
+    # "ca(t)" instead of pure /ae/). This entry never touches CLASSES['vowel'],
+    # so the five already-approved long vowels (a/ee/oh/eye/or) are unaffected.
+    'vowel-steady': dict(ms=(60, 340), bright=(0.02, 0.45), zcr=(0.00, 0.25)),
 }
 
 # ---------------------------------------------------------------------------
@@ -181,20 +189,80 @@ CORPUS = [
     # Short vowels. Taking these from words is also the fix for a bug CLAUDE.md
     # records as open: A's target is /ae/ (apple) and the notation made the
     # engine say /ei/.
-    ('aaa', 'vowel', 'nucleus', ['cat', 'ant', 'apple'], None),
-    ('ihh', 'vowel', 'nucleus', ['ink', 'pin', 'insect'], None),
-    ('eh', 'vowel', 'nucleus', ['bed', 'ten', 'net', 'egg'], None),
-    ('uh', 'vowel', 'nucleus', ['mud', 'gum', 'nut'], None),
-    ('awh', 'vowel', 'nucleus', ['got', 'dog', 'hot'], None),
+    #
+    # pos == 'nucleus-steady', not 'nucleus': real-device QA on the plain
+    # nucleus cut (the whole voiced vowel span) rejected all five --
+    # "cat -> aaa read as ca(t)" -- because the span starts right where a
+    # released consonant's formant transition is still moving, and that
+    # transition can outlast the loudness/noise gate that finds the span's
+    # edge. 'nucleus-steady' narrows to the flattest part of that span (see
+    # cut_nucleus_steady). This does NOT touch cut_nucleus itself or the
+    # 'nucleus' pos, so a/ee/oh/eye/or below are unaffected -- same bytes as
+    # before, same OK verdicts.
+    #
+    # 'uh' lost its first two source words entirely rather than being left to
+    # the gates: "mud" and "nut" both onset on a nasal (/m/, /n/), and a nasal
+    # murmur is exactly the contamination 'nucleus-steady' is narrowing away
+    # from. It is not reliably caught by the numeric gates alone -- "mud"
+    # failed the new selfsim ceiling (0.454), but "nut" happened not to
+    # (0.000) despite the same onset, so the fix is the word choice, not just
+    # the check. "gum"/"hug"/"bug" all onset on a stop or fricative, which the
+    # brightness-based span detector already handles correctly (see "cat").
+    ('aaa', 'vowel', 'nucleus-steady', ['cat', 'ant', 'apple'], None),
+    ('ihh', 'vowel', 'nucleus-steady', ['ink', 'pin', 'insect'], None),
+    ('eh', 'vowel', 'nucleus-steady', ['bed', 'ten', 'net', 'egg'], None),
+    ('uh', 'vowel', 'nucleus-steady', ['gum', 'hug', 'bug'], None),
+    ('awh', 'vowel', 'nucleus-steady', ['got', 'dog', 'hot'], None),
     # Digraph long vowels. For these the letter name IS the target phoneme, so
     # the notation was not teaching the wrong sound -- but taking them from
     # words is what finally separates `a` from `eh`, which CLAUDE.md records as
     # a confirmed collision that broke a scored question.
-    ('a', 'vowel', 'nucleus', ['rain', 'cake', 'aim'], None),
-    ('ee', 'vowel', 'nucleus', ['bee', 'tree'], None),
-    ('oh', 'vowel', 'nucleus', ['boat', 'coat'], None),
-    ('eye', 'vowel', 'nucleus', ['tie', 'pie'], None),
-    ('or', 'vowel', 'nucleus', ['corn', 'fork'], None),
+    #
+    # Second round: the gallery graded all five NO, and the reason is the same
+    # defect as aaa/ihh/eh/uh/awh above -- rain/bee/boat/tie/corn all onset on a
+    # consonant, and the plain 'nucleus' cut can carry a few tens of ms of that
+    # consonant's formant transition at the front.
+    #
+    # These five did NOT get 'nucleus-steady', though, and that is a deliberate
+    # different fix, not an oversight. Three of them (a/oh/eye) are true
+    # diphthongs -- /eI/, /oU/, /aI/ -- whose formants are SUPPOSED to keep
+    # moving through the whole vowel. cut_nucleus_steady searches for the
+    # FLATTEST window, and measured on "rain": that search picks
+    # window=[5,23], starting at frame 5 (0% into the span) with a bright range
+    # of [0.05,0.25] -- i.e. it keeps the /r/-onset murmur AND most of the
+    # glide, because a smooth ramp scores as "flat" under a sum-of-consecutive-
+    # deltas metric just as readily as a true plateau does. Narrowing further
+    # risks trimming the glide down to whichever end happens to look flattest,
+    # which would swap "onset consonant blended in" for "diphthong flattened
+    # into a monophthong" -- a different defect, not a fix.
+    #
+    # So instead of a new cut, these use THE SAME 'nucleus' cut as before, on a
+    # VOWEL-INITIAL word: rain(/r/)->aim, bee(/b/)->eel, boat(/b/)->oat,
+    # tie(/t/)->ice, corn(/k/)->orb. With no onset consonant at all there is
+    # nothing for the cut to blend in, so the whole natural core span IS the
+    # vowel -- diphthong glide included, untouched -- and it needed no new
+    # segmentation code, which is the safer fix per se (a word swap cannot
+    # introduce a new class of segmentation bug; new code can).
+    #
+    # `a` needed a slower source rate too: at the default -r 88, "aim"'s own
+    # core span is only 55ms (measured) -- long enough to pass every gate here,
+    # but likely too brief for a 5-year-old to register the glide at all. -r 60
+    # is real articulation (see EN_RATE's comment in audio.js on why rate is a
+    # legitimate lever for a continuant), not the repetition this whole
+    # conversion exists to remove -- 145ms at -r 60, still one pulse, still
+    # vowel-initial.
+    #
+    # `ee`/`or` are not true diphthongs by the same test -- English /i:/ and
+    # /o:r/-with-rhotic-coloring are usually described as a single target with
+    # at most a glide-like offset, not two vowel qualities -- but the safer fix
+    # applied regardless: eel/east and orb/ornate are vowel-initial too, so the
+    # question of whether narrowing would clip a glide never has to be
+    # answered for them either.
+    ('a', 'vowel', 'nucleus', ['aim', 'ate'], 60),
+    ('ee', 'vowel', 'nucleus', ['eel', 'east'], None),
+    ('oh', 'vowel', 'nucleus', ['oat', 'oath'], None),
+    ('eye', 'vowel', 'nucleus', ['ice', 'eye'], None),
+    ('or', 'vowel', 'nucleus', ['orb', 'ornate'], None),
 ]
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
@@ -337,6 +405,41 @@ def self_similarity(seg):
     return best
 
 
+# How many leading ms count as "the edge" for the contamination check below.
+# 20ms is about 4 frames at FRAME_MS=5 -- enough to average out single-frame
+# noise, short enough to stay inside an onset transition rather than spanning
+# past it into the steady vowel.
+EDGE_MS = 20
+
+
+def edge_flux_ratio(seg, sr):
+    """Mean frame-to-frame brightness change in the first EDGE_MS versus the
+    rest of the segment. Answers a narrower question than self-similarity: not
+    "is there a repeated block" but "is the very front of this cut still
+    changing faster than the body is" -- direct evidence of a leftover
+    consonant-to-vowel transition at the edge, which is what the rejected
+    whole-span cut actually contained.
+
+    This is necessary but not sufficient on its own: a nasal/liquid murmur is
+    ALSO flat (see cut_nucleus_steady's docstring), so a low ratio here does
+    not by itself prove the edge is clean -- that is what the stricter
+    self-similarity gate below is for. The two catch different shapes of the
+    same underlying mistake (heterogeneous edge vs. homogeneous-but-wrong
+    edge), which is why both are gated for pos == 'nucleus-steady'.
+    """
+    fr, step = frames(seg, sr)
+    edge_n = max(2, EDGE_MS // FRAME_MS)
+    deltas = [abs(fr[i][1] - fr[i - 1][1]) for i in range(1, len(fr))]
+    if not deltas:
+        return 0.0
+    edge, body = deltas[:edge_n - 1], deltas[edge_n - 1:]
+    edge_mean = sum(edge) / len(edge) if edge else 0.0
+    body_mean = sum(body) / len(body) if body else edge_mean
+    if body_mean <= 1e-6:
+        return 0.0 if edge_mean <= 1e-6 else 99.0
+    return edge_mean / body_mean
+
+
 def pulses(samples, sr):
     step = max(1, sr * PULSE_FRAME_MS // 1000)
     env = []
@@ -461,12 +564,12 @@ def cut_coda(samples, sr, klass):
     return samples[start * step:]
 
 
-def cut_nucleus(samples, sr):
-    """The steady part of the vowel: expand around the loudest frame."""
-    fr, step = frames(samples, sr)
-    if not fr:
-        return []
-    peak = max(f[0] for f in fr)
+def vowel_core_span(fr, peak):
+    """(start, end) frame indices of the whole voiced vowel-ish region,
+    expanding outward from the loudest frame while brightness stays vowel-like
+    and loudness stays high. Shared by cut_nucleus and cut_nucleus_steady so
+    the two describe the same span -- the steady cut only narrows it further.
+    """
     pk = max(range(len(fr)), key=lambda i: fr[i][0])
     a = pk
     while a > 0 and fr[a - 1][0] > peak * 0.55 and fr[a - 1][1] < 0.45:
@@ -474,14 +577,91 @@ def cut_nucleus(samples, sr):
     b = pk
     while b + 1 < len(fr) and fr[b + 1][0] > peak * 0.55 and fr[b + 1][1] < 0.45:
         b += 1
+    return a, b
+
+
+def cut_nucleus(samples, sr):
+    """The steady part of the vowel: expand around the loudest frame.
+
+    UNCHANGED BEHAVIOUR, BYTE FOR BYTE -- this is what a/ee/oh/eye/or still use,
+    and their audio must not move: the user has already graded them OK. Do not
+    fold cut_nucleus_steady's narrowing into this function.
+    """
+    fr, step = frames(samples, sr)
+    if not fr:
+        return []
+    peak = max(f[0] for f in fr)
+    a, b = vowel_core_span(fr, peak)
     return samples[a * step:(b + 1) * step]
+
+
+# Fraction of the core span kept by the flatness search below. Not a fixed
+# skip-the-front-N% (option 1 in isolation): tried alone, a fixed fraction
+# either stayed inside a nasal/liquid onset's murmur (that murmur is QUIET
+# there is nothing IN it that changes) or landed back on it depending on the
+# word, because "position in the span" and "is this the murmur" are not the
+# same fact. What separates the murmur from the true vowel is that the murmur
+# is flat at a DIFFERENT level, so the search below (option 2) hunts for the
+# flattest window regardless of where it falls, and the length below decides
+# how much of the span it is allowed to claim -- long enough to reach a real
+# steady state, short enough not to just re-select the whole span.
+NUCLEUS_STEADY_WINDOW_FRAC = 0.55
+
+
+def steady_window(fr, a, b, win):
+    """The `win`-frame window inside [a, b] with the least brightness
+    movement -- the flattest run of formants, i.e. the part of the vowel that
+    is not still transitioning into or out of a neighbouring consonant.
+    Ties broken toward higher average loudness, which biases away from a quiet
+    nasal/liquid murmur without hardcoding where the murmur is.
+    """
+    best, best_score = None, None
+    for start in range(a, b - win + 2):
+        end = start + win - 1
+        flux = sum(abs(fr[i][1] - fr[i - 1][1]) for i in range(start + 1, end + 1))
+        avg_rms = sum(fr[i][0] for i in range(start, end + 1)) / win
+        score = (round(flux, 6), -avg_rms)
+        if best_score is None or score < best_score:
+            best_score, best = score, (start, end)
+    return best
+
+
+def cut_nucleus_steady(samples, sr):
+    """Narrower than cut_nucleus: the flattest NUCLEUS_STEADY_WINDOW_FRAC of
+    the core span, not the whole span.
+
+    This exists because the whole span was rejected on the real device: "cat"
+    -> aaa read as "ca(t)", because the core span starts right where the RMS/
+    brightness gate first admits the vowel, and a released consonant's formant
+    transition can still be moving for tens of ms after that gate opens (the
+    gate is loudness+noise, not formant tracking, which this project cannot do
+    without an FFT). Searching for the flattest sub-window finds the part of
+    the vowel that has actually settled.
+    """
+    fr, step = frames(samples, sr)
+    if not fr:
+        return []
+    peak = max(f[0] for f in fr)
+    a, b = vowel_core_span(fr, peak)
+    span = b - a + 1
+    win = max(8, int(round(span * NUCLEUS_STEADY_WINDOW_FRAC)))
+    win = min(win, span)
+    s, e = steady_window(fr, a, b, win)
+    return samples[s * step:(e + 1) * step]
 
 
 def extract(word, klass, pos, rate=None):
     raw, sr = say_pcm(word, rate)
     body = trim_word(raw, sr)
+    edge_flux = None
     if pos == 'nucleus':
         seg = cut_nucleus(body, sr)
+    elif pos == 'nucleus-steady':
+        seg = cut_nucleus_steady(body, sr)
+        # Measured on the RAW cut, before fade(): the 15ms cosine taper zeros
+        # out most of the very edge this metric exists to look at, which would
+        # silently disable the check rather than fail it loudly.
+        edge_flux = edge_flux_ratio(seg, sr)
     elif pos == 'coda':
         seg = cut_coda(body, sr, klass)
     else:
@@ -495,6 +675,7 @@ def extract(word, klass, pos, rate=None):
                 rms=rms, bright=bright, zcr=zcr,
                 pbright=peak_bright(seg, sr),
                 selfsim=self_similarity(seg),
+                edgeFluxRatio=edge_flux,
                 pulses=p, gaps=gaps)
 
 
@@ -511,8 +692,29 @@ AGREE_ZCR = 0.20
 # spliced one.
 SELFSIM_MAX = 0.90
 
+# STRICTER self-similarity ceiling, only for pos == 'nucleus-steady'.
+# Self-similarity was built to catch a spliced repeat (see SELFSIM_MAX), but it
+# turns out to also be the best available signal for a DIFFERENT contamination:
+# a nasal or liquid murmur bled into the front of the cut. A murmur is
+# periodic voicing too, just at the consonant's own formants rather than the
+# vowel's, so it raises long-lag self-similarity the same way a splice does --
+# just less. Measured on the actual candidate words for the five sounds this
+# gate exists for: every clean word (stop or fricative onset, or vowel-initial)
+# scored 0.000-0.221; the two nasal-onset words tried ("mud" for uh, "net" for
+# eh) scored 0.454 and 0.570. 0.30 sits in the gap. This does not replace
+# SELFSIM_MAX -- it is tighter, so passing this gate also passes that one --
+# it is applied instead of it for this pos only.
+NUCLEUS_STEADY_SELFSIM_MAX = 0.30
 
-def failures_for(e, klass, spec):
+# Ceiling for edge_flux_ratio (see its docstring), pos == 'nucleus-steady' only.
+# Measured on the words actually shipped: 0.18-1.56. Measured on words that were
+# tried and rejected for other reasons (elevated selfsim, or too short): up to
+# 2.69 ("wish"). 2.0 sits between the two populations with margin on both
+# sides.
+NUCLEUS_STEADY_EDGE_FLUX_MAX = 2.0
+
+
+def failures_for(e, klass, pos, spec):
     bad = []
     if e['pulses'] != 1:
         bad.append('pulses=%d (gaps %s)' % (e['pulses'], e['gaps']))
@@ -530,18 +732,28 @@ def failures_for(e, klass, spec):
     if 'pbright' in spec and not spec['pbright'][0] <= e['pbright'] <= spec['pbright'][1]:
         bad.append('pbright=%.2f outside %s (no burst -> not a plosive)'
                    % (e['pbright'], spec['pbright']))
-    if e['selfsim'] > SELFSIM_MAX:
+    if pos == 'nucleus-steady':
+        if e['selfsim'] > NUCLEUS_STEADY_SELFSIM_MAX:
+            bad.append('selfsim=%.3f > %.2f -- suspect a consonant murmur '
+                       '(nasal/liquid) blended into the vowel, not just a '
+                       'repeat splice' % (e['selfsim'], NUCLEUS_STEADY_SELFSIM_MAX))
+        if e['edgeFluxRatio'] is not None and e['edgeFluxRatio'] > NUCLEUS_STEADY_EDGE_FLUX_MAX:
+            bad.append('edgeFluxRatio=%.2f > %.2f -- the first %dms is still '
+                       'changing faster than the rest, likely an unresolved '
+                       'onset transition' % (e['edgeFluxRatio'],
+                                             NUCLEUS_STEADY_EDGE_FLUX_MAX, EDGE_MS))
+    elif e['selfsim'] > SELFSIM_MAX:
         bad.append('selfsim=%.3f > %.2f -- contains a repeated block'
                    % (e['selfsim'], SELFSIM_MAX))
     return bad
 
 
 def build_one(key, klass, pos, words, rate):
-    spec = CLASSES[klass]
+    spec = CLASSES['vowel-steady'] if pos == 'nucleus-steady' else CLASSES[klass]
     tried = []
     for w in words:
         e = extract(w, klass, pos, rate)
-        e['bad'] = failures_for(e, klass, spec)
+        e['bad'] = failures_for(e, klass, pos, spec)
         tried.append(e)
     clean = [e for e in tried if not e['bad']]
     row = dict(key=key, klass=klass, pos=pos, tried=tried, chosen=None,
@@ -595,16 +807,18 @@ def bait():
 
 
 def probe():
-    print('%-5s %-9s %-8s %-7s %7s %7s %7s %7s %7s %6s  %s'
+    print('%-5s %-9s %-8s %-7s %7s %7s %7s %7s %7s %6s %6s  %s'
           % ('key', 'class', 'pos', 'word', 'word', 'seg', 'bright', 'pbrt',
-             'zcr', 'selfs', 'reject'))
+             'zcr', 'selfs', 'efr', 'reject'))
     for key, klass, pos, words, rate in CORPUS:
+        spec = CLASSES['vowel-steady'] if pos == 'nucleus-steady' else CLASSES[klass]
         for w in words:
             e = extract(w, klass, pos, rate)
-            bad = failures_for(e, klass, CLASSES[klass])
-            print('%-5s %-9s %-8s %-7s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f  %s'
+            bad = failures_for(e, klass, pos, spec)
+            efr = '%6.2f' % e['edgeFluxRatio'] if e['edgeFluxRatio'] is not None else '     -'
+            print('%-5s %-9s %-8s %-7s %6.0fms %6.0fms %7.2f %7.2f %7.3f %6.3f %s  %s'
                   % (key, klass, pos, w, e['word_ms'], e['ms'], e['bright'],
-                     e['pbright'], e['zcr'], e['selfsim'], '; '.join(bad)))
+                     e['pbright'], e['zcr'], e['selfsim'], efr, '; '.join(bad)))
     return []
 
 
@@ -683,6 +897,12 @@ def generate():
             naturalMs=ms, stretch=1.0,
             source=c['word'], pos=r['pos'], klass=r['klass'], pulses=p,
             selfSim=round(c['selfsim'], 3), bright=round(c['bright'], 3),
+            # None for every pos except 'nucleus-steady' -- it is only computed
+            # (and only means anything) for that cut. Recorded so the gallery
+            # and `--check` can both see it without recomputing from the raw
+            # word, which check() no longer has access to.
+            edgeFluxRatio=(round(c['edgeFluxRatio'], 3)
+                          if c['edgeFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
     bad = report(rows)
     manifest = {
@@ -693,6 +913,7 @@ def generate():
                               'stretch': w['stretch'], 'source': w['source'],
                               'pos': w['pos'], 'class': w['klass'],
                               'pulses': w['pulses'], 'selfSim': w['selfSim'],
+                              'edgeFluxRatio': w['edgeFluxRatio'],
                               'bright': w['bright']}
                    for w in written},
     }
@@ -715,19 +936,30 @@ def check():
     with open(os.path.join(OUT_DIR, 'manifest.json')) as fh:
         manifest = json.load(fh)
     bad = []
-    print('%-5s %-7s %-8s %7s %6s %6s  %s'
-          % ('key', 'source', 'pos', 'ms', 'puls', 'selfs', 'verdict'))
+    print('%-5s %-7s %-14s %7s %6s %6s %6s  %s'
+          % ('key', 'source', 'pos', 'ms', 'puls', 'selfs', 'efr', 'verdict'))
     for key, meta in manifest['sounds'].items():
         path = os.path.join(OUT_DIR, '%s.%s' % (key, manifest['ext']))
         if not os.path.exists(path):
-            print('%-5s %-7s %-8s %7s %6s %6s  MISSING'
-                  % (key, meta['source'], meta['pos'], '-', '-', '-'))
+            print('%-5s %-7s %-14s %7s %6s %6s %6s  MISSING'
+                  % (key, meta['source'], meta['pos'], '-', '-', '-', '-'))
             bad.append(key)
             continue
         s, sr = read_wav(path)
         p, _ = pulses(s, sr)
         ms = round(len(s) / sr * 1000)
         ss = self_similarity(s)
+        steady = meta['pos'] == 'nucleus-steady'
+        # NOT recomputed from the shipped bytes. Tried that first and it was
+        # wrong: edge_flux_ratio looks at exactly the frames the 15ms fade
+        # tapers, and the taper's own amplitude ramp dominates the measurement
+        # there (measured: "cat" 0.34 pre-fade at generation time, 3.52
+        # recomputed from the faded file -- a false FAIL on an asset nothing
+        # had changed). This checks the value generate() actually gated on
+        # instead, i.e. it verifies the manifest's claim is still within the
+        # ceiling rather than re-deriving a number this mode structurally
+        # cannot compute correctly (check() never has the pre-fade audio).
+        efr = meta.get('edgeFluxRatio') if steady else None
         why = []
         if p != 1:
             why.append('%d pulses' % p)
@@ -735,12 +967,18 @@ def check():
             why.append('%dms != manifest %d' % (ms, meta['ms']))
         if meta['stretch'] != 1.0 or meta['naturalMs'] != meta['ms']:
             why.append('manifest claims a stretch')
-        if ss > SELFSIM_MAX:
-            why.append('selfsim %.3f' % ss)
+        selfsim_ceiling = NUCLEUS_STEADY_SELFSIM_MAX if steady else SELFSIM_MAX
+        if ss > selfsim_ceiling:
+            why.append('selfsim %.3f > %.2f%s' % (
+                ss, selfsim_ceiling,
+                ' (murmur ceiling)' if steady else ''))
+        if efr is not None and efr > NUCLEUS_STEADY_EDGE_FLUX_MAX:
+            why.append('edgeFluxRatio %.2f > %.2f' % (efr, NUCLEUS_STEADY_EDGE_FLUX_MAX))
         if why:
             bad.append(key)
-        print('%-5s %-7s %-8s %6dms %6d %6.3f  %s'
+        print('%-5s %-7s %-14s %6dms %6d %6.3f %6s  %s'
               % (key, meta['source'], meta['pos'], ms, p, ss,
+                 ('%.2f' % efr) if efr is not None else '-',
                  'ok' if not why else 'FAIL ' + '; '.join(why)))
     print('\n%d assets, %d FAIL' % (len(manifest['sounds']), len(bad)))
     return bad + collisions(list(manifest['sounds']))
