@@ -5,6 +5,20 @@
 
 let audioUnlocked = false
 
+// iOS refuses speechSynthesis.speak() until one speak() has happened inside a
+// real user gesture, and refuses it *silently* -- no error, no onend, no
+// sound. The app's own callers (world card / chapter card / stage node) all sit
+// in a gesture, so this is belt-and-braces rather than a known break: it makes
+// the very first touch anywhere in the document do the unlock, so no future
+// screen can introduce an auto-speaking entry point that lands before any tap.
+//
+// `once` means this costs one listener for the lifetime of the page, and
+// unlockAudio() is idempotent, so the app's explicit calls are unaffected.
+if (typeof document !== 'undefined') {
+  document.addEventListener('pointerdown', () => unlockAudio(), { once: true, capture: true })
+  document.addEventListener('touchstart', () => unlockAudio(), { once: true, capture: true })
+}
+
 export function unlockAudio() {
   if (audioUnlocked) return
   audioUnlocked = true
@@ -708,7 +722,16 @@ function speakNow(text, lang, rate) {
     // fix. A generous length-based estimate means this essentially never
     // fires under normal conditions -- real completion via onend is
     // still what resolves things almost every time.
-    const estimatedMs = Math.min(12000, Math.max(2500, 1500 + raw.length * 120))
+    // Scaled by 1/rate. The old fixed form was fitted at one rate, and a
+    // *slower* rate makes real speech longer while leaving the net where it
+    // was -- so the net starts firing during normal speech, the pump advances,
+    // and the next sound stacks on the one still playing. That is the exact
+    // overlap this queue exists to prevent, arriving through its own safety
+    // valve. Concretely: "sss" got 1860ms, but at rate 0.15 it really takes
+    // ~4-5s. Clamped below at 1 so a fast rate can only ever widen the net,
+    // never tighten it -- this must stay a net that never fires in practice.
+    const slow = 1 / Math.min(1, Math.max(0.05, rate || 1))
+    const estimatedMs = Math.min(30000, Math.max(2500, (1500 + raw.length * 120) * slow))
     const safetyTimer = setTimeout(finish, estimatedMs)
     try {
       window.speechSynthesis.speak(utter)
