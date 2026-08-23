@@ -104,7 +104,7 @@
   const screens = await import('/src/screens.js')
   const audio = await import(sameAsApp('audio.js'))
   const state = await import(sameAsApp('state.js'))
-  const { chapters } = await import(sameAsApp('stages.js'))
+  const { chapters, stageHealthMax } = await import(sameAsApp('stages.js'))
 
   async function enterStage(chapterId, stageIndex, keepCheckpoint = false) {
     if (!keepCheckpoint) state.clearCheckpoint()
@@ -3629,6 +3629,159 @@
     )
   }
 
+  // ---- reviewTargets consumer (screens.js's withGeneratedReview /
+  // buildGeneratedReviewBeat) ----
+  //
+  // reviewTargets has had zero consumers since it was introduced -- this is
+  // the first case that reads it. There is no chapter 9 yet to exercise the
+  // generator through real play (it only activates for chapter.order > 8),
+  // so this calls the exported pure functions directly: real chapter 1-8
+  // data proves the "stay off" gates hold against production data, and a
+  // synthetic chapter/stage -- built only in this function, never
+  // registered anywhere -- proves the generation logic itself is sound.
+  async function reviewGeneratedQuickfire() {
+    let threw = null
+    const obs = {}
+    try {
+      // Gate 1: a REAL chapter-8 stage (order <= 8) must come back with the
+      // exact same object reference, even though it declares reviewTargets
+      // -- chapters 1-8 keep exactly the beats they ship today. Uses the
+      // default `chapter` param (real getChapterForStage lookup), not an
+      // override, so this exercises the actual production call path.
+      const c8s4 = chapters
+        .find((c) => c.order === 8)
+        .stages.find((s) => s.reviewTargets)
+      obs.gate1SameReference = screens.withGeneratedReview(c8s4) === c8s4
+
+      // Gate 2: a synthetic chapter with order > 8 whose reviewTargets stage
+      // ALREADY has a hand-authored choose-sequence beat must also come
+      // back unchanged -- a future author can opt out per-stage.
+      const handAuthoredStage = {
+        id: 'synthetic-handauthored',
+        reviewTargets: ['S', 'A', 'T', 'Z'],
+        beats: [{ kind: 'choose-sequence', steps: [] }],
+      }
+      const fakeChapter9 = {
+        order: 9,
+        stages: [
+          { beats: [{ kind: 'teach', letter: 'Z' }] },
+          handAuthoredStage,
+        ],
+      }
+      obs.gate2SameReference =
+        screens.withGeneratedReview(handAuthoredStage, fakeChapter9) ===
+        handAuthoredStage
+
+      // The actual generation path: a synthetic chapter 9 teaching G and B
+      // (new), reviewing everything chapters 1-8 really taught (old) -- built
+      // from the REAL cumulative reviewTargets list so this exercises the
+      // real SOUND_TABLE lookups. G and B both have a CONFUSION_GROUPS
+      // partner (C, P) already in that real list, so this exercises the
+      // interference-pair path, not just its fallback.
+      const realTaughtSoFar = c8s4.reviewTargets
+      const stage9 = {
+        id: 'synthetic-c9-stage',
+        reviewTargets: [...realTaughtSoFar, 'G', 'B'],
+        beats: [
+          { kind: 'teach', letter: 'G' },
+          { kind: 'teach', letter: 'B' },
+          { kind: 'finale', words: ['bag'] },
+        ],
+      }
+      const chapter9 = { order: 9, stages: [stage9] }
+      const withReview = screens.withGeneratedReview(stage9, chapter9)
+      obs.injected = withReview !== stage9
+      obs.beatCountGrew = withReview.beats.length === stage9.beats.length + 1
+      const injectedIndex = withReview.beats.findIndex(
+        (b) => b.kind === 'choose-sequence'
+      )
+      obs.insertedBeforeLastBeat = injectedIndex === withReview.beats.length - 2
+      const beat = withReview.beats[injectedIndex]
+      obs.stepCount = beat.steps.length
+      obs.scored = beat.scored === true
+
+      // No option grid may pair two options with the same `say` (C/K's
+      // "one sound, two letterforms") or a known collision pair (a/eh's
+      // "two sounds, one rendered waveform") -- the two failure modes a
+      // hand-authored beat is protected from by validateChapters(), which
+      // never runs on this beat since it's built at render time, not in
+      // chapters/index.js.
+      const collisionPairs = [['buh', 'duh'], ['a', 'eh']]
+      let sameSayTwice = false
+      let collisionPairFound = false
+      let everySaySet = true
+      let exactlyOneCorrectPerStep = true
+      for (const step of beat.steps) {
+        const says = step.options.map((o) => o.say)
+        if (says.some((s) => !s)) everySaySet = false
+        if (new Set(says).size !== says.length) sameSayTwice = true
+        for (const [x, y] of collisionPairs) {
+          if (says.includes(x) && says.includes(y)) collisionPairFound = true
+        }
+        if (step.options.filter((o) => o.correct).length !== 1) {
+          exactlyOneCorrectPerStep = false
+        }
+      }
+      obs.noSameSoundTwice = !sameSayTwice
+      obs.noCollisionPair = !collisionPairFound
+      obs.everySaySet = everySaySet
+      obs.exactlyOneCorrectPerStep = exactlyOneCorrectPerStep
+
+      // The whole point of consuming reviewTargets instead of just quizzing
+      // this chapter's own letters: at least one step's correct answer has
+      // to be a grapheme from BEFORE this chapter.
+      obs.hasCrossChapterStep = beat.steps.some((step) =>
+        step.options.some((o) => o.correct && realTaughtSoFar.includes(o.label))
+      )
+
+      // stageHealthMax must see the generated beat too, or the health bar
+      // would already be pinned at 0% before this beat's hit could land.
+      obs.healthMaxIncludesGenerated =
+        stageHealthMax(withReview) === stageHealthMax(stage9) + beat.hits
+
+      // Calling it again on the same (stage, chapter) must reproduce the
+      // identical step order -- seeded, not Math.random() -- so a retry
+      // after the recovery panel shows the same round rather than a reshuffle.
+      const again = screens.withGeneratedReview(stage9, chapter9)
+      obs.deterministic =
+        JSON.stringify(again.beats[injectedIndex]) === JSON.stringify(beat)
+
+      // A stage with reviewTargets but nothing new to teach (no `teach`
+      // beat at all in its chapter) must degrade to "no beat generated",
+      // not throw.
+      const emptyStage = {
+        id: 'synthetic-empty',
+        reviewTargets: ['S'],
+        beats: [{ kind: 'finale', words: ['a'] }],
+      }
+      const emptyChapter = { order: 9, stages: [emptyStage] }
+      obs.emptyChapterNoOp =
+        screens.withGeneratedReview(emptyStage, emptyChapter) === emptyStage
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'review-quickfire-generated-from-reviewTargets',
+      threw === null &&
+        obs.gate1SameReference &&
+        obs.gate2SameReference &&
+        obs.injected &&
+        obs.beatCountGrew &&
+        obs.insertedBeforeLastBeat &&
+        obs.scored &&
+        obs.stepCount >= 2 &&
+        obs.noSameSoundTwice &&
+        obs.noCollisionPair &&
+        obs.everySaySet &&
+        obs.exactlyOneCorrectPerStep &&
+        obs.hasCrossChapterStep &&
+        obs.healthMaxIncludesGenerated &&
+        obs.deterministic &&
+        obs.emptyChapterNoOp,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+  }
+
   const CASES = {
     worldheader: worldHeaderFit,
     tap: tapBacklog,
@@ -3690,6 +3843,7 @@
     sndfallback: sndFallback,
     sndnosilence: sndNoSilence,
     sndmanifest: sndManifest,
+    reviewgen: reviewGeneratedQuickfire,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

@@ -8,6 +8,11 @@ import {
   stageHealthMax,
   worlds,
 } from './data/stages.js'
+// Not re-exported by data/stages.js's back-compat shim, so imported straight
+// from the module it actually lives in. Read-only: this file consumes
+// SOUND_TABLE (via this lookup) to build review rounds, never edits
+// src/data/chapters/** itself -- that stays phonics-owned.
+import { letterformSounds } from './data/chapters/index.js'
 import {
   clearCheckpoint,
   getCheckpoint,
@@ -414,16 +419,21 @@ function worldSelectScreen() {
       let cls = 'chapter-card'
       if (cleared) cls += ' cleared'
       if (!unlocked) cls += ' locked'
-      // The card's portrait is one specific character -- the boss of the
-      // world's first chapter -- so it is revealed by THAT stage being
-      // cleared, not by the whole world being finished.
+      // The card's portrait is one specific character -- the world's first
+      // chapter's boss stage -- so it is revealed by THAT stage being
+      // cleared, not by the whole world being finished. It shows the HERO,
+      // not the villain: `hero` on a chapterBoss stage IS the chapter's
+      // combined form (e.g. robots.js's -deluxe styles, or a superhero's
+      // thickest silhouette doing double duty as its own combine form --
+      // see art.js/CLAUDE.md), so a world's entry card is "who you become",
+      // not "who you're about to fight" (user request).
       const faceStage = firstChapter
         ? firstChapter.stages[firstChapter.stages.length - 1]
         : null
       const inner =
         unlocked && faceStage
           ? portraitHtml(
-              villainArt(faceStage.villain),
+              heroArt(faceStage.hero),
               isStageCleared(faceStage.id)
             )
           : '<i class="lock">🔒</i>'
@@ -588,11 +598,275 @@ function mapScreen(chapterId) {
   })
 }
 
+// ---------- GENERATED CUMULATIVE REVIEW (reviewTargets consumer) ----------
+//
+// stage.reviewTargets, when a stage declares it, is validated by
+// validateChapters() to equal EXACTLY the full set of graphemes the
+// curriculum has taught up to and including that stage (chapters/index.js's
+// "reviewTargets 계약" -- see the comment there). It is the review POOL, not
+// a list of quiz steps: nothing in this app has ever consumed it to build a
+// round. Chapters 1-8 already hand-author their own choose-sequence
+// quickfire for every stage that declares it, occasionally mixing in one
+// cross-chapter step by hand (commit 997aa43), so this generator is wired
+// to STAY OFF for them and only supply the round chapter 9+ doesn't have to
+// hand-author -- a future phonics author gets this for free as long as
+// reviewTargets itself is right, which validateChapters already
+// double-checks independently of anything below.
+//
+// Two gates, both required, so it can never touch what already shipped:
+//   1. chapter.order > HAND_AUTHORED_MAX_CHAPTER_ORDER -- chapters 1-8 keep
+//      exactly the beats they ship today, whatever this code would build.
+//   2. the stage has no hand-authored `choose-sequence` beat already -- a
+//      future chapter can still opt out per-stage by writing its own, and
+//      this can never double up one stage's review round.
+//
+// Deliberately NOT wired into src/data/chapters/**: it reads reviewTargets
+// and SOUND_TABLE (via letterformSounds()) and splices the generated beat
+// in at render time, so chapter data never has to know this exists and
+// authoring a new chapter costs nothing extra beyond reviewTargets itself.
+const HAND_AUTHORED_MAX_CHAPTER_ORDER = 8
+
+// Mirrors chapters/index.js's (unexported, and not this file's to export)
+// SPEECH_COLLISION_PAIRS. The fact it encodes -- these two SAY strings
+// render identically on-device despite different notation -- is true
+// regardless of who's asking, so a generated step needs the same guard a
+// hand-authored one gets from validateChapters(). Keep in sync by hand if a
+// new pair is ever measured there.
+const GENERATED_REVIEW_COLLISION_PAIRS = [
+  ['buh', 'duh'],
+  ['a', 'eh'],
+]
+
+// Best-effort articulatory/orthographic confusion groups, used only to pick
+// which OLDER grapheme a generated review step spends its one cross-chapter
+// slot on, and which of THIS chapter's new graphemes make the most useful
+// wrong answers for it. Grounded in the pairs 997aa43 hand-picked instead of
+// guessed fresh: B/P (bilabial voicing contrast), G/C/K (velar place -- C
+// and K already can't coexist as two options, see canCoexistInReview), L/R
+// (liquids), D/T (alveolar voicing contrast, the same contrast chapter 4's
+// c4s4-r1-warmup hand-picks T as D's one safe foil for), and the
+// letter-NAME vowel family Jolly leans on for A/AI and O/OA (997aa43's
+// chapter-7 steps drew on exactly that family). Not exhaustive -- add a
+// line the same way chapters/index.js's own tables grow.
+const CONFUSION_GROUPS = [
+  ['B', 'P'],
+  ['G', 'C', 'K'],
+  ['L', 'R'],
+  ['D', 'T'],
+  ['A', 'AI', 'O', 'OA', 'IE'],
+]
+
+// Deterministic PRNG (mulberry32) seeded from a string, so a generated
+// review beat's option order is stable across re-renders of the very same
+// stage (retry after the recovery panel, a probe-harness re-run) instead of
+// reshuffling every time runBeat() re-enters it.
+function seededRandom(seedStr) {
+  let h = 1779033703 ^ seedStr.length
+  for (let i = 0; i < seedStr.length; i++) {
+    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353)
+    h = (h << 13) | (h >>> 19)
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507)
+    h = Math.imul(h ^ (h >>> 13), 3266489909)
+    h ^= h >>> 16
+    return (h >>> 0) / 4294967296
+  }
+}
+
+function shuffleDeterministic(seedStr, arr) {
+  const rand = seededRandom(seedStr)
+  const a = arr.slice()
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+// A letterform is only safe to auto-quiz if SOUND_TABLE gives it exactly one
+// SAY. Two rows sharing a letterform (OO's long/short oo, group 5) mean the
+// generator has no way to know which sound a bare reviewTargets entry means
+// -- that context only a hand author has -- so those sit out rather than
+// guess.
+function primarySay(letterform) {
+  const sounds = letterformSounds().get(letterform)
+  return sounds && sounds.length === 1 ? sounds[0] : null
+}
+
+// Whether two letterforms can share one option grid: never the same
+// letterform twice, never two letterforms whose SAY is identical (C/K's
+// "one sound, two letterforms" -- would make a two-correct-answer
+// question), never a known collision pair (a/eh's "two sounds, one
+// rendered waveform" -- would make the wrong answer sound identical to the
+// right one on a real device).
+function canCoexistInReview(a, b) {
+  if (a === b) return false
+  const sayA = primarySay(a)
+  const sayB = primarySay(b)
+  if (!sayA || !sayB) return false
+  if (sayA === sayB) return false
+  return !GENERATED_REVIEW_COLLISION_PAIRS.some(
+    ([x, y]) => (x === sayA && y === sayB) || (x === sayB && y === sayA)
+  )
+}
+
+// The graphemes THIS chapter itself introduces, in teaching order, deduped.
+// Derived from the chapter's own `teach` beats rather than diffing
+// reviewTargets against the previous stage's declaration, so it still works
+// on a chapter's very first reviewTargets-bearing stage.
+function chapterOwnLetterforms(chapter) {
+  const seen = []
+  for (const stage of chapter.stages) {
+    for (const beat of stage.beats) {
+      if (
+        beat.kind === 'teach' &&
+        typeof beat.letter === 'string' &&
+        !seen.includes(beat.letter)
+      ) {
+        seen.push(beat.letter)
+      }
+    }
+  }
+  return seen
+}
+
+// One choose-sequence step: `correct` plus its (already vetted) distractors,
+// shuffled. Null distractors means null step -- a step needs at least 2
+// options to be answerable, and a shorter generated quickfire beats a
+// broken one.
+function buildReviewStep(stageId, tag, correctLf, distractorLfs) {
+  if (!distractorLfs.length) return null
+  const pool = shuffleDeterministic(`${stageId}:${tag}`, [
+    correctLf,
+    ...distractorLfs,
+  ])
+  return {
+    promptAudio: primarySay(correctLf),
+    options: pool.map((lf, i) => ({
+      id: `${stageId}-rq-${tag}-${i}-${lf}`,
+      icon: 'letterTile',
+      label: lf,
+      say: primarySay(lf),
+      correct: lf === correctLf,
+    })),
+  }
+}
+
+function pickDistractors(candidates, correctLf, max = 2) {
+  const picked = []
+  for (const lf of candidates) {
+    if (picked.length >= max) break
+    if (lf === correctLf) continue
+    if (
+      canCoexistInReview(lf, correctLf) &&
+      picked.every((d) => canCoexistInReview(d, lf))
+    ) {
+      picked.push(lf)
+    }
+  }
+  return picked
+}
+
+// Picks the one older grapheme the stage's cross-chapter step reviews, and
+// the newly-taught graphemes that make the most useful wrong answers for it
+// -- per 997aa43, the risk to old knowledge is a NEW similar sound crowding
+// it out, not sheer time elapsed, so the wrong answers are this chapter's
+// own new letters, preferring ones sharing a CONFUSION_GROUPS family with
+// the grapheme under review.
+function pickInterferenceStep(stageId, oldPool, newPool) {
+  let oldHit = null
+  let distractors = []
+  for (const group of CONFUSION_GROUPS) {
+    const hit = oldPool.find((lf) => group.includes(lf))
+    if (!hit) continue
+    const found = pickDistractors(
+      newPool.filter((lf) => group.includes(lf)),
+      hit
+    )
+    if (found.length) {
+      oldHit = hit
+      distractors = found
+      break
+    }
+  }
+  if (!oldHit) {
+    // No modeled confusion pair matches anything taught so far -- fall back
+    // to the oldest still-taught grapheme (reviewTargets preserves
+    // curriculum order) against plain new-chapter distractors, so an
+    // unmodeled pair still gets reviewed rather than silently never
+    // reviewed at all.
+    oldHit = oldPool[0]
+    if (!oldHit) return null
+    distractors = pickDistractors(newPool, oldHit)
+  }
+  if (!distractors.length) return null
+  return buildReviewStep(stageId, 'x', oldHit, distractors)
+}
+
+// Builds the whole generated beat, or null if there isn't enough usable
+// material (e.g. every candidate got filtered out by canCoexistInReview).
+// Exported for the fullstack probe harness (_probe-fs.html) to exercise
+// directly with synthetic chapter/stage objects, since chapter 9+ doesn't
+// exist yet to exercise it through real play.
+export function buildGeneratedReviewBeat(stage, chapter) {
+  const taught = stage.reviewTargets
+  if (!Array.isArray(taught) || !taught.length) return null
+  const chapterNew = chapterOwnLetterforms(chapter)
+  const older = taught.filter((lf) => !chapterNew.includes(lf))
+  const newPool = chapterNew.filter((lf) => primarySay(lf))
+  const oldPool = older.filter((lf) => primarySay(lf))
+  if (!newPool.length) return null
+
+  const steps = []
+  newPool.forEach((correct, i) => {
+    const distractors = pickDistractors([...newPool, ...oldPool], correct)
+    const step = buildReviewStep(stage.id, `n${i}`, correct, distractors)
+    if (step) steps.push(step)
+  })
+
+  const interference = oldPool.length
+    ? pickInterferenceStep(stage.id, oldPool, newPool)
+    : null
+  if (interference) steps.push(interference)
+
+  if (!steps.length) return null
+  return {
+    kind: 'choose-sequence',
+    scored: true,
+    hits: 1,
+    instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+    steps,
+  }
+}
+
+// Clones the stage with the generated beat spliced in right before its last
+// beat -- the same position chapters 1-8 hand-place their own choose-
+// sequence in, immediately before the stage's finale/closing beat. Returns
+// the ORIGINAL stage object, untouched, whenever either gate says no or
+// generation produced nothing usable, so stageHealthMax() and the
+// checkpoint's beatIndex bound always match whatever beats array actually
+// plays. Never mutates the shared `stages` array: `{...stage}` clones, so
+// the chapters module's own data stays exactly what validateChapters()
+// checked. `chapter` defaults to a real lookup but accepts an override so
+// the probe harness can exercise both gates with a synthetic chapter,
+// without needing a real chapter 9 to exist.
+export function withGeneratedReview(stage, chapter = getChapterForStage(stage.id)) {
+  if (!stage || !stage.reviewTargets) return stage
+  if (!chapter || chapter.order <= HAND_AUTHORED_MAX_CHAPTER_ORDER) return stage
+  if (stage.beats.some((b) => b.kind === 'choose-sequence')) return stage
+  const generated = buildGeneratedReviewBeat(stage, chapter)
+  if (!generated) return stage
+  const beats = stage.beats.slice()
+  beats.splice(Math.max(0, beats.length - 1), 0, generated)
+  return { ...stage, beats }
+}
+
 // ---------- STAGE SCREEN ----------
 
 function stageScreen(stageId) {
   clearAudioQueue()
-  const stage = getStageById(stageId)
+  const stage = withGeneratedReview(getStageById(stageId))
   const runtime = {
     stage,
     nav: beginScreen(),
