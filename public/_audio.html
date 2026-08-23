@@ -35,6 +35,9 @@
 판정은 저장소의 <code>sound-verdicts.json</code> 에 바로 기록된다.
 <span class="src">file</span> = 미리 생성된 음소 파일, <span class="src">tts</span> = 엔진 합성.</p>
 
+<p class="note">모음 <code>aaa ihh eh uh awh</code> <b>다섯 개를 특히 주의해서 들어라.</b>
+생성기는 "모음이다" 와 "다른 단어에서도 같게 나온다" 까지만 증명할 수 있고,
+그게 /ɛ/ 인지 /ɪ/ 인지는 증명하지 못한다. 잘못 골랐다면 거기에 숨는다.</p>
 <div id="list"></div>
 
 <h2>결함 확인 · 대체안 비교</h2>
@@ -165,16 +168,21 @@ const list = document.getElementById('list')
 for (const key of keys) {
   const row = document.createElement('div')
   row.className = 'row'
+  // Showing the source word is not decoration: a verdict on /s/ is meaningless
+  // if the listener cannot see it was cut out of "sun". Same for the class --
+  // a wrong vowel pick is the one thing these assets cannot self-verify.
+  const meta = (manifest.sounds || {})[key] || {}
+  const tag = meta.source ? `←${meta.source}` : ''
   row.innerHTML =
     `<span class="key">${key}</span>` +
-    `<span class="src" data-src></span>` +
+    `<span class="src" data-src>${tag}</span>` +
     `<button class="play">🔊 들어보기</button>` +
     `<button class="v" data-v="ok">OK</button>` +
     `<button class="v" data-v="no">NO</button>`
   row.dataset.key = key
   row.querySelector('.play').onclick = async () => {
-    row.querySelector('[data-src]').textContent = '…'
-    row.querySelector('[data-src]').textContent = await play(key)
+    const how = await play(key)
+    row.querySelector('[data-src]').textContent = how === 'file' ? tag || 'file' : 'tts!'
   }
   for (const b of row.querySelectorAll('.v')) b.onclick = () => save(key, b.dataset.v)
   list.appendChild(row)

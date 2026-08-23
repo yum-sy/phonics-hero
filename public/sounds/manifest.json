@@ -1,0 +1,182 @@
+{
+ "ext": "wav",
+ "voice": "Samantha",
+ "rate": 88,
+ "sounds": {
+  "sss": {
+   "ms": 260,
+   "source": "sun",
+   "pulses": 1,
+   "class": "sibilant",
+   "bright": 1.886
+  },
+  "fff": {
+   "ms": 260,
+   "source": "fit",
+   "pulses": 1,
+   "class": "sibilant",
+   "bright": 1.693
+  },
+  "mmm": {
+   "ms": 260,
+   "source": "mat",
+   "pulses": 1,
+   "class": "nasal",
+   "bright": 0.091
+  },
+  "nnn": {
+   "ms": 260,
+   "source": "net",
+   "pulses": 1,
+   "class": "nasal",
+   "bright": 0.06
+  },
+  "lll": {
+   "ms": 260,
+   "source": "lap",
+   "pulses": 1,
+   "class": "liquid",
+   "bright": 0.076
+  },
+  "rrr": {
+   "ms": 260,
+   "source": "rat",
+   "pulses": 1,
+   "class": "liquid",
+   "bright": 0.089
+  },
+  "zz": {
+   "ms": 260,
+   "source": "zip",
+   "pulses": 1,
+   "class": "sibilant",
+   "bright": 1.725
+  },
+  "tuh": {
+   "ms": 220,
+   "source": "top",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.308
+  },
+  "puh": {
+   "ms": 190,
+   "source": "pig",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.152
+  },
+  "kuh": {
+   "ms": 220,
+   "source": "cat",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.259
+  },
+  "buh": {
+   "ms": 145,
+   "source": "bag",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.213
+  },
+  "duh": {
+   "ms": 155,
+   "source": "dog",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.22
+  },
+  "guh": {
+   "ms": 150,
+   "source": "gap",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.231
+  },
+  "huh": {
+   "ms": 160,
+   "source": "hat",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.204
+  },
+  "juh": {
+   "ms": 210,
+   "source": "jam",
+   "pulses": 1,
+   "class": "plosive",
+   "bright": 0.417
+  },
+  "aaa": {
+   "ms": 260,
+   "source": "cat",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.244
+  },
+  "ihh": {
+   "ms": 260,
+   "source": "pin",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.178
+  },
+  "eh": {
+   "ms": 260,
+   "source": "egg",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.228
+  },
+  "uh": {
+   "ms": 260,
+   "source": "nut",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.136
+  },
+  "awh": {
+   "ms": 260,
+   "source": "dog",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.22
+  },
+  "a": {
+   "ms": 260,
+   "source": "rain",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.201
+  },
+  "ee": {
+   "ms": 260,
+   "source": "bee",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.161
+  },
+  "oh": {
+   "ms": 260,
+   "source": "boat",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.188
+  },
+  "eye": {
+   "ms": 260,
+   "source": "tie",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.25
+  },
+  "or": {
+   "ms": 260,
+   "source": "fork",
+   "pulses": 1,
+   "class": "vowel",
+   "bright": 0.134
+  }
+ }
+}

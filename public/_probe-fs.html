@@ -3266,6 +3266,348 @@
     state.clearCheckpoint()
   }
 
+  // --- baked phoneme assets -----------------------------------------------
+  // The sounds the child imitates are no longer synthesised: audio.js plays a
+  // generated WAV from public/snd/ when one exists for the exact string, and
+  // falls back to TTS for everything else. These cases exist because that
+  // introduces a second playback path into a queue whose entire value is the
+  // "one sound at a time" invariant, and because its failure mode -- an asset
+  // that does not play and does not fall back -- is SILENCE, which is the one
+  // thing the user has already reported and the hardest thing to see in a
+  // transcript-based harness.
+  //
+  // HOW THE ASSET PATH IS REACHED HERE, and why it is not reached by accident.
+  // Headless Chrome starts every AudioContext suspended and its resume() never
+  // settles without a user gesture (measured: still pending after 3000ms) --
+  // which is exactly why audio.js must not await resume(), and it means all the
+  // other cases in this file run the TTS fallback unchanged. To exercise the
+  // asset path, these cases shadow `state` on AudioContext.prototype so the
+  // already-created context reports 'running'. That is a lie about audibility
+  // only: fetch, decodeAudioData, the real buffer durations and the real queue
+  // are all genuine.
+  //
+  // Observation is by patching AudioBufferSourceNode.prototype.start rather
+  // than by any hook inside audio.js. A test-only seam in the module would be
+  // a thing that can rot without failing; a real API cannot.
+  let sndPlays = []
+
+  function sndPatch({ forceRunning = true, breakSource = false } = {}) {
+    const CtxProto = (window.AudioContext || window.webkitAudioContext).prototype
+    const NodeProto = window.AudioBufferSourceNode.prototype
+    const hadOwnState = Object.prototype.hasOwnProperty.call(CtxProto, 'state')
+    const origStart = NodeProto.start
+    const origCreate = CtxProto.createBufferSource
+    sndPlays = []
+    if (forceRunning) {
+      Object.defineProperty(CtxProto, 'state', {
+        get: () => 'running',
+        configurable: true,
+      })
+    }
+    if (breakSource) {
+      CtxProto.createBufferSource = function () {
+        throw new Error('simulated createBufferSource failure')
+      }
+    }
+    NodeProto.start = function (...args) {
+      sndPlays.push({
+        at: Date.now(),
+        ms: this.buffer ? Math.round(this.buffer.duration * 1000) : -1,
+      })
+      return origStart.apply(this, args)
+    }
+    return () => {
+      NodeProto.start = origStart
+      CtxProto.createBufferSource = origCreate
+      // `state` lives on BaseAudioContext.prototype, so deleting the shadow
+      // restores the real getter. Only delete a shadow we installed.
+      if (forceRunning && !hadOwnState) delete CtxProto.state
+    }
+  }
+
+  // Assets are ~260-480ms and TTS here is a 120ms stub, so a real overlap
+  // shows up as hundreds of ms. This absorbs only timer scheduling jitter.
+  const SND_SLOP_MS = 60
+
+  // audio.js decodes assets in the background and never awaits a load in the
+  // play path, so the first request for a cold key is spoken instead. These
+  // cases therefore have to get the cache warm before they assert on it.
+  //
+  // wait() CANNOT be used to wait for that, and this is the second virtual-time
+  // trap in this file. Under --virtual-time-budget a setTimeout fires as fast
+  // as the budget allows, so `await wait(500)` costs ~0ms of REAL time -- and
+  // fetch + decodeAudioData are real work on real threads, so they have not
+  // finished. Awaiting an actual fetch is what yields real time; each one is a
+  // sub-millisecond round trip against the dev server, so this is a real-time
+  // pump, not a sleep.
+  //
+  // It returns whether the cache actually came up, and every caller asserts on
+  // that: a silent "warm-up never happened" would turn all four of these cases
+  // into vacuous passes.
+  async function sndWarm() {
+    audio.unlockAudio() // idempotent; kicks warmSoundAssets() if it can
+    let plays = 0
+    for (let i = 0; i < 300; i++) {
+      await fetch('/sounds/manifest.json')
+      const restore = sndPatch()
+      audio.speakEN('sss')
+      await audio.whenAudioIdle()
+      plays = sndPlays.length
+      restore()
+      if (plays > 0) return true
+    }
+    return false
+  }
+
+  async function sndQueue() {
+    let threw = null
+    const obs = {}
+    obs.warm = await sndWarm()
+    const restore = sndPatch()
+    try {
+      spoken = []
+      audio.clearAudioQueue()
+      const t0 = Date.now()
+      // Fired without awaiting, which is the shape that used to overlap: three
+      // call sites racing into one queue.
+      audio.speakEN('sss')
+      audio.speakEN('tuh')
+      audio.speakEN('cat')
+      await audio.whenAudioIdle()
+      obs.elapsed = Date.now() - t0
+      obs.plays = sndPlays.map((p) => ({ ms: p.ms, at: p.at - t0 }))
+      obs.spoken = spoken.slice()
+      // sss and tuh have assets; cat does not.
+      obs.assetsPlayed = sndPlays.length
+      obs.assetMs = sndPlays.map((p) => p.ms)
+      obs.notSpokenByTts = !spoken.includes('sss') && !spoken.includes('tuh')
+      obs.wordWentToTts = spoken.includes('cat')
+      // The invariant: nothing starts before the previous thing stopped
+      // sounding, and MIN_GAP_MS of silence sits between them.
+      let worstGap = Infinity
+      for (let i = 1; i < sndPlays.length; i++) {
+        const gap = sndPlays[i].at - (sndPlays[i - 1].at + sndPlays[i - 1].ms)
+        worstGap = Math.min(worstGap, gap)
+      }
+      obs.worstAssetGap = worstGap === Infinity ? null : worstGap
+      obs.noOverlap = worstGap === Infinity || worstGap >= -SND_SLOP_MS
+      obs.gapHeld = worstGap === Infinity || worstGap >= 500 - SND_SLOP_MS
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    restore()
+    check(
+      'asset-sounds-play-through-the-queue-without-overlap',
+      !threw &&
+        obs.warm === true &&
+        obs.assetsPlayed === 2 &&
+        obs.assetMs[0] === 260 &&
+        obs.assetMs[1] === 220 &&
+        obs.notSpokenByTts === true &&
+        obs.wordWentToTts === true &&
+        obs.noOverlap === true &&
+        obs.gapHeld === true,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+  }
+
+  async function sndFallback() {
+    let threw = null
+    const obs = {}
+    obs.warm = await sndWarm()
+    const restore = sndPatch()
+    try {
+      spoken = []
+      audio.clearAudioQueue()
+      // A word, a LETTER NAME, and Korean. None has an asset, and the middle
+      // one is the trap: lowercasing before the lookup (which is what the TTS
+      // path does before speaking) would make 'A' hit a.wav and replace an
+      // intended letter name with the AI vowel sound.
+      audio.speakEN('cat')
+      audio.speakEN('A')
+      audio.speakKO('잘했어')
+      await audio.whenAudioIdle()
+      obs.plays = sndPlays.map((p) => p.ms)
+      obs.spoken = spoken.slice()
+      obs.noAssets = sndPlays.length === 0
+      obs.allSpoken = ['cat', 'a', '잘했어'].every((t) => spoken.includes(t))
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    restore()
+    check(
+      'assetless-strings-including-letter-names-still-go-to-tts',
+      !threw && obs.warm === true && obs.noAssets === true && obs.allSpoken === true,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+  }
+
+  async function sndNoSilence() {
+    let threw = null
+    const obs = {}
+    obs.warm = await sndWarm()
+    try {
+      // (a) context not running -- the real state of every other case in this
+      //     file, asserted explicitly rather than assumed.
+      const r1 = sndPatch({ forceRunning: false })
+      spoken = []
+      audio.clearAudioQueue()
+      audio.speakEN('sss')
+      await audio.whenAudioIdle()
+      obs.suspendedPlays = sndPlays.length
+      obs.suspendedSpoke = spoken.includes('sss')
+      r1()
+      // (b) running context, but the source node cannot be created. This is
+      //     the route that used to report "played" and produce nothing.
+      const r2 = sndPatch({ breakSource: true })
+      spoken = []
+      audio.clearAudioQueue()
+      audio.speakEN('sss')
+      await audio.whenAudioIdle()
+      obs.brokenPlays = sndPlays.length
+      obs.brokenSpoke = spoken.includes('sss')
+      r2()
+      // (c) and with nothing broken it really is the asset, so (a) and (b)
+      //     above are not passing because the asset path is simply dead.
+      const r3 = sndPatch()
+      spoken = []
+      audio.clearAudioQueue()
+      audio.speakEN('sss')
+      await audio.whenAudioIdle()
+      obs.healthyPlays = sndPlays.length
+      obs.healthySpoke = spoken.includes('sss')
+      r3()
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'every-asset-failure-route-falls-back-to-tts-never-silence',
+      !threw &&
+        obs.warm === true &&
+        obs.suspendedPlays === 0 &&
+        obs.suspendedSpoke === true &&
+        obs.brokenPlays === 0 &&
+        obs.brokenSpoke === true &&
+        obs.healthyPlays === 1 &&
+        obs.healthySpoke === false,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+  }
+
+  // The key set is hardcoded in audio.js so the first sound costs no round
+  // trip, which means it can drift from what the generator actually wrote --
+  // and drift is invisible at runtime: a key audio.js has forgotten just goes
+  // quietly back to being spoken as a letter name. This is the only place that
+  // ever notices.
+  async function sndManifest() {
+    let threw = null
+    const obs = {}
+    // Progress breadcrumb. This case has hung twice on virtual-time behaviour
+    // rather than on anything it was testing, and a hang writes no verdict at
+    // all -- so it leaves a trail that says how far it got.
+    const trace = (s) => {
+      document.documentElement.dataset.sndTrace =
+        (document.documentElement.dataset.sndTrace || '') + s + ' '
+    }
+    try {
+      trace('start')
+      const manifest = await (await fetch('/sounds/manifest.json')).json()
+      trace('manifest')
+      const src = await (await fetch(sameAsApp('audio.js'))).text()
+      trace('src')
+      const m = src.match(/SOUND_ASSETS\s*=\s*new Set\(\[([\s\S]*?)\]\)/)
+      const declared = m
+        ? [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1])
+        : []
+      const sounds = manifest.sounds || {}
+      obs.ext = manifest.ext
+      obs.declared = declared.length
+      obs.generated = Object.keys(sounds).length
+      // Every sound must name the WORD it was cut from. That field is what
+      // makes a verdict in the listening gallery mean something -- "the /s/ is
+      // wrong" is unactionable without knowing it came from "sun".
+      obs.missingSource = Object.entries(sounds)
+        .filter(([, v]) => !v.source)
+        .map(([k]) => k)
+      // A regex that stopped matching would report an empty set as "no
+      // difference", which is the false-pass shape this project keeps hitting.
+      obs.parsed = declared.length >= 20
+      obs.missingFromAudioJs = Object.keys(sounds).filter((k) => !declared.includes(k))
+      obs.missingFromDisk = declared.filter((k) => sounds[k] == null)
+      // Every declared asset must really fetch and really decode, at the
+      // duration the generator measured. A 404 or a truncated file would
+      // otherwise only show up as a sound quietly reverting to TTS.
+      // The bytes are verified by PARSING THE WAV HEADER, not by handing them
+      // to decodeAudioData, and that is a measurement, not a shortcut.
+      // Sequential decodeAudioData stops resolving after ~19 calls under
+      // --virtual-time-budget (probed: 17 succeed, then a 2000ms race times
+      // out; reordering the keys moves the stall, so it is a decoder resource
+      // limit, not a bad file), and moving them into one Promise.all only
+      // moved the stall -- this case hung twice on it and a hang writes no
+      // verdict at all. Reading the header is also the stricter check: it pins
+      // channels, sample rate, bit depth and the real PCM length, where a
+      // decode only reports a duration. That the browser can actually decode
+      // and play these is proven by sndqueue/sndnosilence going through
+      // audio.js's own path.
+      const wav = (ab) => {
+        const dv = new DataView(ab)
+        const tag = (o) => String.fromCharCode(dv.getUint8(o), dv.getUint8(o + 1),
+                                               dv.getUint8(o + 2), dv.getUint8(o + 3))
+        if (tag(0) !== 'RIFF' || tag(8) !== 'WAVE') return { err: 'not RIFF/WAVE' }
+        let off = 12
+        let fmt = null
+        while (off + 8 <= dv.byteLength) {
+          const id = tag(off)
+          const size = dv.getUint32(off + 4, true)
+          if (id === 'fmt ') {
+            fmt = {
+              ch: dv.getUint16(off + 10, true),
+              rate: dv.getUint32(off + 12, true),
+              bits: dv.getUint16(off + 22, true),
+            }
+          } else if (id === 'data' && fmt) {
+            return { ...fmt, ms: Math.round(size / (fmt.rate * fmt.ch * fmt.bits / 8) * 1000) }
+          }
+          off += 8 + size + (size % 2)
+        }
+        return { err: 'no data chunk' }
+      }
+      const raw = await Promise.all(
+        declared.map(async (key) => {
+          const res = await fetch(`/sounds/${key}.${manifest.ext}`)
+          return [key, res.ok, res.ok ? await res.arrayBuffer() : null]
+        })
+      )
+      trace('fetched')
+      obs.undecodable = raw
+        .map(([key, ok, ab]) => {
+          if (!ok) return key + ' http-error'
+          const w = wav(ab)
+          if (w.err) return `${key} ${w.err}`
+          if (w.ch !== 1 || w.bits !== 16) return `${key} ${w.ch}ch/${w.bits}bit`
+          if (Math.abs(w.ms - sounds[key].ms) > 5) {
+            return `${key} ${w.ms}ms != manifest ${sounds[key].ms}ms`
+          }
+          return null
+        })
+        .filter(Boolean)
+      trace('verified')
+    } catch (e) {
+      threw = e.message || String(e)
+    }
+    check(
+      'sound-asset-manifest-matches-audio-js-and-every-file-is-valid-pcm',
+      !threw &&
+        obs.parsed === true &&
+        obs.declared === obs.generated &&
+        obs.missingSource.length === 0 &&
+        obs.missingFromAudioJs.length === 0 &&
+        obs.missingFromDisk.length === 0 &&
+        obs.undecodable.length === 0,
+      `threw=${threw} ${JSON.stringify(obs)}`
+    )
+  }
+
   const CASES = {
     worldheader: worldHeaderFit,
     tap: tapBacklog,
@@ -3323,6 +3665,10 @@
     seqbolt: seqBolt,
     pointertap: pointerTap,
     touchtargets: touchTargets,
+    sndqueue: sndQueue,
+    sndfallback: sndFallback,
+    sndnosilence: sndNoSilence,
+    sndmanifest: sndManifest,
   }
 
   const names = only ? only.split(',') : Object.keys(CASES)

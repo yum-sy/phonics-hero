@@ -34,6 +34,231 @@ export function unlockAudio() {
   // moment a real voice list can exist -- grab it here rather than waiting for
   // a voiceschanged event that may never arrive.
   refreshVoices()
+  // Same gesture, same reason: an AudioContext created outside one starts
+  // suspended on iOS. Warming the buffers here means the first drill sound of
+  // the session is already decoded when the child reaches it.
+  warmSoundAssets()
+}
+
+// ---- baked phoneme assets ----
+//
+// Web Speech cannot say a bare phoneme, and the reason turned out to be worse
+// than "it sounds wrong". Comparing md5 of the rendered audio against the
+// letter name spelled out the same number of times (`say -v Samantha -r 88`):
+//
+//   sss  922ms == "ess ess ess"       BYTE-IDENTICAL
+//   mmm  736ms == "em em em"          BYTE-IDENTICAL
+//   lll  863ms == "el el el"          BYTE-IDENTICAL
+//   rrr  875ms == "ar ar ar"          BYTE-IDENTICAL
+//   zz   759ms == "zee zee"           BYTE-IDENTICAL
+//   ihh 1049ms == "eye aitch aitch"   BYTE-IDENTICAL
+//   (Alex adds fff == "eff eff eff" and aaa == "ay ay ay")
+//
+// So the first sound of the app was never /s/. It was the letter name, three
+// times -- "에스 에스 에스". That is the actual identity of the complaint the
+// user raised three times, and nothing in this file could have reached it:
+// EN_RATE's own comment shows rate is a weak lever by construction, and the
+// repeat structure that was tried instead was repeating the wrong thing.
+// On top of that the *voice* was a lottery -- the target iPad resolved English
+// to the system's Korean voice, which read "tuh" as "주아".
+//
+// So the sounds the child imitates are not synthesised on the device any more.
+// scripts/gen-sounds.py speaks a real WORD on a machine where it can be
+// measured and cuts the phoneme out of it -- /s/ from "sun", /m/ from "mat",
+// /ae/ from "cat" -- verifies each cut against its acoustic class and against
+// the same phoneme cut from a second word, and writes public/sounds/. A word
+// is dictionary pronunciation, so a letter-name spell-out is impossible by
+// construction.
+//
+// THE ASSET KEY IS THE NOTATION STRING, so this needs no chapter-data change
+// and cannot drift from one: `sss` plays /sounds/sss.wav, and any string
+// without an asset (words, letter names, Korean, sentences) goes to TTS
+// untouched.
+//
+// The match is EXACT AND CASE-SENSITIVE, and that is load-bearing rather than
+// incidental. Chapter 7 teaches AI with the notation `a`, and chapter 1 teaches
+// the letter name with `'A'`. Lowercasing before the lookup -- which is what
+// speakNow() does before speaking -- would make `'A'` hit a.wav and replace an
+// intended letter name with a vowel sound. Case is the only thing separating
+// those two, so the lookup happens on the raw string and the lowercasing stays
+// where it was, inside the TTS path.
+//
+// Consequence worth knowing: an uppercase notation (`'SSS'`) would silently
+// get TTS instead of its asset. No chapter has one today (checked: every
+// uppercase spoken string in the corpus is a single letter), and the failure
+// mode is the old behaviour rather than silence.
+//
+// public/sounds/ is also what public/_audio.html (the listening gallery the
+// user grades sounds in) reads, so the app and the audition page are playing
+// the same bytes -- a verdict recorded there is a verdict about what ships.
+const SOUND_BASE = `${import.meta.env.BASE_URL || '/'}sounds/`
+const SOUND_EXT = 'wav'
+
+// Must match CORPUS in scripts/gen-sounds.py. Hardcoded rather than fetched so
+// the first sound costs no round trip and a network hiccup cannot turn the
+// whole curriculum back into letter names; the generator also writes
+// public/sounds/manifest.json, and a harness case fails if the two disagree.
+const SOUND_ASSETS = new Set([
+  'sss', 'fff', 'nnn', 'mmm', 'lll', 'rrr', 'zz', 'aaa', 'ihh', 'awh',
+  'eh', 'uh', 'oh', 'a', 'ee', 'or', 'eye',
+  'tuh', 'puh', 'kuh', 'buh', 'duh', 'guh', 'huh', 'juh',
+])
+
+// `null` = not tried yet, `false` = no Web Audio on this engine (never retried,
+// because the constructor's absence is not a transient condition).
+let audioCtx = null
+
+// key -> { buffer } once the load has settled. `buffer` is an AudioBuffer, or
+// null for a 404 / decode failure -- a settled null is kept rather than
+// retried, because neither of those fixes itself and re-fetching on every
+// drill would put a request in front of every sound.
+//
+// A key that is still LOADING has no entry here, only an entry in
+// `soundLoading`. That split is deliberate: the play path reads this map
+// synchronously and never awaits a load (see soundBufferFor).
+const soundBuffers = new Map()
+const soundLoading = new Set()
+
+function ensureAudioCtx() {
+  if (audioCtx !== null) return audioCtx
+  const Ctx = window.AudioContext || window.webkitAudioContext
+  if (!Ctx) {
+    audioCtx = false
+    return false
+  }
+  try {
+    audioCtx = new Ctx()
+  } catch (e) {
+    audioCtx = false
+  }
+  return audioCtx
+}
+
+// Starts a load if one is not already done or in flight. Returns nothing on
+// purpose: NOTHING IN THE PLAY PATH EVER AWAITS THIS.
+//
+// The first version did await it, with a deadline to stop a stalled fetch from
+// freezing the queue, and both halves of that were wrong. Awaiting a network
+// operation at the front of the queue makes every sound depend on the network
+// being up; and the deadline needed a timeout constant, i.e. exactly the kind
+// of fitted guess this path was supposed to be free of. Not awaiting removes
+// both: an unfinished load simply means this one occurrence is spoken instead,
+// and the buffer is there for the next one.
+function loadSound(key) {
+  if (soundBuffers.has(key) || soundLoading.has(key)) return
+  soundLoading.add(key)
+  ;(async () => {
+    let buffer = null
+    const ctx = ensureAudioCtx()
+    if (ctx) {
+      try {
+        const res = await fetch(`${SOUND_BASE}${key}.${SOUND_EXT}`)
+        // On a WebKit old enough to only have the callback form of
+        // decodeAudioData this awaits `undefined` and stores null, i.e. TTS.
+        // That is the correct degradation: never silence.
+        if (res.ok) buffer = (await ctx.decodeAudioData(await res.arrayBuffer())) || null
+      } catch (e) {
+        buffer = null
+      }
+    }
+    soundBuffers.set(key, buffer)
+    soundLoading.delete(key)
+  })()
+}
+
+// Fired from the first user gesture. Nothing awaits it -- a sound that is not
+// decoded yet is simply awaited by pump() when it is needed.
+function warmSoundAssets() {
+  resumeAudioCtx()
+  for (const key of SOUND_ASSETS) loadSound(key)
+}
+
+// The whole asset decision, and it is SYNCHRONOUS -- pump() calls it at the
+// front of the queue and gets an answer without awaiting anything. Every "no"
+// here means the string is spoken by TTS instead, so there is no route from
+// here to silence.
+//
+// An asset only ever plays into a RUNNING context. A suspended one accepts
+// start() and produces nothing, and this project has just been through "소리가
+// 전혀 안나와".
+//
+// resume() is fired and NOT awaited, and that shape exists to avoid a measured
+// deadlock rather than as a style choice. In headless Chrome with no user
+// gesture, `resume()` returns a promise that never settles at all (probed:
+// still pending after 3000ms, state still 'suspended'). Awaiting it stalls
+// pump(), and pump() is what every beat transition in the app is gated on -- so
+// an autoplay policy the app cannot satisfy would present as a permanently
+// frozen screen. Firing it costs nothing and lets the *next* sound find a
+// running context; the real unlock is unlockAudio(), inside a real gesture.
+function soundBufferFor(text, lang) {
+  if (!lang.startsWith('en')) return null
+  const key = text == null ? '' : String(text).trim()
+  if (!SOUND_ASSETS.has(key)) return null
+  const ctx = ensureAudioCtx()
+  if (!ctx) return null
+  if (ctx.state !== 'running') {
+    resumeAudioCtx()
+    return null
+  }
+  if (!soundBuffers.has(key)) {
+    // Not warmed (or warming lost the race with the first drill). Start it and
+    // speak this one occurrence -- the next one is the asset.
+    loadSound(key)
+    return null
+  }
+  return soundBuffers.get(key)
+}
+
+function resumeAudioCtx() {
+  const ctx = ensureAudioCtx()
+  if (!ctx || ctx.state === 'running') return
+  try {
+    const p = ctx.resume()
+    // Never awaited anywhere, so an unsettled promise is inert -- but an
+    // outright rejection would still surface as an unhandled rejection.
+    if (p && p.catch) p.catch(() => {})
+  } catch (e) {
+    // ignore
+  }
+}
+
+// Resolves `true` (pump()'s trust bit) when the asset has finished sounding,
+// or `null` if it never started -- which makes pump() speak the string
+// instead. Reporting "played" for a source node that threw would be the one
+// unforgivable failure here: total silence, with the queue advancing as if the
+// child had been taught something.
+//
+// This path carries none of the machinery the TTS path needs, deliberately.
+// minSpeechMs exists because iPadOS lies in its `onend`, and the safety timer
+// exists because speechSynthesis sometimes never reports at all; both are
+// estimates fitted to strings whose real duration is unknowable in advance.
+// Here `buffer.duration` IS the duration -- exact, per file, measured at
+// generation time -- so the wait is the fact rather than a fit, and the trust
+// bit is unconditionally true. Do not reintroduce a floor here: it could only
+// ever be wrong.
+//
+// The buffer plays at its native rate. It was cut from a word rendered at
+// `say -r 88`, the bucket Web Speech's rate 0.5 lands in (see EN_RATE), so
+// item.rate is already baked in -- applying it again as playbackRate would
+// transpose the phoneme down an octave, i.e. teach the wrong vowel.
+function playSound(buffer) {
+  return new Promise((resolve) => {
+    const ctx = ensureAudioCtx()
+    try {
+      const src = ctx.createBufferSource()
+      src.buffer = buffer
+      src.connect(ctx.destination)
+      src.start()
+    } catch (e) {
+      resolve(null) // hand it back to TTS rather than teaching silence
+      return
+    }
+    // A timer rather than src.onended: the two fire at the same instant for a
+    // non-looping buffer, and a timer cannot be withheld by a context that
+    // gets suspended mid-play, which would deadlock the queue. Background-tab
+    // throttling can only make it later, never earlier.
+    setTimeout(() => resolve(true), Math.ceil(buffer.duration * 1000))
+  })
 }
 
 function sleep(ms) {
@@ -611,7 +836,23 @@ async function pump() {
       // nothing to restart them, i.e. silence until reload.
       let trusted = false
       try {
-        trusted = await speakNow(item.text, item.lang, item.rate)
+        // Asset first, TTS otherwise -- and the choice is made HERE, at the
+        // front of the queue, not when the item was enqueued: a tap item's
+        // text is replaced in place by a later tap (see speakTap), so the
+        // string is only final at this point. Playing a file is an item of
+        // this queue like any other, so the "one sound at a time, and the next
+        // one is not started until this one is finished" invariant covers both
+        // paths; routing assets around the queue would bring back the exact
+        // overlap it exists to prevent.
+        const buffer = soundBufferFor(item.text, item.lang)
+        const played = buffer ? await playSound(buffer) : null
+        // `null` means no audio was produced -- no asset for this string, the
+        // context is not running, the buffer has not finished loading, or the
+        // source node threw. Every one of those routes to TTS, so the only way
+        // this item makes no sound at all is a speechSynthesis that makes none.
+        trusted = played === null
+          ? await speakNow(item.text, item.lang, item.rate)
+          : played
       } catch (e) {
         // ignore -- treat as spoken, and as untrustworthy
       }
