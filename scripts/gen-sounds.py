@@ -887,6 +887,16 @@ CORPUS = [
 # likeliest cause is a much noisier source file, not these constants.
 ISLAND_GATE_FRAC = 0.03
 ISLAND_MERGE_GAP_MS = 30
+# Per-key override of ISLAND_GATE_FRAC, for a source whose natural decay
+# tail carries real (if quiet) phoneme content past the default 3% cutoff --
+# see EXTERNAL_ONSET_CORPUS's header (now superseded) for the full story of
+# `lll`. Measured directly on l-lip.mp3: RMS is still 2.15% of peak at the
+# default cutoff (0.70s) and does not reach true noise floor (~3-5 raw RMS,
+# indistinguishable from mic hiss) until ~0.84s -- everything between is a
+# real, if fading, /l/ release, not silence. 0.005 (0.5%) lands the cut at
+# ~0.75-0.76s, capturing that release while stopping an order of magnitude
+# above the noise floor rather than at it.
+EXTERNAL_GATE_OVERRIDE = {'lll': 0.005}
 # Padding added outside the detected lobe-0 edges before fade() tapers it --
 # enough for a natural attack/decay, not so much that silence starts eating
 # into the 500-900ms gap and dragging in noise floor. 8ms is the "5-10ms"
@@ -935,11 +945,17 @@ ISLAND_MIN_MS = 20
 # currently speaks a voiced-TH key, and CLAUDE.md's own recommendation is to
 # teach voiced TH from real words only, never a bare-phoneme drill.
 #
-# `lll` is DELIBERATELY ABSENT from this list, unlike every other key -- but
-# unlike the note that used to live here, it is no longer pinned to the
-# legacy CORPUS fallback either. See EXTERNAL_ONSET_CORPUS below (right after
-# this list) for where `lll` now comes from and why lobe 0 of l-lip.mp3 was
-# never going to work no matter how it was re-cut.
+# `lll` DOES ship from lobe 0 of l-lip.mp3 like every other key, but with
+# EXTERNAL_GATE_OVERRIDE (see next to ISLAND_GATE_FRAC) instead of the
+# default 3% cutoff. Two earlier rounds got this wrong by assuming the
+# TIMBRE was broken (dark/velarized L resonating like /o/) and chasing a
+# different lobe (word-onset "light" L from "lip"/"lure" -- see
+# EXTERNAL_ONSET_CORPUS below, now unused but kept for the record). Direct
+# listening to the source file settled it: the default cutoff was simply
+# too early, truncating the sound before the tongue finished the lateral
+# closure that resolves it from "eu/o" into "eul" -- a boundary problem,
+# not a timbre problem, and the fix is a lower gate on the SAME lobe, not a
+# different lobe.
 EXTERNAL_CORPUS = [
     ('sss', 's-sit-mess.mp3'),
     ('aaa', 'a-apple.mp3'),
@@ -956,6 +972,7 @@ EXTERNAL_CORPUS = [
     ('guh', 'g-get.mp3'),
     ('awh', 'o-octopus.mp3'),
     ('uh', 'u-up.mp3'),
+    ('lll', 'l-lip.mp3'),
     ('fff', 'f-fun.mp3'),
     ('buh', 'b-bat.mp3'),
     ('a', 'a-cake.mp3'),
@@ -983,61 +1000,40 @@ EXTERNAL_CORPUS = [
     ('arh', 'ar-jar.mp3'),
 ]
 
-# EXTERNAL_ONSET_CORPUS -- like EXTERNAL_CORPUS, but for keys whose lobe-0
-# isolated phoneme is unusable and the fix is to cut a WORD-ONSET consonant
-# out of lobe 1 instead (see build_external_onset_all()).
+# EXTERNAL_ONSET_CORPUS -- SUPERSEDED, kept empty and unused (see
+# EXTERNAL_GATE_OVERRIDE next to ISLAND_GATE_FRAC for what replaced it), but
+# not deleted: it records a real wrong turn worth not repeating.
 #
-# WHY THIS EXISTS: `lll`'s real-device verdict on l-lip.mp3's lobe 0 ("가깝다
-# /o/ 에", sounds close to /o/) was a TIMBRE complaint, not a boundary one --
-# confirmed by inspecting the envelope first (lobe 0 runs a clean single
-# pulse 0.24-0.70s, nothing about it looks like a mis-cut). The likely cause
-# is CODA position, not the narrator or the phoneme: English /l/ has two
-# allophones, and they are acoustically almost different sounds --
-#   - CODA /l/ ("bell", "ball", and lobe 0 of l-lip.mp3, which is read as an
-#     isolated sound in the same manner a coda would trail off) is "dark"
-#     (velarized) -- the tongue back bunches toward the velum, which pulls
-#     F2 down toward back-vowel/rounded-vowel territory. That is exactly the
-#     direction "sounds like /o/" points.
-#   - ONSET /l/ (the /l/ that STARTS a word: "lip", "lure") is "light" --
-#     the same velarization is much weaker, because there is no following
-#     coda position pulling the tongue back yet.
-# Both l-lip.mp3 and ure-lure.mp3 happen to have this for free: their lobe 1
-# is the example WORD, and both example words ("lip", "lure") start with the
-# very onset /l/ this project actually wants. No new recording was needed --
-# only a different lobe of two recordings the project already had.
+# `lll`'s real-device verdict on l-lip.mp3's lobe 0 ("가깝다 /o/ 에", sounds
+# close to /o/) was READ as a TIMBRE complaint -- English /l/ has two
+# allophones (CODA "dark"/velarized L, pulling F2 toward back-vowel
+# territory, vs. ONSET "light" L without that pull), and lobe 0 of an
+# isolated citation-form /l/ trails off the same way a coda would, so
+# "dark L resonating like /o/" looked like the whole explanation. That
+# theory produced this now-empty corpus: cut the word-ONSET /l/ out of
+# lobe 1 ("lip"/"lure") instead, since onset position is light L by
+# construction. It measured clean (lip-onset and lure-onset both ~225ms,
+# comfortably inside CLASSES['liquid']) and shipped -- and STILL got
+# rejected, this time as "너무 짧다" at the raw 125ms cut, then "li 에
+# 가깝다" once LIQUID_ONSET_EXTRA_MS=100 lengthened it (the extra 100ms
+# turned out to be each word's own following-vowel color, not more /l/ --
+# see LIQUID_ONSET_EXTRA_MS's own comment for that measurement).
 #
-# EXTRACTION: lobe 1 is found the same way lobe 0 is (all_islands(), see its
-# docstring), then cut_onset(word_seg, sr, 'liquid') -- the same onset_end()
-# consonant/vowel boundary already used for every CORPUS onset row, PLUS
-# LIQUID_ONSET_EXTRA_MS tacked on after it (see that constant's own comment,
-# next to cut_onset(), for why the raw onset_end() cut was too short and how
-# far past it turned out to be safe). There is no new cut-boundary rule
-# here, only a new *lobe* to point the existing one at, plus the same
-# "walk a fixed distance past the boundary" trick the plosive branch
-# already used.
-#
-# MEASURED (both from island 1, cut_onset('liquid'), fade()'d, re-read from
-# disk, with LIQUID_ONSET_EXTRA_MS=100): lip-onset 224.7ms bright=0.213
-# zcr=0.046 selfSim=0.126 pulses=1; lure-onset 224.7ms bright=0.107
-# zcr=0.028 selfSim=0.324 pulses=1. Both clear CLASSES['liquid'] (ms
-# 90-320, bright 0.03-0.55, zcr 0-0.30) with margin. Cross-word agreement
-# (dbright=0.106, dzcr=0.018) is looser than the raw-onset_end() cut's
-# dbright=0.006 -- expected, since every extra ms past the murmur is each
-# word's OWN vowel color -- but still nowhere near AGREE_BRIGHT=0.45 /
-# AGREE_ZCR=0.20, and the divergence had already flattened by this length
-# (see LIQUID_ONSET_EXTRA_MS's comment for the full sweep). The two words'
-# onset_end() landed on the same frame index in both (t=125ms, before the
-# extra padding) by coincidence of the boundary rule, not because the
-# audio was forced to match; the bright/zcr numbers were computed
-# independently per file.
-#
-# `l-lip.mp3` is listed first and is what SHIPS (matches EXTERNAL_CORPUS's
-# own "first passing candidate ships, rest are cross-word evidence" rule,
-# and keeps `lll` sourced from the same file EXTERNAL_CORPUS's key list
-# already expects by name). `ure-lure.mp3` is the cross-word check only.
-EXTERNAL_ONSET_CORPUS = [
-    ('lll', 'liquid', ['l-lip.mp3', 'ure-lure.mp3']),
-]
+# Direct listening to the RAW SOURCE FILE is what actually settled it, after
+# two rounds of guessing from measurements alone: lobe 0 was never a timbre
+# problem. It was cut too early. RMS at the default 3%-of-peak cutoff
+# (0.70s) is still 2.15% of peak -- a real, if fading, /l/ release, not
+# silence -- and does not reach true noise floor until ~0.84s. The original
+# cut stopped before the tongue finished the lateral closure that resolves
+# the sound from "eu/o" into "eul", which is exactly what an isolated /l/
+# citation naturally sounds like when it is NOT truncated. The fix needed
+# was a lower gate on the SAME lobe (EXTERNAL_GATE_OVERRIDE), not a
+# different lobe, a different word, or a length adjustment on the onset cut.
+# Two measurement-only rounds missed this because every gate the pipeline
+# checks (CLASSES, cross-word agreement) is a proxy for "sounds right" and
+# none of them can detect "cut off 100ms too early" the way an actual ear
+# checking the actual source file did immediately.
+EXTERNAL_ONSET_CORPUS = []
 # Which island index is "the example word" in these sources. Both files this
 # corpus uses share the two-lobe shape EXTERNAL_CORPUS's header measured
 # (phoneme, silence, word) -- island 0 is the isolated phoneme (unusable
@@ -1898,7 +1894,8 @@ def build_external_all():
             bad.append(key)
             continue
         samples, sr = decode_mp3(mp3path)
-        isl = first_island(samples, sr)
+        isl = first_island(samples, sr,
+                            gate_frac=EXTERNAL_GATE_OVERRIDE.get(key, ISLAND_GATE_FRAC))
         if isl is None:
             print('%-6s %-24s SKIP -- no energy island found (file may be '
                   'silent or below gate)' % (key, mp3name))

@@ -213,6 +213,20 @@
    "tailFluxRatio": null,
    "bright": 0.203
   },
+  "lll": {
+   "ms": 525,
+   "naturalMs": 525,
+   "stretch": 1.0,
+   "source": "fundations:l-lip.mp3",
+   "pos": "isolated",
+   "class": "recording",
+   "rate": null,
+   "pulses": 1,
+   "selfSim": 0.168,
+   "edgeFluxRatio": null,
+   "tailFluxRatio": null,
+   "bright": 0.13
+  },
   "fff": {
    "ms": 220,
    "naturalMs": 220,
@@ -562,20 +576,6 @@
    "edgeFluxRatio": null,
    "tailFluxRatio": null,
    "bright": 0.283
-  },
-  "lll": {
-   "ms": 125,
-   "naturalMs": 125,
-   "stretch": 1.0,
-   "source": "fundations:l-lip.mp3 (word onset)",
-   "pos": "onset",
-   "class": "liquid",
-   "rate": null,
-   "pulses": 1,
-   "selfSim": 0.287,
-   "edgeFluxRatio": null,
-   "tailFluxRatio": null,
-   "bright": 0.096
   }
  }
 }
