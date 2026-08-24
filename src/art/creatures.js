@@ -1391,40 +1391,40 @@ export function creatureMuncher({ bodyColor = '#932a80', accent = '#6b1c5c' } = 
   // what the chapter boss needed and the pastel version could not do.
   const DOME = '#e8d84a'
   const domeShell = (cx) => `
-    <circle cx="${cx}" cy="56" r="13" fill="${DOME}" ${ol(SW_MID)}/>`
+    <circle cx="${cx}" cy="50" r="16" fill="${DOME}" ${ol(SW_MID)}/>`
   const domeFace = (cx) => `
-    <ellipse cx="${cx}" cy="55" rx="5" ry="5.4" fill="${INK}"/>
-    <path d="M ${cx - 8},48 C ${cx - 4},43.5 ${cx + 4},43.5 ${cx + 8},48" fill="none"
+    <ellipse cx="${cx}" cy="49" rx="6" ry="6.6" fill="${INK}"/>
+    <path d="M ${cx - 10},44 C ${cx - 5},36 ${cx + 5},36 ${cx + 10},44" fill="none"
       stroke="${INK}" stroke-width="2.1" opacity="0.75"/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 40)}
+      ${shadow(60, 136, 48)}
 
-      ${paws(accent, 100, 11, 12)}
-      ${feet(accent, 128, 14, 8)}
-      ${domeShell(42)}
-      ${domeShell(78)}
-      ${blob(bodyColor, 60, 94, 40, 36, true, BELLY_MG)}
-      ${domeFace(42)}
-      ${domeFace(78)}
-      ${shadeCrescent(60, 94, 40, 36)}
+      ${paws(accent, 94, 13, 14)}
+      ${feet(accent, 126, 16, 9)}
+      ${domeShell(40)}
+      ${domeShell(80)}
+      ${blob(bodyColor, 60, 88, 48, 44, true, BELLY_MG)}
+      ${domeFace(40)}
+      ${domeFace(80)}
+      ${shadeCrescent(60, 88, 48, 44)}
 
       <!-- the maw, sitting on the belly patch. Teeth are a ROW of four small
            blunt nubs along the upper lip: the first version had two big round
            teeth centred in the dark oval and they read unmistakably as a
            second pair of eyes, which made the real domed eyes above read as
            ears. A row cannot be misread that way. -->
-      <path d="M 34,98 C 40,116 80,116 86,98 C 76,92 44,92 34,98 Z"
+      <path d="M 29,90 C 36,112 84,112 91,90 C 79,84 41,84 29,90 Z"
         fill="${INK}" ${ol(SW_MID)}/>
-      <polygon points="42,95 48,95 45,103" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="52,93 58,93 55,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="62,93 68,93 65,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="72,95 78,95 75,103" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="38,89 46,89 42,97" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="50,87 58,87 54,95" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="62,87 70,87 66,95" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="74,89 82,89 78,97" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
 
-      <circle cx="16" cy="80" r="3.4" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
-      <circle cx="104" cy="72" r="3" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
-      <circle cx="100" cy="110" r="3.8" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <circle cx="16" cy="74" r="3.4" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <circle cx="104" cy="66" r="3" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <circle cx="100" cy="104" r="3.8" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
     `)
   )
 }

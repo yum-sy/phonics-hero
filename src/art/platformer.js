@@ -2314,17 +2314,6 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       P('35,71 43,71 38,81', '#fff', { nohalo: true }),
       P('75,71 83,71 78,81', '#fff', { nohalo: true }),
 
-      // Fire breath. The void is this figure's mouth, so the flame has to
-      // come from there rather than the face — a stream pouring straight
-      // down between the legs. Contained to x 35..81 / y 92..131, well
-      // inside every edge the old scan measured, so it adds mass without
-      // touching the frame's tight margins at all. Three nested flat fills
-      // (no gradient, per the family rule), outer ring haloed like the rest
-      // of the body so it reads as attached to the maw rather than a loose
-      // decal.
-      D('M 86,74 C 92,70 104,68 115,72 C 115,80 115,88 115,88 C 104,92 92,90 86,86 Z', FLAME_OUT, ink(2.4)),
-      D('M 87,76 C 92,73 102,71 112,75 C 112,81 112,86 112,86 C 102,89 92,87 87,84 Z', FLAME_MID, { nohalo: true }),
-      D('M 88,78 C 92,76 100,74 108,78 C 108,81 108,83 108,83 C 100,86 92,84 88,82 Z', FLAME_CORE, { nohalo: true }),
 
       villainArm(armL, bodyColor, accent, 12),
       villainArm(armR, bodyColor, accent, 12),
@@ -2365,7 +2354,14 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // eyeColor: red irises, per every one of the four reference photos --
       // see `villainFaceParts`'s own note. Every other villain's call is
       // unchanged and keeps the LINE default.
-      villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, mouth: false, eyeColor: FIRE_RED }),
+      villainFaceParts(56, 32, { dx: 13, ex: 7.2, tilt: 1.3, eyeColor: FIRE_RED }),
+      // Fire breath from the face mouth, shooting right into the open space
+      // beside the head (x 86..115, y 34..62). Drawn last so it sits on top
+      // of the head box. Three nested flat fills, same family rule as every
+      // other fire element in this file.
+      D('M 68,44 C 84,36 106,34 115,40 C 115,60 106,62 84,60 C 72,54 68,52 Z', FLAME_OUT, ink(2.2)),
+      D('M 69,46 C 84,40 104,38 112,44 C 112,58 104,59 84,57 C 73,52 69,50 Z', FLAME_MID, { nohalo: true }),
+      D('M 70,47 C 84,43 102,42 108,47 C 108,55 102,56 84,54 C 74,50 70,49 Z', FLAME_CORE, { nohalo: true }),
     ]),
   ]
   return sticker(backdrop, body)

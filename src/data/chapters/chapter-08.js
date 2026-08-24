@@ -203,7 +203,7 @@ export const chapter8 = {
       order: 1,
       title: 'A Rising Sound',
       villain: { name: 'Foglurk', art: 'foglurk', style: 'supervillain-fog' },
-      hero: { name: 'Comet', art: 'comet', style: 'superhero-acrobat' },
+      hero: { name: 'Inky', art: 'inky', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
@@ -310,7 +310,7 @@ export const chapter8 = {
       order: 2,
       title: 'Power of IE',
       villain: { name: 'Smudge', art: 'smudge', style: 'supervillain-eraser' },
-      hero: { name: 'Comet', art: 'comet', style: 'superhero-acrobat' },
+      hero: { name: 'Inky', art: 'inky', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
@@ -454,7 +454,7 @@ export const chapter8 = {
       order: 3,
       title: 'Power of EE',
       villain: { name: 'Blockade', art: 'blockade', style: 'supervillain-stop' },
-      hero: { name: 'Halo', art: 'halo', style: 'superhero-shield' },
+      hero: { name: 'Pip', art: 'pip', style: 'superhero-shield' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -615,7 +615,7 @@ export const chapter8 = {
       order: 4,
       title: 'Power of OR',
       villain: { name: 'Tanglewire', art: 'tanglewire', style: 'supervillain-jumble' },
-      hero: { name: 'Torque', art: 'torque', style: 'superhero-thunder' },
+      hero: { name: 'Nord', art: 'nord', style: 'superhero-thunder' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -842,7 +842,7 @@ export const chapter8 = {
       order: 5,
       title: 'Boss: TIE and CORN!',
       villain: { name: 'King Static', art: 'king-static', style: 'supervillain-king' },
-      hero: { name: 'Captain Nova', art: 'captain-nova', style: 'superhero-armor' },
+      hero: { name: 'Captain Pin', art: 'captain-pin', style: 'superhero-armor' },
       chapterBoss: true,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
