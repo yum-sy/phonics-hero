@@ -934,6 +934,20 @@ ISLAND_MIN_MS = 20
 # th-the.mp3 exists in phonics_sounds/ but nothing in the curriculum
 # currently speaks a voiced-TH key, and CLAUDE.md's own recommendation is to
 # teach voiced TH from real words only, never a bare-phoneme drill.
+#
+# `lll` is DELIBERATELY ABSENT from this list, unlike every other key. Real-
+# device feedback on l-lip.mp3's lobe 0 was "가깝다 /o/ 에" (sounds close to
+# /o/), not a length/trimming complaint -- ruled out by inspecting the frame-
+# level envelope first (lobe 0 runs 0.24-0.70s with a slow-decaying tail from
+# ~0.51s that looked trimmable, but the user's own ear called it a TIMBRE
+# problem, not a boundary problem, so no amount of re-cutting that same lobe
+# fixes it). The likely cause is this narrator's /l/ being strongly "dark"
+# (velarized), which lowers F2 toward back-vowel territory -- an acoustic
+# property of the recording, not an extraction defect. `lll` instead stays
+# pinned to the pre-pivot CORPUS entry (`bell`/`ball` coda, see CORPUS above)
+# via LEGACY_ALWAYS in generate() -- that extraction already has a real-
+# device OK verdict on record (commit bad8ffd) from before this file's
+# real-recording pivot, so it is a proven-good fallback, not a guess.
 EXTERNAL_CORPUS = [
     ('sss', 's-sit-mess.mp3'),
     ('aaa', 'a-apple.mp3'),
@@ -950,7 +964,6 @@ EXTERNAL_CORPUS = [
     ('guh', 'g-get.mp3'),
     ('awh', 'o-octopus.mp3'),
     ('uh', 'u-up.mp3'),
-    ('lll', 'l-lip.mp3'),
     ('fff', 'f-fun.mp3'),
     ('buh', 'b-bat.mp3'),
     ('a', 'a-cake.mp3'),
@@ -1878,7 +1891,15 @@ def generate(legacy_tts=False):
     # spend minutes re-synthesizing 28 sounds that are about to be
     # overwritten by build_external_all() anyway; `--legacy-tts` still runs
     # it for archaeology (e.g. reproducing an old manifest entry by hand).
-    rows = [build_one(*row) for row in CORPUS] if legacy_tts else []
+    #
+    # LEGACY_ALWAYS is the one exception: keys pinned to a CORPUS row even
+    # outside `--legacy-tts`, because their EXTERNAL_CORPUS recording turned
+    # out worse than the pre-pivot asset. See EXTERNAL_CORPUS's own note on
+    # `lll` for why it lives here instead of in EXTERNAL_CORPUS like every
+    # other key.
+    LEGACY_ALWAYS = {'lll'}
+    rows = [build_one(*row) for row in CORPUS
+            if legacy_tts or row[0] in LEGACY_ALWAYS]
     # rate actually used per key, keyed by CORPUS's own declaration -- read
     # back here rather than threaded through build_one/extract, which return
     # per-WORD dicts that don't carry the row's rate at all.
@@ -1922,7 +1943,10 @@ def generate(legacy_tts=False):
             tailFluxRatio=(round(c['tailFluxRatio'], 3)
                           if c['tailFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
-    bad = report(rows) if legacy_tts else []
+    # report(rows) unconditionally: `rows` only holds the full CORPUS when
+    # --legacy-tts is set, but it always holds the LEGACY_ALWAYS rows (lll),
+    # and a silently-broken lll build must still surface as a FAIL.
+    bad = report(rows) if rows else []
     ext_written, ext_bad = build_external_all()
     written += ext_written
     bad = bad + ext_bad

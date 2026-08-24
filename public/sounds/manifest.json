@@ -3,6 +3,20 @@
  "voice": "Samantha",
  "rate": 88,
  "sounds": {
+  "lll": {
+   "ms": 190,
+   "naturalMs": 190,
+   "stretch": 1.0,
+   "source": "bell",
+   "pos": "coda",
+   "class": "liquid",
+   "rate": 88,
+   "pulses": 1,
+   "selfSim": 0.094,
+   "edgeFluxRatio": null,
+   "tailFluxRatio": null,
+   "bright": 0.187
+  },
   "sss": {
    "ms": 225,
    "naturalMs": 225,
@@ -212,20 +226,6 @@
    "edgeFluxRatio": null,
    "tailFluxRatio": null,
    "bright": 0.203
-  },
-  "lll": {
-   "ms": 475,
-   "naturalMs": 475,
-   "stretch": 1.0,
-   "source": "fundations:l-lip.mp3",
-   "pos": "isolated",
-   "class": "recording",
-   "rate": null,
-   "pulses": 1,
-   "selfSim": 0.17,
-   "edgeFluxRatio": null,
-   "tailFluxRatio": null,
-   "bright": 0.13
   },
   "fff": {
    "ms": 220,
