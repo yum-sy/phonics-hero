@@ -64,10 +64,20 @@ crossfaded NOISE loop does not correlate with itself (the rejected sss scored
 0.170), so this catches the voiced splice, not every splice.
 
 USAGE
-  python3 scripts/gen-sounds.py            # generate + verify
-  python3 scripts/gen-sounds.py --probe    # per-word descriptor dump (tuning)
-  python3 scripts/gen-sounds.py --bait     # md5 spell-out test on notations
-  python3 scripts/gen-sounds.py --check    # re-verify the committed assets
+  python3 scripts/gen-sounds.py              # generate from EXTERNAL_CORPUS + verify
+  python3 scripts/gen-sounds.py --legacy-tts # ALSO run the superseded TTS-cut CORPUS
+  python3 scripts/gen-sounds.py --probe      # per-word descriptor dump (CORPUS tuning)
+  python3 scripts/gen-sounds.py --bait       # md5 spell-out test on CORPUS notations
+  python3 scripts/gen-sounds.py --check      # re-verify the committed assets
+
+REAL-RECORDING PIVOT (see EXTERNAL_CORPUS below CORPUS's definition)
+----------------------------------------------------------------------
+As of this pass, every sound this script ships comes from a professional
+isolated-phoneme recording (phonics_sounds/*.mp3, Fundations-style: [pure
+phoneme] + silence + [example word]) instead of a TTS-synthesized word with a
+phoneme cut out of it. CORPUS/build_one/extract/the whole cut_* family below
+are the OLD pipeline -- kept for their reasoning trail and for
+`--legacy-tts`, not deleted, but not run by default any more.
 """
 
 import hashlib
@@ -82,6 +92,14 @@ import wave
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, os.pardir, 'public', 'sounds')
 TMP_DIR = os.path.join(OUT_DIR, '.tmp')
+
+# Where the user's professional isolated-phoneme recordings live (Fundations-
+# style: filename "<letter>-<word>.mp3", audio is [pure phoneme] + [silence] +
+# [the word]). See EXTERNAL_CORPUS below for the pivot this enabled: every
+# TTS-cut sound this file used to synthesize is superseded by a real
+# recording, because a real recording cannot mispronounce a phoneme the way a
+# CV-fragment splice can ("tuh" sounding like "top" trailing off).
+PHONICS_DIR = os.path.join(HERE, os.pardir, 'phonics_sounds')
 
 # Samantha is the iOS en-US default and the voice every duration constant in
 # src/audio.js is fitted to.
@@ -292,6 +310,16 @@ CLASSES = {
 # the phoneme the child drills is the phoneme they hear in the app's own words.
 # Where the corpus has no word long enough (every coda below), an ordinary
 # English word is used instead -- only the extracted phoneme is ever heard.
+# SUPERSEDED (kept for history, not run by default -- see EXTERNAL_CORPUS
+# below). Every key this list produces now has a real isolated-phoneme
+# recording instead, and a real recording cannot have this pipeline's own
+# worst failure mode: a spliced CV fragment that still carries a piece of its
+# donor word's vowel ("tuh" sounding like "top" trailing off -- the exact
+# complaint that took nine gallery rounds on the plosives alone, see PLOSIVE_
+# VOWEL_MS_OVERRIDE's and CODA_PLOSIVE_DROP_FRAC's comments above). The
+# reasoning trail below stays because it is still the answer to "why not just
+# use TTS", and because `python3 scripts/gen-sounds.py --legacy-tts` still
+# runs it end to end if the recordings directory ever goes missing.
 CORPUS = [
     # Continuants ship from CODA position: word-initial /m/ is 40ms, which is
     # why the rejected build felt it had to pad them.
@@ -820,6 +848,136 @@ CORPUS = [
     # function before any word is worth trying.
 ]
 
+# ---------------------------------------------------------------------------
+# EXTERNAL_CORPUS -- real isolated-phoneme recordings (Fundations-style),
+# supplied by the user in phonics_sounds/*.mp3. This is now the PRIMARY
+# generation path; CORPUS above is legacy/fallback only (--legacy-tts).
+#
+# WHY THIS EXISTS: every round of gallery feedback on the TTS-cut plosives
+# (tuh/puh/kuh/buh/duh/guh/huh/juh, nine rounds total, see the huge comment
+# block above CORPUS) had the same shape -- a synthesized WORD spliced at a
+# boundary still carries a sliver of that word's own vowel or formant
+# transition, and a 5-year-old's ear catches it every time
+# ("모음이 붙어서 들린다"). A professionally recorded isolated phoneme has no
+# such sliver to leak, by construction: a human speaker actually produced the
+# bare sound, so there is no splice boundary for anything to leak across.
+#
+# THE FILE SHAPE (measured, not assumed -- see scripts, or re-run
+# `first_island()` diagnostics): every phonics_sounds/*.mp3 tried (41/41
+# checked below, sample of 2 more checked from the untouched remainder) is
+# TWO lobes of energy separated by 500-900ms of near-silence:
+#   lobe 0: the isolated phoneme alone (114-540ms depending on the sound --
+#           held continuants like /l/ run long, plosive bursts run short)
+#   lobe 1+: the word(s) the phoneme comes from (ignored entirely -- the
+#           whole point is the child never hears the donor word)
+# This means extraction has NO cut-boundary-placement problem at all, unlike
+# every function above this comment: there is no vowel to trim around,
+# because the recording already contains nothing BUT the phoneme in that
+# first lobe. The only job is finding where lobe 0 starts and ends, which is
+# a much easier problem (silence-gated island detection, see first_island())
+# than "where does this word's vowel begin" ever was.
+#
+# GATE_FRAC=0.03 (of the file's own peak, which lives in the louder word
+# lobe): every one of the 41 sources measured has lobe-0 peak_frac between
+# 0.23 (a quiet fricative onset, th-thin.mp3) and 1.00 (several), and every
+# inter-lobe gap measured 500ms or more -- so 3% is comfortably below every
+# real lobe and MERGE_GAP_MS=30 is comfortably below every real gap, with
+# roughly an order of magnitude of margin on both sides. If a future
+# recording ever fails this (SKIPPED, printed, never guessed at), the
+# likeliest cause is a much noisier source file, not these constants.
+ISLAND_GATE_FRAC = 0.03
+ISLAND_MERGE_GAP_MS = 30
+# Padding added outside the detected lobe-0 edges before fade() tapers it --
+# enough for a natural attack/decay, not so much that silence starts eating
+# into the 500-900ms gap and dragging in noise floor. 8ms is the "5-10ms"
+# the user asked for; fade() itself (15ms cosine, same constant every other
+# sound in this file uses) still does the click-prevention work.
+ISLAND_PAD_MS = 8
+# Below this, "the sound" is mostly the fade taper -- ship-short is the right
+# call per this file's own header ("SHIP IT SHORT... short beats repeated"),
+# but a sub-20ms clip is not that trade-off, it is silence with a click
+# shaved off. None of the 41 sources below are anywhere near this floor (the
+# shortest, tuh, is 131ms) -- it exists so a bad future recording fails LOUD
+# instead of shipping an inaudible file.
+ISLAND_MIN_MS = 20
+
+# key -> source mp3 in phonics_sounds/. `key` is the exact SOUND_TABLE `say`
+# string (src/data/chapters/index.js) -- same contract as CORPUS's own first
+# column, so no chapter-data change is needed and the asset key cannot drift
+# from the notation that plays it (see audio.js's SOUND_ASSETS comment).
+#
+# `zz` (CORPUS's old Z key, from "buzz"/"fizz") is retired, not carried
+# forward: SOUND_TABLE moved Z's accepted notation to `zze` (see index.js's Z
+# row) a while before this pass, but nothing ever updated the asset pipeline
+# or audio.js's SOUND_ASSETS to match, so `zz` had been dead weight (no
+# chapter data ever speaks it) and Z was silently falling through to TTS.
+# This pass fixes both: `zze` ships from a real recording and `zz` is deleted
+# (see the STALE-file report at the end of generate()).
+#
+# `aaa` (letterform A) sources from a-apple.mp3, not a-cake.mp3, and this is
+# a live correction, not just a resourcing swap: SOUND_TABLE's own note on
+# the `aaa` row says the TTS notation's target was always wrong ("A 의
+# 목표음은 /ae/(apple)인데 이 표기는 /ei/ 를 낸다"). a-apple.mp3 is the
+# short /ae/ Jolly Group 1 actually teaches for the single letter A;
+# a-cake.mp3 is the long /ei/ that belongs to the AI digraph (`a`, letterform
+# AI, group 4) and is correctly used there instead. Both were extracted and
+# measured (a-apple: island0 130-439ms, peak_frac 1.00; a-cake: island0
+# 110-589ms, peak_frac 0.84 -- both clean, single-pulse, well inside every
+# gate) -- this is a real choice between two good recordings, not a fallback
+# from a bad one, and it should be confirmed by real-device listening like
+# every other sound here, precisely because it changes 8+ chapters' worth of
+# established behaviour instead of just re-sourcing it.
+#
+# `thhu` sources the voiceless /th/ (th-thin.mp3) only. Voiced /th/ (/dh/,
+# "this") has no SOUND_TABLE notation at all (say: null, by design -- see
+# that row's own note) and is deliberately not given one here either:
+# th-the.mp3 exists in phonics_sounds/ but nothing in the curriculum
+# currently speaks a voiced-TH key, and CLAUDE.md's own recommendation is to
+# teach voiced TH from real words only, never a bare-phoneme drill.
+EXTERNAL_CORPUS = [
+    ('sss', 's-sit-mess.mp3'),
+    ('aaa', 'a-apple.mp3'),
+    ('tuh', 't-tuck.mp3'),
+    ('ihh', 'i-igloo.mp3'),
+    ('puh', 'p-pick.mp3'),
+    ('nnn', 'n-nap.mp3'),
+    ('kuh', 'k-kit.mp3'),
+    ('eh', 'e-elephant.mp3'),
+    ('huh', 'h-hat.mp3'),
+    ('rrr', 'r-rid.mp3'),
+    ('mmm', 'm-mug.mp3'),
+    ('duh', 'd-dip.mp3'),
+    ('guh', 'g-get.mp3'),
+    ('awh', 'o-octopus.mp3'),
+    ('uh', 'u-up.mp3'),
+    ('lll', 'l-lip.mp3'),
+    ('fff', 'f-fun.mp3'),
+    ('buh', 'b-bat.mp3'),
+    ('a', 'a-cake.mp3'),
+    ('juh', 'j-jog.mp3'),
+    ('oh', 'o-rope.mp3'),
+    ('eye', 'i-kite.mp3'),
+    ('ee', 'e-team.mp3'),
+    ('or', 'or-fork.mp3'),
+    ('zze', 'z-zip-buzz.mp3'),
+    ('weh', 'w-will.mp3'),
+    ('ngh', 'ng-ring.mp3'),
+    ('vve', 'v-van.mp3'),
+    ('uuu', 'oo-boot-new.mp3'),
+    ('uuh', 'oo-book-bush.mp3'),
+    ('yyuh', 'y-yes.mp3'),
+    ('ksuh', 'x-mix-rocks.mp3'),
+    ('ch', 'ch-chick.mp3'),
+    ('shhu', 'sh-ship.mp3'),
+    ('thhu', 'th-thin.mp3'),
+    ('kw', 'qu-quest.mp3'),
+    ('ou', 'ou-how-out.mp3'),
+    ('oi', 'oi-soil-toy.mp3'),
+    ('u', 'u-use-cue.mp3'),
+    ('erh', 'er-herd-bird-turn.mp3'),
+    ('arh', 'ar-jar.mp3'),
+]
+
 # The notation each key used to be spoken as, and the letter-name spell-out it
 # turned out to be byte-identical to. Kept as a live test (--bait) rather than a
 # comment: it is the evidence for why this script exists.
@@ -884,6 +1042,78 @@ def write_wav(path, samples, sr):
     w.writeframes(struct.pack('<%dh' % len(samples),
                               *[max(-32768, min(32767, int(x))) for x in samples]))
     w.close()
+
+
+def decode_mp3(mp3_path):
+    """mp3 -> (samples, sr) at this project's standard SR, mono 16-bit.
+
+    `-d LEI16@%d` (data-format-with-sample-rate), not a separate `-r` flag:
+    afconvert's `-r` is SAMPLE RATE CONVERTER QUALITY (0-127), not the output
+    sample rate -- confirmed with `afconvert --help`. Passing SR (22050) to
+    `-r` the way say_pcm() does above silently does nothing to the output
+    rate; it happens to be harmless there only because `say`'s own AIFF
+    output already matches SR. That coincidence does not hold for an
+    arbitrary source mp3, so this path must not repeat that mistake.
+    """
+    os.makedirs(TMP_DIR, exist_ok=True)
+    tag = hashlib.md5(mp3_path.encode()).hexdigest()[:10]
+    wav = os.path.join(TMP_DIR, 'ext-' + tag + '.wav')
+    subprocess.run(['afconvert', '-f', 'WAVE', '-d', 'LEI16@%d' % SR, '-c', '1',
+                    mp3_path, wav], check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    s, sr = read_wav(wav)
+    os.remove(wav)
+    return s, sr
+
+
+def first_island(samples, sr, gate_frac=ISLAND_GATE_FRAC,
+                  merge_gap_ms=ISLAND_MERGE_GAP_MS):
+    """(start_sample, end_sample) of the first silence-separated block of
+    energy above `gate_frac` of this file's own peak, or None if the file is
+    silent throughout. See EXTERNAL_CORPUS's header for why this is the whole
+    extraction problem for a real recording (no vowel to trim around, unlike
+    every cut_* function above): the isolated phoneme IS the first block, in
+    every one of the 41 sources this project uses, by a wide silence margin.
+    """
+    env, step = frames_rms_only(samples, sr)
+    peak = max(env) if env else 0.0
+    if peak <= 0:
+        return None
+    gate = peak * gate_frac
+    on = [v > gate for v in env]
+    runs = []
+    i = 0
+    while i < len(on):
+        if on[i]:
+            j = i
+            while j < len(on) and on[j]:
+                j += 1
+            runs.append([i, j])
+            i = j
+        else:
+            i += 1
+    if not runs:
+        return None
+    win_ms = step / sr * 1000.0
+    start, end = runs[0]
+    for s, e in runs[1:]:
+        gap_ms = (s - end) * win_ms
+        if gap_ms >= merge_gap_ms:
+            break
+        end = e
+    return start * step, end * step
+
+
+def frames_rms_only(samples, sr, ms=FRAME_MS):
+    """Same windowing as frames() below but RMS-only -- first_island() has no
+    use for brightness/zcr, and computing them for a 2-4 second recording on
+    every one of 41 sources is pure waste."""
+    step = max(1, sr * ms // 1000)
+    env = []
+    for i in range(0, len(samples) - step + 1, step):
+        blk = samples[i:i + step]
+        env.append(math.sqrt(sum(x * x for x in blk) / len(blk)))
+    return env, step
 
 
 def frames(samples, sr, ms=FRAME_MS):
@@ -1483,6 +1713,81 @@ def build_one(key, klass, pos, words, rate, frac=None, tail_max=None):
     return row
 
 
+def build_external_all():
+    """Run EXTERNAL_CORPUS end to end: decode each mp3, cut lobe 0, write the
+    asset, and return (written, bad) in the same shape generate() already
+    expects from the legacy CORPUS/build_one path, so the two can be
+    concatenated without generate() needing to know which pipeline a given
+    entry came from.
+    """
+    written, bad = [], []
+    if not os.path.isdir(PHONICS_DIR):
+        print('WARNING: %s not found -- skipping the real-recording pipeline '
+              '(%d sounds will be missing unless --legacy-tts is used)'
+              % (PHONICS_DIR, len(EXTERNAL_CORPUS)))
+        return written, bad
+    print('%-6s %-24s %8s %5s %6s %6s  %s'
+          % ('key', 'source', 'ms', 'puls', 'bright', 'selfs', 'note'))
+    for key, mp3name in EXTERNAL_CORPUS:
+        mp3path = os.path.join(PHONICS_DIR, mp3name)
+        note = ''
+        if not os.path.exists(mp3path):
+            print('%-6s %-24s SKIP -- source file missing' % (key, mp3name))
+            bad.append(key)
+            continue
+        samples, sr = decode_mp3(mp3path)
+        isl = first_island(samples, sr)
+        if isl is None:
+            print('%-6s %-24s SKIP -- no energy island found (file may be '
+                  'silent or below gate)' % (key, mp3name))
+            bad.append(key)
+            continue
+        s0, e0 = isl
+        pad = int(sr * ISLAND_PAD_MS / 1000)
+        lo = max(0, s0 - pad)
+        hi = min(len(samples), e0 + pad)
+        raw_ms = (hi - lo) / sr * 1000.0
+        seg = fade(samples[lo:hi])
+        if raw_ms < ISLAND_MIN_MS:
+            print('%-6s %-24s SKIP -- extracted %.0fms, under the %dms '
+                  'inaudible floor' % (key, mp3name, raw_ms, ISLAND_MIN_MS))
+            bad.append(key)
+            continue
+        p, gaps = pulses([int(x) for x in seg], sr)
+        if p == 0:
+            print('%-6s %-24s SKIP -- extracted segment is silence after '
+                  'fade' % (key, mp3name))
+            bad.append(key)
+            continue
+        if p > 1:
+            # Not a hard failure -- ambiguous, per the task's own instruction
+            # not to guess when a burst is unclear. A single dominant lobe
+            # split into >1 pulse by PULSE_GAP_MS is a real ambiguity signal
+            # (unlike the many single-pulse sounds this file already ships),
+            # so this is surfaced rather than silently shipped.
+            note = 'FLAG: %d pulses inside the extracted island (gaps %s) -- ' \
+                   'ambiguous, check by ear before trusting' % (p, gaps)
+        rms, bright, zcr = descriptors(seg)
+        ss = self_similarity(seg)
+        path = os.path.join(OUT_DIR, '%s.%s' % (key, EXT))
+        write_wav(path, seg, sr)
+        # Re-measure from disk, same discipline as the legacy path's own
+        # generate() loop -- these are the bytes the browser actually fetches.
+        back, bsr = read_wav(path)
+        bp, _ = pulses(back, bsr)
+        bms = round(len(back) / bsr * 1000)
+        print('%-6s %-24s %6dms %5d %6.2f %6.3f  %s'
+              % (key, mp3name, bms, bp, bright, ss, note))
+        written.append(dict(
+            key=key, ms=bms, naturalMs=bms, stretch=1.0,
+            source='fundations:%s' % mp3name, pos='isolated', klass='recording',
+            pulses=bp, rate=None,
+            selfSim=round(ss, 3), bright=round(bright, 3),
+            edgeFluxRatio=None, tailFluxRatio=None,
+            bytes=os.path.getsize(path)))
+    return written, bad
+
+
 # ---------------------------------------------------------------------------
 # modes
 
@@ -1567,8 +1872,13 @@ def collisions(keys):
     return out
 
 
-def generate():
-    rows = [build_one(*row) for row in CORPUS]
+def generate(legacy_tts=False):
+    # CORPUS/build_one (TTS-cut) is legacy as of the real-recording pivot --
+    # see EXTERNAL_CORPUS's header. Off by default so a normal run does not
+    # spend minutes re-synthesizing 28 sounds that are about to be
+    # overwritten by build_external_all() anyway; `--legacy-tts` still runs
+    # it for archaeology (e.g. reproducing an old manifest entry by hand).
+    rows = [build_one(*row) for row in CORPUS] if legacy_tts else []
     # rate actually used per key, keyed by CORPUS's own declaration -- read
     # back here rather than threaded through build_one/extract, which return
     # per-WORD dicts that don't carry the row's rate at all.
@@ -1612,7 +1922,10 @@ def generate():
             tailFluxRatio=(round(c['tailFluxRatio'], 3)
                           if c['tailFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
-    bad = report(rows)
+    bad = report(rows) if legacy_tts else []
+    ext_written, ext_bad = build_external_all()
+    written += ext_written
+    bad = bad + ext_bad
     manifest = {
         'ext': EXT,
         'voice': VOICE,
@@ -1714,7 +2027,7 @@ if __name__ == '__main__':
     elif '--check' in sys.argv:
         failures = check()
     else:
-        failures = generate()
+        failures = generate(legacy_tts='--legacy-tts' in sys.argv)
     if os.path.isdir(TMP_DIR) and not os.listdir(TMP_DIR):
         os.rmdir(TMP_DIR)
     sys.exit(1 if failures else 0)

@@ -94,17 +94,30 @@ export function unlockAudio() {
 const SOUND_BASE = `${import.meta.env.BASE_URL || '/'}sounds/`
 const SOUND_EXT = 'wav'
 
-// Must match CORPUS in scripts/gen-sounds.py. Hardcoded rather than fetched so
-// the first sound costs no round trip and a network hiccup cannot turn the
-// whole curriculum back into letter names; the generator also writes
-// public/sounds/manifest.json, and a harness case fails if the two disagree.
+// Must match EXTERNAL_CORPUS in scripts/gen-sounds.py (all 41 real-recording
+// keys, one per SOUND_TABLE row that has a `say` value). Hardcoded rather
+// than fetched so the first sound costs no round trip and a network hiccup
+// cannot turn the whole curriculum back into letter names; the generator
+// also writes public/sounds/manifest.json, and a harness case fails if the
+// two disagree.
+//
+// Real-recording pivot: every key below now plays a professionally recorded
+// isolated phoneme (phonics_sounds/*.mp3, see gen-sounds.py's
+// EXTERNAL_CORPUS) instead of a TTS-word with a phoneme spliced out of it.
+// `zz` (old Z key, cut from "buzz"/"fizz") is retired -- SOUND_TABLE's
+// accepted Z notation is `zze`, and nothing in chapter data ever spoke `zz`,
+// so it was dead weight silently leaving Z on the TTS-fallback path. `zze`
+// is the one actually wired to the letter.
 const SOUND_ASSETS = new Set([
-  'sss', 'fff', 'nnn', 'mmm', 'lll', 'rrr', 'zz', 'aaa', 'ihh', 'awh',
+  'sss', 'fff', 'nnn', 'mmm', 'lll', 'rrr', 'zze', 'aaa', 'ihh', 'awh',
   'eh', 'uh', 'oh', 'a', 'ee', 'or', 'eye',
   'tuh', 'puh', 'kuh', 'buh', 'duh', 'guh', 'huh', 'juh',
-  // Group 5 (chapter 9+): NG and both OO vowels. See the CORPUS list in
-  // scripts/gen-sounds.py for the cut recipe and why V and W are not here yet.
-  'ngh', 'uuu', 'uuh',
+  // Group 5 (chapter 9+): NG, both OO vowels, W, V.
+  'ngh', 'uuu', 'uuh', 'weh', 'vve',
+  // Group 6 (chapter 9+): Y, X, CH, SH, voiceless TH.
+  'yyuh', 'ksuh', 'ch', 'shhu', 'thhu',
+  // Group 7 (chapter 9+): QU, OU, OI, UE, ER, AR.
+  'kw', 'ou', 'oi', 'u', 'erh', 'arh',
 ])
 
 // `null` = not tried yet, `false` = no Web Audio on this engine (never retried,
