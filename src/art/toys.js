@@ -1097,6 +1097,9 @@ export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) 
   const FACE_SHADOW = '#5e5570'
   const CAPE = '#171320'
   const CAPE_LINING = '#8f2230'
+  const FIRE_RED = '#e24b4a'
+  const FIRE_ORANGE = '#f4a71b'
+  const FIRE_YELLOW = '#ffd43b'
 
   const claw = (cx, cy, rot) => `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
@@ -1113,9 +1116,9 @@ export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) 
             larger at every hem point, then the black cape on top at the
             original points -- the lining shows as a thin band all round
             the jagged edge instead of needing per-notch triangle math. */ ''}
-      <polygon points="30,48 6,85 2,136 18,126 28,137 40,124 60,135 80,124 92,137 102,126 118,136 114,85 90,48
+      <polygon points="30,48 6,85 4,137 16,122 28,137 40,122 52,137 64,122 76,137 88,122 100,137 112,122 116,137 114,85 90,48
                        78,60 60,64 42,60" fill="${CAPE_LINING}" ${ol(3.4)}/>
-      <polygon points="30,48 8,84 4,132 18,124 26,134 40,122 60,130 80,122 94,134 102,124 116,132 112,84 90,48
+      <polygon points="30,48 8,84 6,133 18,120 30,133 42,120 54,133 66,120 78,133 90,120 102,133 114,120 116,133 112,84 90,48
                        78,60 60,64 42,60" fill="${CAPE}" ${ol(3.8)}/>
       ${litP('30,50 14,80 12,120 26,112 24,80 38,56', 0.14)}
       ${shadeP('90,50 106,80 108,122 94,114 96,80 82,56', 0.22)}
@@ -1180,6 +1183,17 @@ export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) 
       <path d="M 63,42 Q 69,38 75,42 Q 69,44.6 63,42 Z" fill="${EYE_RED}" ${ol(2)}/>
       ${nose(60, 46, 3.6, 3)}
       ${snarl(60, 50.5, 8, 6)}
+      ${/* Fire breath: three flat-colour layers fan right from the snarl
+            into the space beside the helmet. No stroke -- emitted light
+            does not carry an ink outline. Drawn last so the fire sits in
+            front of the shoulder armour. Red outer (largest) → orange
+            middle → yellow inner (brightest core). */ ''}
+      <polygon points="66,58 68,50 80,46 96,47 112,52 116,58 112,64 96,66 80,64 68,62"
+        fill="${FIRE_RED}" stroke="none"/>
+      <polygon points="66,57 68,51 79,48 94,49 109,53 113,58 110,63 95,65 79,63 68,61"
+        fill="${FIRE_ORANGE}" stroke="none"/>
+      <polygon points="67,56 68,52 78,49 92,50 106,54 110,58 107,62 93,63 78,62 68,60"
+        fill="${FIRE_YELLOW}" stroke="none"/>
     </g>
   `
   )

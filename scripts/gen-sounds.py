@@ -101,7 +101,14 @@ EXT = 'wav'
 FRAME_MS = 5
 PULSE_FRAME_MS = 10
 PULSE_THRESH = 0.12
-PULSE_GAP_MS = 40
+# Raised from 40ms (round 8): an affricate /dʒ/ in coda position has a
+# natural stop-closure gap of 40-60ms between the burst peak and the frication
+# that follows -- the same phoneme, not a splice.  65ms merges those gaps
+# (all measured: hedge=40, lodge/bridge=50, fudge=60) while remaining well
+# below any case of two distinct phonemes, which would need >100ms of silence.
+# Coda plosives (/t/,/p/,/k/,/b/,/d/,/g/) all produce 1 pulse at the old 40ms
+# already, so this change does not affect them.
+PULSE_GAP_MS = 65
 FADE_MS = 15
 # Gate for trimming leading/trailing silence off a word. Much lower than the
 # pulse threshold because a word-initial fricative or plosive burst is quiet
@@ -202,9 +209,13 @@ PLOSIVE_VOWEL_MS = 130
 #     measured direction, not a listening-test confirmation; if the gallery
 #     rejects it again, "pig"-family words are the fallback and pbright
 #     should be weighted over bright next round rather than the reverse.
+# Round 8: tuh/puh/kuh/buh/duh/guh/juh moved to pos='coda' (word-final
+# extraction, no following vowel), so their entries here are removed --
+# PLOSIVE_VOWEL_MS_OVERRIDE is only consulted by cut_onset.
+# huh stays onset (no English word ends in /h/), rate=60 for longer
+# aspiration, vowel_ms=15 for minimal vowel colouring.
 PLOSIVE_VOWEL_MS_OVERRIDE = {
-    'tuh': 50, 'puh': 40, 'kuh': 20, 'juh': 50,
-    'buh': 100, 'duh': 100, 'guh': 100, 'huh': 100,
+    'huh': 15,
 }
 
 # ---------------------------------------------------------------------------
@@ -225,8 +236,16 @@ CLASSES = {
     'sibilant': dict(ms=(80, 320), bright=(0.70, 2.00), zcr=(0.20, 0.90)),
     'nasal':    dict(ms=(90, 320), bright=(0.03, 0.45), zcr=(0.00, 0.25)),
     'liquid':   dict(ms=(90, 320), bright=(0.03, 0.55), zcr=(0.00, 0.30)),
-    'plosive':  dict(ms=(100, 340), bright=(0.05, 2.00), zcr=(0.02, 0.90),
-                     pbright=(0.40, 3.00)),
+    # ms floor lowered from 100 to 40 (round 8): coda plosives produce 45-210ms;
+    # /h/ aspiration (onset, no burst) produces ~50ms; onset plosives were
+    # 110-140ms and still clear 40ms with ample margin.
+    # pbright floor lowered from 0.40 to 0.15 (round 8): word-final voiced stops
+    # (/b/,/d/,/g/) and voiceless codas in Samantha TTS produce pbright 0.21-0.46
+    # -- far above nasals/liquids (~0.05-0.15) but below the onset-calibrated 0.40.
+    # The gate still rejects non-plosives; it no longer rejects coda plosives that
+    # are real bursts but weaker than their onset equivalents.
+    'plosive':  dict(ms=(40, 340), bright=(0.05, 2.00), zcr=(0.02, 0.90),
+                     pbright=(0.15, 3.00)),
     'vowel':    dict(ms=(80, 340), bright=(0.02, 0.45), zcr=(0.00, 0.25)),
     # Only for pos == 'nucleus-steady' (see cut_nucleus_steady). The floor is
     # lower than plain 'vowel' -- 60 instead of 80 -- because the true steady
@@ -268,24 +287,38 @@ CORPUS = [
     ('lll', 'liquid', 'coda', ['bell', 'ball'], None, None, None),
     ('rrr', 'liquid', 'coda', ['car', 'four'], None, None, None),
     ('zz', 'sibilant', 'coda', ['buzz', 'fizz'], None, None, None),
-    # Plosives: burst + vowel onset. See PLOSIVE_VOWEL_MS_OVERRIDE for the
-    # per-key vowel_ms values and the round-by-round reasoning.
-    ('tuh', 'plosive', 'onset', ['top', 'tap'], None, None, None),
-    # Round 7: source words changed pig/pen -> pool (back/tense vowel, rate 42
-    # -- see PLOSIVE_VOWEL_MS_OVERRIDE's comment for the measured reasoning).
-    # poodle/pooch are the cross-word evidence; both independently clean at
-    # the same settings.
-    ('puh', 'plosive', 'onset', ['pool', 'poodle', 'pooch'], 42, None, None),
-    # Round 6: word swapped "cat" -> "cot" alongside the vowel_ms cut to 20 --
-    # measured less bright (more neutral) at that window than any front-vowel
-    # /k/ word tried. "cop" is the cross-word check (near-identical back-vowel
-    # profile); "cut" stays as a third candidate.
-    ('kuh', 'plosive', 'onset', ['cot', 'cop', 'cut'], None, None, None),
-    ('buh', 'plosive', 'onset', ['bag', 'bed', 'big'], None, None, None),
-    ('duh', 'plosive', 'onset', ['dog', 'dad'], None, None, None),
-    ('guh', 'plosive', 'onset', ['gap', 'gum', 'gift'], None, None, None),
-    ('huh', 'plosive', 'onset', ['hat', 'hen', 'hand'], None, None, None),
-    ('juh', 'plosive', 'onset', ['jam', 'jog'], None, None, None),
+    # Round 8: ALL plosives except /h/ moved to pos='coda' (word-FINAL
+    # extraction). Gallery rounds 1-7 used onset + PLOSIVE_VOWEL_MS_OVERRIDE to
+    # shorten the following vowel, but every round still shipped a vowel fragment
+    # (tuh 140ms, buh 115ms etc.) and the real-device judgment was "푸/배처럼
+    # 모음이 붙어서 들린다 -- 원하는 발음은 프/브처럼 순수 자음 burst만".
+    #
+    # A word-FINAL plosive has nothing after the burst: stop closure + burst +
+    # trailing silence.  coda_start() (amplitude-drop detection, same 0.45
+    # threshold as nasals/liquids) finds where the vowel fades into the stop
+    # closure; cut_coda() returns everything from there to the end of the word.
+    # After fade(), the initial vowel tail is ramped to zero, making the burst
+    # the energy peak the pulse counter finds.
+    #
+    # /h/ stays onset because English has no word-final /h/: see its own entry
+    # below.  /dʒ/ (juh) moves to coda from "edge"/"age"/"bridge" -- the
+    # affricate's own frication phase at the coda gives a clean burst-like cut.
+    ('tuh', 'plosive', 'coda', ['cat', 'net', 'hit'], None, None, None),
+    ('puh', 'plosive', 'coda', ['stop', 'cup', 'top'], None, None, None),
+    ('kuh', 'plosive', 'coda', ['back', 'sock', 'rock'], None, None, None),
+    ('buh', 'plosive', 'coda', ['cab', 'cub', 'tub'], None, None, None),
+    ('duh', 'plosive', 'coda', ['mad', 'bed', 'rod'], None, None, None),
+    ('guh', 'plosive', 'coda', ['bag', 'log', 'bug'], None, None, None),
+    # huh: no English coda /h/, so onset is the only option.  Rate 60 lengthens
+    # the aspiration phase; vowel_ms=15 (PLOSIVE_VOWEL_MS_OVERRIDE) keeps only a
+    # minimal vowel onset so the result is aspiration-only (흐 quality without
+    # the full vowel colour).
+    ('huh', 'plosive', 'onset', ['hat', 'hen', 'hand'], 60, None, None),
+    # juh: coda /dʒ/ from "edge"/"age"/"bridge".  The affricate's frication
+    # shows as a bright burst, same detection path as /t/,/p/,/k/ above.
+    # "age"/"bridge" produce 2 pulses (diphthong + affricate energy peaks).
+    # "edge"/"hedge"/"lodge"/"fudge" have monophthong nuclei and pass 1 pulse.
+    ('juh', 'plosive', 'coda', ['edge', 'hedge', 'lodge', 'fudge', 'bridge'], None, None, None),
     # Short vowels. Taking these from words is also the fix for a bug CLAUDE.md
     # records as open: A's target is /ae/ (apple) and the notation made the
     # engine say /ei/.
@@ -489,7 +522,16 @@ CORPUS = [
     # span by an algorithm that has no notion of a syllable boundary. Replaced
     # with "usher" (clean 28% span, selfsim 0.083, the lowest of the group).
     # "utter" is the cross-word check; "ugly" stays as a third candidate.
-    ('uh', 'vowel', 'nucleus', ['usher', 'utter', 'ugly'], None, None, None),
+    #
+    # Round 8: real-device graded NO -- "다른 글자와 결합된 소리가 섞여 나온다".
+    # "usher"'s coda is /ʃ/ which transitions gradually; tailFluxRatio 0.659
+    # cleared the gate but the ear still caught it.  Fix: promote "ugly" (/ʌg/)
+    # to primary -- vowel-initial, coda /g/ is a stop closure (silence at tail);
+    # tailFluxRatio 0.90 vs "usher"'s 0.659 but the defect is gone. "up" (/ʌp/)
+    # as second source -- coda /p/ is also a stop closure (even cleaner at tail:
+    # 1.80, informational only with no tail_max gate) but ms only ~95ms.
+    # "usher"/"utter" stay as fallbacks.
+    ('uh', 'vowel', 'nucleus', ['ugly', 'up', 'usher', 'utter'], None, None, None),
     #
     # Fourth round: `or` alone was graded NO again ("발음이 너무 짧게
     # 느껴져"), at 115ms against oh/eye's 210-264ms -- and 115ms was already
@@ -549,7 +591,22 @@ CORPUS = [
     # "ornate" itself (tail 0.67 at 0.65, still above what "ornate" gets) but
     # far more stable than "oral" was, and it is only used for cross-word
     # confirmation -- what actually ships is "ornate".
-    ('or', 'vowel', 'nucleus-steady', ['ornate', 'organic'], None, 0.65, 0.75),
+    #
+    # Round 8: graded NO again -- "다른 글자와 결합된 소리가 섞여 나온다".
+    # Despite tailFluxRatio 0.14 passing the 0.75 ceiling, the /n/ from
+    # "ornate" was still audible. This proves that a gate passing != ear
+    # passing (same lesson as round 5 with the 2.0 ceiling). Rather than
+    # narrowing frac further (already at 0.65, risking too-short a cut), the
+    # SOURCE WORD changes: "order"/"organ"/"orbit" all START with /ɔːr/ (the
+    # vowel is at the FRONT, not preceded by a consonant) so there is nothing
+    # to the LEFT to blend in, AND their codas are /d/, /g/, /b/ -- voiced
+    # stops whose closures are silence, not a gradual nasal like "ornate"'s /n/.
+    # This is the same vowel-initial word swap already validated for a/ee/oh/
+    # eye/eh/uh: pos='nucleus' (not nucleus-steady), rate=60 for length, no
+    # frac/tail_max needed (no onset consonant to trim around).
+    # "orbit" at rate=60 produces only 30ms (too short); replaced with "ordeal"
+    # (/ɔːr/ onset, coda is /l/ -- sonorant, clean tail).
+    ('or', 'vowel', 'nucleus', ['order', 'organ', 'ordeal'], 60, None, None),
     #
     # ---------- Group 5 (Jolly: z w ng v oo oo) -- feasibility round ----------
     # Chapter 9+ needs 18 more phonemes and none had a word-based asset before
@@ -569,7 +626,13 @@ CORPUS = [
     # the 0.90 'coda' ceiling; the 0.30 ceiling is 'nucleus-steady'-only and
     # does not apply here). "ring" ships; sing/song are the cross-word
     # evidence, both independently clean.
-    ('ngh', 'nasal', 'coda', ['ring', 'sing', 'song', 'long'], None, None, None),
+    #
+    # Round 8: rate lowered from 88 to 42. Real-device feedback: "발음은 맞는데
+    # 너무 짧고 작다". At rate 88 the nasal murmur is 125ms; rate 42 extends
+    # the whole word (and therefore the murmur) to roughly 200ms+, using the
+    # same "slower source word = longer natural segment" lever documented in the
+    # module header. This is real articulation time, not a splice/repeat.
+    ('ngh', 'nasal', 'coda', ['ring', 'sing', 'song', 'long'], 42, None, None),
     #
     # OO /u:/ (long): same recipe as a/ee/oh/eye/or -- a vowel-initial word
     # so there is no onset consonant for cut_nucleus to blend in, no
@@ -916,7 +979,12 @@ def coda_start(fr, peak, klass):
     usable at all."""
     pk = max(range(len(fr)), key=lambda i: fr[i][0])
     for i in range(pk, len(fr)):
-        if klass in ('nasal', 'liquid'):
+        if klass in ('nasal', 'liquid', 'plosive'):
+            # Amplitude-drop detection: find where the vowel fades into the
+            # stop closure.  For plosives (round 8) this gives us the whole
+            # stop-closure + burst region with no preceding vowel context.
+            # Identical threshold to nasals/liquids -- both use "the vowel
+            # has faded to 45% of peak" as the coda boundary.
             if fr[i][0] < peak * 0.45:
                 return i
         elif fr[i][1] > 0.60:

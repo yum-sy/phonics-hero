@@ -165,27 +165,23 @@
 //   - 둘 다 5세 한국 남아에게 구체물이다(넥타이, 옥수수).
 //
 // ============================================================================
-// 아이콘: 이 챕터의 그림 커버리지가 1/3 이다 -- 아이콘 담당에게 넘길 것
+// 아이콘: 2026-08 승격 완료 -- IE/EE/OR 세 소리 전부 그림 문항 보유
 // ============================================================================
-// 현재 62종에서 이 챕터의 세 소리를 그림으로 물어볼 수 있는 것은 **`horse`
-// 하나**(OR, h-OR-se)뿐이다. IE 와 EE 는 그림이 **0개**라 두 소리의 문항이
-// 전부 letterTile 과 listen-repeat/finale 의 words[] 로만 나간다.
+// `tie`·`pie`(IE), `bee`·`tree`·`feet`(EE), `fork`·`corn`(OR) 입고로
+// 이 챕터의 그림 커버리지가 1/3 → 전체 소리로 확장됐다.
 //
-// TODO(icon): 아래가 생기면 그 자리에서 바로 그림 문항으로 바꿀 수 있다.
-//   조건을 개수로 적는다 -- 낡은 주석이 챕터 4~6 의 버그 원인이었다.
-//   * IE: `tie`, `pie` 2개가 생기면 -> c8s2-r2 를 "IE 가 들어있는 그림 찾기"
-//     (오답은 어중 모음이 다른 그림 2개)로 교체. `lie` 까지 3개가 되면
-//     c8s2 에 multiselect "IE 소리가 들어있는 걸 모두" 를 만들 수 있다
-//     (multiselect 는 정답 2개 이상이 필요하고, 정답 쌍이 odd-one-out 과
-//      완전히 같아지면 안 되므로 **3개**가 필요하다 -- 챕터 7 이 AI 에서만
-//      '모두 찾기' 를 만들 수 있었던 이유가 이것이다).
-//   * EE: `bee`, `tree` 2개 -> c8s3-r2 를 "EE 가 들어있는 그림 찾기" 로 교체.
-//     `feet` 까지 3개 -> c8s3 에 '모두 찾기' 신설 가능(위와 같은 이유).
-//   * OR: `fork`, `corn` 2개 -> `horse` 와 합쳐 3개가 되므로 c8s4 에
-//     '모두 찾기' 신설 가능. 지금은 1개라 odd-one-out 도 못 만든다
-//     (odd-one-out 은 같은 소리 2개 + 다른 것 1개가 필요하다).
-//   * 보스 단어 `tie`·`corn` 의 그림이 생기면 c8s5-r5-wordspot 앞에
-//     그림-단어 짝짓기를 넣을 수 있다.
+// 승격 내역 (2026-08):
+//   * IE: c8s2-r2 → "IE 가 들어있는 그림 찾기"(tie 정답, 4보기)로 교체.
+//     `lie` 가 없어 multiselect 는 아직 보류 -- `lie` 입고 시 신설 가능.
+//   * EE: c8s3-r2 → "EE 가 들어있는 그림 찾기"(bee 정답, 4보기)로 교체.
+//     c8s3-r2b-multi 신설 -- bee/tree/feet 모두찾기(5보기, 정답 3/오답 2).
+//   * OR: c8s4-r2b-multi 신설 -- fork/horse/corn 모두찾기(5보기, 정답 3/오답 2).
+//     c8s4-r2 의 "horse 하나" 문항은 유지(horse 가 유일한 OR 단어 찾기 단독 예시).
+//
+// 아직 남은 것:
+//   * IE multiselect: `lie` 추가 시 신설 가능 (multiselect 는 정답 3개 필요 --
+//     챕터 7 의 AI 경우와 같은 이유, 정답 쌍 ≠ odd-one-out 전체).
+//   * 보스 단어 그림-짝짓기(c8s5 앞): chapterBoss 스테이지 제약으로 보류.
 //
 // **OR 보드에 절대 올리면 안 되는 기존 아이콘 2종** (사람 눈에는 정답처럼
 // 보이지만 아니다 -- 나중에 누가 "OR 그림이 더 있는데?" 하며 넣을 자리다):
@@ -346,16 +342,17 @@ export const chapter8 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '"pig"과 같은 소리로 시작하는 걸 찾아보세요!',
-          promptAudio: 'pig',
-          // /p/ 의 근접쌍 /b/ 를 오답으로 둔다.
+          // IE 그림 문항 -- tie 를 정답으로, 어중 모음이 다른 그림 3개를 오답으로.
+          // (이전: /p/ 복습 문항. tie/pie 아이콘 입고로 IE 그림 문항으로 승격.)
+          instructionKo: '이 소리가 들어있는 그림을 찾아보세요!',
+          promptAudio: 'eye',
           options: [
-            { id: 'c8s2-net', icon: 'net', label: 'net', correct: false },
-            { id: 'c8s2-box', icon: 'box', label: 'box', correct: false },
-            { id: 'c8s2-pen', icon: 'pen', label: 'pen', correct: true },
-            { id: 'c8s2-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c8s2-r2-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c8s2-r2-tie', icon: 'tie', label: 'tie', correct: true },
+            { id: 'c8s2-r2-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c8s2-r2-dog', icon: 'dog', label: 'dog', correct: false },
           ],
-          readAloud: { targetText: 'pen' },
+          readAloud: { targetText: 'tie' },
         },
         {
           id: 'c8s2-r3-trace',
@@ -490,17 +487,35 @@ export const chapter8 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          // 프롬프트 단어를 'horse' 로 둬서 다음 스테이지의 OR 을 미리 귀에
-          // 넣는다. 여기서 묻는 것은 초성 /h/ 다.
-          instructionKo: '"horse"과 같은 소리로 시작하는 걸 찾아보세요!',
-          promptAudio: 'horse',
+          // EE 그림 문항 -- bee 를 정답으로, 어중 모음이 다른 그림 3개를 오답으로.
+          // (이전: /h/ 복습+OR 예열 문항. bee/tree/feet 입고로 EE 그림 문항으로 승격.)
+          instructionKo: '이 소리가 들어있는 그림을 찾아보세요!',
+          promptAudio: 'ee',
           options: [
-            { id: 'c8s3-nut', icon: 'nut', label: 'nut', correct: false },
-            { id: 'c8s3-hat', icon: 'hat', label: 'hat', correct: true },
-            { id: 'c8s3-fish', icon: 'fish', label: 'fish', correct: false },
-            { id: 'c8s3-box', icon: 'box', label: 'box', correct: false },
+            { id: 'c8s3-r2-bee', icon: 'bee', label: 'bee', correct: true },
+            { id: 'c8s3-r2-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c8s3-r2-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c8s3-r2-box', icon: 'box', label: 'box', correct: false },
           ],
-          readAloud: { targetText: 'hat' },
+          readAloud: { targetText: 'bee' },
+        },
+        {
+          id: 'c8s3-r2b-multi',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          // EE 모두찾기 -- bee/tree/feet 세 아이콘이 전부 정답.
+          // bee/tree/feet 3개로 정답 3개 확보돼 multiselect 조건 충족.
+          // 오답 2개는 어중 모음이 다른 그림: hat(/æ/), sun(/ʌ/).
+          instructionKo: 'EE 소리가 들어있는 그림을 모두 고르고 ✓를 누르세요!',
+          options: [
+            { id: 'c8s3-r2b-bee', icon: 'bee', label: 'bee', correct: true },
+            { id: 'c8s3-r2b-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c8s3-r2b-tree', icon: 'tree', label: 'tree', correct: true },
+            { id: 'c8s3-r2b-hat', icon: 'hat', label: 'hat', correct: false },
+            { id: 'c8s3-r2b-feet', icon: 'feet', label: 'feet', correct: true },
+          ],
+          readAloud: { targetText: 'bee' },
         },
         {
           id: 'c8s3-r3-trace',
@@ -648,6 +663,25 @@ export const chapter8 = {
             { id: 'c8s4-cat', icon: 'cat', label: 'cat', correct: false },
           ],
           readAloud: { targetText: 'horse' },
+        },
+        {
+          id: 'c8s4-r2b-multi',
+          kind: 'multiselect',
+          scored: true,
+          hits: 1,
+          // OR 모두찾기 -- fork/horse/corn 세 아이콘이 전부 정답.
+          // fork·corn 입고로 horse 와 합쳐 3개가 돼 multiselect 조건 충족.
+          // orange·door 는 절대 포함하지 않는다(파일 헤더 경고 참조).
+          // 오답 2개는 OR 소리가 없는 그림: sun(/ʌ/), net(/ɛ/).
+          instructionKo: 'OR 소리가 들어있는 그림을 모두 고르고 ✓를 누르세요!',
+          options: [
+            { id: 'c8s4-r2b-sun', icon: 'sun', label: 'sun', correct: false },
+            { id: 'c8s4-r2b-fork', icon: 'fork', label: 'fork', correct: true },
+            { id: 'c8s4-r2b-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c8s4-r2b-horse', icon: 'horse', label: 'horse', correct: true },
+            { id: 'c8s4-r2b-corn', icon: 'corn', label: 'corn', correct: true },
+          ],
+          readAloud: { targetText: 'fork' },
         },
         {
           id: 'c8s4-r3-trace',

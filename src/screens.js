@@ -1301,9 +1301,8 @@ function renderNonScoredBeat(runtime, beat) {
     // is stages 2-4. Chapters with fewer authored stages keep whatever
     // non-boss heroes they do have rather than rendering an empty lineup.
     const nonBossStages = chapter.stages.filter((s) => !s.chapterBoss)
-    const lineup = (
-      nonBossStages.length > 3 ? nonBossStages.slice(1) : nonBossStages
-    ).slice(0, 3)
+    // Always skip stage 1 (index 0, the tutorial) and take stages 2-4 (indices 1-3).
+    const lineup = nonBossStages.slice(1, 4)
     const dirs = ['from-left', 'from-right', 'from-left']
     const robotsHtml = lineup
       .map(

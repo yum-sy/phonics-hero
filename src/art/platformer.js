@@ -1229,73 +1229,135 @@ export function platJumper({
   return sticker(backdrop, body)
 }
 
-// The spring: the shirt is replaced by a stack of coil turns, and one arm
-// stays raised — the same "bounce" identity v3-v8 gave this slot, kept
-// because it is a torso substitution, not a skeleton choice, and survives the
-// LEGO conversion unchanged in concept.
+// Ollie — Yoshi motif. Organic curves rather than LEGO blocks: big round green
+// head with a protruding white snout, orange spines on the skull, white belly,
+// short stubby arms, and wide round orange boots. The emblem plate lives on the
+// belly where the bib was; the LEGO coil/shirt/dungaree grammar is gone for
+// this slot entirely (the user confirmed each chapter family can have a wholly
+// different visual grammar).
+//
+// BOUNDS. Spines are nohalo (like speed lines) so they only need their own
+// stroke edge inside 0..120/0..140; tallest tip lands at y 2 (edge 2-1=1 ≥ 0).
+// All body parts with halo satisfy: x 6..114, y 6..134 for 3-unit ink.
+// Boot bottom at y 132: 132+1.6+4.5=138.1 ≤ 140. Left arm fist left edge
+// at x 15: 15-1.5-4.5=9 ≥ 6. Right arm mirrors cleanly.
 export function platSpring({
-  bodyColor = '#2f9e5c',
-  accent = '#16522f',
+  bodyColor = '#4db840',
+  accent = '#1a6e14',
   emblem = 'M',
   visorColor = '#fff3c4',
 } = {}) {
-  const turn = (cy, rx, ry = 9) => [
-    E(60, cy, rx, ry, bodyColor, ink(3)),
-    E(60 - rx * 0.3, cy - ry * 0.32, rx * 0.4, ry * 0.28, '#fff', { opacity: 0.24, nohalo: true }),
-    E(60 + rx * 0.24, cy + ry * 0.3, rx * 0.32, ry * 0.2, '#000', { opacity: 0.12, nohalo: true }),
+  const GREEN = bodyColor
+  const GREEN_DK = accent
+  const ORANGE = '#f07020'
+  const ORANGE_DK = '#b84010'
+  const SNOUT_CLR = '#f5f0e2'
+  const BLUE_IRIS = '#3a6abf'
+
+  // Orange spine — nohalo, drawn before the head so the head covers its base.
+  const spine = (cx, tip, base, hw) =>
+    P(
+      `${cx - hw},${base} ${cx + hw},${base} ${cx},${tip}`,
+      ORANGE,
+      { stroke: LINE, 'stroke-width': 2, 'stroke-linejoin': 'round', nohalo: true }
+    )
+
+  // Eye: white sclera + blue iris + black pupil + white highlight + angled brow.
+  // k=-1 for left eye, k=+1 for right.
+  const eye = (cx, cy, k) => [
+    E(cx, cy, 7.2, 8.2, '#fff', ink(2.2)),
+    C(cx + k * 1.8, cy + 1.2, 5, BLUE_IRIS, { nohalo: true }),
+    C(cx + k * 1.3, cy + 0.8, 2.7, LINE, { nohalo: true }),
+    C(cx + k * 0.3, cy - 1.2, 1.2, '#fff', { nohalo: true }),
+    S(
+      `M ${(cx - k * 7.4).toFixed(1)},${(cy - 10).toFixed(1)} Q ${cx},${(cy - 13).toFixed(1)} ${(cx + k * 6.5).toFixed(1)},${(cy - 8).toFixed(1)}`,
+      LINE,
+      3.4,
+      { nohalo: true }
+    ),
   ]
-  const seam = (cy, rx) => E(60, cy, rx, 2.6, accent, ink(2.2))
-  const backdrop = [E(60, 135, 22, 3, '#000', { opacity: 0.14 })]
-  // v11: NO SKIN NECK. v9 had the coil stack's own top turn swallow the whole
-  // neck quad; v10's fix was to shrink/lower the stack so the skin trapezoid
-  // showed again -- and the user reviewed THAT render and reversed the call:
-  // "코일 컨셉을 할라고 하면 목 대신에 적당한 굵기의 코일이 들어가면 좋겠어."
-  // Skin neck is wrong twice over for this hero specifically -- it is the one
-  // figure whose torso is a coil, so a bare neck between head and spring reads
-  // as an unfinished stack, not a design choice. The fix is a THIRD option,
-  // not a rerun of v9 or v10: one extra turn, narrower than the chest turns
-  // (rx 19 against 26-29) so it cannot swallow the 58-wide head the way v9's
-  // rx-26 first turn did, but wider than the old skin neck (14-16) so it does
-  // not read as a thin disconnected ring either. Its top edge (64-6.5=57.5)
-  // sits right at the chin (58) -- legoHead is painted after this whole list,
-  // so its face box quietly trims the 0.5 units that poke above the chin
-  // instead of a seam needing to line up by hand.
+
+  const backdrop = [E(60, 136, 22, 3.2, '#000', { opacity: 0.14 })]
+
   const body = [
-    turn(64, 19, 6.5),
-    turn(72, 26, 6),
-    turn(80, 29, 6.5),
-    turn(88, 26, 6),
-    seam(68, 20),
-    seam(76, 27.5),
-    seam(84, 27.5),
+    // 1. Spines — drawn first so the head covers their base area.
+    spine(45, 5, 20, 5.5),
+    spine(56, 2, 16, 5.5),
+    spine(67, 5, 20, 5.5),
+    spine(77, 9, 22, 4.5),
 
-    // BIGGER CHEST, BIGGER LETTER. User: "몸통이 너무 작아서 O 글자도 너무
-    // 작아졌어." The old box (92..108, 16 tall) was 10 units shorter than the
-    // other three heroes' bib (76..102, 26 tall) despite spanning the same
-    // 42-unit width -- the plate inherited that shortfall directly (h 16
-    // against their 21). Grown to 90..111 (21 tall, matching) and 4 units
-    // wider (38..82) so the plate gets real padding on every side instead of
-    // being sized to the box's own edge.
-    box(38, 90, 82, 111, 7, DENIM, ink(3.2)),
-    R(39, 91, 15, 16, 5, DENIM_LIT, { opacity: 0.5, nohalo: true }),
-    bigButton(36, 94, 7),
-    mirror(bigButton(36, 94, 7)),
-    // Ollie keeps the family's one round plate — a stadium, not a disc, so
-    // the letter O is not fighting square corners while still being full
-    // width down the whole middle. h 17 against the old 16 is a small jump on
-    // paper; on a round plate `emblemPlate`'s own radius (h/2) grows with it,
-    // so the glyph's usable band grows faster than the number suggests.
-    emblemPlate(40, 92, 40, 17, visorColor, accent, emblem, true),
+    // 2. Arms — drawn before the body so the body oval covers the shoulder root.
+    // Left arm: tube from shoulder (40,86) out to fist (25,95).
+    tube(40, 86, 12, 25, 95, 10, GREEN, ink(3)),
+    C(25, 95, 10, GREEN, ink(3)),
+    E(25, 98, 7, 4, GREEN_DK, { opacity: 0.3, nohalo: true }),
+    // Right arm (mirrored x → 120-x gives shoulder 80, fist 95).
+    tube(80, 86, 12, 95, 95, 10, GREEN, ink(3)),
+    C(95, 95, 10, GREEN, ink(3)),
+    E(95, 98, 7, 4, GREEN_DK, { opacity: 0.3, nohalo: true }),
 
-    legoLegsStanding(),
+    // 3. Neck stub — drawn before the head so the head box covers the top seam.
+    box(51, 64, 69, 76, 5, GREEN, ink(2.8)),
 
-    legoArmBase({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, bodyColor),
-    legoArmBase({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, bodyColor),
+    // 4. Body oval.
+    E(60, 96, 24, 21, GREEN, ink(3.2)),
+    E(69, 98, 12, 16, GREEN_DK, { opacity: 0.2, nohalo: true }),
+    E(50, 82, 9, 5, '#fff', { opacity: 0.24, nohalo: true }),
 
-    legoHead(G_STD, HEAD_HALF, BRIM_HALF, bodyColor, accent, visorColor),
+    // 5. White belly (Yoshi's pale front).
+    E(60, 99, 15, 17, SNOUT_CLR, ink(2.2)),
 
-    legoArmFist({ x: 34, y: 90, w: 14 }, { x: 22, y: 108, w: 11 }, accent, 10),
-    legoArmFist({ x: 86, y: 82, w: 14 }, { x: 98, y: 58, w: 11 }, accent, 10),
+    // 6. Emblem plate on the belly.
+    emblemPlate(43, 90, 34, 20, visorColor, accent, emblem, true),
+
+    // 7. Head — drawn after spines/neck so it covers their bases/seam.
+    // Flat-ish top, wide round cheeks: slightly wider than tall.
+    D(
+      'M 32,35 C 32,19 42,13 60,13 C 78,13 88,19 88,35 C 88,57 80,66 60,66 C 40,66 32,57 32,35 Z',
+      GREEN,
+      ink(3.2)
+    ),
+    // Right-side shade — keeps the head from reading as a flat disc.
+    D(
+      'M 74,15 C 85,22 88,32 88,35 C 88,53 80,64 68,66 L 80,56 C 86,47 88,41 88,35 C 88,27 85,18 74,15 Z',
+      GREEN_DK,
+      { opacity: 0.22, nohalo: true }
+    ),
+    // Upper-left highlight.
+    E(46, 25, 9, 5.5, '#fff', { opacity: 0.26, nohalo: true }),
+
+    // 8. White snout oval (Yoshi's most distinctive feature, covers lower face).
+    E(60, 50, 19, 14, SNOUT_CLR, ink(2.8)),
+    E(62, 55, 11, 7, '#c8c0a8', { opacity: 0.38, nohalo: true }),
+    // Nostrils.
+    C(52, 46, 2.4, '#8a7d66', ink(1.4)),
+    C(68, 46, 2.4, '#8a7d66', ink(1.4)),
+    // Smile curve.
+    S('M 45,56 Q 60,63 75,56', LINE, 2.6, { nohalo: true }),
+
+    // 9. Eyes (sit above the snout on the green part of the head).
+    eye(46, 31, -1),
+    eye(74, 31, 1),
+
+    // 10. Cheek blush.
+    E(36, 44, 5.5, 3.5, CHEEK, { opacity: 0.55, nohalo: true }),
+    E(84, 44, 5.5, 3.5, CHEEK, { opacity: 0.55, nohalo: true }),
+
+    // 11. Legs (short stubs below body, drawn after body so they emerge from it).
+    box(42, 116, 57, 124, 3.5, GREEN, ink(2.8)),
+    box(63, 116, 78, 124, 3.5, GREEN, ink(2.8)),
+
+    // 12. Boots — wide flat-topped orange boxes (Yoshi's big rounded boots).
+    // Left boot: x 28..64, y 120..132. Bottom halo: 132+1.6+4.5=138.1 ✓
+    box(28, 120, 64, 132, 9, ORANGE, ink(3.2), 't'),
+    R(28, 126, 36, 6, 0, ORANGE_DK, { nohalo: true }),
+    S('M 31,122 L 59,122', '#fff', 2, { opacity: 0.35, nohalo: true }),
+    // Right boot — mirror maps x → 120-x giving x 56..92.
+    mirror([
+      box(28, 120, 64, 132, 9, ORANGE, ink(3.2), 't'),
+      R(28, 126, 36, 6, 0, ORANGE_DK, { nohalo: true }),
+      S('M 31,122 L 59,122', '#fff', 2, { opacity: 0.35, nohalo: true }),
+    ]),
   ]
   return sticker(backdrop, body)
 }
@@ -1579,6 +1641,22 @@ export function platPowerup({
     wing,
     mirror(wing),
     legoHead(G_BOSS, 33, 43, FIRE_WHITE, FIRE_BRIM, null, 1.14),
+
+    // Sharp teeth — painted ON TOP of legoHead's face so they override the
+    // existing rounded white-teeth lens. G_BOSS.mouthY=58, s=1.14, cx=60.
+    // mw = 8.6*1.14 ≈ 9.8; outer mouth spans y 58..67.6, x 50.2..69.8.
+    // Step 1: cover the existing convex-lens white teeth with dark fill.
+    D('M 50.2,58 Q 60,61 69.8,58 Q 60,67.6 50.2,58 Z', MOUTH, { nohalo: true }),
+    // Step 2: five sharp upper fangs pointing downward.
+    P('52,58.5 55,58.5 53.5,65.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('55,58.5 58,58.5 56.5,66.2', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('58,58.5 61.2,58.5 59.6,66.8', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('61,58.5 64,58.5 62.5,66.2', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('64,58.5 67,58.5 65.5,65.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    // Step 3: three lower fangs pointing upward.
+    P('54,67.5 57.8,67.5 55.9,62.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('58.5,67.5 62.5,67.5 60.5,61.8', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
+    P('63,67.5 67,67.5 65,62.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
 
     // Fist, then fireball, in that order and both after the head: the
     // fireball has to land on top of its own fist for the "holding the
