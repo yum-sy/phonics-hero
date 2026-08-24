@@ -184,26 +184,35 @@ const ICONS = {
   // break, and each leg's second segment bends back toward the midline
   // instead of continuing outward, so the stance reads as "legs bent under
   // the body" instead of "legs planted wide".
+  // Round 3 redraw. Rejected again as an all-#2c2c2a silhouette (same black
+  // as `insect`'s outline strokes and most other line-art) with legs thinner
+  // than the antennae -- at button size it read as a scribble, not a bug.
+  // This one gives the body a warm rust-brown fill (real ants read
+  // red-brown/black in picture books, not pure ink-black) with a lighter
+  // highlight patch per segment for the layered-shading convention, a much
+  // bigger cartoon eye with a white catch-light, visible mandible, and
+  // fewer/thicker legs so the silhouette reads as three body blobs + bent
+  // legs at 150px instead of dissolving into thin lines.
   ant: () =>
     wrap(`
-      <g stroke="#2c2c2a" stroke-width="3" stroke-linecap="round" fill="none">
-        <path d="M9 18 Q3 10 6 3"/>
-        <path d="M14 17 Q20 10 24 4"/>
+      <ellipse cx="43" cy="35" rx="17" ry="12.6" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
+      <path d="M35 28 Q43 24 51 29 Q45 31 35 28 Z" fill="#a5502a" opacity="0.8"/>
+      <circle cx="24" cy="30" r="7.4" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
+      <path d="M19 26 Q24 23 29 27 Q24 28 19 26 Z" fill="#a5502a" opacity="0.8"/>
+      <circle cx="11" cy="26" r="6.8" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
+      <path d="M6 22 Q11 20 16 23" fill="none" stroke="#a5502a" stroke-width="2.4" stroke-linecap="round" opacity="0.8"/>
+      <path d="M8 21 Q3 11 7 3" fill="none" stroke="#2c2c2a" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M14 20 Q19 10 26 5" fill="none" stroke="#2c2c2a" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="7" cy="3" r="2.2" fill="#2c2c2a"/>
+      <circle cx="26" cy="5" r="2.2" fill="#2c2c2a"/>
+      <path d="M4 27 L11 31 L4 33 Z" fill="#2c2c2a"/>
+      <circle cx="9" cy="24" r="3.4" fill="#f5f2ea"/>
+      <circle cx="8.3" cy="24" r="1.6" fill="#2c2c2a"/>
+      <g stroke="#2c2c2a" stroke-width="5.2" stroke-linecap="round" fill="none">
+        <path d="M20 33 L12 42 L15 53"/>
+        <path d="M31 37 L33 48 L29 58"/>
+        <path d="M46 40 L55 48 L53 59"/>
       </g>
-      <g stroke="#2c2c2a" stroke-width="4.6" stroke-linecap="round" fill="none">
-        <path d="M20 30 L17 40 L19 51"/>
-        <path d="M33 33 L35 44 L33 55"/>
-        <path d="M49 35 L53 45 L51 56"/>
-      </g>
-      <line x1="14" y1="23" x2="19" y2="25" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round"/>
-      <line x1="27" y1="29" x2="32" y2="31" stroke="#2c2c2a" stroke-width="3.6" stroke-linecap="round"/>
-      <circle cx="10" cy="22" r="6.4" fill="#2c2c2a"/>
-      <circle cx="23" cy="27" r="5" fill="#2c2c2a"/>
-      <ellipse cx="45" cy="34" rx="16" ry="12.8" fill="#2c2c2a"/>
-      <path d="M15 19 Q11 23 7 20 Q10 15 15 16 Z" fill="#4a4a52" opacity="0.7"/>
-      <path d="M27 25 Q24 29 20 27 Q22 24 27 23 Z" fill="#4a4a52" opacity="0.7"/>
-      <path d="M55 31 Q46 37 36 32 Q41 23 55 26 Z" fill="#4a4a52" opacity="0.7"/>
-      <circle cx="8" cy="20" r="1.8" fill="#f5f2ea"/>
     `),
 
   apple: () =>
@@ -438,17 +447,27 @@ const ICONS = {
   // drawn shorter and noticeably WIDER (a round bulb nose, not a slim
   // wedge) specifically to sit apart from tie's narrow necktie silhouette,
   // which stays that narrow the whole way down with squared-off shoulders.
+  // Round 2 redraw. Rejected as an unattached organic blob -- with nothing
+  // around it, a lone nose shape doesn't read as a face part to a 5-year-old,
+  // it reads as an unidentified brown lump. This version frames it with the
+  // minimum face context that fixes that: two eyebrow arcs above, a smiling
+  // mouth below, and blush-cheek circles flanking it, so the gestalt is
+  // "face, here is its nose" rather than an isolated shape. Nostrils enlarged
+  // and darkened so they read at button size.
   nose: () =>
     wrap(`
-      <path d="M32 11 Q23 21 19 31 Q16 41 19 47.5 Q21.5 52 27 53.5 Q29.5 54.5 32 52.5
-               Q34.5 54.5 37 53.5 Q42.5 52 45 47.5 Q48 41 45 31 Q41 21 32 11 Z"
+      <circle cx="13" cy="41" r="5.4" fill="#f2a4a0" opacity="0.55"/>
+      <circle cx="51" cy="41" r="5.4" fill="#f2a4a0" opacity="0.55"/>
+      <path d="M13 17 Q20 11 27 15" fill="none" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+      <path d="M37 15 Q44 11 51 17" fill="none" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+      <path d="M30 13 Q22 24 19 33 Q16 42 19 48 Q21.5 52.5 27 54 Q29.5 55 32 53
+               Q34.5 55 37 54 Q42.5 52.5 45 48 Q48 42 45 33 Q42 24 34 13
+               Q32 11 30 13 Z"
         fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.6" stroke-linejoin="round"/>
-      <path d="M29 14 Q22 23 19 32" fill="none" stroke="#fbe8cf" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>
-      <path d="M19 44 Q17 48 21 51 Q18 46 20 43 Z" fill="#dba165" opacity="0.6"/>
-      <ellipse cx="25" cy="46.5" rx="4" ry="2.8" fill="#7a5230" transform="rotate(-20 25 46.5)"/>
-      <ellipse cx="39" cy="46.5" rx="4" ry="2.8" fill="#7a5230" transform="rotate(20 39 46.5)"/>
-      <path d="M8 36 Q5 44 9 51" fill="none" stroke="#c98f4e" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
-      <path d="M56 36 Q59 44 55 51" fill="none" stroke="#c98f4e" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+      <path d="M28 16 Q21 25 19 34" fill="none" stroke="#fbe8cf" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>
+      <ellipse cx="25" cy="47" rx="4.6" ry="3.4" fill="#7a5230" transform="rotate(-18 25 47)"/>
+      <ellipse cx="39" cy="47" rx="4.6" ry="3.4" fill="#7a5230" transform="rotate(18 39 47)"/>
+      <path d="M20 56 Q32 61 44 56" fill="none" stroke="#5a3a22" stroke-width="3.6" stroke-linecap="round"/>
     `),
 
   // -- Group 2: C/K, E, H (chapter 3) --
@@ -875,14 +894,27 @@ const ICONS = {
   // verbatim, only the dorsal fin changed: was a sharp straight-edged
   // triangle (read as a shark fin), now a soft curved fin (rounded
   // sides meeting at a blunt tip, no straight shark-tooth edges).
+  // Round 3 redraw. The blue ellipse-body + thin dorsal spike near the eye
+  // read as ambiguous (whale/boat guesses in review) rather than "fish" --
+  // the dorsal fin sat over the head instead of mid-back, and cool blue is
+  // shared with `rain`/`boat`/`umbrella` water iconography, giving it no
+  // distinct hue lane. Switched to goldfish-orange (a color no other icon in
+  // this set uses), moved the dorsal fin to the actual mid-back, added a
+  // pectoral fin, a gill mark, and scale-arc texture, so both silhouette and
+  // color carry the "fish" reading independently.
   fish: () =>
     wrap(`
-      <polygon points="46,32 62,18 62,46" fill="#0c447c"/>
-      <ellipse cx="28" cy="32" rx="24" ry="15" fill="#378add"/>
-      <path d="M6 38 Q28 50 50 38 Q28 46 6 38 Z" fill="#5dd6e0"/>
-      <path d="M22,17 Q24,8 27,6 Q30,8 32,17 Z" fill="#0c447c"/>
-      <circle cx="16" cy="28" r="3.6" fill="#f5f2ea"/>
-      <circle cx="15" cy="28" r="1.9" fill="#2c2c2a"/>
+      <path d="M44 20 Q58 12 60 32 Q58 52 44 44 Q52 32 44 20 Z" fill="#e2691b"/>
+      <path d="M8 32 Q10 14 30 12 Q48 14 52 32 Q48 50 30 52 Q10 50 8 32 Z" fill="#f4923a"/>
+      <path d="M10 40 Q22 50 34 48 Q22 46 12 38 Z" fill="#ffcf7a"/>
+      <path d="M24 12 Q28 3 35 8 Q32 15 25 17 Z" fill="#e2691b"/>
+      <path d="M21 36 Q16 44 23 47 Q26 40 26 35 Z" fill="#e2691b"/>
+      <path d="M9 24 Q14 28 9 33" fill="none" stroke="#a8460c" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <path d="M25 20 Q31 22 37 20" fill="none" stroke="#a8460c" stroke-width="1.6" stroke-linecap="round" opacity="0.5"/>
+      <path d="M23 28 Q29 30 35 28" fill="none" stroke="#a8460c" stroke-width="1.6" stroke-linecap="round" opacity="0.5"/>
+      <circle cx="18" cy="25" r="5.2" fill="#fffef8"/>
+      <circle cx="17" cy="25" r="2.8" fill="#2c2c2a"/>
+      <path d="M8 35 Q11 38 15 37" fill="none" stroke="#a8460c" stroke-width="2" stroke-linecap="round"/>
     `),
 
   // Chose a desk fan (wire-cage ring + pinwheel blades + stand) over a
@@ -1450,6 +1482,13 @@ const ICONS = {
   // rhythm from hand's symmetric peak-in-the-middle fingers before color
   // is even considered, which is the actual ask (toes must not read as a
   // second hand).
+  // Round 2 redraw. Rejected because the foot outline floated with nothing
+  // above it -- without a leg/ankle to attach to, five rotated toe-blobs on
+  // a pale ellipse read as an unidentified paw, not a human foot. Added a
+  // cut-off pant-cuff cylinder above each ankle (the same "context anchor"
+  // fix as `nose`'s eyebrows/mouth) so the gestalt reads "leg, and here are
+  // its feet," plus pink toenails for a color cue skin-tone alone doesn't
+  // give.
   feet: () => {
     const foot = (cx, dir) => {
       const s = n => (cx + dir * n).toFixed(1)
@@ -1470,10 +1509,11 @@ const ICONS = {
           `<rect x="${(cx + dir * dx - w / 2).toFixed(1)}" y="28" width="${w}" height="${len}" rx="${(w / 2).toFixed(1)}" ` +
           `fill="#f5d6b0" stroke="#c98f4e" stroke-width="2" transform="rotate(${ang} ${tx} 28)"/>`
         nails +=
-          `<ellipse cx="${tx}" cy="${(28 + len * 0.3).toFixed(1)}" rx="${(w * 0.28).toFixed(1)}" ry="${(len * 0.2).toFixed(1)}" ` +
-          `fill="#fbe8cf" opacity="0.8" transform="rotate(${ang} ${tx} 28)"/>`
+          `<ellipse cx="${tx}" cy="${(28 + len * 0.32).toFixed(1)}" rx="${(w * 0.3).toFixed(1)}" ry="${(len * 0.22).toFixed(1)}" ` +
+          `fill="#f2938a" stroke="#c9605a" stroke-width="0.6" transform="rotate(${ang} ${tx} 28)"/>`
       })
       return `
+        <rect x="${s(-6)}" y="-12" width="12" height="16" rx="4" fill="#7fb5e0" stroke="#3a7bb8" stroke-width="2"/>
         <path d="M${s(-7)} 2 Q${s(-7)} -1 ${s(0)} -1 Q${s(7)} -1 ${s(7)} 2
                  L${s(10)} 18 Q${s(13)} 24 ${s(9)} 29 Q${s(0)} 33 ${s(-9)} 29
                  Q${s(-14)} 24 ${s(-9.5)} 15 Q${s(-8)} 8 ${s(-7)} 2 Z"
@@ -1482,7 +1522,11 @@ const ICONS = {
         <ellipse cx="${s(-3)}" cy="8" rx="3.4" ry="5.4" fill="#fbe8cf" opacity="0.55"/>
         ${toeShapes}${nails}`
     }
-    return wrap(`${foot(17, 1)}${foot(47, -1)}`)
+    return wrap(`
+      <g transform="translate(0 12)">
+        ${foot(17, 1)}${foot(47, -1)}
+      </g>
+    `)
   },
 
   // A table fork, tilted so no axis-aligned symmetry invites a letter

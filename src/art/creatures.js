@@ -1433,18 +1433,25 @@ export function creatureMuncher({ bodyColor = '#932a80', accent = '#6b1c5c' } = 
            lip. Upper fangs hang from the top of the cavity, lower fangs rise
            from the bottom, offset by half a tooth-width so the two rows
            interlace across the middle instead of leaving a clean gap --
-           that crossing is what reads as "jagged" rather than "toothed". -->
+           that crossing is what reads as "jagged" rather than "toothed".
+           The outline is drawn first so every fang below sits BEHIND the
+           lip line, never past it: the two boundary curves were evaluated
+           by hand (bezier sampled at t=0..1) so each fang's flat edge and
+           x-span clears the curve at that point by a >=2px margin --
+           the previous coordinates were authored against a mental "generic
+           oval mouth" rather than this path's actual (shallower-near-the-
+           corners) curve, which is what let them poke through the lip. -->
       <path d="M 20,94 C 33,134 87,134 100,94 C 80,84 40,84 20,94 Z"
         fill="${INK}" ${ol(SW)}/>
-      <polygon points="27,90 37,90 32,118" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="45,88 55,88 50,116" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="63,88 73,88 68,116" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="81,90 91,90 86,118" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="18,126 28,126 23,98" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="36,129 46,129 41,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="54,129 64,129 59,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="72,129 82,129 77,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
-      <polygon points="90,126 100,126 95,98" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="34.5,93 43.5,93 39,110" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="48.5,93 57.5,93 53,110" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="62.5,93 71.5,93 67,110" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="76.5,93 85.5,93 81,110" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="27.5,104 36.5,104 32,93" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="41.5,104 50.5,104 46,90" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="55.5,104 64.5,104 60,89" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="69.5,104 78.5,104 74,90" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="83.5,104 92.5,104 88,93" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
 
       <!-- warty bumps: 8 of them, mixed pink/teal, ringing the torso from
            the shoulders down to the haunches so the silhouette itself reads
