@@ -1528,19 +1528,44 @@ def coda_start(fr, peak, klass, drop_frac=None):
 # rounded /jʊər/ glide, so anything past the shared /l/ murmur necessarily
 # diverges. That climb has a clear elbow: dbright grows by +0.01-0.03 per
 # 15-25ms step through 90ms extra (0.006->0.102), then FLATTENS from 100ms
-# on (0.106, 0.109, 0.108, 0.107 through 125/150/175ms extra) -- i.e. by
-# ~100ms extra the two words have already fully diverged into their own
-# vowel color and pushing further just adds more of each word's own,
-# uncorrelated vowel padding rather than any more shared /l/-transition
-# content. 100ms extra (224.7ms total for both words, coincidentally) is
-# the chosen value: it is the point where lengthening stops buying anything
-# real, it sits inside the requested 200-300ms band, and it clears
-# CLASSES['liquid'] on both words with wide margin (lip: bright=0.213
-# zcr=0.046 selfsim=0.126; lure: bright=0.107 zcr=0.028 selfsim=0.324 --
-# all lightyears from the 0.55/0.30/0.90 ceilings). Liquid-only: nasal's
-# onset_end() branch is untouched (mmm/nnn ship from the isolated/coda path,
-# never cut_onset), and this constant is consulted nowhere but here.
-LIQUID_ONSET_EXTRA_MS = 100
+# on (0.106, 0.109, 0.108, 0.107 through 125/150/175ms extra).
+#
+# 100ms extra (224.7ms total) was shipped on the theory that "the elbow" =
+# "vowel color has fully arrived, more length is harmless padding". Real-
+# device QA on that build proved this reading WRONG: it came back "li 에
+# 가깝다" (sounds like the syllable "li", the bare consonant plus the start
+# of "lip"'s own /ɪ/), not a pure liquid. The elbow is not a safety
+# threshold -- dbright is already rising at the very FIRST step past 0
+# (0.006 -> ~0.03 by 15ms extra), meaning vowel color starts leaking in
+# immediately once the cut moves past onset_end()'s own boundary, not at
+# some later point. The "flattening" from 100ms on does not mean "no more
+# vowel is being added" -- it means both words have each fully entered
+# their OWN following vowel by then, so their divergence stops growing
+# simply because there is no more onset transition left to diverge over,
+# not because the extra audio stopped being vowel. CLASSES['liquid'] cannot
+# catch this either, for the same reason the divergence metric was needed
+# in the first place: a liquid+vowel-onset murmur is still "quiet and dark"
+# by bright/zcr, so it passes clean at every extension tried, including
+# ones that are audibly wrong.
+#
+# LIQUID_ONSET_EXTRA_MS=0 (125ms total, onset_end()'s own boundary with no
+# extension) is therefore correct, not a compromise: it is the ONLY point
+# on this sweep with no measurable vowel-color divergence between lip and
+# lure (0.006), which is exactly what "pure /l/, no following-vowel color"
+# means operationally. Its being shorter than the other liquids (rrr
+# 510ms, mmm 495ms) is not a defect to fix by further cutting -- those ship
+# from CODA position, where a liquid can be held indefinitely by the
+# speaker with no vowel to transition into; ONSET /l/ is inherently brief
+# because English does not hold a syllable-initial consonant before its
+# vowel the way it can sustain one at a syllable's end. Matching rrr/mmm's
+# duration would require extracting from coda position instead, which is
+# exactly what reintroduced the dark-L ("들린다 o 처럼") problem this whole
+# EXTERNAL_ONSET_CORPUS branch exists to avoid -- short-and-correct beats
+# long-and-wrong here, the same "SHIP IT SHORT" call this file makes
+# throughout. Liquid-only: nasal's onset_end() branch is untouched (mmm/nnn
+# ship from the isolated/coda path, never cut_onset), and this constant is
+# consulted nowhere but here.
+LIQUID_ONSET_EXTRA_MS = 0
 
 
 def cut_onset(samples, sr, klass, vowel_ms=PLOSIVE_VOWEL_MS):
