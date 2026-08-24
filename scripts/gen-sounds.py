@@ -935,19 +935,11 @@ ISLAND_MIN_MS = 20
 # currently speaks a voiced-TH key, and CLAUDE.md's own recommendation is to
 # teach voiced TH from real words only, never a bare-phoneme drill.
 #
-# `lll` is DELIBERATELY ABSENT from this list, unlike every other key. Real-
-# device feedback on l-lip.mp3's lobe 0 was "가깝다 /o/ 에" (sounds close to
-# /o/), not a length/trimming complaint -- ruled out by inspecting the frame-
-# level envelope first (lobe 0 runs 0.24-0.70s with a slow-decaying tail from
-# ~0.51s that looked trimmable, but the user's own ear called it a TIMBRE
-# problem, not a boundary problem, so no amount of re-cutting that same lobe
-# fixes it). The likely cause is this narrator's /l/ being strongly "dark"
-# (velarized), which lowers F2 toward back-vowel territory -- an acoustic
-# property of the recording, not an extraction defect. `lll` instead stays
-# pinned to the pre-pivot CORPUS entry (`bell`/`ball` coda, see CORPUS above)
-# via LEGACY_ALWAYS in generate() -- that extraction already has a real-
-# device OK verdict on record (commit bad8ffd) from before this file's
-# real-recording pivot, so it is a proven-good fallback, not a guess.
+# `lll` is DELIBERATELY ABSENT from this list, unlike every other key -- but
+# unlike the note that used to live here, it is no longer pinned to the
+# legacy CORPUS fallback either. See EXTERNAL_ONSET_CORPUS below (right after
+# this list) for where `lll` now comes from and why lobe 0 of l-lip.mp3 was
+# never going to work no matter how it was re-cut.
 EXTERNAL_CORPUS = [
     ('sss', 's-sit-mess.mp3'),
     ('aaa', 'a-apple.mp3'),
@@ -990,6 +982,61 @@ EXTERNAL_CORPUS = [
     ('erh', 'er-herd-bird-turn.mp3'),
     ('arh', 'ar-jar.mp3'),
 ]
+
+# EXTERNAL_ONSET_CORPUS -- like EXTERNAL_CORPUS, but for keys whose lobe-0
+# isolated phoneme is unusable and the fix is to cut a WORD-ONSET consonant
+# out of lobe 1 instead (see build_external_onset_all()).
+#
+# WHY THIS EXISTS: `lll`'s real-device verdict on l-lip.mp3's lobe 0 ("가깝다
+# /o/ 에", sounds close to /o/) was a TIMBRE complaint, not a boundary one --
+# confirmed by inspecting the envelope first (lobe 0 runs a clean single
+# pulse 0.24-0.70s, nothing about it looks like a mis-cut). The likely cause
+# is CODA position, not the narrator or the phoneme: English /l/ has two
+# allophones, and they are acoustically almost different sounds --
+#   - CODA /l/ ("bell", "ball", and lobe 0 of l-lip.mp3, which is read as an
+#     isolated sound in the same manner a coda would trail off) is "dark"
+#     (velarized) -- the tongue back bunches toward the velum, which pulls
+#     F2 down toward back-vowel/rounded-vowel territory. That is exactly the
+#     direction "sounds like /o/" points.
+#   - ONSET /l/ (the /l/ that STARTS a word: "lip", "lure") is "light" --
+#     the same velarization is much weaker, because there is no following
+#     coda position pulling the tongue back yet.
+# Both l-lip.mp3 and ure-lure.mp3 happen to have this for free: their lobe 1
+# is the example WORD, and both example words ("lip", "lure") start with the
+# very onset /l/ this project actually wants. No new recording was needed --
+# only a different lobe of two recordings the project already had.
+#
+# EXTRACTION: lobe 1 is found the same way lobe 0 is (all_islands(), see its
+# docstring), then cut_onset(word_seg, sr, 'liquid') -- the same onset_end()
+# consonant/vowel boundary already used for every CORPUS onset row -- finds
+# where that word's initial /l/ gives way to its vowel. There is no new
+# cut-boundary rule here, only a new *lobe* to point the existing one at.
+#
+# MEASURED (both from island 1, cut_onset('liquid'), fade()'d, re-read from
+# disk): lip-onset 125ms bright=0.096 zcr=0.031 selfSim=0.287 pulses=1;
+# lure-onset 125ms bright=0.090 zcr=0.030 selfSim=0.141 pulses=1. Both clear
+# CLASSES['liquid'] (ms 90-320, bright 0.03-0.55, zcr 0-0.30) with margin, and
+# cross-word agreement is unusually tight -- dbright=0.006, dzcr=0.001,
+# against AGREE_BRIGHT=0.45 / AGREE_ZCR=0.20 -- consistent with "this is the
+# same allophone from two different words", not a coincidence. The two
+# words' onset_end() landed on the same frame index in both (t=125ms) by
+# coincidence of the boundary rule, not because the audio was forced to
+# match; the bright/zcr numbers were computed independently per file.
+#
+# `l-lip.mp3` is listed first and is what SHIPS (matches EXTERNAL_CORPUS's
+# own "first passing candidate ships, rest are cross-word evidence" rule,
+# and keeps `lll` sourced from the same file EXTERNAL_CORPUS's key list
+# already expects by name). `ure-lure.mp3` is the cross-word check only.
+EXTERNAL_ONSET_CORPUS = [
+    ('lll', 'liquid', ['l-lip.mp3', 'ure-lure.mp3']),
+]
+# Which island index is "the example word" in these sources. Both files this
+# corpus uses share the two-lobe shape EXTERNAL_CORPUS's header measured
+# (phoneme, silence, word) -- island 0 is the isolated phoneme (unusable
+# here, see the header above), island 1 is the word. Not per-row because it
+# is a fact about the recording SHAPE these sources share, not about any one
+# key.
+ONSET_WORD_ISLAND = 1
 
 # The notation each key used to be spoken as, and the letter-name spell-out it
 # turned out to be byte-identical to. Kept as a live test (--bait) rather than a
@@ -1079,19 +1126,23 @@ def decode_mp3(mp3_path):
     return s, sr
 
 
-def first_island(samples, sr, gate_frac=ISLAND_GATE_FRAC,
-                  merge_gap_ms=ISLAND_MERGE_GAP_MS):
-    """(start_sample, end_sample) of the first silence-separated block of
-    energy above `gate_frac` of this file's own peak, or None if the file is
-    silent throughout. See EXTERNAL_CORPUS's header for why this is the whole
-    extraction problem for a real recording (no vowel to trim around, unlike
-    every cut_* function above): the isolated phoneme IS the first block, in
-    every one of the 41 sources this project uses, by a wide silence margin.
+def all_islands(samples, sr, gate_frac=ISLAND_GATE_FRAC,
+                 merge_gap_ms=ISLAND_MERGE_GAP_MS):
+    """Every silence-separated block of energy above `gate_frac` of this
+    file's own peak, as a list of (start_sample, end_sample), in file order.
+
+    Factored out of first_island() (which used to inline this and just keep
+    the first run) so EXTERNAL_ONSET_CORPUS can reach island 1 -- the example
+    WORD lobe, not the isolated-phoneme lobe -- for sources where the isolated
+    phoneme itself turned out to be unusable (see EXTERNAL_ONSET_CORPUS's own
+    header). Every caller that only ever wanted lobe 0 keeps doing exactly
+    that through first_island() below; this only adds the ability to ask for
+    a later lobe too.
     """
     env, step = frames_rms_only(samples, sr)
     peak = max(env) if env else 0.0
     if peak <= 0:
-        return None
+        return []
     gate = peak * gate_frac
     on = [v > gate for v in env]
     runs = []
@@ -1106,15 +1157,29 @@ def first_island(samples, sr, gate_frac=ISLAND_GATE_FRAC,
         else:
             i += 1
     if not runs:
-        return None
+        return []
     win_ms = step / sr * 1000.0
-    start, end = runs[0]
+    merged = [list(runs[0])]
     for s, e in runs[1:]:
-        gap_ms = (s - end) * win_ms
+        gap_ms = (s - merged[-1][1]) * win_ms
         if gap_ms >= merge_gap_ms:
-            break
-        end = e
-    return start * step, end * step
+            merged.append([s, e])
+        else:
+            merged[-1][1] = e
+    return [(s * step, e * step) for s, e in merged]
+
+
+def first_island(samples, sr, gate_frac=ISLAND_GATE_FRAC,
+                  merge_gap_ms=ISLAND_MERGE_GAP_MS):
+    """(start_sample, end_sample) of the first silence-separated block of
+    energy above `gate_frac` of this file's own peak, or None if the file is
+    silent throughout. See EXTERNAL_CORPUS's header for why this is the whole
+    extraction problem for a real recording (no vowel to trim around, unlike
+    every cut_* function above): the isolated phoneme IS the first block, in
+    every one of the 41 sources this project uses, by a wide silence margin.
+    """
+    islands = all_islands(samples, sr, gate_frac, merge_gap_ms)
+    return islands[0] if islands else None
 
 
 def frames_rms_only(samples, sr, ms=FRAME_MS):
@@ -1801,6 +1866,115 @@ def build_external_all():
     return written, bad
 
 
+def build_external_onset_all():
+    """Run EXTERNAL_ONSET_CORPUS end to end: decode each source, find its
+    word island (ONSET_WORD_ISLAND), cut the word-initial consonant out of it
+    with cut_onset()/onset_end() (the same boundary rule CORPUS's onset rows
+    use), and ship the first candidate that clears its CLASSES gate. See
+    EXTERNAL_ONSET_CORPUS's own header for why this pipeline exists instead
+    of just re-cutting lobe 0 like build_external_all() does.
+
+    Returns (written, bad) in the same shape as build_external_all() so
+    generate() can concatenate the two without caring which pipeline a key
+    came from.
+    """
+    written, bad = [], []
+    if not os.path.isdir(PHONICS_DIR):
+        print('WARNING: %s not found -- skipping the onset-extraction '
+              'pipeline (%d sounds will be missing)'
+              % (PHONICS_DIR, len(EXTERNAL_ONSET_CORPUS)))
+        return written, bad
+    print('%-6s %-24s %8s %6s %6s %6s  %s'
+          % ('key', 'source', 'ms', 'bright', 'zcr', 'selfs', 'note'))
+    for key, klass, mp3names in EXTERNAL_ONSET_CORPUS:
+        gate = CLASSES[klass]
+        candidates = []
+        for mp3name in mp3names:
+            mp3path = os.path.join(PHONICS_DIR, mp3name)
+            if not os.path.exists(mp3path):
+                print('%-6s %-24s SKIP -- source file missing' % (key, mp3name))
+                continue
+            samples, sr = decode_mp3(mp3path)
+            islands = all_islands(samples, sr)
+            if len(islands) <= ONSET_WORD_ISLAND:
+                print('%-6s %-24s SKIP -- only %d island(s), need index %d '
+                      '(the example word)'
+                      % (key, mp3name, len(islands), ONSET_WORD_ISLAND))
+                continue
+            s0, e0 = islands[ONSET_WORD_ISLAND]
+            pad = int(sr * ISLAND_PAD_MS / 1000)
+            lo = max(0, s0 - pad)
+            hi = min(len(samples), e0 + pad)
+            word_seg = samples[lo:hi]
+            onset_raw = cut_onset(word_seg, sr, klass)
+            seg = fade(onset_raw)
+            ms = len(seg) / sr * 1000.0
+            if ms < ISLAND_MIN_MS:
+                print('%-6s %-24s SKIP -- onset cut is %.0fms, under the '
+                      '%dms inaudible floor' % (key, mp3name, ms, ISLAND_MIN_MS))
+                continue
+            p, gaps = pulses([int(x) for x in seg], sr)
+            if p == 0:
+                print('%-6s %-24s SKIP -- onset cut is silence after fade'
+                      % (key, mp3name))
+                continue
+            rms, bright, zcr = descriptors(seg)
+            ss = self_similarity(seg)
+            fails = []
+            if not (gate['ms'][0] <= ms <= gate['ms'][1]):
+                fails.append('ms %.0f outside %s' % (ms, gate['ms']))
+            if not (gate['bright'][0] <= bright <= gate['bright'][1]):
+                fails.append('bright %.3f outside %s' % (bright, gate['bright']))
+            if not (gate['zcr'][0] <= zcr <= gate['zcr'][1]):
+                fails.append('zcr %.3f outside %s' % (zcr, gate['zcr']))
+            if ss > SELFSIM_MAX:
+                fails.append('selfsim %.3f > %.2f' % (ss, SELFSIM_MAX))
+            print('%-6s %-24s %6.0fms %6.3f %6.3f %6.3f  %s'
+                  % (key, mp3name, ms, bright, zcr, ss,
+                     'FAIL: ' + '; '.join(fails) if fails else 'ok'))
+            candidates.append(dict(word=mp3name, seg=seg, sr=sr, ms=ms,
+                                    bright=bright, zcr=zcr, selfsim=ss, pulses=p,
+                                    fails=fails))
+        if not candidates:
+            bad.append(key)
+            continue
+        chosen = next((c for c in candidates if not c['fails']), None)
+        if chosen is None:
+            print('%-6s %-24s FAIL -- no candidate cleared the %s gate'
+                  % (key, '/'.join(mp3names), klass))
+            bad.append(key)
+            continue
+        note = ''
+        others = [c for c in candidates if c is not chosen and not c['fails']]
+        if others:
+            o = others[0]
+            db = abs(chosen['bright'] - o['bright'])
+            dz = abs(chosen['zcr'] - o['zcr'])
+            if db > AGREE_BRIGHT or dz > AGREE_ZCR:
+                note = ('FLAG: %s and %s disagree: dbright=%.2f (max %.2f) '
+                        'dzcr=%.3f (max %.3f)'
+                        % (chosen['word'], o['word'], db, AGREE_BRIGHT,
+                           dz, AGREE_ZCR))
+                print('%-6s %-24s %s' % (key, '', note))
+                bad.append(key)
+                continue
+        path = os.path.join(OUT_DIR, '%s.%s' % (key, EXT))
+        write_wav(path, chosen['seg'], chosen['sr'])
+        # Re-measure from disk, same discipline as build_external_all()'s own
+        # loop -- these are the bytes the browser actually fetches.
+        back, bsr = read_wav(path)
+        bp, _ = pulses(back, bsr)
+        bms = round(len(back) / bsr * 1000)
+        written.append(dict(
+            key=key, ms=bms, naturalMs=bms, stretch=1.0,
+            source='fundations:%s (word onset)' % chosen['word'],
+            pos='onset', klass=klass, pulses=bp, rate=None,
+            selfSim=round(chosen['selfsim'], 3), bright=round(chosen['bright'], 3),
+            edgeFluxRatio=None, tailFluxRatio=None,
+            bytes=os.path.getsize(path)))
+    return written, bad
+
+
 # ---------------------------------------------------------------------------
 # modes
 
@@ -1892,12 +2066,17 @@ def generate(legacy_tts=False):
     # overwritten by build_external_all() anyway; `--legacy-tts` still runs
     # it for archaeology (e.g. reproducing an old manifest entry by hand).
     #
-    # LEGACY_ALWAYS is the one exception: keys pinned to a CORPUS row even
-    # outside `--legacy-tts`, because their EXTERNAL_CORPUS recording turned
-    # out worse than the pre-pivot asset. See EXTERNAL_CORPUS's own note on
-    # `lll` for why it lives here instead of in EXTERNAL_CORPUS like every
-    # other key.
-    LEGACY_ALWAYS = {'lll'}
+    # LEGACY_ALWAYS used to pin `lll` to its pre-pivot CORPUS row (`bell`/
+    # `ball` coda) even outside `--legacy-tts`, because its EXTERNAL_CORPUS
+    # recording (a dark, coda-position /l/) sounded like /o/ on real-device
+    # QA. `lll` now ships from EXTERNAL_ONSET_CORPUS instead -- a light,
+    # onset-position /l/ cut from the same source files' example-word lobe
+    # (see that corpus's header for the dark-L/light-L acoustics) -- so
+    # nothing needs the legacy fallback any more. Kept as an empty set,
+    # rather than deleted outright, so a future key that hits the same
+    # "real-recording pivot sounds worse" failure has a documented place to
+    # go without re-deriving this mechanism.
+    LEGACY_ALWAYS = set()
     rows = [build_one(*row) for row in CORPUS
             if legacy_tts or row[0] in LEGACY_ALWAYS]
     # rate actually used per key, keyed by CORPUS's own declaration -- read
@@ -1944,12 +2123,14 @@ def generate(legacy_tts=False):
                           if c['tailFluxRatio'] is not None else None),
             bytes=os.path.getsize(path)))
     # report(rows) unconditionally: `rows` only holds the full CORPUS when
-    # --legacy-tts is set, but it always holds the LEGACY_ALWAYS rows (lll),
-    # and a silently-broken lll build must still surface as a FAIL.
+    # --legacy-tts is set (LEGACY_ALWAYS is empty now, see its own comment),
+    # so this is normally a no-op -- kept so a future LEGACY_ALWAYS entry's
+    # build failure still surfaces as a FAIL instead of silently vanishing.
     bad = report(rows) if rows else []
     ext_written, ext_bad = build_external_all()
-    written += ext_written
-    bad = bad + ext_bad
+    onset_written, onset_bad = build_external_onset_all()
+    written += ext_written + onset_written
+    bad = bad + ext_bad + onset_bad
     manifest = {
         'ext': EXT,
         'voice': VOICE,
