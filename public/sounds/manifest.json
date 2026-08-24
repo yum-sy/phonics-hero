@@ -385,15 +385,15 @@
    "ms": 145,
    "naturalMs": 145,
    "stretch": 1.0,
-   "source": "foot",
+   "source": "pull",
    "pos": "nucleus-steady",
    "class": "vowel",
-   "rate": 88,
+   "rate": 42,
    "pulses": 1,
-   "selfSim": 0.217,
-   "edgeFluxRatio": 1.696,
-   "tailFluxRatio": null,
-   "bright": 0.139
+   "selfSim": 0.06,
+   "edgeFluxRatio": 0.427,
+   "tailFluxRatio": 0.866,
+   "bright": 0.13
   }
  }
 }

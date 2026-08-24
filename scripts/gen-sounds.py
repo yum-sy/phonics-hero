@@ -650,10 +650,73 @@ CORPUS = [
     # over the 2.0 ceiling) and "look" keeps an /l/ murmur (selfsim 0.648,
     # over the stricter 0.30 nucleus-steady ceiling) -- both rejected the
     # same way those rows already document, not a new failure shape.
-    # "foot"/"put"/"good" are all clean at the default rate and default
-    # 0.95 fraction, no override needed. "foot" ships; put/good are the
-    # cross-word evidence.
-    ('uuh', 'vowel', 'nucleus-steady', ['foot', 'put', 'good'], None, None, None),
+    #
+    # Round 8 shipped "foot"/"put"/"good" (all passed the then-existing
+    # gates at the default rate/0.95 fraction) and it was graded NO on a real
+    # device. CLAUDE.md's own rule -- "the identity of a vowel cannot be
+    # proven by measurement, only heard" -- means the gates passing was never
+    # proof the CUT was clean, only that it wasn't one of the failure shapes
+    # this file already knows how to detect. So this round re-measured "foot"
+    # against a metric the gates were not actually enforcing for it:
+    # tailFluxRatio (see `or`'s CORPUS row for why this exists -- a cut can be
+    # clean at the front and still carry the following consonant's transition
+    # at the back). Nothing had ever computed it for `uuh` because no row
+    # here set `tail_max`, so it silently rode along ungated:
+    #   foot(default)  edgeFluxRatio 1.70  tailFluxRatio 1.74
+    #   good(default)  edgeFluxRatio 0.83  tailFluxRatio 1.49
+    # Both numbers sit right under the informal 2.0 ceiling used elsewhere in
+    # this file for exactly this metric -- i.e. "foot" was passing every gate
+    # it was actually checked against while sitting close to a ceiling that
+    # was never applied to it. That is the same shape as the `or`<-"ornate"
+    # rejection (gate passed at 1.41, ear still caught it), just on a sound
+    # that had no gate on this axis at all before now.
+    #
+    # Swept every short /U/ word tried against `extract()`/`failures_for()`
+    # directly (not just eyeballed): w-onset words ("wolf"/"wool"/"wood") also
+    # clear every existing gate at rate 42-60, with even LONGER natural spans
+    # (185-250ms) than foot/put/good ever reach -- but they were not shipped
+    # despite that, because /w/ is a labio-velar GLIDE directly into a
+    # ROUNDED vowel (the same quality axis), and this file has no metric that
+    # can tell "flat because it's the steady vowel" from "flat because a
+    # glide into an acoustically similar vowel doesn't perturb brightness
+    # much" -- the exact blind spot CLAUDE.md documents for /w/ generally
+    # ("every cut function... finds a REGION... none of those exist for a
+    # glide"). A metrics-clean word built on a metric's known blind spot is
+    # not evidence, so these were set aside rather than shipped on faith.
+    #
+    # Liquid-CODA words ("pull"/"full"/"bull") measured far better than
+    # foot/put/good on the two axes that matter here, at rate 42:
+    #   pull  ms=145  selfsim=0.060  edgeFluxRatio=0.43  tailFluxRatio=0.87
+    #   full  ms=140  selfsim=0.157  edgeFluxRatio=0.85  tailFluxRatio=0.68
+    #   bull  ms=140  selfsim=0.162  edgeFluxRatio=0.46  tailFluxRatio=1.14
+    # selfsim in particular has much more margin below the 0.30 murmur
+    # ceiling than foot's own 0.217 or good's 0.247 ever had (0.06-0.16 vs.
+    # 0.21-0.25) -- these onsets are a voiceless stop, an unvoiced fricative,
+    # and a voiced stop respectively (/p/ /f/ /b/), none of them the
+    # nasal/liquid class that ceiling exists to catch, so there is nothing
+    # for it to be borderline against. `tail_max=1.0` is added to this row
+    # (new -- no prior round gated this axis for `uuh`) so a future word swap
+    # cannot silently reintroduce the same ungated tail defect "foot" shipped
+    # with (1.0, not the looser 2.0 used for `awh`/informational elsewhere,
+    # because this round has three clean candidates to choose from and can
+    # afford to hold out for a tighter number -- see `or`'s row history for
+    # why "gate passes" and "ear passes" are not the same claim and a looser
+    # ceiling should not be assumed safe just because it is already used
+    # elsewhere). "pull" ships (best edgeFluxRatio + selfsim, and clears 1.0
+    # with margin); "full" is the cross-word evidence (also clears 1.0);
+    # "bull" is kept as a THIRD candidate/fallback even though it fails the
+    # new 1.0 ceiling at 1.14 -- it is not shipped, but the measurement is
+    # left in the row so a future rate change can be checked against it too
+    # rather than rediscovering the number.
+    #
+    # NOT YET HEARD ON A REAL DEVICE. This is a measured direction (better
+    # margins on every axis the gates already use for the sibling nucleus-
+    # steady vowels, plus a newly-added tail gate the old asset would not
+    # have cleared), not a listening-test confirmation -- see the module
+    # header's own limit on this ("the identity of a vowel... is judged by
+    # ear only"). sound-verdicts.json's `uuh` entry is cleared so the
+    # gallery shows it unjudged again.
+    ('uuh', 'vowel', 'nucleus-steady', ['pull', 'full', 'bull'], 42, None, 1.0),
     #
     # V /v/ and W /w/: tried and NOT shipped this round, for two different
     # reasons, neither of which a different word fixes.

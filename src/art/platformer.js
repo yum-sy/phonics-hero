@@ -2359,9 +2359,9 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // beside the head (x 86..115, y 34..62). Drawn last so it sits on top
       // of the head box. Three nested flat fills, same family rule as every
       // other fire element in this file.
-      D('M 68,44 C 84,36 106,34 115,40 C 115,60 106,62 84,60 C 72,54 68,52 Z', FLAME_OUT, ink(2.2)),
-      D('M 69,46 C 84,40 104,38 112,44 C 112,58 104,59 84,57 C 73,52 69,50 Z', FLAME_MID, { nohalo: true }),
-      D('M 70,47 C 84,43 102,42 108,47 C 108,55 102,56 84,54 C 74,50 70,49 Z', FLAME_CORE, { nohalo: true }),
+      D('M 68,44 C 84,36 106,34 115,40 C 115,60 106,62 84,60 C 78,58 72,56 68,52 Z', FLAME_OUT, ink(2.2)),
+      D('M 69,46 C 84,40 104,38 112,44 C 112,58 104,59 84,57 C 79,55 73,53 69,50 Z', FLAME_MID, { nohalo: true }),
+      D('M 70,47 C 84,43 102,42 108,47 C 108,55 102,56 84,54 C 80,52 74,51 70,49 Z', FLAME_CORE, { nohalo: true }),
     ]),
   ]
   return sticker(backdrop, body)
