@@ -1642,22 +1642,6 @@ export function platPowerup({
     mirror(wing),
     legoHead(G_BOSS, 33, 43, FIRE_WHITE, FIRE_BRIM, null, 1.14),
 
-    // Sharp teeth — painted ON TOP of legoHead's face so they override the
-    // existing rounded white-teeth lens. G_BOSS.mouthY=58, s=1.14, cx=60.
-    // mw = 8.6*1.14 ≈ 9.8; outer mouth spans y 58..67.6, x 50.2..69.8.
-    // Step 1: cover the existing convex-lens white teeth with dark fill.
-    D('M 50.2,58 Q 60,61 69.8,58 Q 60,67.6 50.2,58 Z', MOUTH, { nohalo: true }),
-    // Step 2: five sharp upper fangs pointing downward.
-    P('52,58.5 55,58.5 53.5,65.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('55,58.5 58,58.5 56.5,66.2', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('58,58.5 61.2,58.5 59.6,66.8', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('61,58.5 64,58.5 62.5,66.2', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('64,58.5 67,58.5 65.5,65.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    // Step 3: three lower fangs pointing upward.
-    P('54,67.5 57.8,67.5 55.9,62.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('58.5,67.5 62.5,67.5 60.5,61.8', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-    P('63,67.5 67,67.5 65,62.5', GLOVE, { stroke: LINE, 'stroke-width': 1.3, nohalo: true }),
-
     // Fist, then fireball, in that order and both after the head: the
     // fireball has to land on top of its own fist for the "holding the
     // flower's fireball" read the original comment describes, and both need
@@ -2338,9 +2322,9 @@ export function platGlitch({ bodyColor = '#3d3d46', accent = '#7d5fe0' } = {}) {
       // (no gradient, per the family rule), outer ring haloed like the rest
       // of the body so it reads as attached to the maw rather than a loose
       // decal.
-      D('M 45,96 C 39,106 35,116 40,126 C 47,131 69,131 76,126 C 81,116 77,106 71,96 Z', FLAME_OUT, ink(2.4)),
-      D('M 48,98 C 43,107 40,115 45,123 C 50,127 66,127 71,123 C 76,115 73,107 68,98 Z', FLAME_MID, { nohalo: true }),
-      D('M 51,101 C 48,108 46,113 50,120 C 53,123 63,123 66,120 C 70,113 68,108 65,101 Z', FLAME_CORE, { nohalo: true }),
+      D('M 86,74 C 92,70 104,68 115,72 C 115,80 115,88 115,88 C 104,92 92,90 86,86 Z', FLAME_OUT, ink(2.4)),
+      D('M 87,76 C 92,73 102,71 112,75 C 112,81 112,86 112,86 C 102,89 92,87 87,84 Z', FLAME_MID, { nohalo: true }),
+      D('M 88,78 C 92,76 100,74 108,78 C 108,81 108,83 108,83 C 100,86 92,84 88,82 Z', FLAME_CORE, { nohalo: true }),
 
       villainArm(armL, bodyColor, accent, 12),
       villainArm(armR, bodyColor, accent, 12),

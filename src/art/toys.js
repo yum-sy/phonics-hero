@@ -1097,9 +1097,6 @@ export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) 
   const FACE_SHADOW = '#5e5570'
   const CAPE = '#171320'
   const CAPE_LINING = '#8f2230'
-  const FIRE_RED = '#e24b4a'
-  const FIRE_ORANGE = '#f4a71b'
-  const FIRE_YELLOW = '#ffd43b'
 
   const claw = (cx, cy, rot) => `
     <g transform="translate(${cx},${cy}) rotate(${rot})">
@@ -1183,17 +1180,6 @@ export function toyWindDown({ bodyColor = '#332c45', accent = '#6f5bd0' } = {}) 
       <path d="M 63,42 Q 69,38 75,42 Q 69,44.6 63,42 Z" fill="${EYE_RED}" ${ol(2)}/>
       ${nose(60, 46, 3.6, 3)}
       ${snarl(60, 50.5, 8, 6)}
-      ${/* Fire breath: three flat-colour layers fan right from the snarl
-            into the space beside the helmet. No stroke -- emitted light
-            does not carry an ink outline. Drawn last so the fire sits in
-            front of the shoulder armour. Red outer (largest) → orange
-            middle → yellow inner (brightest core). */ ''}
-      <polygon points="66,58 68,50 80,46 96,47 112,52 116,58 112,64 96,66 80,64 68,62"
-        fill="${FIRE_RED}" stroke="none"/>
-      <polygon points="66,57 68,51 79,48 94,49 109,53 113,58 110,63 95,65 79,63 68,61"
-        fill="${FIRE_ORANGE}" stroke="none"/>
-      <polygon points="67,56 68,52 78,49 92,50 106,54 110,58 107,62 93,63 78,62 68,60"
-        fill="${FIRE_YELLOW}" stroke="none"/>
     </g>
   `
   )

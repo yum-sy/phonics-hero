@@ -1417,10 +1417,10 @@ export function creatureMuncher({ bodyColor = '#932a80', accent = '#6b1c5c' } = 
            ears. A row cannot be misread that way. -->
       <path d="M 34,98 C 40,116 80,116 86,98 C 76,92 44,92 34,98 Z"
         fill="${INK}" ${ol(SW_MID)}/>
-      <circle cx="45" cy="98" r="2.7" fill="${BELLY}"/>
-      <circle cx="55" cy="96" r="2.7" fill="${BELLY}"/>
-      <circle cx="65" cy="96" r="2.7" fill="${BELLY}"/>
-      <circle cx="75" cy="98" r="2.7" fill="${BELLY}"/>
+      <polygon points="42,95 48,95 45,103" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="52,93 58,93 55,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="62,93 68,93 65,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <polygon points="72,95 78,95 75,103" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
 
       <circle cx="16" cy="80" r="3.4" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
       <circle cx="104" cy="72" r="3" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
