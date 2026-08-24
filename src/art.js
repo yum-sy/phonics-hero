@@ -809,7 +809,7 @@ const HERO_PALETTES = {
   'captain-red': { style: 'creature-boss' },
   'gogo': { style: 'plat-jumper', bodyColor: '#d1332f', accent: '#7a1a18', emblem: 'G' },
   // 6.85 -> 9.32
-  'ollie': { style: 'plat-spring', bodyColor: '#e8732a', accent: '#6b2c07', emblem: 'O' },
+  'ollie': { style: 'plat-spring', emblem: 'O' },
   'umo': { style: 'plat-block', bodyColor: '#3aa15a', accent: '#1c5c30', emblem: 'U' },
   // 3.08 -> 11.0 by moving the ink, not the plate. See platPowerup's note.
   // platPowerup 은 bodyColor 를 받아서 무시한다 -- 파이어 파워업의 흰색이
