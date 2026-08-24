@@ -1252,7 +1252,10 @@ export function platSpring({
   const ORANGE = '#f07020'
   const ORANGE_DK = '#b84010'
   const SNOUT_CLR = '#f5f0e2'
-  const BLUE_IRIS = '#3a6abf'
+  // Yoshi's own eyes are white with a dark reddish-brown iris, never blue --
+  // a cool blue iris was the one part of this figure that broke the warm
+  // green/orange/cream palette the rest of the motif already matches.
+  const IRIS = '#7a3018'
 
   // Orange spine — nohalo, drawn before the head so the head covers its base.
   const spine = (cx, tip, base, hw) =>
@@ -1266,7 +1269,7 @@ export function platSpring({
   // k=-1 for left eye, k=+1 for right.
   const eye = (cx, cy, k) => [
     E(cx, cy, 7.2, 8.2, '#fff', ink(2.2)),
-    C(cx + k * 1.8, cy + 1.2, 5, BLUE_IRIS, { nohalo: true }),
+    C(cx + k * 1.8, cy + 1.2, 5, IRIS, { nohalo: true }),
     C(cx + k * 1.3, cy + 0.8, 2.7, LINE, { nohalo: true }),
     C(cx + k * 0.3, cy - 1.2, 1.2, '#fff', { nohalo: true }),
     S(
