@@ -1366,65 +1366,98 @@ export function creatureCorky({ bodyColor = '#3a72c4', accent = '#5b6b82' } = {}
   )
 }
 
-// Pixel Muncher, the chapter boss: a toad with the family's biggest, heaviest
-// body and one gimmick -- the wide mouth. The earlier version shed sharp
-// checkerboard squares along one flank; those went with the rest of the
-// angular pass, replaced by three round crumbs, which also removes any chance
-// of the erosion settling into a right angle that reads as a letterform.
+// Pixel Muncher, the chapter boss. REDESIGNED (2026-08) after repeated "small
+// and unimposing" verdicts on the toad-with-a-wide-mouth version below this
+// comment in git history. The new brief (user-supplied reference: a bloated
+// sludge-monster silhouette -- huge flat-round mass, warty bumps, a jagged
+// fanged maw, big round white eyes) is followed for its STYLISTIC traits only
+// -- no name, palette, or silhouette is copied -- and redrawn entirely in this
+// file's own grammar: sepia outline, flat color, no gradients/filters,
+// viewBox "0 0 120 140".
+//
+// The whole redesign is one move: stop treating the boss as "a bigger version
+// of the same round-body-plus-two-limbs animal" and instead let the body BE
+// the character. Limbs shrink to stubs that barely clear the mass; every unit
+// of size budget goes into the torso, which now spans x 10-110 / y 34-138 --
+// as close to the full 120x140 box as a non-clipping silhouette gets once the
+// eye-domes (which bulge above the torso, same trick the old version used)
+// and the ground shadow are given their own margin.
 export function creatureMuncher({ bodyColor = '#932a80', accent = '#6b1c5c' } = {}) {
-  // Muncher is the chapter boss and is allowed to be the DARKEST figure in the
-  // file -- luminance 0.088, half the value of the other four villains -- which
-  // is only possible because of the domes below. Every other villain's floor is
-  // set by ink dot eyes sitting directly on the body; move the eyes onto a pale
-  // field and that floor disappears, so the boss can go as dark as it wants.
+  // Still allowed to be the darkest figure in the file for the same reason as
+  // before: the eyes carry the contrast floor, not the ink dots on the body.
   const BELLY_MG = '#e9bcd6' // dulled tint of the body, per the villain note
-  // Domed toad eyes: the shells go in before the body so the body's outline
-  // cuts across them (they bulge half above the head, the way a real toad's
-  // do), but the pupils and lids go in after, or the body would clip the
-  // bottom of each pupil.
-  //
-  // The domes are ACID YELLOW rather than body-coloured, and it does two jobs
-  // at once. Legibility: an ink pupil on #932a80 measures 2.0:1 and turns to
-  // mush, on #e8d84a it measures 10.7:1 -- the best eye contrast in the file.
-  // Character: a pale amphibian eye with a small dark pupil is the one facial
-  // arrangement in this soft-lined family that can look predatory, which is
-  // what the chapter boss needed and the pastel version could not do.
-  const DOME = '#e8d84a'
-  const domeShell = (cx) => `
-    <circle cx="${cx}" cy="50" r="16" fill="${DOME}" ${ol(SW_MID)}/>`
-  const domeFace = (cx) => `
-    <ellipse cx="${cx}" cy="49" rx="6" ry="6.6" fill="${INK}"/>
-    <path d="M ${cx - 10},44 C ${cx - 5},36 ${cx + 5},36 ${cx + 10},44" fill="none"
-      stroke="${INK}" stroke-width="2.1" opacity="0.75"/>`
+
+  // Warty bumps. Bright, NON-body-colored accents (a sepia-lined family has no
+  // other way to make a surface texture read at a glance) rather than tints of
+  // bodyColor/accent, which is the point -- they need to pop, not blend.
+  const BUMP_PINK = '#ff6fae'
+  const BUMP_TEAL = '#2ecfc0'
+  // Each bump sits astride the torso's own outline (rule 3's "limbs behind
+  // body" logic run in reverse: these are emitted AFTER the body so they read
+  // as things erupting FROM the hide, not parts tucked behind it). Centers are
+  // chosen just inside or right on the torso ellipse's edge at that angle so
+  // the bump's own radius carries it a few px past the silhouette without
+  // ever nearing the 0/120/0/140 box walls -- checked by hand at every site.
+  const bump = (cx, cy, r, fill) =>
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${ol(SW_MID)}/>`
+
+  // Eyes: big, round, WHITE-dominant with a small dark pupil -- the reference's
+  // most distinctive trait and a deliberate departure from this file's usual
+  // rule-4 plain ink dot. The shells go in before the body so the torso's
+  // outline cuts across their lower third (they bulge half above the head,
+  // the same toad-eye trick the previous version used), and the pupils go in
+  // after, or the torso would clip the bottom of each one.
+  const EYE_WHITE = '#ffffff'
+  const eyeShell = (cx) => `
+    <circle cx="${cx}" cy="40" r="19" fill="${EYE_WHITE}" ${ol(SW_MID)}/>`
+  const eyePupil = (cx) => `
+    <circle cx="${cx}" cy="43" r="7.4" fill="${INK}"/>
+    <path d="M ${cx - 12},32 C ${cx - 6},24 ${cx + 6},24 ${cx + 12},32" fill="none"
+      stroke="${INK}" stroke-width="2.3" opacity="0.75"/>`
 
   return svgWrap(
     fig(`
-      ${shadow(60, 136, 48)}
+      ${shadow(60, 138, 52)}
 
-      ${paws(accent, 94, 13, 14)}
-      ${feet(accent, 126, 16, 9)}
-      ${domeShell(40)}
-      ${domeShell(80)}
-      ${blob(bodyColor, 60, 88, 48, 44, true, BELLY_MG)}
-      ${domeFace(40)}
-      ${domeFace(80)}
-      ${shadeCrescent(60, 88, 48, 44)}
+      ${paws(accent, 100, 15, 16)}
+      ${feet(accent, 128, 19, 11)}
+      ${eyeShell(34)}
+      ${eyeShell(86)}
+      ${blob(bodyColor, 60, 86, 50, 52, true, BELLY_MG)}
+      ${eyePupil(34)}
+      ${eyePupil(86)}
+      ${shadeCrescent(60, 86, 50, 52)}
 
-      <!-- the maw, sitting on the belly patch. Teeth are a ROW of four small
-           blunt nubs along the upper lip: the first version had two big round
-           teeth centred in the dark oval and they read unmistakably as a
-           second pair of eyes, which made the real domed eyes above read as
-           ears. A row cannot be misread that way. -->
-      <path d="M 29,90 C 36,112 84,112 91,90 C 79,84 41,84 29,90 Z"
-        fill="${INK}" ${ol(SW_MID)}/>
-      <polygon points="38,89 46,89 42,97" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="50,87 58,87 54,95" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="62,87 70,87 66,95" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
-      <polygon points="74,89 82,89 78,97" fill="${BELLY}" stroke="${INK}" stroke-width="1.2"/>
+      <!-- the maw: far wider and deeper than the old version's, with a
+           jagged double row of fangs rather than four blunt nubs along one
+           lip. Upper fangs hang from the top of the cavity, lower fangs rise
+           from the bottom, offset by half a tooth-width so the two rows
+           interlace across the middle instead of leaving a clean gap --
+           that crossing is what reads as "jagged" rather than "toothed". -->
+      <path d="M 20,94 C 33,134 87,134 100,94 C 80,84 40,84 20,94 Z"
+        fill="${INK}" ${ol(SW)}/>
+      <polygon points="27,90 37,90 32,118" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="45,88 55,88 50,116" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="63,88 73,88 68,116" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="81,90 91,90 86,118" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="18,126 28,126 23,98" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="36,129 46,129 41,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="54,129 64,129 59,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="72,129 82,129 77,101" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
+      <polygon points="90,126 100,126 95,98" fill="${BELLY}" stroke="${INK}" stroke-width="1.4"/>
 
-      <circle cx="16" cy="74" r="3.4" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
-      <circle cx="104" cy="66" r="3" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
-      <circle cx="100" cy="104" r="3.8" fill="${accent}" stroke="${LINE}" stroke-width="1.2"/>
+      <!-- warty bumps: 8 of them, mixed pink/teal, ringing the torso from
+           the shoulders down to the haunches so the silhouette itself reads
+           as knobbly rather than smooth-round, which is what the earlier
+           "toad" reading came from. -->
+      ${bump(18, 70, 9, BUMP_PINK)}
+      ${bump(102, 68, 9, BUMP_TEAL)}
+      ${bump(14, 96, 8, BUMP_TEAL)}
+      ${bump(106, 92, 10, BUMP_PINK)}
+      ${bump(60, 38, 7, BUMP_TEAL)}
+      ${bump(38, 124, 9, BUMP_PINK)}
+      ${bump(82, 128, 8, BUMP_TEAL)}
+      ${bump(72, 64, 6, BUMP_PINK)}
     `)
   )
 }
