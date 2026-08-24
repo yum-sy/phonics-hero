@@ -36,27 +36,10 @@
 판정은 저장소의 <code>sound-verdicts.json</code> 에 바로 기록된다.
 <span class="src">file</span> = 미리 생성된 음소 파일, <span class="src">tts</span> = 엔진 합성.</p>
 
-<p class="note">15종(<code>tuh puh kuh buh duh guh huh juh fff mmm nnn lll rrr sss zz</code>)은
-이미 OK 판정이 유효하다 -- 다시 들을 필요 없다. <b>10종이 이번에 새로 생성됐다</b>
-(아래 목록에서 <b>미판정</b>으로 뜨는 것들 -- 옛 판정은 무효화해서 지웠다):
-어두 자음이 섞여 있던 결함을 고쳤다.</p>
-<p class="note">모음 10종 <code>aaa ihh eh uh awh a ee oh eye or</code> <b>특히 주의해서 들어라.</b>
-생성기는 "모음이다" 와 "다른 단어에서도 같게 나온다" 까지만 증명할 수 있고, 그게 정확히
-어떤 모음인지는 증명하지 못한다. 잘못 골랐다면 거기에 숨는다.</p>
+<p class="note">전체 41종이 전문 파닉스 녹음(Fundations 계열)에서 뜬 격리 음소다 --
+TTS 합성이 아니라 실제 사람이 발음한 순수 소리를 잘라낸 것. 각 항목의 <span class="src">source</span>
+표시가 어느 원본 mp3에서 왔는지 보여준다.</p>
 <div id="list"></div>
-
-<h2>결함 확인 · 대체안 비교</h2>
-<p class="note">가운데 버튼이 <b>증거</b>다. 지금 표기와 <i>글자 이름을 여러 번 읽은 것</i>이
-같은 소리로 들리면(파일이 바이트 동일이다) 아이는 소리가 아니라 글자 이름을 듣고 있는 것이다.
-오른쪽이 대체안이고, 그것에 대해 OK/NO 를 눌러라.</p>
-<div id="compare"></div>
-
-<h2>RAW rate 확인</h2>
-<p class="note">엔진 합성만 해당. 파일 소리는 rate 와 무관하다.</p>
-<div id="rates"></div>
-<p>단어 <input type="text" id="word" value="sss">
-   rate <input type="text" id="custom" value="0.5">
-   <button id="customgo">🔊 GO</button></p>
 
 <h2>진단</h2>
 <pre id="out"></pre>
@@ -203,7 +186,7 @@ for (const key of keys) {
 
 function paint() {
   let ok = 0, no = 0
-  for (const row of [...list.children, ...cmp.children]) {
+  for (const row of list.children) {
     const v = verdicts[row.dataset.key]
     for (const b of row.querySelectorAll('.v')) {
       b.classList.toggle('on-ok', !!v && v.v === 'ok' && b.dataset.v === 'ok')
@@ -213,7 +196,7 @@ function paint() {
     if (v && v.v === 'no') no++
   }
   document.getElementById('tally').textContent =
-    `OK ${ok} · NO ${no} · 미판정 ${keys.length + COMPARE.length - ok - no} / ${keys.length + COMPARE.length}`
+    `OK ${ok} · NO ${no} · 미판정 ${keys.length - ok - no} / ${keys.length}`
 }
 
 document.getElementById('reload').onclick = () => loadVerdicts()
@@ -221,65 +204,6 @@ document.getElementById('dump').onclick = () => {
   const no = keys.filter((k) => verdicts[k] && verdicts[k].v === 'no')
   log('NO: ' + (no.length ? no.join(' ') : '(없음)'))
   log('미판정: ' + (keys.filter((k) => !verdicts[k]).join(' ') || '(없음)'))
-}
-
-// ---- the seven confirmed misreads, each with its proof and its candidate ---
-// `proof` is byte-identical to `now` (md5, say -r 88, both voices unless noted).
-// Hearing them back to back is the only way a parent can confirm what the app
-// has actually been teaching; the candidate is measured but phoneme-unproven,
-// which is exactly what an ear has to settle.
-const COMPARE = [
-  { letter: 'S', now: 'sss', proof: 'ess ess ess',     alt: 'sse',  where: '두 음성' },
-  { letter: 'I', now: 'ihh', proof: 'eye aitch aitch', alt: 'ieh',  where: '두 음성' },
-  { letter: 'A', now: 'aaa', proof: 'ay ay ay',        alt: 'aae',  where: 'Alex' },
-  { letter: 'F', now: 'fff', proof: 'eff eff eff',     alt: 'ffe',  where: 'Alex' },
-  { letter: 'R', now: 'rrr', proof: 'ar ar ar',        alt: 'rruh', where: 'Samantha' },
-  { letter: 'M', now: 'mmm', proof: 'em em em',        alt: 'mmh',  where: 'Samantha' },
-  { letter: 'L', now: 'lll', proof: 'el el el',        alt: 'lleh', where: 'Samantha' },
-]
-const cmp = document.getElementById('compare')
-for (const c of COMPARE) {
-  const row = document.createElement('div')
-  row.className = 'row'
-  row.dataset.key = 'alt:' + c.alt
-  row.innerHTML =
-    `<span class="key">${c.letter}</span>` +
-    `<button class="play">지금 “${c.now}”</button>` +
-    `<button class="play proof">= “${c.proof}”</button>` +
-    `<button class="play cand">대신 “${c.alt}”</button>` +
-    `<span class="src">${c.where}</span>` +
-    `<button class="v" data-v="ok">OK</button>` +
-    `<button class="v" data-v="no">NO</button>`
-  const btns = row.querySelectorAll('.play')
-  btns[0].onclick = () => play(c.now)
-  btns[1].onclick = () => playTts(c.proof)
-  btns[2].onclick = () => playTts(c.alt)
-  for (const b of row.querySelectorAll('.v')) b.onclick = () => save('alt:' + c.alt, b.dataset.v)
-  cmp.appendChild(row)
-}
-
-// ---- raw rate ladder + engine diagnostics ----------------------------------
-for (const r of [0.1, 0.2, 0.3, 0.5, 0.85, 1]) {
-  const b = document.createElement('button')
-  b.textContent = '🔊 ' + r
-  b.onclick = () => {
-    const u = new SpeechSynthesisUtterance(document.getElementById('word').value || 'sss')
-    u.lang = 'en-US'
-    u.rate = r
-    const t0 = Date.now()
-    u.onend = () => log(`rate ${r}: ${Date.now() - t0}ms (reads back ${u.rate})`)
-    window.speechSynthesis.speak(u)
-  }
-  document.getElementById('rates').appendChild(b)
-}
-document.getElementById('customgo').onclick = () => {
-  const r = parseFloat(document.getElementById('custom').value)
-  const u = new SpeechSynthesisUtterance(document.getElementById('word').value || 'sss')
-  u.lang = 'en-US'
-  u.rate = r > 0 ? r : 1
-  const t0 = Date.now()
-  u.onend = () => log(`rate ${u.rate}: ${Date.now() - t0}ms`)
-  window.speechSynthesis.speak(u)
 }
 
 function dumpVoices(tag) {
