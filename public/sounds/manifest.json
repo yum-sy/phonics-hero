@@ -564,18 +564,18 @@
    "bright": 0.283
   },
   "lll": {
-   "ms": 125,
-   "naturalMs": 125,
+   "ms": 225,
+   "naturalMs": 225,
    "stretch": 1.0,
    "source": "fundations:l-lip.mp3 (word onset)",
    "pos": "onset",
    "class": "liquid",
    "rate": null,
    "pulses": 1,
-   "selfSim": 0.287,
+   "selfSim": 0.126,
    "edgeFluxRatio": null,
    "tailFluxRatio": null,
-   "bright": 0.096
+   "bright": 0.213
   }
  }
 }

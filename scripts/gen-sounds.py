@@ -1008,20 +1008,28 @@ EXTERNAL_CORPUS = [
 #
 # EXTRACTION: lobe 1 is found the same way lobe 0 is (all_islands(), see its
 # docstring), then cut_onset(word_seg, sr, 'liquid') -- the same onset_end()
-# consonant/vowel boundary already used for every CORPUS onset row -- finds
-# where that word's initial /l/ gives way to its vowel. There is no new
-# cut-boundary rule here, only a new *lobe* to point the existing one at.
+# consonant/vowel boundary already used for every CORPUS onset row, PLUS
+# LIQUID_ONSET_EXTRA_MS tacked on after it (see that constant's own comment,
+# next to cut_onset(), for why the raw onset_end() cut was too short and how
+# far past it turned out to be safe). There is no new cut-boundary rule
+# here, only a new *lobe* to point the existing one at, plus the same
+# "walk a fixed distance past the boundary" trick the plosive branch
+# already used.
 #
 # MEASURED (both from island 1, cut_onset('liquid'), fade()'d, re-read from
-# disk): lip-onset 125ms bright=0.096 zcr=0.031 selfSim=0.287 pulses=1;
-# lure-onset 125ms bright=0.090 zcr=0.030 selfSim=0.141 pulses=1. Both clear
-# CLASSES['liquid'] (ms 90-320, bright 0.03-0.55, zcr 0-0.30) with margin, and
-# cross-word agreement is unusually tight -- dbright=0.006, dzcr=0.001,
-# against AGREE_BRIGHT=0.45 / AGREE_ZCR=0.20 -- consistent with "this is the
-# same allophone from two different words", not a coincidence. The two
-# words' onset_end() landed on the same frame index in both (t=125ms) by
-# coincidence of the boundary rule, not because the audio was forced to
-# match; the bright/zcr numbers were computed independently per file.
+# disk, with LIQUID_ONSET_EXTRA_MS=100): lip-onset 224.7ms bright=0.213
+# zcr=0.046 selfSim=0.126 pulses=1; lure-onset 224.7ms bright=0.107
+# zcr=0.028 selfSim=0.324 pulses=1. Both clear CLASSES['liquid'] (ms
+# 90-320, bright 0.03-0.55, zcr 0-0.30) with margin. Cross-word agreement
+# (dbright=0.106, dzcr=0.018) is looser than the raw-onset_end() cut's
+# dbright=0.006 -- expected, since every extra ms past the murmur is each
+# word's OWN vowel color -- but still nowhere near AGREE_BRIGHT=0.45 /
+# AGREE_ZCR=0.20, and the divergence had already flattened by this length
+# (see LIQUID_ONSET_EXTRA_MS's comment for the full sweep). The two words'
+# onset_end() landed on the same frame index in both (t=125ms, before the
+# extra padding) by coincidence of the boundary rule, not because the
+# audio was forced to match; the bright/zcr numbers were computed
+# independently per file.
 #
 # `l-lip.mp3` is listed first and is what SHIPS (matches EXTERNAL_CORPUS's
 # own "first passing candidate ships, rest are cross-word evidence" rule,
@@ -1486,6 +1494,55 @@ def coda_start(fr, peak, klass, drop_frac=None):
     return None
 
 
+# lll's onset cut (see EXTERNAL_ONSET_CORPUS below) landed at 125ms straight
+# out of onset_end() -- real-device QA on that ("다크 L"/o-color fixed) came
+# back "다른 소리보다 너무 짧다" next. onset_end() itself cannot be pushed
+# past this: its threshold (bright>0.13, amp>peak*0.35) is not what is
+# binding here -- both l-lip.mp3 and ure-lure.mp3 hit onset_end()'s OWN
+# fallback (`return max(1, pk)`, the RMS peak frame) before either condition
+# ever fires, because a liquid's brightness never climbs much above the
+# vowel's own (0.09-0.14 throughout, well under 0.13 for lure the entire
+# clip). Sweeping the amp fraction 0.35->0.70 and the bright floor
+# 0.13->0.30 confirmed this: neither moved the cut by more than one 5ms
+# frame, because both are gated by `range(2, pk+1)` -- onset_end() cannot
+# return past the peak frame by construction. The only way to lengthen the
+# clip is what the plosive branch below already does: walk a fixed distance
+# PAST that point, same as PLOSIVE_VOWEL_MS.
+#
+# So `LIQUID_ONSET_EXTRA_MS` was swept directly (0/15/25/40/50/65/75/90/
+# 100/125/150/175/200ms tacked on after onset_end(), both words, re-measured
+# each time): every value through 175ms clears CLASSES['liquid'] (ms 90-320,
+# bright 0.03-0.55, zcr 0-0.30) for BOTH lip and lure with margin -- 200ms
+# breaks it (lure's total hits 325ms, over the 320ms ceiling, because that
+# extra walks into the next island). Gate compliance alone therefore permits
+# anything up to ~175ms extra (300ms total, the top of the requested
+# 200-300ms range) -- but the gate does not detect vowel-color creep, since
+# a liquid+vowel murmur and a liquid+vowel formant onset are both "quiet and
+# dark" by the same bright/zcr numbers the gate checks.
+#
+# The cross-word bright DIVERGENCE is what catches that instead (same
+# "agreement" logic EXTERNAL_ONSET_CORPUS's own header already uses to
+# trust this pair): at 0ms extra dbright=0.006 (lip and lure are, for
+# practical purposes, identical). It climbs steadily as more of each word's
+# OWN vowel gets pulled in -- lip's vowel is bright /ɪ/, lure's is a
+# rounded /jʊər/ glide, so anything past the shared /l/ murmur necessarily
+# diverges. That climb has a clear elbow: dbright grows by +0.01-0.03 per
+# 15-25ms step through 90ms extra (0.006->0.102), then FLATTENS from 100ms
+# on (0.106, 0.109, 0.108, 0.107 through 125/150/175ms extra) -- i.e. by
+# ~100ms extra the two words have already fully diverged into their own
+# vowel color and pushing further just adds more of each word's own,
+# uncorrelated vowel padding rather than any more shared /l/-transition
+# content. 100ms extra (224.7ms total for both words, coincidentally) is
+# the chosen value: it is the point where lengthening stops buying anything
+# real, it sits inside the requested 200-300ms band, and it clears
+# CLASSES['liquid'] on both words with wide margin (lip: bright=0.213
+# zcr=0.046 selfsim=0.126; lure: bright=0.107 zcr=0.028 selfsim=0.324 --
+# all lightyears from the 0.55/0.30/0.90 ceilings). Liquid-only: nasal's
+# onset_end() branch is untouched (mmm/nnn ship from the isolated/coda path,
+# never cut_onset), and this constant is consulted nowhere but here.
+LIQUID_ONSET_EXTRA_MS = 100
+
+
 def cut_onset(samples, sr, klass, vowel_ms=PLOSIVE_VOWEL_MS):
     fr, step = frames(samples, sr)
     if not fr:
@@ -1494,6 +1551,8 @@ def cut_onset(samples, sr, klass, vowel_ms=PLOSIVE_VOWEL_MS):
     hi = onset_end(fr, peak, klass) * step
     if klass == 'plosive':
         hi = min(len(samples), hi + int(sr * vowel_ms / 1000))
+    elif klass == 'liquid':
+        hi = min(len(samples), hi + int(sr * LIQUID_ONSET_EXTRA_MS / 1000))
     return samples[0:hi]
 
 
