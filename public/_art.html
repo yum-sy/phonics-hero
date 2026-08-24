@@ -128,10 +128,16 @@
   let html = ''
 
   for (const ch of chapters) {
+    // World 2+ (chapter order > 7) reuses World 1 hero assets verbatim --
+    // no new hero art to verify, so the gallery only needs to show villains
+    // for those chapters (사용자 지시: 히어로 세트는 이미 계열이 명시돼 있고
+    // 재사용이라 검증 대상이 아님).
+    const showHeroes = ch.order <= 7
     const cast = []
     const seen = new Set()
     for (const st of ch.stages) {
-      for (const [role, fn] of [['hero', art.heroArt], ['villain', art.villainArt]]) {
+      const roles = showHeroes ? [['hero', art.heroArt], ['villain', art.villainArt]] : [['villain', art.villainArt]]
+      for (const [role, fn] of roles) {
         const c = st[role]
         if (seen.has(c.art)) continue
         seen.add(c.art)
@@ -141,8 +147,9 @@
     const heroes = cast.filter((c) => c.role === 'hero')
     const villains = cast.filter((c) => c.role === 'villain')
     html += `<h2>챕터 ${ch.order} · ${ch.title}</h2>`
-    html += `<div class="note">${FAMILY[ch.id] || ''} · 히어로 ${heroes.length} / 빌런 ${villains.length}</div>`
-    for (const [label, group] of [['히어로', heroes], ['빌런', villains]]) {
+    html += `<div class="note">${FAMILY[ch.id] || ''} · ${showHeroes ? `히어로 ${heroes.length} / ` : '(히어로는 월드1 재사용, 검증 생략) · '}빌런 ${villains.length}</div>`
+    const groups = showHeroes ? [['히어로', heroes], ['빌런', villains]] : [['빌런', villains]]
+    for (const [label, group] of groups) {
       html += `<div class="note">${label}</div><div class="row">`
       for (const c of group) {
         const key = 'char:' + c.slug
