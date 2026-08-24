@@ -48,36 +48,66 @@
 ```
 HANDOFF.md             # 중단 지점 + 재발주 목록 (새 세션은 이걸 먼저 읽는다)
 CLAUDE.md              # 항구적 규칙 (이 파일)
+vite.config.js         # dev 전용 /__verdict 미들웨어 (소리·아트 갤러리 판정 저장)
+sound-verdicts.json    # 소리 갤러리 판정 (사용자가 실기기에서 OK/NO)
+art-verdicts.json      # 아트 갤러리 판정 (캐릭터 + 단어 아이콘)
+scripts/
+  gen-sounds.py        # 음소 에셋 생성기 (public/sounds/*.wav 재생성)
 src/
   main.js              # 진입점, renderWorldSelect() 호출
-  screens.js           # 4단계 네비게이션 + 9종 beat 렌더러 + 보스 등식 유도
-  audio.js             # TTS 큐 (겹침 방지, minSpeechMs 바닥), SpeechRecognition
+  screens.js           # 4단계 네비게이션 + 9종 beat 렌더러 + 보스 등식 유도 +
+                       #   reviewTargets 누적 복습 생성기(withGeneratedReview)
+  audio.js             # 음소 에셋 재생(큐 통합) + TTS 폴백 큐, SpeechRecognition
   state.js             # 진행 상태, 잠금 로직, 체크포인트
   art.js               # heroArt/villainArt dispatch + style 테이블 + 팔레트,
-                       #   슈퍼히어로 계열 함수
+                       #   슈퍼히어로(마블) 계열 함수
   art/
-    robots.js          # 챕터 1 · 카봇 (각진 변신자동차)
-    dinosaurs.js       # 챕터 3 · 공룡 (유기적 곡선)
-    creatures.js       # 챕터 4 · 포켓몬 계열 (세피아 선화)
-    platformer.js      # 챕터 5 · 마리오 계열 (검정 선화 + 흰 후광)
-    toys.js            # 챕터 6 · 토이스토리 계열 (굵은 잉크)
-  icons.js             # 단어 아이콘 50종 + shoutBurst() 집중선 효과
+    robots.js          # 카봇 계열(챕터 1·8 예정이던 자리 → 12로 이전, 각진
+                       #   변신자동차). HERO_VARIANTS/VILLAIN_VARIANTS 로 같은
+                       #   함수를 재사용해 구조 변주(색만이 아니라 실루엣도 다름)
+    dinosaurs.js       # 공룡 계열(챕터 3, 유기적 곡선)
+    creatures.js       # 포켓몬 계열(챕터 4, 세피아 선화). **동결.** 엠블럼은
+                       #   타원으로 확장돼 두 글자 다이그래프 대응됨
+    platformer.js      # 마리오 계열(챕터 5). **레고 슈퍼마리오 전동 피규어
+                       #   문법**(v9~v12) — 큰 사각 머리+캡 모듈, 회색 펙
+                       #   관절, 오버올 리벳. 이전의 "인체 골격 잉크 스티커"
+                       #   문법(v2~v8)은 폐기됨
+    toys.js            # 토이스토리 계열(챕터 6, 굵은 잉크 선화). 보스는 저그
+                       #   황제 모티브
+    dc.js              # DC 히어로 계열(챕터 7). 레고 미니피그 비율 —
+                       #   배트맨/플래시/사이보그/슈퍼맨 + 조커 모티브 보스
+  icons.js             # 단어 아이콘 70종. **그림체 전환 진행 중** — 이모지형
+                       #   평면 기호에서 그림책 삽화 스타일로(아래 참조)
   style.css            # 전체 스타일, 가로/세로 방향 지원
   data/
     chapters/
       index.js         # 챕터 통합, worlds/stages 배열, 조회 함수,
-                       #   validateChapters() (dev 전용 계약 검증)
-      chapter-01.js    # …  chapter-07.js (챕터 1–7, 스테이지 35개)
+                       #   validateChapters() (dev 전용 계약 검증),
+                       #   SOUND_TABLE(42개 소리 TTS 폴백 표기 단일 진실원)
+      chapter-01.js    # …  chapter-08.js (챕터 1–8, 스테이지 40개)
     stages.js          # 하위 호환 shim → chapters/index.js 재export
-public/                # 검증 하네스 — 셋은 회귀 스위트로 승격돼 추적된다
-  _probe.html          # 앱 화면 HUD: shot 53개 × 세로/가로, NOSCROLL/SCROLL,
+public/
+  sounds/              # 음소 에셋 wav 25종 + manifest.json (gen-sounds.py 산출물)
+                       # 검증 하네스 — 넷은 회귀 스위트로 승격돼 추적된다
+  _probe.html          # 앱 화면 HUD: shot 다수 × 세로/가로, NOSCROLL/SCROLL,
                        #   gap/bgap, SPILL(라벨 넘침), CLIP, on=[…] 요소 인구조사,
                        #   ?nat=1 여유 측정, ?css= 오버라이드, ?iso=<stage>:<kind>
-  _probe-fs.html       # 게임 로직·오디오: 시나리오 37개 + 35스테이지 플레이스루.
-                       #   REAL_MS 테이블은 rate 0.5 실측값이고 낡으면 거짓 통과를
-                       #   만든다 — 그걸 잡는 자체 테스트가 들어있다
-  _art.html            # 아트 갤러리 (크기 전환 + 실루엣 모드)
+  _probe-fs.html       # 게임 로직·오디오: 시나리오 64개(챕터8 이후 계속 늘어남).
+                       #   REAL_MS 테이블은 낡으면 거짓 통과를 만든다 — 그걸
+                       #   잡는 자체 테스트가 들어있다
+  _art.html            # 아트 갤러리 — 크기/실루엣 전환 + **OK/NO 판정 버튼**
+                       #   (art-verdicts.json 에 저장, 캐릭터 자동 반영 — 새
+                       #   챕터를 추가하면 코드 수정 없이 갤러리에 나타난다)
+  _audio.html          # 소리 갤러리 — 들어보기 + OK/NO (sound-verdicts.json).
+                       #   manifest.json 을 읽으므로 gen-sounds.py 재생성만
+                       #   하면 갤러리가 자동으로 새 소리를 반영한다
 ```
+
+**새 음성/캐릭터를 만들면 반드시 해당 갤러리로 실기기 검증할 수 있어야
+한다** — 캐릭터는 `_art.html` 이 `chapters` 를 순회해서 이미 자동
+반영되고(코드 수정 불필요), 소리는 `manifest.json` 재생성만 하면
+`_audio.html` 이 자동 반영한다. 갤러리 자체를 고쳐야 하는 경우는
+새 갤러리 섹션(예: 새 필터)을 추가할 때뿐이다.
 
 
 새 챕터 추가: `chapter-NN.js` 를 만들고 `chapters/index.js` 의 import + 배열에 넣으면
@@ -166,25 +196,51 @@ villainArt(villainOrName)
 스타일 계열은 파일로 분리한다 — 함수 두어 개를 넘기면 `src/art/<family>.js` 로 빼고
 `art.js` 가 import 해서 `HERO_STYLES`/`VILLAIN_STYLES` 에 등록한다. 그래야 디자이너를
 계열별로 병렬 투입할 수 있다(같은 파일이면 서로 덮어쓴다).
-- `art/robots.js` — `robot`, `robot-deluxe` (히어로/빌런, 챕터 1 = Carbot 계열). 각진
-  변신자동차 문법: 가슴=자동차 앞면(앞유리+그릴 슬랫+헤드라이트), 어깨 바퀴, 스포일러,
-  V 크레스트, `rx` 금지
-- `art.js` 내 슈퍼히어로 계열(챕터 2 = Marvel 히어로 계열) — `superhero`,
-  `superhero-acrobat/-shield/-thunder/-armor`, `supervillain-fog/-eraser/-stop/-jumble/-king`
-- `art/dinosaurs.js` — `dino-raptor/-armored/-flyer/-horned` (챕터 3 = 공룡 계열),
+- `art/robots.js` — `robot`, `robot-deluxe` (카봇 계열). 각진 변신자동차 문법:
+  가슴=자동차 앞면(앞유리+그릴 슬랫+헤드라이트), 어깨 바퀴, 스포일러, V 크레스트,
+  `rx` 금지. **`HERO_VARIANTS`/`VILLAIN_VARIANTS`**(각 4종: `wedge`/`spoiler-wide`/
+  `crest-double`/`vent-slats`, `spike-back`/`twin-horn`/`saw-crown`/`hook-claw`)가
+  귀-핀/어깨/뿔만 바꿔서 같은 함수로 구조가 다른 실루엣을 낸다 — 계열이 반복될
+  때(챕터 12, 15, 22, 29) 색상 놀이에서 벗어나는 장치. 팔레트 엔트리에 `variant`
+  키로 배정한다
+- `art.js` 내 슈퍼히어로(마블) 계열 — `superhero`,
+  `superhero-acrobat/-shield/-thunder/-armor`, `supervillain-fog/-eraser/-stop/-jumble/-king`.
+  `superhero-armor`(`heroPoweredArmor`) 는 "가장 두꺼운 실루엣" 으로 설계돼 있어서
+  별도 함수 없이 챕터 보스 합체 폼 자리를 겸한다(captain-pin, 챕터8 재사용시
+  captain-nova 도 동일). 마스크 눈은 `lenses()`/`slit()` 로 그리는데 **바깥쪽
+  (관자놀이) 모서리가 안쪽보다 높아야** 상승형(영웅적)이다 — `tilt` 부호를
+  거꾸로 넣으면 처진 눈이 된다(`ea9b9ab`/`c09d09a` 에서 실제로 발견된 버그)
+- `art/dinosaurs.js` — `dino-raptor/-armored/-flyer/-horned` (공룡 계열),
   `dino-blink/-echo/-upside/-swamp/-shadow-rex`. 유기적 `path` 곡선, 큰 흰 눈, 온색 중립색
   — 로봇 계열과 반대 문법
 - `art/platformer.js` — `plat-jumper/-spring/-block/-powerup`, `plat-flip/-slime/
-  -magnetjack/-brick/-glitch` (챕터 5 = 마리오 계열). 굵은 검정 잉크 선화 +
-  **흰 스티커 후광**(부품 모델에서 `haloPaint` 흰 채움 + `stroke +9` 를 깔고 그 위에
-  `paint` — 그림자/반짝임/파편은 `nohalo:true`, 텍스트는 제외). **인체 비율·관절이
-  미완이다 — `HANDOFF.md` §4 참조**
-- `art/creatures.js` — `crt-*` (챕터 4 = 포켓몬 계열). 세피아 선화(`#7a5c48`) +
-  굵기 계층 2.6/2.0/1.4, 엠블럼 판만 **3.0(파일 내 최대)**, `shadeCrescent()` 경계
-  선명한 음영. **선화 색을 검정으로 바꾸지 마라** — 토이스토리·마리오 계열과 같아진다.
-  원색 몸 + 세피아 선화가 이 계열의 정체성이다
-- `art/toys.js` — `toy-*` (챕터 6 = 토이스토리 계열). 굵은 잉크 선화 + 각진 구조
-- 모든 SVG: viewBox `"0 0 120 140"`, 그라디언트/필터 금지(SVG 내부)
+  -magnetjack/-brick/-glitch` (마리오 계열). **레고 슈퍼마리오 전동 피규어
+  문법(v9~v12)** — 머리가 어깨보다 큰 사각 덩어리, 별도 모듈인 캡(돔+챙+옆머리),
+  회색 `pegDisc()` 관절(반경을 작게, 하이라이트 점 없이 — 크면 물방울무늬처럼
+  튄다), 팔은 `legoArmBase`(머리보다 먼저)/`legoArmFist`(머리보다 나중)로
+  나눠서 치켜든 주먹이 머리에 안 가려지게 한다. 코일 계열(`platSpring`)은
+  목 트라페조이드 대신 **좁은 코일 링 하나**가 목 자리를 겸한다. 보스
+  (`platPowerup`) 는 다른 세 히어로보다 훨씬 크고 화면을 꽉 채워야 한다 —
+  잉크 픽셀 비율로 증명해라(장식 몇 개 추가로는 안 된다, 실측 사례:
+  82.65%→88.62%가 통과선이었다). 이전의 "인체 골격 잉크 스티커" 문법
+  (v2~v8, 흰 스티커 후광)은 전면 폐기됐다
+- `art/creatures.js` — `crt-*` (포켓몬 계열). **동결.** 세피아 선화(`#7a5c48`) +
+  굵기 계층 2.6/2.0/1.4, `shadeCrescent()` 경계 선명한 음영. **선화 색을 검정으로
+  바꾸지 마라** — 토이스토리·마리오 계열과 같아진다. 원색 몸 + 세피아 선화가
+  이 계열의 정체성이다. **엠블럼 판은 원형 유지, 타원으로 확장**돼 두 글자
+  다이그래프를 담는다(`emblemBadge()`, 링 스트로크는 다이그래프에서 2로
+  얇아진다 — 홑글자용 3~3.6 폭 그대로 쓰면 잉크와 겹친다)
+- `art/toys.js` — `toy-*` (토이스토리 계열). 굵은 잉크 선화 + 각진 구조 + 면
+  겹치기 음영. 보스(`toyWindDown`) 는 저그 황제 모티브(뿔 투구, 빛나는 눈
+  슬릿, 박쥐 날개 어깨, 톱니 밑단 망토)
+- `art/dc.js` — `dc-hero`(4종: 배트맨/플래시/사이보그/슈퍼맨형) + 조커 모티브
+  보스 빌런(DC 히어로 계열). 레고 미니피그 비율. 배트맨 망토는 밑단이 아래로
+  갈수록 **바깥으로 벌어져야** 등 뒤에 붙은 것처럼 보인다(좁아지면 실루엣에서
+  안 보인다)
+- 모든 SVG: viewBox `"0 0 120 140"`, 그라디언트/필터 금지(SVG 내부).
+  `creatures.js` 는 산문 주석에 의도적으로 `--` 를 쓴다 — SVG 파싱 전에
+  `<!--...-->` 를 벗겨야 한다(안 벗기면 전부 PARSE-FAIL, "이미 비싸게 배운
+  함정" 절 참고)
 
 **계열 간 그림체 통일은 요구사항이 아니다 (사용자 확정).** 원문: *"챕터마다 전부 완전히
 새로운 그림체와 컨셉으로 가도 상관 없어. 하나의 앱이라는 일관성이라는 게 필요 없다는
@@ -202,18 +258,23 @@ villainArt(villainOrName)
 그라디언트/필터 금지, `emblem` 글자의 가독성(파닉스 교육 요소), 아트가 알파벳으로
 오독되지 않을 것.
 
-### 세계관 순서 (챕터 스타일 계열 사이클, 7개씩 반복)
-| # | 계열 | 상태 |
-|---|---|---|
-| 1 | **Carbot** — 각진 변신로봇 | 완료 `art/robots.js` |
-| 2 | **Marvel 히어로 계열** | 완료 (`art.js` 내) |
-| 3 | **공룡** | 완료 `art/dinosaurs.js` |
-| 4 | **포켓몬 계열** — 라이츄/잠만보/몰드류 + 합체 리자몽 | **완료·동결** (사용자 승인: "아주 좋아 더 이상 변경할게 없어 보여") |
-| 5 | **마리오 계열** — 모자+장갑 점프 플랫포머 | 관절·다리 완료, **그림체 방향 재검토 중**(레고형 vs 픽셀) |
-| 6 | **토이스토리 계열** — 살아있는 장난감들 | 완료 `art/toys.js` |
-| 7 | **DC 히어로 계열** — 케이프+카울 탐정, 비행 능력자 등 | **미착수** (robot 폴백) |
+### 세계관 순서
 
-챕터 8 부터 이 7개 계열이 다시 반복된다.
+**월드 1**(챕터 1~7, 고정): Carbot → Marvel → 공룡 → 포켓몬(동결) →
+마리오(레고) → 토이스토리 → DC. 7계열 전부 완료.
+
+**월드 2+ 는 계열 순서가 매번 다르다** (사용자 지시: "월드 2부터 이
+순서를 다 다르게 배치하자"). 챕터 8 은 원래 카봇이었는데 **마블로
+재배정**됐다(`8a98fe5`) — 로봇 인프라(`HERO_VARIANTS` 등)는 버려지지
+않고 챕터 12 로 이전됐다. **월드별 실제 배정표와 그 근거(포켓몬의
+다이그래프 제약 등)는 `HANDOFF.md` §-1 이 최신이다** — 여기서 표를
+중복 관리하지 않는다, 새 챕터를 계열에 배정하기 전에 그 표를 봐라.
+
+**히어로/빌런 변주 정책**: 계열이 반복될 때 히어로는 같은 그림
+함수+구조를 재사용하고 이름·엠블럼만 바꾼다(색을 크게 바꿀 필요 없음).
+빌런은 매번 색을 눈에 띄게 다르게 배정한다(구조 변주가 있으면 그것도
+바꾼다). 이미 실행 중인 관행이다 — `art.js` 팔레트 주석에 "챕터 N 의
+회색/보라/... 와 갈리게" 라는 식으로 매번 남겨라.
 
 **계열 성격은 데이터가 아니라 아트가 소유한다.** 사용자가 계열별로 원작 캐릭터의
 **특징을 분명하게** 잡으라고 지시했다 — 원문: *"아는 캐릭터가 나오는 거랑 오리지널
@@ -234,19 +295,19 @@ villainArt(villainOrName)
 > **세션을 새로 시작했다면 먼저 `HANDOFF.md` 를 읽어라.** 그 파일이 "지금 중단된
 > 지점"과 재발주할 작업 목록을 담고 있다. 이 문서(`CLAUDE.md`)는 항구적 규칙이다.
 
-측정된 현재 수치 (커밋 `1c74cc5` 기준):
-챕터 **7개** / 스테이지 **35개** / 단어 아이콘 **50종** / 캐릭터 슬롯 **70개**
-`validateChapters` **0건** / 프로덕션 빌드 **통과** / 캐릭터 렌더 실패 **0**
+측정된 현재 수치 (커밋 `ac8b02b` 기준):
+챕터 **8개** / 스테이지 **40개** / 단어 아이콘 **69종** / 캐릭터 팔레트 **81개**
+`validateChapters` **0건** / 프로덕션 빌드 **통과**
 
 ### 완료
-- [x] 월드 선택 → 챕터 선택 → 스테이지 맵 → 스테이지 화면 네비게이션
-- [x] **챕터 1–7 (월드 1 완결)** — Jolly Group 1–4:
-      S/A/T · I/P/N · C·K/E/H · R/M/D · G/O/U · L/F/B · AI/J/OA
+- [x] 월드 선택(합체 히어로 실루엣) → 챕터 선택(빌런 실루엣) → 스테이지 맵 →
+      스테이지 화면 네비게이션
+- [x] **챕터 1–8 (월드 1 완결 + 월드 2 첫 챕터)** — Jolly Group 1–4 전체:
+      S/A/T · I/P/N · C·K/E/H · R/M/D · G/O/U · L/F/B · AI/J/OA · IE/EE/OR
 - [x] 9가지 beat 타입 렌더러 (`match-shape` 포함 — b/d 반전을 *모양*으로 가르치는 beat)
-- [x] TTS 큐 (겹침 방지, 안전 타임아웃, stuck 방지, `cancel()` 미호출 원칙)
-- [x] **최소 발화 시간 바닥 (`minSpeechMs`)** — iPadOS 의 `onend` 조기 발화에 대한 방어.
-      추정이 아니라 **엄격한 하한**이라 정직한 엔진에서는 분기가 발화되지 않는다
-      (정직 경로 간격 바이트 동일). 리워드 화면 겹침 +2292ms → −14ms
+- [x] **소리 드릴이 TTS 에서 단어 기반 음소 에셋으로 전환**(`public/sounds/*.wav`
+      25종) — 글자 이름 스펠아웃 오독 계열이 원리적으로 닫혔다. 오디오 큐가
+      에셋/TTS 양쪽을 통합 처리, 실패 시 무음 없이 TTS 로 폴백
 - [x] 오답 재시연 (2연속 오답 시 힌트), 음성 중 화면 이동 차단(`whenAudioIdle()`)
 - [x] `clearAudioQueue()` — 뒤로가기 시 대기 발화 취소(진행 중 발화는 자연 종료)
 - [x] 체크포인트 복구 — 슬립/리로드/크래시에서만 살아남고 의도적 이탈에는 지워진다
@@ -254,38 +315,48 @@ villainArt(villainOrName)
 - [x] 보스 합체 연출 — 미니봇 **3개(스테이지 2–4)** 슬라이드인 + 최종 형태,
       **탭으로 즉시 스킵**(이중 실행 가드)
 - [x] **보스 합체 다음 화면 = 글자 등식** — `drag-build` `target` 에서 `targetSlots()`
-      로 유도한다(`S + A + T = SAT`, 챕터 7 은 `R + AI + N = RAIN` 으로 다이그래프 유지).
-      빌드 타깃에서 유도하므로 아이가 실제로 조립하는 것과 어긋날 수 없다
+      로 유도한다. 빌드 타깃에서 유도하므로 아이가 실제로 조립하는 것과 어긋날 수 없다
 - [x] **표시 / 발화 분리** — `words[]`·`readAloud`·`options[]`·`letters[]` 가 표시용과
-      발화용을 따로 갖는다. `screens.js` 의 모든 `speakEN` 이 오디오 전용 필드나
-      `spokenPair()`/`optionSpeech()` 정규화 결과만 받는다(표시 문자열 직접 발화 경로 0개)
-- [x] **다이그래프 지원 전체 경로** — `drag-build` 슬롯 배열(`['R','AI','N']`),
-      `optionLabelHtml` 의 `length <= 2` sr-only, 검증기, 등식 유도
+      발화용을 따로 갖는다(표시 문자열 직접 발화 경로 0개)
+- [x] **다이그래프 지원 전체 경로** — `drag-build` 슬롯 배열, `optionLabelHtml` 의
+      `length <= 2` sr-only, 검증기, 등식 유도. 엠블럼 판은 6계열(카봇/공룡/토이/
+      마리오/마블/DC)이 공유하는 "두 한계 중 좁은 쪽이 이긴다" 자동 축소 공식
+      (`plateType`/`superheroPlate`/`emblemPlate`)으로 두 글자를 담고, 포켓몬만
+      원형 배지라 별도로 타원 확장(`emblemBadge`)이 필요했다 — 이제 7계열 전부
+      다이그래프 안전
 - [x] **`validateChapters()`** — dev 로드 시 데이터 계약 위반을 `console.error` 로 출력.
       프로덕션 번들에서는 tree-shaking 으로 제거됨(빌드로 확인)
-- [x] **아트 데이터화** — `heroArt`/`villainArt` 가 style 테이블로 dispatch, 계열별 파일 분리
-- [x] **아트 계열 6종** — 카봇 / 마블 / 공룡 / 포켓몬 / 마리오 / 토이스토리.
-      계열마다 그림체가 다르다 (의도된 것 — 위 "캐릭터 아트" 절 참조)
+- [x] **`reviewTargets` 누적 복습 생성기**(`withGeneratedReview`, `screens.js`) —
+      챕터 9+ 가 `reviewTargets` 를 선언하고 손으로 퀵파이어를 안 쓰면 자동 생성.
+      챕터 1~8 은 게이트로 보호돼 기존 콘텐츠 그대로
+- [x] **난이도 곡선 파일럿** — 챕터 6·7·8 이 역할별 보기 개수 표(warmup 3 유지 ·
+      표준 4 · hard 5 · wordspot 3 유지 · multiselect 5)로 아는 글자 수 증가에
+      비례해 우연 정답률이 낮아진다. 챕터 1~5 는 계획만 있고 미실행(아이콘
+      재고 확인 필요, "난이도 곡선" 절 참고)
+- [x] **아트 데이터화** — `heroArt`/`villainArt` 가 style 테이블로 dispatch, 계열별
+      파일 분리, `HERO_VARIANTS`/`VILLAIN_VARIANTS` 로 같은 함수 재사용 시 구조도 변주
+- [x] **아트 계열 7종 전부 완료** — 카봇 / 마블 / 공룡 / 포켓몬(동결) / 마리오
+      (레고) / 토이스토리 / DC. 계열마다 그림체가 다르다(의도된 것)
+- [x] **소리 갤러리**(`_audio.html`) + **아트 갤러리**(`_art.html`, OK/NO 판정) —
+      실기기에서 사용자가 직접 듣고/보고 판정, `sound-verdicts.json`/
+      `art-verdicts.json` 에 저장(`vite.config.js` 의 `/__verdict` 미들웨어)
 - [x] 텍스트 1.5~2.2배 확대 + 애니메이션 톤 팔레트 → 레이아웃 빈 공간 해결
-      (세계 선택 62.3%→1.7%, 보스 합체 29.2%→2.8%)
 
 ### 진행 중 / 미완료
-전체 목록과 재발주용 상세는 **`HANDOFF.md` §4** 를 보라. 요약:
-- [ ] **맵 화면 4건** — 텍스트 2배 더, `Power of I` 의 타깃 글자 색 강조, 별 제거,
-      제목 줄바꿈 시 노드 정렬. `battle4` 가 텍스트 확대로 `SCROLL ovfY=46` 회귀
-- [ ] **마리오 인체 비율·관절** — 어깨/손목/무릎 관절 없음, 엉덩이 폭이 어깨보다 넓음
-- [ ] **Magno(잠만보) 누운 자세** + **포켓몬 원색 전환** + **Captain Red 과감하게**
-- [ ] **난이도 곡선** — 7챕터의 beat 구성·보기 개수·`reviewTargets` 가 사실상 동일한데
-      아이가 아는 글자는 3→18개로 늘어난다. **챕터 간 누적 복습이 설계되지 않았다**
-- [ ] `.beat-equation` 스타일링 (등식 전용 중간 크기 — 훅만 있고 규칙이 없다)
-- [x] ~~`icons3` 세로 여백 11.4%~~ → **3.1% 로 해소됐다**(옵션 그리드 탄성화).
-      남은 8% 초과는 가로 `finale2` 9.3% · `build2c` 8.8% · `recovery` 8.7% 뿐이고
-      전부 선재다. **`bossN` shot 의 여백 수치는 합체 연출 중간값이라 무의미하다**
-      (세 번째 미니봇이 아직 도착 전이고 히어로가 `scale(0)` 이다 — 세로 17.3% 로
-      읽힌다). 정지 상태는 `invite` shot 이다
-- [ ] 챕터 7 **DC 히어로 계열 아트 미착수** (현재 robot 폴백 — 크래시는 없다)
-- [ ] 아이콘 공백 (`grep -rn "TODO(icon)" src/data/chapters/*.js`)
-- [ ] 챕터 8–33 콘텐츠 (26개)
+전체 목록과 재발주용 상세는 **`HANDOFF.md`** 를 보라(§-1 이 월드 순서,
+나머지가 세부 항목). 요약:
+- [ ] **아이콘 그림체 전환** — 이모지형 평면 기호에서 그림책 삽화 스타일로.
+      10종 프로토타입 완료(`ant`/`corn`/`feet`/`fish`/`jug`/`mat`/`nose`/`sock`/
+      `tap`/`top`), 나머지 59종은 방향 확정 후 진행
+- [ ] **난이도 곡선 챕터 2~5 소급** — 아이콘 재고(oddoneout 형식이 한 소리에
+      그림 3개 필요) 확인이 선행돼야 한다
+- [ ] `.beat-equation` 스타일링 — 완료됨(측정된 폭 공식이 이미 있다), 재확인만
+      필요하면 하되 처음부터 다시 만들지 마라
+- [ ] 챕터 9–33 콘텐츠(25개) — 챕터 9(Z/W/NG)부터 Jolly Group 5, 음소 에셋이
+      아직 그룹5 일부(NG/OO 장단음)만 있고 V/W/그룹6~7은 없다. 챕터 9 착수 전에
+      오디오팀의 자산 진행 상황을 확인해라
+- [ ] `chapterSelectScreen()` 의 실루엣도 히어로로 바꿀지 — 월드 선택은 이미
+      바뀌었다(`889e2ec`), 챕터 선택은 사용자 판단 대기
 
 ### 출시 전 확인
 - [x] ~~`DEV_UNLOCK_ALL` 을 손으로 `false` 로 바꾸기~~ → **구조적으로 해결됨.**
@@ -294,9 +365,11 @@ villainArt(villainOrName)
 - [ ] 빌드 산출물 확인(회귀 방지): `dist/assets/*.js` 에 `DEV_UNLOCK`·`import.meta.env`·
       `validateChapters` 가 **없고**, 잠금 함수가 `return true` 로 단축되지 않고 실제 로직
       (`return n<=0||m(e[n-1].id)` 형태)을 유지하는지 확인
-- [ ] **실기기에서 소리 표기 청취 확인** — macOS `say` 측정으로 하이픈형 결함을 잡았지만
-      iPad Safari 음성과 동일 보장은 없다. 챕터 1 스테이지 1(`sssss` 단일형)과
-      챕터 7(`a, a, a` 콤마형) 두 개만 들어보면 형식 양쪽을 다 확인한다
+- [ ] **실기기에서 음소 에셋 청취 확인** — 소리 드릴은 이제 TTS 콤마/단일 표기가
+      아니라 `public/sounds/*.wav` 재생이다(위 "소리 드릴은 TTS 가 아니라..." 절).
+      새로 추가된 `puh`(재소싱)·`ngh`/`uuu`/`uuh`(신규) 는 `_audio.html` 판정만
+      됐고 실기기 확인이 아직이다. TTS 폴백 경로(챕터 9+ 미출시 소리)는 여전히
+      콤마/단일 표기 규칙이 적용되므로 그 경로가 살아있는 챕터가 생기면 별도 확인 필요
 
 ## 검증 방법 (재현 가능)
 이 맥에는 `rsvg-convert`/`magick`/`inkscape` 가 **없다.** SVG·화면 확인은 두 경로뿐:
