@@ -1307,8 +1307,12 @@ export function platSpring({
     E(69, 98, 12, 16, GREEN_DK, { opacity: 0.2, nohalo: true }),
     E(50, 82, 9, 5, '#fff', { opacity: 0.24, nohalo: true }),
 
-    // 5. White belly (Yoshi's pale front).
-    E(60, 99, 15, 17, SNOUT_CLR, ink(2.2)),
+    // 5. White belly (Yoshi's pale front) -- grown from 15x17 to 19x20 so it
+    // reads as the dominant patch on the torso (real Yoshi's belly is most
+    // of the front, not a sliver peeking round the badge); still leaves a
+    // thin green ring against the 24x21 body oval so the belly doesn't
+    // fuse into the outline.
+    E(60, 99, 19, 20, SNOUT_CLR, ink(2.2)),
 
     // 6. Emblem plate on the belly.
     emblemPlate(43, 90, 34, 20, visorColor, accent, emblem, true),
