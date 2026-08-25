@@ -275,20 +275,24 @@ const ICONS = {
       <rect x="20" y="26" width="24" height="6" rx="3" fill="#b8b8b8"/>
     `),
 
+  // Round 2 redraw. Thin light-gray brick lines (stroke 2.5, #b8b8b8) washed
+  // out at button size, and the arch reused ink's exact navy (#0c447c) --
+  // both flagged after a licensed reference sheet (i=igloo cell) was
+  // supplied. Matched it directly: thick black outline (stroke 3.4, same
+  // weight the rest of the bold-outline icon family uses), a visible grid
+  // of individually-outlined brick blocks instead of overlaid arc/line
+  // strokes, and a plain dark entrance (not ink's specific navy).
   igloo: () =>
     wrap(`
-      <rect x="1" y="50" width="62" height="8" rx="4" fill="#eafcff"/>
-      <path d="M3 52 A29 29 0 0 1 61 52 Z" fill="#f5f2ea"/>
-      <g stroke="#b8b8b8" stroke-width="2.5" fill="none">
-        <path d="M7 38 A28 26 0 0 1 57 38"/>
-        <path d="M17 27 A19 19 0 0 1 47 27"/>
-        <path d="M12 52 V40"/>
-        <path d="M52 52 V40"/>
-        <path d="M22 38 V28"/>
-        <path d="M42 38 V28"/>
+      <path d="M4 54 A28 27 0 0 1 60 54 Z" fill="#eef2f5" stroke="#1c1c1c" stroke-width="3.4" stroke-linejoin="round"/>
+      <g stroke="#1c1c1c" stroke-width="2" fill="none">
+        <path d="M4 54 A28 27 0 0 1 60 54"/>
+        <path d="M9 44 A22 22 0 0 1 55 44"/>
+        <path d="M16 35 A14 15 0 0 1 48 35"/>
+        <path d="M12 54 V44 M32 54 V32 M52 54 V44"/>
+        <path d="M20 44 V36 M44 44 V36"/>
       </g>
-      <path d="M18 52 A14 17 0 0 1 46 52 Z" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="2.5"/>
-      <path d="M22 52 A10 13 0 0 1 42 52 Z" fill="#0c447c"/>
+      <path d="M20 54 A12 15 0 0 1 44 54 Z" fill="#33393f" stroke="#1c1c1c" stroke-width="3"/>
     `),
 
   // A top-down winged ladybug, so it never reads as the side-on all-black
