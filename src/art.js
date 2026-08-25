@@ -780,6 +780,17 @@ const HERO_PALETTES = {
   'inky': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'I' },
   'pip': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'P' },
   'nord': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'N' },
+  // 챕터 8 이 챕터 2 와 완전히 동일한 에셋(색 변경 없음, 사용자 확정)을
+  // 재사용하지만, 같은 이름으로 재사용하면 팔레트 emblem 하나를 두 챕터가
+  // 공유하게 돼 챕터8 실제 커리큘럼(IE/EE/OR)과 다른 배지(I/P/N)가 뜨는
+  // 조용한 버그가 된다(실제로 발견됨). 챕터 데이터에 emblem 을 직접 못
+  // 넣게 validateChapters 가 막고 있으므로("색·외형은 art.js 소유"),
+  // CLAUDE.md 의 "표시 이름 / 아트 정체성 분리" 원칙대로 표시 이름은
+  // 그대로 'Inky' 등을 쓰되 art 슬러그만 별도(-c8)로 둬서 이 팔레트
+  // 항목을 따로 가진다. 색은 전부 동일하게 복사, emblem 만 다르다.
+  'inky-c8': { style: 'superhero-acrobat', bodyColor: '#d1332f', accent: '#1f3c88', capeColor: '#1f3c88', emblem: 'IE' },
+  'pip-c8': { style: 'superhero-shield', bodyColor: '#3a63c7', accent: '#f5f2ea', capeColor: '#c0272d', emblem: 'EE' },
+  'nord-c8': { style: 'superhero-thunder', bodyColor: '#3f4654', accent: '#c9cfd8', capeColor: '#c0272d', maskColor: '#c9cfd8', emblem: 'OR' },
   // `inkColor` is set here rather than left to the art function because this
   // character is red/gold while heroPoweredArmor's own default is indigo.
   'captain-pin': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', inkColor: '#6e1216', emblem: '★' },

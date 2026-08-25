@@ -203,7 +203,7 @@ export const chapter8 = {
       order: 1,
       title: 'A Rising Sound',
       villain: { name: 'Foglurk', art: 'foglurk', style: 'supervillain-fog' },
-      hero: { name: 'Inky', art: 'inky', style: 'superhero-acrobat' },
+      hero: { name: 'Inky', art: 'inky-c8', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
@@ -310,7 +310,7 @@ export const chapter8 = {
       order: 2,
       title: 'Power of IE',
       villain: { name: 'Smudge', art: 'smudge', style: 'supervillain-eraser' },
-      hero: { name: 'Inky', art: 'inky', style: 'superhero-acrobat' },
+      hero: { name: 'Inky', art: 'inky-c8', style: 'superhero-acrobat' },
       chapterBoss: false,
       beats: [
         {
@@ -454,7 +454,7 @@ export const chapter8 = {
       order: 3,
       title: 'Power of EE',
       villain: { name: 'Blockade', art: 'blockade', style: 'supervillain-stop' },
-      hero: { name: 'Pip', art: 'pip', style: 'superhero-shield' },
+      hero: { name: 'Pip', art: 'pip-c8', style: 'superhero-shield' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
@@ -615,7 +615,7 @@ export const chapter8 = {
       order: 4,
       title: 'Power of OR',
       villain: { name: 'Tanglewire', art: 'tanglewire', style: 'supervillain-jumble' },
-      hero: { name: 'Nord', art: 'nord', style: 'superhero-thunder' },
+      hero: { name: 'Nord', art: 'nord-c8', style: 'superhero-thunder' },
       chapterBoss: false,
       reviewTargets: [
         'S', 'A', 'T', 'I', 'P', 'N', 'C', 'K', 'E', 'H', 'R', 'M',
