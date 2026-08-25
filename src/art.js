@@ -888,7 +888,9 @@ const VILLAIN_PALETTES = {
   'floodlight': { style: 'dc-floodlight' },
   'nightfall': { style: 'dc-nightfall' },
   // 챕터 8 빌런. 챕터 1 의 회색/보라/암회색/주황/검정과 갈리게.
-  'rustbot': { bodyColor: '#a1552e', accent: '#4f2513', variant: 'hook-claw' },
+  // hue 20(챕터1 tickbot)과 5도밖에 안 떨어져 거의 겹치던 것을 hue 47
+  // 앰버브라운으로 교체 (디자이너 감사에서 발견, 2026-08)
+  'rustbot': { bodyColor: '#b8862e', accent: '#5c3d13', variant: 'hook-claw' },
   'crashbot': { bodyColor: '#4f6b8a', accent: '#243546', variant: 'twin-horn' },
   'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16', variant: 'spike-back' },
   'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c', variant: 'saw-crown' },
