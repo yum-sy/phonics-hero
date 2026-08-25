@@ -1274,7 +1274,48 @@ const ICONS = {
   book: () => photoIcon('book'),
   yoyo: () => photoIcon('yoyo'),
   fox: () => photoIcon('fox'),
-  chips: () => photoIcon('chips'),
+  // A potato-chip bag, redrawn by hand after the photo-crop version (still a
+  // reference-sheet fries carton at these proportions) read as a duplicate
+  // of `fries` -- same red carton, same yellow sticks poking up. This is
+  // deliberately the opposite build on every axis fries uses: a tall
+  // standing pouch (not a wide short carton) with a jagged heat-sealed
+  // crimp on top and a folded seam band at the bottom (fries has neither --
+  // it is an open-top box), green (not red -- the only other green in the
+  // set is `snake`'s cord-thin body, nothing bag-shaped), and the chips
+  // themselves are ruffled ovals with a wavy scalloped rim, not straight
+  // rods -- the single detail meant to kill the fries confusion even in a
+  // hard greyscale cutout where the color split disappears. Style/palette
+  // are original, not traced from any reference image.
+  chips: () => {
+    const clipId = nextId('chips-clip')
+    const bagTop =
+      'M15 20 L18.5 11 L23 18 L27.5 10 L32 18 L36.5 10 L41 18 L45.5 11 L49 20 Z'
+    const bagBody =
+      'M15 20 Q13 34 14.5 46 L49.5 46 Q51 34 49 20 Z'
+    const bagFold = 'M14.5 46 Q14 51 17 56 L47 56 Q50 51 49.5 46 Z'
+    // Ruffled chip: a lumpy oval built from alternating wide/narrow curves
+    // around the rim instead of a smooth ellipse, so the scallop reads even
+    // at a hard cutout.
+    const chip = (cx, cy, s, rot) =>
+      `<g transform="translate(${cx} ${cy}) rotate(${rot}) scale(${s})">` +
+      `<path d="M-11 1 Q-9 -7 -3 -6 Q1 -9 6 -5 Q12 -6 11 1 Q13 6 6 7 Q2 10 -2 7 Q-9 9 -11 3 Z" ` +
+      `fill="#f0c987" stroke="#a5672a" stroke-width="1.8" stroke-linejoin="round"/>` +
+      `<path d="M-6 -2 Q0 -4.5 5 -1" fill="none" stroke="#c9975c" stroke-width="1.3" stroke-linecap="round"/>` +
+      `</g>`
+    return wrap(`
+      <g>${chip(24, 8, 1.35, -18)}${chip(33, 4, 1.5, 10)}${chip(41, 9, 1.3, 28)}</g>
+      <path d="${bagBody}" fill="#2f9e5c"/>
+      <path d="${bagTop}" fill="#2f9e5c"/>
+      <clipPath id="${clipId}"><path d="${bagBody}"/></clipPath>
+      <path d="M32 20 L49.5 20 Q51 34 49.5 46 L36 46 Q34 34 32 20 Z" fill="#3fb86e" clip-path="url(#${clipId})"/>
+      <path d="${bagFold}" fill="#1c7a43"/>
+      <line x1="17.5" y1="51" x2="46.5" y2="51" stroke="#0f5c30" stroke-width="1.6"/>
+      <ellipse cx="32" cy="33" rx="9" ry="6.5" fill="#e7d9a8" stroke="#a5672a" stroke-width="1.6"/>
+      <path d="${bagBody}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="${bagTop}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="${bagFold}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
+    `)
+  },
   shoe: () => photoIcon('shoe'),
   thumb: () => photoIcon('thumb'),
   queen: () => photoIcon('queen'),
