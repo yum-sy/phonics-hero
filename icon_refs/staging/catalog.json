@@ -2,12 +2,13 @@
   "apple": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      7,
-      51,
-      178,
-      140
+      4,
+      4,
+      179,
+      139
     ],
-    "croppedFile": "apple.png"
+    "croppedFile": "apple.png",
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (7,51,178,140) started 47px too far down into the cell, cutting the leaf; new box is the full 4x6 corner-grid cell (row0,col0) inset 4px to clear the ruling line, keep_largest drops the 'Aa' label."
   },
   "cat": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -33,12 +34,13 @@
   "fish": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      190,
-      194,
-      361,
-      283
+      187,
+      147,
+      362,
+      282
     ],
-    "croppedFile": "fish.png"
+    "croppedFile": "fish.png",
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (190,194,361,283) cut the dorsal fin tip; new box is the full cell (row1,col1) inset 4px, keep_largest drops the 'Ff' label."
   },
   "hat": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -63,13 +65,13 @@
   "kite": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      460,
-      302,
-      520,
-      426
+      370,
+      290,
+      545,
+      425
     ],
     "croppedFile": "kite.png",
-    "note": "cropBox replaced 2026-08 clipping fix: original box (x0=373,y0=337) started below the kite's top point, losing the entire top (pink/red) half of the diamond"
+    "note": "cropBox replaced again 2026-08-25 (real-device pass): the prior 'fix' (460,302,520,426) still clipped the left tip and top point -- it was inset too far from the cell. New box is the full cell (row2,col2) inset 4px, keep_largest drops the 'Kk' label."
   },
   "cup": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -85,22 +87,24 @@
   "nose": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      190,
-      480,
-      361,
-      569
+      187,
+      433,
+      362,
+      568
     ],
-    "croppedFile": "nose.png"
+    "croppedFile": "nose.png",
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (190,480,361,569) started 47px too far down, cutting the nose bridge/top; new box is the full cell (row3,col1) inset 4px, keep_largest drops the 'Nn' label."
   },
   "octopus": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      373,
-      480,
-      544,
-      569
+      370,
+      433,
+      545,
+      568
     ],
-    "croppedFile": "octopus.png"
+    "croppedFile": "octopus.png",
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (373,480,544,569) cut the left tentacle tips; new box is the full cell (row3,col2) inset 4px, keep_largest drops the 'Oo' label."
   },
   "sun": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -189,13 +193,13 @@
   "bee": {
     "source": "스크린샷 2026-08-25 오후 1.04.24.png",
     "cropBox": [
-      979,
-      463,
+      981,
+      423,
       1080,
-      552
+      591
     ],
     "croppedFile": "bee.png",
-    "note": "reference card labeled 'buzz' but pictures a bee"
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (979,463,1080,552) stopped well above the card's white-interior bottom, cutting the bee's foot; re-measured the card's white interior directly, keep_largest drops the 'ZZ' label + 'zzzzzz' sleep decoration."
   },
   "hand": {
     "source": "스크린샷 2026-08-25 오후 1.04.54.png",
@@ -232,13 +236,13 @@
   "rain": {
     "source": "스크린샷 2026-08-25 오전 11.13.35.png",
     "cropBox": [
-      14,
-      568,
-      213,
-      669
+      10,
+      560,
+      222,
+      672
     ],
     "croppedFile": "rain.png",
-    "note": "cropBox extended 2026-08 clipping fix: original y1=661 cut both raindrop tips; still needs keep_largest_component (crop-icon-photos.py) to drop the neighboring ai label glyph"
+    "note": "cropBox replaced again 2026-08-25 (real-device pass): the prior 'fix' (14,568,213,669) still clipped the cloud's rightmost lobe -- its content bbox landed exactly on that box's right edge with zero margin, which read as fine in a bbox-margin check but wasn't. Widened right edge to 222 (still short of the ai/ee card separator at ~224), keep_largest drops the 'ai' caption glyph."
   },
   "pie": {
     "source": "스크린샷 2026-08-25 오전 11.14.29.png",
@@ -303,12 +307,13 @@
   "elephant": {
     "source": "스크린샷 2026-08-25 오후 1.05.11.png",
     "cropBox": [
-      631,
-      259,
+      628,
+      206,
       736,
-      337
+      356
     ],
-    "croppedFile": "elephant.png"
+    "croppedFile": "elephant.png",
+    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (631,259,736,337) stopped well below the card's white-interior top, cutting the ear; re-measured the card's white interior directly (pixel scan) and used that (inset a few px from the blue border), keep_largest drops the 'e' label."
   },
   "ball": {
     "source": "스크린샷 2026-08-25 오후 1.05.11.png",

@@ -272,6 +272,17 @@ def process_abs(source, box, name, tol=16, pad=5, keep_largest=False):
     print(name, "->", outpath, result.size)
 
 
+def process_standalone(source, name, tol=16, pad=5, keep_largest=False):
+    """Like `process_abs()` but for a standalone reference image that is
+    already just the illustration on a flat background (no flashcard grid
+    to slice into) -- e.g. a single asset the user supplies directly. Takes
+    the whole image as the box.
+    """
+    im = Image.open(os.path.join(REFS, source)).convert("RGB")
+    w, h = im.size
+    process_abs(source, (0, 0, w, h), name, tol=tol, pad=pad, keep_largest=keep_largest)
+
+
 def process(sheet, cols, rows, row, col, frac_box, name, tol=16, pad=5):
     cell = load_grid_cell(sheet, cols, rows, row, col)
     cw, ch = cell.size
@@ -340,8 +351,14 @@ if __name__ == "__main__":
     # pull in a nearby caption letter as a second disjoint blob, so those
     # two need keep_largest=True; kite/rat came out clean without it.
     process_abs(A, (373, 262, 475, 356), "moon", keep_largest=True)
-    process_abs(C, (460, 302, 520, 426), "kite")
-    process_abs(D2, (14, 568, 213, 669), "rain", keep_largest=True)
+    # kite: re-widened again in the 2026-08-25 real-device pass below (see
+    # that comment) -- (460, 302, 520, 426) still clipped the left tip.
+    process_abs(C, (370, 290, 545, 425), "kite", keep_largest=True)
+    # rain: re-widened again below -- (14, 568, 213, 669) still clipped the
+    # cloud's rightmost lobe (its content bbox landed exactly on that box's
+    # right edge with zero margin, which read as intact at a glance but
+    # wasn't -- confirmed by re-deriving from the source sheet).
+    process_abs(D2, (10, 560, 222, 672), "rain", keep_largest=True)
     process_abs(C, (240, 610, 361, 712), "rat")
 
     # yoyo: D is only 2 cells wide with no clean grid helper -- crop its
@@ -380,3 +397,52 @@ if __name__ == "__main__":
     process_abs(A, (600, 250, 730, 365), "fork", keep_largest=True)
     process_abs(E, (333, 202, 429, 282), "tree", keep_largest=True)
     process_abs(F, (755, 446, 860, 525), "ball", keep_largest=True)
+
+    # 2026-08-25 real-device clipping pass -- user checked _art.html on the
+    # actual iPad and reported eight icons clipped (apple/nose/elephant/fish
+    # top, kite/octopus left, rain right, bee bottom); a prior session had
+    # re-measured these with alpha-bbox math and wrongly called them fine.
+    # Re-derived by hand from the source sheets (grid math for the C-sheet
+    # corner-style five, direct pixel scans for elephant/bee/rain's "card"
+    # style borders -- see chat history for the scan method), each cross-
+    # checked with an actual qlmanage render, not just bbox numbers:
+    #   - apple/nose/fish/kite/octopus share sheet C's 4x6 corner grid
+    #     (cell = 183x143px). The old boxes were inset far enough from the
+    #     cell edge to dodge the grid ruling line but that inset ate into
+    #     the artwork (apple's leaf, nose's bridge, fish's dorsal fin,
+    #     kite's left tip+top point, octopus's left tentacle tips). Fix:
+    #     crop each *full* cell (row*143..row*143+143, col*183..+183) inset
+    #     by only 4px -- just enough to clear the ruling line -- then
+    #     keep_largest to drop the corner label glyph (Aa/Nn/Ff/Kk/Oo) that
+    #     the wider box now also catches.
+    #     (An earlier attempt here expanded *outward* past the cell edge
+    #     to be extra safe, onto the black ruling line itself. That backfired:
+    #     flood_transparent's BFS starts on the crop's outer ring, and the
+    #     ruling line's antialiased gray forms an unbroken wall the fill
+    #     can't cross, so it only clears a thin band near the edge and
+    #     leaves almost the entire cell -- label included -- opaque. Stay
+    #     *inside* the ruling line, never on it.)
+    #   - elephant/bee/rain are each a different "card" sheet (blue-bordered,
+    #     green-bordered, purple-bordered respectively) where the old boxes
+    #     simply didn't reach far enough: elephant's box stopped well below
+    #     the card's white-interior top (ear clipped), bee's stopped well
+    #     above the interior bottom (foot clipped), rain's right edge landed
+    #     exactly on the cloud's rightmost lobe with zero margin (content
+    #     bbox flush against the box edge reads as "fine" in a bbox-margin
+    #     check but is visibly clipped on screen). Fix: re-measured each
+    #     card's white-interior rectangle with a pixel scan and used that
+    #     (inset a few px from the border) as the box, with keep_largest to
+    #     drop the card's letter/caption text.
+    process_abs(C, (4, 4, 179, 139), "apple", keep_largest=True)
+    process_abs(C, (187, 433, 362, 568), "nose", keep_largest=True)
+    process_abs(C, (187, 147, 362, 282), "fish", keep_largest=True)
+    process_abs(C, (370, 433, 545, 568), "octopus", keep_largest=True)
+    process_abs(F, (628, 206, 736, 356), "elephant", keep_largest=True)
+    process_abs(A, (981, 423, 1080, 591), "bee", keep_largest=True)
+
+    # feet: replaces the hand-drawn SVG in src/icons.js (repeatedly buggy --
+    # see CLAUDE.md/HANDOFF.md history) with a user-supplied standalone
+    # asset (icon_refs/feet_asset.png, a side-profile foot on a flat
+    # #f7f7f7 background, not a flashcard sheet) run through the same
+    # background-removal pipeline as every other photo icon.
+    process_standalone("feet_asset.png", "feet", keep_largest=True)
