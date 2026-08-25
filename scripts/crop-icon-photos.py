@@ -305,6 +305,8 @@ B = "스크린샷 2026-08-25 오전 11.14.29.png"  # red sheet, 7x3, ay/ou/ie/ea
 C = "스크린샷 2026-08-25 오전 11.07.55.png"  # ABC alphabet sheet, 4x6, corner style
 D = "스크린샷 2026-08-25 오전 11.08.54.png"  # yoyo | zipper pair, corner style
 D2 = "스크린샷 2026-08-25 오전 11.13.35.png"  # purple sheet, ai/rain card (used by re-crop pass only)
+E = "스크린샷 2026-08-25 오후 1.04.54.png"  # blue sheet, hand/tree cards (used by re-crop pass only)
+F = "스크린샷 2026-08-25 오후 1.05.11.png"  # blue sheet, ball card (used by re-crop pass only)
 
 if __name__ == "__main__":
     process(A, 9, 3, 2, 7, CARD_BOX, "zebra")
@@ -359,3 +361,22 @@ if __name__ == "__main__":
     result = trim_edge_slivers(result)
     result.save(os.path.join(OUT, "yoyo.png"))
     print("yoyo ->", os.path.join(OUT, "yoyo.png"), result.size)
+
+    # 2026-08 second clipping-fix pass (chapter 1-8 icon re-audit) -- six
+    # more of the original 31 legacy crops (never recorded as process()/
+    # process_abs() calls in this file to begin with -- they were produced
+    # by an ad hoc one-off pass in commit 6c034cf and only the resulting
+    # PNGs + catalog.json cropBox history survived) turned out to clip real
+    # artwork once re-measured pixel-by-pixel against the source sheets:
+    # cat's ear tips, hand's fingertips, umbrella's finial knob, fork's
+    # handle butt, and tree's trunk (box bottom stopped 15px short of where
+    # the trunk pixels actually end). ball wasn't clipped but had pulled in
+    # a disjoint fragment of the blue "ll" in the "ba(ll)" caption below it
+    # as a second blob -- keep_largest drops it. All six re-derived with
+    # generous margins the same way as the moon/kite/rain/rat pass above.
+    process_abs(C, (373, 36, 549, 143), "cat", keep_largest=True)
+    process_abs(E, (90, 55, 225, 135), "hand", keep_largest=True)
+    process_abs(C, (0, 745, 183, 858), "umbrella", keep_largest=True)
+    process_abs(A, (600, 250, 730, 365), "fork", keep_largest=True)
+    process_abs(E, (333, 202, 429, 282), "tree", keep_largest=True)
+    process_abs(F, (755, 446, 860, 525), "ball", keep_largest=True)

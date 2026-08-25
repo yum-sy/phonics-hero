@@ -1152,17 +1152,25 @@ const ICONS = {
     const skin = '#f5d3ab'
     const ink = '#1c1c1c'
     const shade = '#e0ab78'
-    const sole = 'M32 13 Q50 13 52 29 L52 45 Q52 61 32 61 Q12 61 12 45 L12 29 Q14 13 32 13 Z'
-    const heel = 'M32 40 Q45 40 45 50 Q45 61 32 61 Q19 61 19 50 Q19 40 32 40 Z'
+    // Sole/heel/toes all shifted down from the original draft, which put
+    // the two tallest toe ellipses' tops at y=-2..-2.7 -- off the top of
+    // the 0-64 viewBox once the 3px toe stroke's half-width is added
+    // (measured via the padded-viewBox alpha-scan CLAUDE.md calls for --
+    // this is what actually renders as flat-cut toe tips, not the
+    // "silhouette barely changed" kind of note this file's header usually
+    // tracks). Sole top/bottom moved from 13/61 to 15/59 and every toe's cy
+    // +6 so the tallest toe now clears the top with ~2px to spare.
+    const sole = 'M32 15 Q50 15 52 30 L52 45 Q52 59 32 59 Q12 59 12 45 L12 30 Q14 15 32 15 Z'
+    const heel = 'M32 40 Q45 40 45 49 Q45 59 32 59 Q19 59 19 49 Q19 40 32 40 Z'
     // Big toe at one end shrinking to the pinky at the other, same as a
     // real foot -- all five centered on one shallow arc so the row reads as
     // "toes on a foot" rather than a straight ruled line of dots.
     const toes = [
-      [15, 10, 6, 7.4],
-      [24.5, 6, 6.4, 8],
-      [34, 5.3, 6.4, 8],
-      [43, 7.5, 5.8, 7.2],
-      [50.5, 12.5, 4.8, 6],
+      [15, 16, 6, 7.4],
+      [24.5, 12, 6.4, 8],
+      [34, 11.3, 6.4, 8],
+      [43, 13.5, 5.8, 7.2],
+      [50.5, 18.5, 4.8, 6],
     ]
     const toeShapes = toes
       .map(

@@ -13,11 +13,12 @@
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
       373,
-      51,
-      544,
-      140
+      36,
+      549,
+      143
     ],
-    "croppedFile": "cat.png"
+    "croppedFile": "cat.png",
+    "note": "cropBox replaced 2026-08 second clipping fix: original box (y0=51) started below both ear tips, clipping them"
   },
   "duck": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -125,12 +126,13 @@
   "umbrella": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      7,
-      766,
-      178,
-      855
+      0,
+      745,
+      183,
+      858
     ],
-    "croppedFile": "umbrella.png"
+    "croppedFile": "umbrella.png",
+    "note": "cropBox replaced 2026-08 second clipping fix: original box (y0=766) started below the canopy peak, clipping the yellow finial knob"
   },
   "car": {
     "source": "스크린샷 2026-08-25 오후 1.04.24.png",
@@ -176,12 +178,13 @@
   "fork": {
     "source": "스크린샷 2026-08-25 오후 1.04.24.png",
     "cropBox": [
-      615,
-      262,
-      717,
-      350
+      600,
+      250,
+      730,
+      365
     ],
-    "croppedFile": "fork.png"
+    "croppedFile": "fork.png",
+    "note": "cropBox replaced 2026-08 second clipping fix: original box (y1=350) ended above the handle butt, clipping its rounded tip"
   },
   "bee": {
     "source": "스크린샷 2026-08-25 오후 1.04.24.png",
@@ -197,12 +200,13 @@
   "hand": {
     "source": "스크린샷 2026-08-25 오후 1.04.54.png",
     "cropBox": [
-      115,
-      46,
-      211,
-      108
+      90,
+      55,
+      225,
+      135
     ],
-    "croppedFile": "hand.png"
+    "croppedFile": "hand.png",
+    "note": "cropBox replaced 2026-08 second clipping fix: original box (y0=46) started above the nd label bottom, and the label got flattened into the fingertip crop, clipping the two tallest fingertips"
   },
   "gift": {
     "source": "스크린샷 2026-08-25 오후 1.04.54.png",
@@ -220,9 +224,10 @@
       333,
       202,
       429,
-      264
+      282
     ],
-    "croppedFile": "tree.png"
+    "croppedFile": "tree.png",
+    "note": "cropBox replaced 2026-08 second clipping fix: original box (y1=264) ended mid-trunk (real trunk pixels continue to y=279), clipping the trunk down to a stub"
   },
   "rain": {
     "source": "스크린샷 2026-08-25 오전 11.13.35.png",
@@ -313,6 +318,7 @@
       860,
       525
     ],
-    "croppedFile": "ball.png"
+    "croppedFile": "ball.png",
+    "note": "keep_largest_component added 2026-08 second clipping fix: a wider box pulled in a disjoint fragment of the blue \"ll\" in the \"ba(ll)\" caption below as a second blob"
   }
 }
