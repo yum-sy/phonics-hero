@@ -447,27 +447,22 @@ const ICONS = {
   // drawn shorter and noticeably WIDER (a round bulb nose, not a slim
   // wedge) specifically to sit apart from tie's narrow necktie silhouette,
   // which stays that narrow the whole way down with squared-off shoulders.
-  // Round 2 redraw. Rejected as an unattached organic blob -- with nothing
-  // around it, a lone nose shape doesn't read as a face part to a 5-year-old,
-  // it reads as an unidentified brown lump. This version frames it with the
-  // minimum face context that fixes that: two eyebrow arcs above, a smiling
-  // mouth below, and blush-cheek circles flanking it, so the gestalt is
-  // "face, here is its nose" rather than an isolated shape. Nostrils enlarged
-  // and darkened so they read at button size.
+  // Round 2 (rejected). Framed the nose with eyebrows/mouth/cheeks for face
+  // context. Round 3 redraw: user supplied a licensed reference sheet
+  // (Jolly-style alphabet chart, Nn cell) and asked to match it directly --
+  // that reference has NO face context at all, just the nose alone: a
+  // simple front-view bulb, pale tan fill, thick black outline, two dark
+  // oval nostrils near the bottom. Matched that exactly rather than
+  // re-litigating the context question -- bolder outline (stroke 3.4 vs the
+  // old 2.6) is what the reference actually leans on to read clearly alone.
   nose: () =>
     wrap(`
-      <circle cx="13" cy="41" r="5.4" fill="#f2a4a0" opacity="0.55"/>
-      <circle cx="51" cy="41" r="5.4" fill="#f2a4a0" opacity="0.55"/>
-      <path d="M13 17 Q20 11 27 15" fill="none" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
-      <path d="M37 15 Q44 11 51 17" fill="none" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
-      <path d="M30 13 Q22 24 19 33 Q16 42 19 48 Q21.5 52.5 27 54 Q29.5 55 32 53
-               Q34.5 55 37 54 Q42.5 52.5 45 48 Q48 42 45 33 Q42 24 34 13
-               Q32 11 30 13 Z"
-        fill="#f5d6b0" stroke="#c98f4e" stroke-width="2.6" stroke-linejoin="round"/>
-      <path d="M28 16 Q21 25 19 34" fill="none" stroke="#fbe8cf" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>
-      <ellipse cx="25" cy="47" rx="4.6" ry="3.4" fill="#7a5230" transform="rotate(-18 25 47)"/>
-      <ellipse cx="39" cy="47" rx="4.6" ry="3.4" fill="#7a5230" transform="rotate(18 39 47)"/>
-      <path d="M20 56 Q32 61 44 56" fill="none" stroke="#5a3a22" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M28 10 Q20 22 17 32 Q14 42 18 49 Q22 55 32 55
+               Q42 55 46 49 Q50 42 47 32 Q44 22 36 10
+               Q32 6 28 10 Z"
+        fill="#f2dcb8" stroke="#1c1c1c" stroke-width="3.4" stroke-linejoin="round"/>
+      <ellipse cx="25" cy="46" rx="4.4" ry="3.2" fill="#3a2a1a" transform="rotate(-12 25 46)"/>
+      <ellipse cx="39" cy="46" rx="4.4" ry="3.2" fill="#3a2a1a" transform="rotate(12 39 46)"/>
     `),
 
   // -- Group 2: C/K, E, H (chapter 3) --
@@ -1346,44 +1341,23 @@ const ICONS = {
     `)
   },
 
-  // A whole lattice pie in its dish, seen from just above the rim. Two
-  // decisions carry it, and both exist to keep it away from `cake`, which is
-  // the nearest icon in the set. Proportion: the pie is wide and shallow
-  // (about 55x38) where the cake is tall with candle spikes over it and a
-  // plate under it. And the outline is deliberately bumpy -- sixteen crimp
-  // bumps ring the crust, so the hard-cutout shape is a scalloped flower
-  // rather than the smooth disc that would put it next to `ball`, `orange`
-  // and `ten`. The pastry lattice over dark filling is also what stops a
-  // 5-year-old naming it pizza: pizza has neither a lattice nor a dish.
-  pie: () => {
-    const clipId = nextId('pie-clip')
-    let crimp = ''
-    const bumps = 16
-    for (let i = 0; i < bumps; i++) {
-      const a = (i / bumps) * Math.PI * 2
-      const x = (32 + Math.cos(a) * 24).toFixed(1)
-      const y = (33 + Math.sin(a) * 10.5).toFixed(1)
-      crimp += `<circle cx="${x}" cy="${y}" r="3.6" fill="#d9a96b"/>`
-    }
-    const bands = a => `
-      <g transform="rotate(${a} 32 33)">
-        <rect x="10" y="24.6" width="44" height="3.8" fill="#d9a96b"/>
-        <rect x="10" y="31.1" width="44" height="3.8" fill="#d9a96b"/>
-        <rect x="10" y="37.6" width="44" height="3.8" fill="#d9a96b"/>
-      </g>`
-    return wrap(`
-      <ellipse cx="32" cy="38" rx="27" ry="12" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="2.2"/>
-      ${crimp}
-      <ellipse cx="32" cy="33" rx="24" ry="10.5" fill="#d9a96b"/>
-      <ellipse cx="32" cy="33" rx="17.5" ry="7" fill="#791f1f"/>
-      <clipPath id="${clipId}"><ellipse cx="32" cy="33" rx="17.5" ry="7"/></clipPath>
-      <g clip-path="url(#${clipId})">
-        ${bands(22)}
-        ${bands(-22)}
-      </g>
-      <ellipse cx="32" cy="33" rx="17.5" ry="7" fill="none" stroke="#a87a45" stroke-width="1.6"/>
-    `)
-  },
+  // Round 2 (rejected). Lattice pie in a dish -- too many stacked shapes
+  // (dish, crimp bumps, lattice bands, clip path) read as visual noise at
+  // button size. User supplied a licensed reference sheet (ie=pie cell) and
+  // asked to match it: a single plain domed pie, no dish, no lattice --
+  // just a round golden-brown crust with a few curved texture lines across
+  // the top (the crimped-edge/vent-slit look real pie photos show), bold
+  // black outline. Kept away from `cake` the same way as before (wide/
+  // shallow oval vs. cake's tall tiers), just with far fewer shapes.
+  pie: () =>
+    wrap(`
+      <ellipse cx="32" cy="40" rx="27" ry="9" fill="#a8641f"/>
+      <ellipse cx="32" cy="34" rx="27" ry="16" fill="#d9a45c" stroke="#1c1c1c" stroke-width="3.2"/>
+      <path d="M14 30 Q20 22 26 29" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
+      <path d="M28 24 Q32 17 36 24" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
+      <path d="M38 29 Q44 22 50 30" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
+      <path d="M20 38 Q32 44 44 38" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.6"/>
+    `),
 
   // The third IE picture. `lie` was the obvious candidate and was rejected --
   // see the report: it is a verb, and a figure lying down reads as "sleep",
@@ -1560,16 +1534,21 @@ const ICONS = {
   // than round-tipped, and the shoulder necks down to a 7-wide handle.
   // `net` and `aim` are a disc on a thin diagonal handle; `hand` has five
   // staggered digits, a wide palm and a cuff.
+  // Round 2: bolder outline (3.4 vs 2.2) and a steeper tilt (-28deg vs -10),
+  // matching a licensed reference sheet (or=fork cell) the user supplied --
+  // same tine/handle construction, just thicker ink and a more diagonal
+  // rest-on-a-table angle, which is what made the reference read clearly as
+  // cutlery rather than a comb.
   fork: () =>
     wrap(`
-      <g transform="rotate(-10 32 32)">
+      <g transform="rotate(-28 32 32)">
         <path d="M19.8 11 L22 7 L24.2 11 L24.2 31 Q25.33 33 26.47 31 L26.47 11
                  L28.67 7 L30.87 11 L30.87 31 Q32 33 33.13 31 L33.13 11
                  L35.33 7 L37.53 11 L37.53 31 Q38.67 33 39.8 31 L39.8 11
                  L42 7 L44.2 11 L44.2 31 C44.2 35 36.6 35.5 35.6 39
                  L34.6 56 Q34.6 59.5 32 59.5 Q29.4 59.5 29.4 56 L28.4 39
                  C27.4 35.5 19.8 35 19.8 31 Z"
-          fill="#b8b8b8" stroke="#2c2c2a" stroke-width="2.2" stroke-linejoin="round"/>
+          fill="#c4c4c4" stroke="#1c1c1c" stroke-width="2" stroke-linejoin="round"/>
         <path d="M32 42 L31.7 55" fill="none" stroke="#8e8e96" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M22 13 L22 28" fill="none" stroke="#f5f2ea" stroke-width="1.4" stroke-linecap="round"/>
       </g>
