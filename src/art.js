@@ -827,20 +827,50 @@ const HERO_PALETTES = {
   'jett': { style: 'dc-jett' },
   'cloak': { style: 'dc-cloak' },
   'nightray': { style: 'dc-boss' },
-  // 챕터 8 (카봇 두 번째 슬롯). 챕터 1 의 초록/주황/파랑/빨강과 색상 이웃이
-  // 겹치지 않게 청록·자주·황토를 골랐다 -- 같은 계열이 두 번 나오므로 배색이
-  // 유일한 구분 수단이다.
-  //
-  // 챕터 8 은 IE/EE/OR 셋 다 다이그래프다. 첫 글자만 새기는 우회는
-  // **축약이 아니라 모순**이었다 -- 세 다이그래프가 하필 전부 앱이 이미
-  // 다른 소리로 가르친 모음으로 시작한다(I=짧은 /i/ 챕터2, E=짧은 /e/ 챕터3,
-  // O=짧은 /o/ 챕터5). 그래서 판이 두 글자를 못 담던 동안은 '★' 를 썼다.
-  // `e81a1ae` 가 robots.js 의 엠블럼 판을 5계열 전부 두 글자 대응으로
-  // 넓혔다(IE/EE/OR 포함 16/16 클리핑 0, 재확인됨) -- 이제 실제 다이그래프를 새긴다.
-  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: 'IE', variant: 'vent-slats' },
-  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: 'EE', variant: 'spoiler-wide' },
-  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: 'OR', variant: 'crest-double' },
-  'nitrostorm': { style: 'robot-deluxe', bodyColor: '#2f7fd6', accent: '#12406e' },
+  // 원래 챕터 8(카봇이 마블로 재배정되기 전)용으로 심어졌던 항목 --
+  // emblem 이 그 시절 챕터8 예정 글자(IE/EE/OR)로 박혀 있었다. 챕터 12가
+  // 같은 이름(nitro/speedy/stormer)을 재사용하면서 그대로 남아있으면
+  // 챕터12 실제 커리큘럼(TH/QU/OU)과 다른 글자 배지가 뜨는 조용한 버그였다
+  // -- emblem 을 챕터12 각 스테이지가 실제로 가르치는 글자로 교정
+  // (nitro=stage2 TH, speedy=stage3 QU, stormer=stage4 OU).
+  // 색은 그대로 유지(청록/자주/황토, 카봇 계열 챕터1·8 과 안 겹침).
+  'nitro': { bodyColor: '#1f9b8e', accent: '#0d4f48', emblem: 'TH', variant: 'vent-slats' },
+  'speedy': { bodyColor: '#8c4bbf', accent: '#4a1f6b', emblem: 'QU', variant: 'spoiler-wide' },
+  'stormer': { bodyColor: '#c98a1f', accent: '#6b4409', emblem: 'OU', variant: 'crest-double' },
+  // 보스 합체 히어로. 예전 이름(nitrostorm)이 챕터12 실제 데이터의
+  // 'vector-prime' 으로 확정돼 이름만 갱신, 색은 그대로.
+  'vector-prime': { style: 'robot-deluxe', bodyColor: '#2f7fd6', accent: '#12406e' },
+
+  // 챕터 9~14 신규 히어로. 정책상 색은 안 바꿔도 되지만(HANDOFF.md 참고),
+  // emblem 은 필수다 -- 팔레트 항목이 없으면 아트 함수 자체의 하드코딩된
+  // 기본 emblem(예: dinoRaptor 의 'C', 챕터3 coco 시절 값)이 그대로
+  // 새어나가 챕터가 실제로 안 가르치는 글자가 배지에 뜬다(nitro/speedy/
+  // stormer 에서 실제로 발견된 것과 같은 함정). 보스 히어로(챕터 마지막
+  // 스테이지, 합체 폼)와 "새 글자 없는 복습 스테이지"용 히어로는 기존
+  // trike(챕터3 보스) 관례대로 emblem 없이 색만 준다.
+  'fizz': { style: 'dino-raptor', emblem: 'Z' },
+  'talon': { style: 'dino-armored', emblem: 'W' },
+  'wingo': { style: 'dino-flyer', emblem: 'NG' },
+  'roara': { style: 'dino-horned' },
+  'bounce': { style: 'plat-jumper', emblem: 'V' },
+  'zoomer': { style: 'plat-spring', emblem: 'OO' },
+  'blocky': { style: 'plat-block', emblem: 'Y' },
+  'turbo-gum': { style: 'plat-powerup' },
+  'sarge': { style: 'toy-soldier', emblem: 'X' },
+  'pluma': { style: 'toy-plush', emblem: 'CH' },
+  'blocko-jr': { style: 'toy-block', emblem: 'SH' },
+  'captain-blockhead': { style: 'toy-boss' },
+  'beacon': { style: 'dc-ray', emblem: 'OI' },
+  'cascade': { style: 'dc-cloak', emblem: 'UE' },
+  'nightray-prime': { style: 'dc-boss' },
+  'sparkit': { style: 'creature-rocket', emblem: 'AR' },
+  'magnix': { style: 'creature-magno', emblem: 'ER' },
+  // 새 글자 없는 복습 전용 스테이지(챕터14 stage4 "Dragon Roar Practice").
+  // creatureDrillo 의 emblem 기본값이 'D'(챕터4 시절 흔적)라 그대로 두면
+  // 챕터14 와 무관한 글자가 뜬다 -- 보스와 같은 '★'(장식용, 특정 글자
+  // 소유 없음)로 명시.
+  'drillbit': { style: 'creature-drillo', emblem: '★' },
+  'captain-ember': { style: 'creature-boss' },
 }
 
 const VILLAIN_PALETTES = {
@@ -887,14 +917,60 @@ const VILLAIN_PALETTES = {
   'gridlock': { style: 'dc-gridlock' },
   'floodlight': { style: 'dc-floodlight' },
   'nightfall': { style: 'dc-nightfall' },
-  // 챕터 8 빌런. 챕터 1 의 회색/보라/암회색/주황/검정과 갈리게.
-  // hue 20(챕터1 tickbot)과 5도밖에 안 떨어져 거의 겹치던 것을 hue 47
-  // 앰버브라운으로 교체 (디자이너 감사에서 발견, 2026-08)
+  // 챕터 12 빌런(카봇 계열 재순환). 챕터 1 의 회색/보라/암회색/주황/검정과
+  // 갈리게. hue 20(챕터1 tickbot)과 5도밖에 안 떨어져 거의 겹치던 것을
+  // hue 47 앰버브라운으로 교체(디자이너 감사에서 발견, 2026-08).
   'rustbot': { bodyColor: '#b8862e', accent: '#5c3d13', variant: 'hook-claw' },
-  'crashbot': { bodyColor: '#4f6b8a', accent: '#243546', variant: 'twin-horn' },
-  'slowbot': { bodyColor: '#6b7a3a', accent: '#333d16', variant: 'spike-back' },
   'grindbot': { bodyColor: '#8a5f7a', accent: '#452c3c', variant: 'saw-crown' },
-  'iron-wreck': { style: 'robot-deluxe', bodyColor: '#8a2e2e', accent: '#3d1414' },
+  // 챕터 12 최종 확정 이름(sparkbot/fumebot/overclock)이 예전 가안(crashbot/
+  // slowbot/iron-wreck)과 달라져서 색만 그대로 옮김 -- variant 4종
+  // (hook-claw/saw-crown/twin-horn/spike-back)이 rustbot/grindbot/sparkbot/
+  // fumebot 에 하나씩, 챕터 보스인 overclock 은 variant 없이 기본형.
+  'sparkbot': { bodyColor: '#4f6b8a', accent: '#243546', variant: 'twin-horn' },
+  'fumebot': { bodyColor: '#6b7a3a', accent: '#333d16', variant: 'spike-back' },
+  'overclock': { bodyColor: '#8a2e2e', accent: '#3d1414' },
+
+  // 챕터 9 빌런(공룡 계열 재순환, 챕터3 blinky/echo/upsy/muddy/shadow-rex
+  // 와 hue 갈리게 -- 디자이너 색상 계획표 기반).
+  'fangor': { style: 'dino-blink', bodyColor: '#b8352a', accent: '#521712' },
+  'snarl': { style: 'dino-echo', bodyColor: '#caa227', accent: '#5a4811' },
+  'grimjaw': { style: 'dino-upside', bodyColor: '#3f74c4', accent: '#1c3458' },
+  'thudfoot': { style: 'dino-swamp', bodyColor: '#3f9a4a', accent: '#1c4521' },
+  'bonecrash': { style: 'dino-shadow-rex', bodyColor: '#33394a', accent: '#161921' },
+
+  // 챕터 10 빌런(마리오 계열 재순환, 챕터5 topsy/gloop/snatchy/blocko/
+  // bug-king 와 hue 갈리게).
+  'wobblegear': { style: 'plat-flip', bodyColor: '#3d78c9', accent: '#1b365a' },
+  'ooze': { style: 'plat-slime', bodyColor: '#8aa83a', accent: '#3e4b1a' },
+  'magnetta': { style: 'plat-magnetjack', bodyColor: '#b83f96', accent: '#521c43' },
+  'bricker': { style: 'plat-brick', bodyColor: '#a8583a', accent: '#4b271a' },
+  'glitchking': { style: 'plat-glitch', bodyColor: '#2f6b6b', accent: '#153030' },
+
+  // 챕터 11 빌런(토이스토리 계열 재순환, 챕터6 wobbly/tangly/boxxy/
+  // tumbles/wind-down 과 hue 갈리게).
+  'springler': { style: 'toy-wobbly', bodyColor: '#4fa030', accent: '#234815' },
+  'fuzzynap': { style: 'toy-tangly', bodyColor: '#2c8f68', accent: '#13402e' },
+  'boxxo': { style: 'toy-boxxy', bodyColor: '#b83f8a', accent: '#521c3e' },
+  'rollo': { style: 'toy-tumbles', bodyColor: '#a83030', accent: '#4b1515' },
+  'windup-duke': { style: 'toy-wind-down', bodyColor: '#5a3d1a', accent: '#281b0b' },
+
+  // 챕터 13 빌런(DC 계열 재순환). 챕터7 blackout/mirage/gridlock/
+  // floodlight/nightfall 은 팔레트 오버라이드 없이 dc.js 함수 자체
+  // 기본색을 썼으므로, 같은 style 함수를 재사용하는 이 5종은 색을
+  // 명시하지 않으면 챕터7과 완전히 동일하게 렌더된다 -- 반드시 오버라이드.
+  'blackspell': { style: 'dc-blackout', bodyColor: '#1a7a6e', accent: '#0b3631' },
+  'mirror-fade': { style: 'dc-mirage', bodyColor: '#6b1f8a', accent: '#300d3e' },
+  'static-lock': { style: 'dc-gridlock', bodyColor: '#8a1030', accent: '#3e0715' },
+  'flare-static': { style: 'dc-floodlight', bodyColor: '#5a6b1a', accent: '#28300b' },
+  'nightshade': { style: 'dc-nightfall', bodyColor: '#1a3d6b', accent: '#0b1b30' },
+
+  // 챕터 14 빌런(포켓몬 계열 재순환, 챕터4 flippy/slippy/grabby/corky/
+  // pixel-muncher 와 hue 갈리게).
+  'flipzag': { style: 'creature-flippy', bodyColor: '#d9a13a', accent: '#61481a' },
+  'slickspin': { style: 'creature-slippy', bodyColor: '#2fae8a', accent: '#154e3e' },
+  'grabnar': { style: 'creature-grabby', bodyColor: '#d43a55', accent: '#5f1a26' },
+  'corvid': { style: 'creature-corky', bodyColor: '#2a8ab0', accent: '#123e4f' },
+  'glitch-emperor': { style: 'creature-glitch', bodyColor: '#8a9a2a', accent: '#3e4512' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
