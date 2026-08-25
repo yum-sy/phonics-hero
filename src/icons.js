@@ -900,25 +900,29 @@ const ICONS = {
   // once the icon is scaled down and viewed briefly, and the goldfish-orange
   // body sits close enough to `orange`'s fruit-orange that a glancing read
   // could pull toward "round orange thing" instead of "fish."
-  // Round 4 redraw. Went back to the single silhouette detail that clip-art
-  // fish rely on most: a forked tail built from two overlapping triangles
-  // with a concave notch between them (unmistakably a tail, not a fin, not
-  // a beak) on a plain rounded-triangle body -- no scale texture, no gill
-  // lines, no separate pectoral fin. Fewer shapes total than round 3, each
-  // one large enough to survive shrinking. Body color moved to a warm coral
-  // red-orange distinct from both `orange` (flat #ef9f27 disc) and `top`/
-  // `fan` (yellow), with a pale cream belly stripe for the classic
-  // goldfish two-tone read, so silhouette alone (round body + forked tail)
-  // already reads "fish" before color is a factor.
+  // Round 4 redraw (rejected). Kept the forked-tail-plus-plain-body
+  // silhouette (that part stuck) but two things were off: the dorsal fin
+  // sat right next to the eye/head, at the body's very top edge near x22-33
+  // -- close enough to the head that it read as a second head-fin rather
+  // than a fin on the BACK -- and the coral/orange palette was asked to
+  // revert to blue (this project's classic fish color, and clearly apart
+  // from `orange`'s fruit-orange with no hue-lane ambiguity to manage).
+  // Round 5 redraw. Same silhouette (forked tail, plain rounded body, no
+  // scales/gills/pectoral fin), fin moved from the head-adjacent top-left
+  // to the actual mid-back (centered over the body's own horizontal
+  // midpoint, well clear of both the head/eye on the left and the tail
+  // root on the right) so it reads as "fin on the back," not "second ear."
+  // Blue restored: deep teal-blue body, a lighter sky-blue belly stripe for
+  // the classic two-tone fish read, navy fin/tail for contrast.
   fish: () =>
     wrap(`
-      <path d="M40 32 Q54 14 60 20 Q56 32 60 44 Q54 50 40 32 Z" fill="#c9440e"/>
-      <path d="M6 32 Q8 12 27 10 Q46 12 46 32 Q46 52 27 54 Q8 52 6 32 Z" fill="#ff7a3d"/>
-      <path d="M8 32 Q10 46 24 51 Q13 48 8 32 Z" fill="#ffe0ad"/>
-      <path d="M22 13 Q26 4 33 8 Q30 15 23 18 Z" fill="#c9440e"/>
+      <path d="M40 32 Q54 14 60 20 Q56 32 60 44 Q54 50 40 32 Z" fill="#0f4c81"/>
+      <path d="M6 32 Q8 12 27 10 Q46 12 46 32 Q46 52 27 54 Q8 52 6 32 Z" fill="#2f86c9"/>
+      <path d="M8 32 Q10 46 24 51 Q13 48 8 32 Z" fill="#bfe4fb"/>
+      <path d="M31 15 Q35 4 41 9 Q37 17 32 19 Z" fill="#0f4c81"/>
       <circle cx="16" cy="26" r="6" fill="#fffef8"/>
       <circle cx="15" cy="26" r="3.2" fill="#2c2c2a"/>
-      <path d="M8 36 Q12 39 17 38" fill="none" stroke="#a8380a" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M8 36 Q12 39 17 38" fill="none" stroke="#0a3660" stroke-width="2.2" stroke-linecap="round"/>
     `),
 
   // Chose a desk fan (wire-cage ring + pinwheel blades + stand) over a
@@ -1479,43 +1483,59 @@ const ICONS = {
   // IS hand's grammar: elongated digits, roughly hand-digit proportions,
   // same silhouette family. Differentiating by cuff color or digit
   // thickness alone was never going to survive a glance at button size.
-  // Round 6 redraw switches proportion families entirely: a single top-down
-  // footprint silhouette -- one continuous teardrop sole (wide ball at the
-  // top, narrowing to a distinct heel at the bottom, the shape a foot sole
-  // actually is, not a rectangle) with FIVE SMALL TOE DOTS clustered tight
-  // along the top edge. The toes are small circles sized a fraction of the
-  // sole's own width (biggest toe 7 units across on a 44-unit-wide sole,
-  // vs. hand's fingers which run half the palm's own width) and packed
-  // edge-to-edge with only hairline gaps -- nothing here is a tapered
-  // rectangle standing away from the mass the way every finger and every
-  // prior toe attempt was. A cuff band sits at the heel end (the narrow
-  // end), which is itself the opposite of `hand`'s wrist (the wide end
-  // tapers to the cuff there; here the cuff caps the already-narrow heel).
+  // Round 6 (rejected). Single top-down sole with five small toe DOTS
+  // clustered along the top edge -- fixed the hand confusion, but still
+  // didn't land as clearly "foot" as hoped.
+  // Round 7 redraw. User supplied reference images and named one directly:
+  // the classic paired "baby footprints" glyph (two teardrop soles, thick
+  // dark outline, five OVAL toes fanned across the top of each, one foot
+  // offset lower than the other like an actual pair of footsteps, a small
+  // arch dot and a short heel-crease stroke on the sole). Built to match
+  // that reference specifically rather than another from-scratch attempt:
+  // bold `ink`-weight stroke (3, matching this file's thick-outline family
+  // members) carries the silhouette even at a glance, ONE shared foot()
+  // helper mirrored via dir=+-1 and vertically offset (right foot drawn
+  // 6 units higher) reproduces the "mid-step" stagger the reference has,
+  // and toes are true ovals (wider than tall, rotated to fan outward from
+  // the ball) rather than circles or rectangles -- the shape the reference
+  // itself uses and a third silhouette family away from both `hand`'s
+  // fingers and round 6's dots.
   feet: () => {
-    const skin = '#e0a273'
-    // Five toe dots, big-to-pinky, packed along the sole's rounded top
-    // edge with near-zero gaps -- a cluster, not a fan.
-    const toes = [
-      [20, 7.4],
-      [27.5, 6.6],
-      [34.5, 5.8],
-      [41, 5.2],
-      [47, 4.6],
-    ]
-    let toeShapes = ''
-    let nails = ''
-    toes.forEach(([cx, r], i) => {
-      const cy = 15 - i * 0.9
-      toeShapes += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${skin}" stroke="#c98f4e" stroke-width="1.6"/>`
-      nails += `<ellipse cx="${cx}" cy="${(cy - r * 0.25).toFixed(1)}" rx="${(r * 0.5).toFixed(1)}" ry="${(r * 0.4).toFixed(1)}" fill="#f2a3a0"/>`
-    })
+    const skin = '#f5d3ab'
+    const ink = '#2b3a55'
+    const foot = (cx, dir, dy) => {
+      const s = (n) => (cx + dir * n).toFixed(1)
+      // [dx, rotation deg] -- five toes fanned across the ball, big toe
+      // innermost (closest to the midline) and rotated most upright, pinky
+      // outermost and rotated most outward, matching the reference's fan.
+      const toes = [
+        [-9, -22],
+        [-3.5, -8],
+        [2, 4],
+        [7, 16],
+        [11.5, 30],
+      ]
+      let toeShapes = ''
+      toes.forEach(([dx, rot]) => {
+        const tx = s(dx)
+        const ty = (dy + 14).toFixed(1)
+        toeShapes += `<ellipse cx="${tx}" cy="${ty}" rx="3.6" ry="5.2" fill="${skin}" stroke="${ink}" stroke-width="2.4" transform="rotate(${dir * rot} ${tx} ${ty})"/>`
+      })
+      return `
+        <path d="M${s(-11)},${dy + 24} Q${s(-13)},${dy + 6} ${s(-2)},${dy + 2}
+                 Q${s(9)},${dy - 2} ${s(12)},${dy + 14}
+                 Q${s(14)},${dy + 30} ${s(8)},${dy + 44}
+                 Q${s(0)},${dy + 54} ${s(-8)},${dy + 46}
+                 Q${s(-14)},${dy + 38} ${s(-11)},${dy + 24} Z"
+          fill="${skin}" stroke="${ink}" stroke-width="3"/>
+        <circle cx="${s(-2)}" cy="${dy + 34}" r="2" fill="${ink}"/>
+        <path d="M${s(2)},${dy + 40} Q${s(6)},${dy + 44} ${s(4)},${dy + 49}"
+          fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/>
+        ${toeShapes}`
+    }
     return wrap(`
-      <path d="M13 58 Q9 40 15 24 Q20 10 33 10 Q46 10 50 24 Q55 42 49 58
-               Q42 64 31 64 Q19 64 13 58 Z"
-        fill="${skin}" stroke="#c98f4e" stroke-width="2.6"/>
-      <ellipse cx="22" cy="46" rx="7" ry="10" fill="#f5d6b0" opacity="0.5"/>
-      ${toeShapes}${nails}
-      <rect x="16" y="56" width="30" height="8" rx="4" fill="#9a9aa2"/>
+      ${foot(20, 1, 6)}
+      ${foot(45, -1, 0)}
     `)
   },
 
