@@ -1126,53 +1126,55 @@ const ICONS = {
   // instead of rounded toes -- getting a smooth dome via a single quadratic
   // per bump needs the tip ON the curve, not acting as its own control
   // point, and doing that by hand across 5 bumps was fighting the tool.
-  // Round 9 redraw. Ankle+heel+sole as one plain silhouette (no toe
-  // scallops baked in), same diagonal composition (leg top-left, heel
-  // bottom-left, foot bulk sweeping down to a ball at bottom-right) plus
-  // five toe ELLIPSES as their own shapes overlapping the ball's edge --
-  // the same technique round 7's paired-footprints used successfully,
-  // repositioned along this reference's diagonal fan instead of a
-  // straight-up row. Centers computed along a baseline from the ball to
-  // the ankle, offset outward by a shrinking radius (big toe 9x5.5 down to
-  // pinky 5x3.5) and rotated to the baseline's own angle (~21 deg) so
-  // every toe's long axis points the same outward direction -- reliably
-  // round every time, unlike hand-tuned bezier control points.
+  // Round 9 (rejected -- caught on self-render this round, not user review).
+  // The diagonal leg+heel+ball silhouette with five toes fanned off one
+  // corner rendered at button size as a THUMBS-UP FIST: a rounded knuckle
+  // mass with a stack of small round bumps along one edge is exactly a
+  // curled hand's grammar (the same failure mode rounds 3-5 supposedly
+  // already closed off), and this composition wandered back into it by a
+  // different path. Caught by actually rendering it standalone before
+  // shipping -- every prior round's rejection reason had been trusted on
+  // faith instead of looking at the pixels, which is how the same failure
+  // mode shipped twice.
+  // Round 10 redraw. Abandoned the diagonal ankle-attached foot for the
+  // classic top-down BARE FOOTPRINT glyph instead: a single vertical sole
+  // (rounded rectangle, ball wider than heel) with five toes as separate
+  // ellipses spaced EVENLY ACROSS THE TOP EDGE, not fanned off one corner.
+  // That symmetric top row is the one layout a curled hand can't produce --
+  // a hand's digits stack along one side of the palm, never spread flat
+  // across its far edge -- so the hand reading is closed off structurally,
+  // not just by styling. No ankle/leg stub either (that's `leg`'s job
+  // already); this is the sole alone, which is also what real "foot"
+  // flashcard pictograms actually draw. A darker heel patch (the same
+  // layered-flat-fill shading every other icon here uses) is the only
+  // shading, so the toes read as rounded bumps rather than flat dots.
   feet: () => {
     const skin = '#f5d3ab'
     const ink = '#1c1c1c'
-    // Five toe ellipses fanning off the ball, big toe nearest the sole
-    // (bottom) shrinking to the pinky nearest the ankle (top) -- drawn as
-    // their own shapes (not baked into the sole's own outline) so each one
-    // stays a clean rounded lobe instead of a hand-fit bezier spike. Same
-    // technique the paired-footprints round used, repositioned along this
-    // single foot's diagonal.
+    const shade = '#e0ab78'
+    const sole = 'M32 13 Q50 13 52 29 L52 45 Q52 61 32 61 Q12 61 12 45 L12 29 Q14 13 32 13 Z'
+    const heel = 'M32 40 Q45 40 45 50 Q45 61 32 61 Q19 61 19 50 Q19 40 32 40 Z'
+    // Big toe at one end shrinking to the pinky at the other, same as a
+    // real foot -- all five centered on one shallow arc so the row reads as
+    // "toes on a foot" rather than a straight ruled line of dots.
     const toes = [
-      [44.6, 57.7, 9, 5.5],
-      [45.7, 49.3, 8, 5],
-      [46.7, 41.2, 7, 4.5],
-      [47.7, 33.1, 6, 4],
-      [48.7, 25.3, 5, 3.5],
+      [15, 10, 6, 7.4],
+      [24.5, 6, 6.4, 8],
+      [34, 5.3, 6.4, 8],
+      [43, 7.5, 5.8, 7.2],
+      [50.5, 12.5, 4.8, 6],
     ]
-    const angle = 20.6
     const toeShapes = toes
       .map(
         ([cx, cy, rx, ry]) =>
-          `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${skin}" stroke="${ink}" stroke-width="3" transform="rotate(${angle} ${cx} ${cy})"/>`
+          `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${skin}" stroke="${ink}" stroke-width="3"/>`
       )
       .join('')
     return wrap(`
-      <path d="M16,2 L32,2
-               Q34,10 33,20
-               Q40,22 43,28
-               Q46,36 44,44
-               Q42,52 34,57
-               Q24,62 14,58
-               Q6,54 6,40
-               Q6,26 12,20
-               Q13,10 16,2 Z"
-        fill="${skin}" stroke="${ink}" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="${sole}" fill="${skin}" stroke="${ink}" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="${heel}" fill="${shade}" opacity="0.55"/>
       ${toeShapes}
-      <path d="M14,10 Q12,20 13,32" fill="none" stroke="#e0ab78" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+      <path d="${sole}" fill="none" stroke="${ink}" stroke-width="3.4" stroke-linejoin="round"/>
     `)
   },
 
