@@ -62,12 +62,13 @@
   "kite": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      373,
-      337,
-      544,
+      460,
+      302,
+      520,
       426
     ],
-    "croppedFile": "kite.png"
+    "croppedFile": "kite.png",
+    "note": "cropBox replaced 2026-08 clipping fix: original box (x0=373,y0=337) started below the kite's top point, losing the entire top (pink/red) half of the diamond"
   },
   "cup": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -113,13 +114,13 @@
   "rat": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
-      190,
-      623,
+      240,
+      610,
       361,
       712
     ],
     "croppedFile": "rat.png",
-    "note": "reference card shows a mouse, not a rat -- low-confidence stand-in, same rodent family"
+    "note": "cropBox moved right + up 2026-08 clipping fix: original x0=190,y0=623 cut the top of the tail curl; x0 moved past the neighboring Rr label so the wider y0 doesn't pull the label in"
   },
   "umbrella": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -167,9 +168,10 @@
       373,
       262,
       475,
-      350
+      356
     ],
-    "croppedFile": "moon.png"
+    "croppedFile": "moon.png",
+    "note": "cropBox widened 2026-08 clipping fix: original y1=350 cut the bottom of the circle"
   },
   "fork": {
     "source": "스크린샷 2026-08-25 오후 1.04.24.png",
@@ -228,9 +230,10 @@
       14,
       568,
       213,
-      661
+      669
     ],
-    "croppedFile": "rain.png"
+    "croppedFile": "rain.png",
+    "note": "cropBox extended 2026-08 clipping fix: original y1=661 cut both raindrop tips; still needs keep_largest_component (crop-icon-photos.py) to drop the neighboring ai label glyph"
   },
   "pie": {
     "source": "스크린샷 2026-08-25 오전 11.14.29.png",

@@ -193,6 +193,85 @@ def trim_edge_slivers(im, max_depth=4):
     return im
 
 
+def keep_largest_component(im, connectivity=8):
+    """Zeroes every connected blob of opaque pixels except the largest one.
+
+    `flood_transparent` only removes background *connected to the crop's
+    outer edge* -- it can't tell a stray disconnected fragment (a caption
+    letter, a card-border sliver) from real content once that fragment
+    sits fully inside the crop with a thin white gap around it. Several
+    icons in this batch needed generous crop boxes (to stop clipping real
+    artwork -- see the 2026-08 clipping-fix pass) that, as a side effect,
+    pulled in a nearby label/caption glyph as a second, smaller, disjoint
+    blob. This keeps only the biggest blob (the illustration itself, which
+    is always larger than a single stray letter) and erases the rest.
+    Do not use this where the illustration legitimately has small
+    disconnected parts (e.g. dotted decoration) that must survive -- check
+    the result renders before trusting it.
+    """
+    im = im.convert("RGBA")
+    w, h = im.size
+    px = im.load()
+    visited = [[False] * w for _ in range(h)]
+    neigh = (
+        [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+        if connectivity == 8
+        else [(0, -1), (0, 1), (-1, 0), (1, 0)]
+    )
+    best, best_size = None, 0
+    for sy in range(h):
+        for sx in range(w):
+            if visited[sy][sx] or px[sx, sy][3] == 0:
+                continue
+            q = deque([(sx, sy)])
+            visited[sy][sx] = True
+            comp = []
+            while q:
+                x, y = q.popleft()
+                comp.append((x, y))
+                for dx, dy in neigh:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < w and 0 <= ny < h and not visited[ny][nx] and px[nx, ny][3] > 0:
+                        visited[ny][nx] = True
+                        q.append((nx, ny))
+            if len(comp) > best_size:
+                best, best_size = comp, len(comp)
+    keep = set(best or [])
+    for y in range(h):
+        for x in range(w):
+            if (x, y) not in keep and px[x, y][3] > 0:
+                r, g, b, a = px[x, y]
+                px[x, y] = (r, g, b, 0)
+    return im
+
+
+def process_abs(source, box, name, tol=16, pad=5, keep_largest=False):
+    """Like `process()` but takes an absolute (x0,y0,x1,y1) pixel box in the
+    source sheet instead of a grid cell + fractional sub-box. Used for the
+    2026-08 clipping-fix pass, where each icon needed a hand-picked box
+    (see icon_refs/staging/catalog.json history / CLAUDE.md) rather than a
+    template box shared across a sheet's cells.
+    """
+    im = Image.open(os.path.join(REFS, source)).convert("RGB")
+    crop = im.crop(box)
+    cw, ch = crop.size
+    bgs = border_bg_colors(crop)
+    x0, y0, x1, y1 = content_bbox(crop, bgs, tol)
+    x0, y0 = max(0, x0 - pad), max(0, y0 - pad)
+    x1, y1 = min(cw, x1 + pad), min(ch, y1 + pad)
+    tight = crop.crop((x0, y0, x1, y1))
+    result = flood_transparent(tight, tol=26)
+    if keep_largest:
+        result = keep_largest_component(result)
+    result = trim_edge_slivers(result)
+    bbox = result.getbbox()
+    if bbox:
+        result = result.crop(bbox)
+    outpath = os.path.join(OUT, f"{name}.png")
+    result.save(outpath)
+    print(name, "->", outpath, result.size)
+
+
 def process(sheet, cols, rows, row, col, frac_box, name, tol=16, pad=5):
     cell = load_grid_cell(sheet, cols, rows, row, col)
     cw, ch = cell.size
@@ -225,6 +304,7 @@ A = "스크린샷 2026-08-25 오후 1.04.24.png"  # green sheet, 9x3, Group 5-7 
 B = "스크린샷 2026-08-25 오전 11.14.29.png"  # red sheet, 7x3, ay/ou/ie/ea/oy/ir/ue etc
 C = "스크린샷 2026-08-25 오전 11.07.55.png"  # ABC alphabet sheet, 4x6, corner style
 D = "스크린샷 2026-08-25 오전 11.08.54.png"  # yoyo | zipper pair, corner style
+D2 = "스크린샷 2026-08-25 오전 11.13.35.png"  # purple sheet, ai/rain card (used by re-crop pass only)
 
 if __name__ == "__main__":
     process(A, 9, 3, 2, 7, CARD_BOX, "zebra")
@@ -237,9 +317,30 @@ if __name__ == "__main__":
     process(A, 9, 3, 1, 7, CARD_BOX, "queen")
     process(A, 9, 3, 1, 2, CARD_BOX, "coin")
     process(A, 9, 3, 0, 6, CARD_BOX, "rubber")
-    process(B, 7, 3, 0, 6, CARD_BOX_TIGHT, "glue")
+    # glue: CARD_BOX_TIGHT is too snug here -- its ring touches the
+    # bottle's pale blue-gray body, so border_bg_colors() clusters that
+    # body color as a "background" candidate and flood_transparent erases
+    # the whole bottle, leaving only the red cap and the "GLUE" label
+    # floating (found in the 2026-08 clipping audit, CLAUDE.md). A wider
+    # absolute box that keeps the ring in pure white card background fixes
+    # it -- see icon_refs/staging/catalog.json history for how this box
+    # was derived.
+    process_abs(B, (795, 60, 868, 132), "glue")
     process(B, 7, 3, 0, 1, CARD_BOX_TIGHT, "cloud")
     process(C, 4, 6, 5, 3, CORNER_BOX, "fox")
+
+    # 2026-08 clipping-fix pass -- these four (moon/kite/rain/rat) had
+    # absolute crop boxes in icon_refs/staging/catalog.json that clipped
+    # real artwork (moon's bottom, kite's whole top half, raindrop tips,
+    # the rat's tail curl). Re-derived with generous margins by scanning
+    # the source sheet's pixels directly (grep CLAUDE.md's clipping-fix
+    # notes for the measurement method). moon/rain's wider margins also
+    # pull in a nearby caption letter as a second disjoint blob, so those
+    # two need keep_largest=True; kite/rat came out clean without it.
+    process_abs(A, (373, 262, 475, 356), "moon", keep_largest=True)
+    process_abs(C, (460, 302, 520, 426), "kite")
+    process_abs(D2, (14, 568, 213, 669), "rain", keep_largest=True)
+    process_abs(C, (240, 610, 361, 712), "rat")
 
     # yoyo: D is only 2 cells wide with no clean grid helper -- crop its
     # left half directly, then reuse the same corner-box + trim pipeline.
