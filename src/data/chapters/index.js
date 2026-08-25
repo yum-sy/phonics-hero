@@ -21,6 +21,12 @@ import { chapter5 } from './chapter-05.js'
 import { chapter6 } from './chapter-06.js'
 import { chapter7 } from './chapter-07.js'
 import { chapter8 } from './chapter-08.js'
+import { chapter9 } from './chapter-09.js'
+import { chapter10 } from './chapter-10.js'
+import { chapter11 } from './chapter-11.js'
+import { chapter12 } from './chapter-12.js'
+import { chapter13 } from './chapter-13.js'
+import { chapter14 } from './chapter-14.js'
 
 export const chapters = [
   chapter1,
@@ -31,6 +37,12 @@ export const chapters = [
   chapter6,
   chapter7,
   chapter8,
+  chapter9,
+  chapter10,
+  chapter11,
+  chapter12,
+  chapter13,
+  chapter14,
 ]
 
 export const stages = chapters.flatMap((c) => c.stages)
@@ -999,7 +1011,9 @@ const LETTERFORM = /^[A-Z]{1,2}$/
 // 반복형 다이그래프만 이름을 나열한다** -- 'ss'/'mm'/'nn'/'ll'/'ff' 같은 진짜 오탈자
 // (소리 표기가 화면으로 새는 사고)까지 통째로 면제해버리는 사고를 막기 위해서다.
 // Jolly group 5 의 `OO` 가 작성되면 여기에 'oo' 를 추가해라.
-const REPEATED_LETTER_DIGRAPHS_DISPLAY = new Set(['ee'])
+// 챕터 10 이 Jolly group 5의 OO(긴/짧은 두 소리, 한 글자꼴)를 쓰면서 추가했다
+// -- 위 주석이 예고한 바로 그 자리다.
+const REPEATED_LETTER_DIGRAPHS_DISPLAY = new Set(['ee', 'oo'])
 // 소리 토큰 **상한**. 직전 라운드는 이걸 하한 2개로 두고 있었는데, 사용자가
 // 실기기 QA 2차에서 반복 형식 전체를 반려했다 -- "전체적으로 3번 2번 빠르게
 // 반복하는건 다 지우자 한번만 똑바로 읽어 주는게 좋겠어, 어짜피 반복해서 들을
