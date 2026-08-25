@@ -1,0 +1,315 @@
+{
+  "apple": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      7,
+      51,
+      178,
+      140
+    ],
+    "croppedFile": "apple.png"
+  },
+  "cat": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      373,
+      51,
+      544,
+      140
+    ],
+    "croppedFile": "cat.png"
+  },
+  "duck": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      556,
+      51,
+      727,
+      140
+    ],
+    "croppedFile": "duck.png"
+  },
+  "fish": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      190,
+      194,
+      361,
+      283
+    ],
+    "croppedFile": "fish.png"
+  },
+  "hat": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      556,
+      194,
+      727,
+      283
+    ],
+    "croppedFile": "hat.png"
+  },
+  "igloo": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      7,
+      337,
+      178,
+      426
+    ],
+    "croppedFile": "igloo.png"
+  },
+  "kite": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      373,
+      337,
+      544,
+      426
+    ],
+    "croppedFile": "kite.png"
+  },
+  "cup": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      7,
+      480,
+      178,
+      569
+    ],
+    "croppedFile": "cup.png",
+    "note": "reference shows a mug, not a teacup -- closest match available"
+  },
+  "nose": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      190,
+      480,
+      361,
+      569
+    ],
+    "croppedFile": "nose.png"
+  },
+  "octopus": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      373,
+      480,
+      544,
+      569
+    ],
+    "croppedFile": "octopus.png"
+  },
+  "sun": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      373,
+      623,
+      544,
+      712
+    ],
+    "croppedFile": "sun.png"
+  },
+  "rat": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      190,
+      623,
+      361,
+      712
+    ],
+    "croppedFile": "rat.png",
+    "note": "reference card shows a mouse, not a rat -- low-confidence stand-in, same rodent family"
+  },
+  "umbrella": {
+    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
+    "cropBox": [
+      7,
+      766,
+      178,
+      855
+    ],
+    "croppedFile": "umbrella.png"
+  },
+  "car": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      252,
+      60,
+      354,
+      149
+    ],
+    "croppedFile": "car.png"
+  },
+  "ring": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      10,
+      262,
+      111,
+      350
+    ],
+    "croppedFile": "ring.png"
+  },
+  "boat": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      131,
+      262,
+      233,
+      350
+    ],
+    "croppedFile": "boat.png"
+  },
+  "moon": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      373,
+      262,
+      475,
+      350
+    ],
+    "croppedFile": "moon.png"
+  },
+  "fork": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      615,
+      262,
+      717,
+      350
+    ],
+    "croppedFile": "fork.png"
+  },
+  "bee": {
+    "source": "스크린샷 2026-08-25 오후 1.04.24.png",
+    "cropBox": [
+      979,
+      463,
+      1080,
+      552
+    ],
+    "croppedFile": "bee.png",
+    "note": "reference card labeled 'buzz' but pictures a bee"
+  },
+  "hand": {
+    "source": "스크린샷 2026-08-25 오후 1.04.54.png",
+    "cropBox": [
+      115,
+      46,
+      211,
+      108
+    ],
+    "croppedFile": "hand.png"
+  },
+  "gift": {
+    "source": "스크린샷 2026-08-25 오후 1.04.54.png",
+    "cropBox": [
+      551,
+      46,
+      646,
+      108
+    ],
+    "croppedFile": "gift.png"
+  },
+  "tree": {
+    "source": "스크린샷 2026-08-25 오후 1.04.54.png",
+    "cropBox": [
+      333,
+      202,
+      429,
+      264
+    ],
+    "croppedFile": "tree.png"
+  },
+  "rain": {
+    "source": "스크린샷 2026-08-25 오전 11.13.35.png",
+    "cropBox": [
+      14,
+      568,
+      213,
+      661
+    ],
+    "croppedFile": "rain.png"
+  },
+  "pie": {
+    "source": "스크린샷 2026-08-25 오전 11.14.29.png",
+    "cropBox": [
+      266,
+      48,
+      374,
+      126
+    ],
+    "croppedFile": "pie.png"
+  },
+  "cake": {
+    "source": "스크린샷 2026-08-25 오전 11.14.29.png",
+    "cropBox": [
+      10,
+      389,
+      118,
+      468
+    ],
+    "croppedFile": "cake.png"
+  },
+  "dog": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      880,
+      71,
+      984,
+      150
+    ],
+    "croppedFile": "dog.png"
+  },
+  "pig": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      383,
+      71,
+      487,
+      150
+    ],
+    "croppedFile": "pig.png"
+  },
+  "orange": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      134,
+      259,
+      239,
+      337
+    ],
+    "croppedFile": "orange.png"
+  },
+  "key": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      383,
+      259,
+      487,
+      337
+    ],
+    "croppedFile": "key.png"
+  },
+  "elephant": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      631,
+      259,
+      736,
+      337
+    ],
+    "croppedFile": "elephant.png"
+  },
+  "ball": {
+    "source": "스크린샷 2026-08-25 오후 1.05.11.png",
+    "cropBox": [
+      755,
+      446,
+      860,
+      525
+    ],
+    "croppedFile": "ball.png"
+  }
+}

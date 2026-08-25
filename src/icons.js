@@ -1,3 +1,5 @@
+import { ICON_PHOTOS } from './icon-photos.js'
+
 // Original flat-color SVG word/picture icons used on choice buttons in
 // place of plain Unicode emoji. Historically kept in the same
 // geometric-primitive style as the character art in art.js (circles/rects/
@@ -38,9 +40,47 @@
 // share of the icon's opaque pixels within dE 12 of the background
 // (`#fffdf4` normal, `#c8f5a8` selected). `sock` measured 72% once and was
 // effectively invisible. Pale fills therefore always carry a dark contour.
+//
+// 2026-08 PHOTO-CROP ROUND (chapter 9-14 sound icons): the user licensed a
+// set of phonics flashcard reference sheets (`icon_refs/*.png`, confirmed
+// copyright-clear -- ours to crop and ship as-is, no redraw needed) and
+// asked for the new Group 5-7 sound icons to be cropped straight from them
+// instead of hand-redrawn as SVG. `ICON_PHOTOS` (`icon-photos.js`) holds
+// each crop as a base64 PNG + its natural pixel size; `photoIcon()` below
+// wraps it in an `<image>` so `wordIcon()` still returns one SVG markup
+// string either way -- callers can't tell a hand-drawn icon from a photo
+// crop apart. Base64 (not a `public/icons/*.png` URL reference) was chosen
+// deliberately: this project's clipping/silhouette probes serialize icon
+// markup into a standalone `data:image/svg+xml` URI and rasterize it to a
+// canvas (see CLAUDE.md's "SVG를 데이터 URI로 파싱할 때" pitfalls) -- a
+// `<image href="/icons/x.png">` would need a second network fetch with no
+// reliable base URL once nested inside that data URI, while a base64 data
+// URI is self-contained and decodes synchronously wherever the SVG ends up.
+// The crops themselves are tightly trimmed to the illustration only (no
+// flashcard letter/caption text) with the card's background flood-filled
+// to transparent from the edges inward, so interior whites (a book's pages,
+// a watch face) survive untouched. See `scripts/crop-icon-photos.py` for
+// the crop tool if more flashcard icons get promoted later.
 
 function wrap(inner, viewBox = '0 0 64 64') {
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" class="word-icon-art">${inner}</svg>`
+}
+
+// Fits a cropped photo (given its natural pixel size) into the 64x64
+// viewBox at `box` px max on the long side, centered -- same visual weight
+// as the hand-drawn icons, which mostly fill the box with a small margin.
+function photoIcon(name, box = 58) {
+  const photo = ICON_PHOTOS[name]
+  if (!photo) return FALLBACK()
+  const { w, h, data } = photo
+  const scale = Math.min(box / w, box / h)
+  const rw = w * scale
+  const rh = h * scale
+  const x = (64 - rw) / 2
+  const y = (64 - rh) / 2
+  return wrap(
+    `<image href="data:image/png;base64,${data}" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${rw.toFixed(2)}" height="${rh.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`
+  )
 }
 
 // Counter so icons that need a local <mask>/<clipPath> id (e.g. moon) don't
@@ -52,21 +92,7 @@ function nextId(prefix) {
 }
 
 const ICONS = {
-  sun: () =>
-    wrap(`
-      <g stroke="#f4a71b" stroke-width="4" stroke-linecap="round">
-        <line x1="32" y1="4" x2="32" y2="14"/>
-        <line x1="32" y1="50" x2="32" y2="60"/>
-        <line x1="4" y1="32" x2="14" y2="32"/>
-        <line x1="50" y1="32" x2="60" y2="32"/>
-        <line x1="12" y1="12" x2="19" y2="19"/>
-        <line x1="45" y1="45" x2="52" y2="52"/>
-        <line x1="52" y1="12" x2="45" y2="19"/>
-        <line x1="19" y1="45" x2="12" y2="52"/>
-      </g>
-      <circle cx="32" cy="32" r="16" fill="#ffd43b" stroke="#f4a71b" stroke-width="2"/>
-    `),
-
+  sun: () => photoIcon('sun'),
   snake: () =>
     wrap(`
       <path d="M10 20 Q10 8 22 8 Q34 8 34 18 Q34 28 22 28 Q14 28 14 34 Q14 44 26 44 Q46 44 46 30"
@@ -75,17 +101,7 @@ const ICONS = {
       <circle cx="22" cy="10" r="2.4" fill="#161615"/>
     `),
 
-  dog: () =>
-    wrap(`
-      <polygon points="16,10 26,26 10,26" fill="#ef9f27"/>
-      <polygon points="48,10 54,26 38,26" fill="#ef9f27"/>
-      <circle cx="32" cy="34" r="20" fill="#f4c07a"/>
-      <ellipse cx="32" cy="42" rx="9" ry="7" fill="#fff6e8"/>
-      <circle cx="24" cy="30" r="3" fill="#161615"/>
-      <circle cx="40" cy="30" r="3" fill="#161615"/>
-      <ellipse cx="32" cy="40" rx="3.4" ry="2.6" fill="#161615"/>
-    `),
-
+  dog: () => photoIcon('dog'),
   // Flashcard-style redraw (2026-08 icon prototype round): a real tube sock
   // silhouette -- straight back edge, ankle bend, rounded toe -- carrying
   // classic sport-sock stripes and reinforced heel/toe patches as the two
@@ -122,39 +138,9 @@ const ICONS = {
         fill="#ffd43b" stroke="#f4a71b" stroke-width="2" stroke-linejoin="round"/>
     `),
 
-  car: () =>
-    wrap(`
-      <path d="M6 40 L12 26 Q14 22 20 22 H44 Q50 22 52 26 L58 40 Z" fill="#378add"/>
-      <polygon points="18,24 26,24 24,34 16,34" fill="#eafcff"/>
-      <polygon points="30,24 42,24 42,34 32,34" fill="#eafcff"/>
-      <rect x="4" y="38" width="56" height="8" rx="3" fill="#0c447c"/>
-      <circle cx="18" cy="48" r="7" fill="#2c2c2a"/>
-      <circle cx="46" cy="48" r="7" fill="#2c2c2a"/>
-      <circle cx="18" cy="48" r="3" fill="#b8b8b8"/>
-      <circle cx="46" cy="48" r="3" fill="#b8b8b8"/>
-    `),
-
-  moon: () => {
-    const maskId = nextId('moon-mask')
-    return wrap(`
-      <mask id="${maskId}">
-        <rect x="0" y="0" width="64" height="64" fill="#fff"/>
-        <circle cx="40" cy="26" r="16" fill="#000"/>
-      </mask>
-      <circle cx="28" cy="32" r="20" fill="#f4c95d" mask="url(#${maskId})"/>
-    `)
-  },
-
-  cup: () =>
-    wrap(`
-      <rect x="12" y="22" width="30" height="24" rx="4" fill="#d1332f"/>
-      <path d="M42 26 Q54 26 54 34 Q54 42 42 42 Z" fill="none" stroke="#d1332f" stroke-width="5"/>
-      <g stroke="#b8b8b8" stroke-width="3" stroke-linecap="round">
-        <path d="M20 14 Q20 10 24 10"/>
-        <path d="M30 14 Q30 10 34 10"/>
-      </g>
-    `),
-
+  car: () => photoIcon('car'),
+  moon: () => photoIcon('moon'),
+  cup: () => photoIcon('cup'),
   bus: () =>
     wrap(`
       <rect x="6" y="14" width="52" height="28" rx="6" fill="#f4c95d"/>
@@ -215,15 +201,7 @@ const ICONS = {
       </g>
     `),
 
-  apple: () =>
-    wrap(`
-      <polygon points="30,10 34,10 33,16 31,16" fill="#712b13"/>
-      <path d="M34 12 Q44 8 42 16" fill="none" stroke="#3b9922" stroke-width="4" stroke-linecap="round"/>
-      <path d="M32 18 C14 18 10 34 16 46 C20 54 28 56 32 52 C36 56 44 54 48 46 C54 34 50 18 32 18 Z"
-        fill="#e24b4a"/>
-      <path d="M22 26 Q26 22 30 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
-    `),
-
+  apple: () => photoIcon('apple'),
   // User: "top은 그냥 원래 이미지로 돌아가자" -- round 2's disc-over-cone
   // redesign read as a mushroom/umbrella, not a spinning top. Reverted to
   // the original triangle-body top verbatim.
@@ -282,19 +260,7 @@ const ICONS = {
   // weight the rest of the bold-outline icon family uses), a visible grid
   // of individually-outlined brick blocks instead of overlaid arc/line
   // strokes, and a plain dark entrance (not ink's specific navy).
-  igloo: () =>
-    wrap(`
-      <path d="M4 54 A28 27 0 0 1 60 54 Z" fill="#eef2f5" stroke="#1c1c1c" stroke-width="3.4" stroke-linejoin="round"/>
-      <g stroke="#1c1c1c" stroke-width="2" fill="none">
-        <path d="M4 54 A28 27 0 0 1 60 54"/>
-        <path d="M9 44 A22 22 0 0 1 55 44"/>
-        <path d="M16 35 A14 15 0 0 1 48 35"/>
-        <path d="M12 54 V44 M32 54 V32 M52 54 V44"/>
-        <path d="M20 44 V36 M44 44 V36"/>
-      </g>
-      <path d="M20 54 A12 15 0 0 1 44 54 Z" fill="#33393f" stroke="#1c1c1c" stroke-width="3"/>
-    `),
-
+  igloo: () => photoIcon('igloo'),
   // A top-down winged ladybug, so it never reads as the side-on all-black
   // `ant` icon that also appears in this app.
   insect: () =>
@@ -327,18 +293,7 @@ const ICONS = {
   // see it: the ears flop out past the head instead of spiking up, and the
   // snout breaks the chin outline. With the snout tucked inside the head
   // circle the two silhouettes were 87% identical.
-  pig: () =>
-    wrap(`
-      <ellipse cx="15" cy="19" rx="7" ry="9.5" transform="rotate(-28 15 19)" fill="#dd7f9a"/>
-      <ellipse cx="49" cy="19" rx="7" ry="9.5" transform="rotate(28 49 19)" fill="#dd7f9a"/>
-      <circle cx="32" cy="32" r="20" fill="#f0a0b4"/>
-      <ellipse cx="32" cy="47" rx="13" ry="10" fill="#dd7f9a"/>
-      <ellipse cx="27" cy="47" rx="3" ry="4" fill="#2c2c2a"/>
-      <ellipse cx="37" cy="47" rx="3" ry="4" fill="#2c2c2a"/>
-      <circle cx="23" cy="26" r="3.4" fill="#2c2c2a"/>
-      <circle cx="41" cy="26" r="3.4" fill="#2c2c2a"/>
-    `),
-
+  pig: () => photoIcon('pig'),
   // Drawn on the diagonal so barrel, cap and nib all stay chunky inside the
   // square instead of shrinking to a thin vertical sliver.
   pen: () =>
@@ -459,41 +414,12 @@ const ICONS = {
   // oval nostrils near the bottom. Matched that exactly rather than
   // re-litigating the context question -- bolder outline (stroke 3.4 vs the
   // old 2.6) is what the reference actually leans on to read clearly alone.
-  nose: () =>
-    wrap(`
-      <path d="M28 10 Q20 22 17 32 Q14 42 18 49 Q22 55 32 55
-               Q42 55 46 49 Q50 42 47 32 Q44 22 36 10
-               Q32 6 28 10 Z"
-        fill="#f2dcb8" stroke="#1c1c1c" stroke-width="3.4" stroke-linejoin="round"/>
-      <ellipse cx="25" cy="46" rx="4.4" ry="3.2" fill="#3a2a1a" transform="rotate(-12 25 46)"/>
-      <ellipse cx="39" cy="46" rx="4.4" ry="3.2" fill="#3a2a1a" transform="rotate(12 39 46)"/>
-    `),
-
-  // -- Group 2: C/K, E, H (chapter 3) --
-
+  nose: () => photoIcon('nose'),
   // Head-only like `dog`, so the split has to come from silhouette and hue:
   // ears are fused spikes on one continuous outline (dog has two detached
   // triangles over a circle), the coat is cool gray instead of dog's tan, and
   // the slit pupils plus whiskers that run past the cheeks are cat-only cues.
-  cat: () =>
-    wrap(`
-      <path d="M8 6 L25 21 H39 L56 6 L53 31 C56 45 46 56 32 56 C18 56 8 45 11 31 Z"
-        fill="#8e8e96" stroke="#2c2c2a" stroke-width="2.6" stroke-linejoin="round"/>
-      <polygon points="13,13 24,23 12,26" fill="#f0a0b4"/>
-      <polygon points="51,13 40,23 52,26" fill="#f0a0b4"/>
-      <g stroke="#2c2c2a" stroke-width="2.4" stroke-linecap="round">
-        <line x1="26" y1="44" x2="3" y2="40"/>
-        <line x1="26" y1="47" x2="4" y2="51"/>
-        <line x1="38" y1="44" x2="61" y2="40"/>
-        <line x1="38" y1="47" x2="60" y2="51"/>
-      </g>
-      <ellipse cx="23" cy="34" rx="5.4" ry="6.4" fill="#ffd43b"/>
-      <ellipse cx="41" cy="34" rx="5.4" ry="6.4" fill="#ffd43b"/>
-      <ellipse cx="23" cy="34" rx="1.7" ry="5.2" fill="#2c2c2a"/>
-      <ellipse cx="41" cy="34" rx="1.7" ry="5.2" fill="#2c2c2a"/>
-      <polygon points="28,43 36,43 32,48" fill="#e24b4a"/>
-    `),
-
+  cat: () => photoIcon('cat'),
   // Full-body bird, so it never competes with the head-only `dog`/`cat`: the
   // red comb, gold beak and dark tail fan are the three shapes that survive
   // 60px, and the dark outline keeps the pale body off a white button.
@@ -539,58 +465,20 @@ const ICONS = {
   // The brim is the whole point: it spans the full 64 units so the outline
   // can never be mistaken for the tall red `cup`, and brown/gold keeps it out
   // of every other icon's palette.
-  hat: () =>
-    wrap(`
-      <path d="M17 44 Q14 14 32 14 Q50 14 47 44 Z" fill="#712b13"/>
-      <rect x="16" y="30" width="32" height="10" fill="#ef9f27"/>
-      <path d="M2 44 Q32 32 62 44 Q32 58 2 44 Z" fill="#712b13"/>
-    `),
-
+  hat: () => photoIcon('hat'),
   // One even-odd path: the bow's hole is a real hole, so a single outline
   // wraps the whole key and no <mask> id can collide. Drawn flat-horizontal
   // to stay clear of the diagonal `pen`, with teeth 7 units wide so they
   // still separate at 60px.
-  key: () =>
-    wrap(`
-      <path fill-rule="evenodd" fill="#f4c95d" stroke="#ef9f27" stroke-width="2.6"
-        stroke-linejoin="round"
-        d="M31.8 25 L60 25 L60 49 L53 49 L53 37 L46 37 L46 49 L39 49 L39 37 L31.8 37
-           A15 15 0 1 1 31.8 25 Z
-           M25 31 A7 7 0 1 0 11 31 A7 7 0 1 0 25 31 Z"/>
-    `),
-
+  key: () => photoIcon('key'),
   // Ears wider than the head plus a hanging trunk: the two shapes that hold
   // up at 60px. Neutral gray, not the cool gray of `cat`, and nothing about
   // the outline invites comparison with the head-only `pig`.
-  elephant: () =>
-    wrap(`
-      <ellipse cx="12" cy="29" rx="12" ry="14" fill="#78787f"/>
-      <ellipse cx="52" cy="29" rx="12" ry="14" fill="#78787f"/>
-      <path d="M20 12 H44 Q50 12 50 20 V34 Q50 44 40 44 H24 Q14 44 14 34 V20 Q14 12 20 12 Z"
-        fill="#a3a3ab"/>
-      <path d="M31 42 V50 Q31 59 40 58" fill="none" stroke="#a3a3ab" stroke-width="10"
-        stroke-linecap="round"/>
-      <polygon points="21,42 26,42 17,54" fill="#f5f2ea"/>
-      <polygon points="38,42 43,42 47,54" fill="#f5f2ea"/>
-      <circle cx="25" cy="27" r="3.2" fill="#2c2c2a"/>
-      <circle cx="39" cy="27" r="3.2" fill="#2c2c2a"/>
-    `),
-
+  elephant: () => photoIcon('elephant'),
   // Fingers are separate fills with 3-unit background gaps instead of one
   // stroked outline -- at 60px a stroked gap fills in and the fingers fuse
   // into a mitten. The green cuff anchors the wrist on any button color.
-  hand: () =>
-    wrap(`
-      <rect x="12" y="30" width="6.4" height="18" rx="3.2" fill="#e0a273"
-        transform="rotate(-32 15.2 48)"/>
-      <rect x="17.5" y="14" width="6.2" height="24" rx="3.1" fill="#e0a273"/>
-      <rect x="26.7" y="10" width="6.2" height="28" rx="3.1" fill="#e0a273"/>
-      <rect x="35.9" y="14" width="6.2" height="24" rx="3.1" fill="#e0a273"/>
-      <rect x="45.1" y="21" width="6.2" height="17" rx="3.1" fill="#e0a273"/>
-      <rect x="15" y="32" width="36" height="20" rx="9" fill="#e0a273"/>
-      <rect x="20" y="50" width="26" height="9" rx="4" fill="#3b9922"/>
-    `),
-
+  hand: () => photoIcon('hand'),
   // Crown-dominant so it can't trade places with `nose`, the app's other
   // face icon: gold spikes over the whole top third, a red band, and a gray
   // beard that `nose` has no equivalent of.
@@ -611,24 +499,7 @@ const ICONS = {
   // Candles and a dripping frosting edge on a plate -- a plain layered slab
   // reads as a box, and the lid-and-handles silhouette of `pot` shares none
   // of these three cues.
-  cake: () =>
-    wrap(`
-      <g fill="#e24b4a">
-        <rect x="17" y="8" width="5" height="14"/>
-        <rect x="29.5" y="6" width="5" height="16"/>
-        <rect x="42" y="8" width="5" height="14"/>
-      </g>
-      <g fill="#ffd43b">
-        <circle cx="19.5" cy="6" r="3.4"/>
-        <circle cx="32" cy="4" r="3.4"/>
-        <circle cx="44.5" cy="6" r="3.4"/>
-      </g>
-      <rect x="9" y="32" width="46" height="19" fill="#f4c95d"/>
-      <path d="M9 22 H55 V34 Q49 40 43 34 Q37 40 32 34 Q26 40 21 34 Q15 40 9 34 Z"
-        fill="#f0a0b4"/>
-      <rect x="4" y="51" width="56" height="6" rx="3" fill="#b8b8b8"/>
-    `),
-
+  cake: () => photoIcon('cake'),
   // Profile head with ears and a mane, so the front-facing round `dog` face
   // never comes close: the long muzzle is the whole silhouette.
   horse: () =>
@@ -644,18 +515,7 @@ const ICONS = {
 
   // Four solid quadrants make the spars readable without drawing hairlines,
   // and the bowed tail is what separates the diamond from the `star`.
-  kite: () =>
-    wrap(`
-      <polygon points="32,2 32,24 12,24" fill="#e24b4a"/>
-      <polygon points="32,2 52,24 32,24" fill="#ffd43b"/>
-      <polygon points="12,24 32,24 32,46" fill="#378add"/>
-      <polygon points="32,24 52,24 32,46" fill="#3b9922"/>
-      <path d="M32 46 Q41 51 34 56 Q27 60 34 62" fill="none" stroke="#2c2c2a"
-        stroke-width="2.8" stroke-linecap="round"/>
-      <polygon points="34,48 42,45 42,53" fill="#5dd6e0"/>
-      <polygon points="28,55 35,52 35,60" fill="#5dd6e0"/>
-    `),
-
+  kite: () => photoIcon('kite'),
   // The numeral itself, on a red round badge. An earlier version drew ten
   // dots to avoid putting a digit glyph next to letter tiles, but this app
   // never teaches numbers, so there is nothing for "10" to be confused with,
@@ -692,54 +552,15 @@ const ICONS = {
   // The tail is drawn first and rooted well inside the body ellipse (same
   // trick as `ant`'s legs) so the body fill covers the seam and it reads as
   // one continuous curl instead of a detached blob.
-  rat: () =>
-    wrap(`
-      <path d="M16 42 Q4 46 4 54 Q4 61 14 59" fill="none" stroke="#e0a273" stroke-width="4.5" stroke-linecap="round"/>
-      <ellipse cx="26" cy="36" rx="20" ry="15" fill="#9b9ba3"/>
-      <circle cx="44" cy="22" r="10" fill="#9b9ba3"/>
-      <polygon points="52,19 63,22 52,26" fill="#7c7c86"/>
-      <circle cx="38" cy="12" r="5.6" fill="#9b9ba3"/>
-      <circle cx="38" cy="12" r="2.6" fill="#e6b8c4"/>
-      <circle cx="47" cy="19" r="2.1" fill="#2c2c2a"/>
-      <g stroke="#7c7c86" stroke-width="1.5" stroke-linecap="round">
-        <line x1="53" y1="19" x2="62" y2="14"/>
-        <line x1="54" y1="22" x2="63" y2="22"/>
-        <line x1="53" y1="25" x2="62" y2="29"/>
-      </g>
-      <ellipse cx="18" cy="49" rx="4" ry="2.4" fill="#7c7c86"/>
-      <ellipse cx="32" cy="50" rx="4" ry="2.4" fill="#7c7c86"/>
-    `),
-
+  rat: () => photoIcon('rat'),
   // A gold band drawn as a circle-with-a-hole (mask, like `moon`) so it can
   // never be read as the disc-shaped `key` head, topped with a mounted gem --
   // the gem is the cue that separates it from `moon`'s bare crescent.
-  ring: () => {
-    const maskId = nextId('ring-mask')
-    return wrap(`
-      <mask id="${maskId}">
-        <rect width="64" height="64" fill="#fff"/>
-        <circle cx="32" cy="42" r="13" fill="#000"/>
-      </mask>
-      <circle cx="32" cy="42" r="19" fill="#f4c95d" mask="url(#${maskId})"/>
-      <circle cx="32" cy="42" r="19" fill="none" stroke="#ef9f27" stroke-width="2" mask="url(#${maskId})"/>
-      <polygon points="32,10 44,24 32,34 20,24" fill="#5dd6e0" stroke="#378add" stroke-width="2.4" stroke-linejoin="round"/>
-      <polygon points="26,20 32,15 38,20 32,26" fill="#eafcff" opacity="0.7"/>
-    `)
-  },
-
+  ring: () => photoIcon('ring'),
   // A wrapped box with a knotted bow, not the flat unwrapped `gum` strip --
   // the bow loops and the vertical+horizontal ribbon cross are the shapes
   // that make it read as "present" rather than "box" at 60px.
-  gift: () =>
-    wrap(`
-      <rect x="10" y="26" width="44" height="30" rx="3" fill="#e24b4a"/>
-      <rect x="10" y="35" width="44" height="8" fill="#f4c95d"/>
-      <rect x="27" y="26" width="10" height="30" fill="#f4c95d"/>
-      <path d="M20 26 Q12 14 22 10 Q30 8 32 20 Q34 8 42 10 Q52 14 44 26 Z"
-        fill="#f4c95d" stroke="#ef9f27" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="32" cy="21" r="4" fill="#ef9f27"/>
-    `),
-
+  gift: () => photoIcon('gift'),
   // A stick of gum sliding out of a torn wrapper. Two earlier drafts failed:
   // a blue wrapped stick was an unreadable object, and bare pink slabs read
   // as an eraser. The wrapper is what names the object and the pink is what
@@ -764,73 +585,15 @@ const ICONS = {
   // their neighbours. And the shade alternates arm by arm, so neighbours stay
   // separate by color even where their strokes nearly touch. Cool purple
   // keeps it off every warm-toned animal icon already in the set.
-  octopus: () => {
-    let arms = ''
-    for (let i = 0; i < 8; i++) {
-      const t = (i - 3.5) / 3.5
-      const sx = 32 + t * 18
-      const sy = 40 - 4 * t * t
-      const tx = 32 + t * 27
-      const ty = 58 - 10 * t * t
-      const cx = sx + t * 6
-      const cy = (sy + ty) / 2
-      const color = i % 2 === 0 ? '#3a3280' : '#7a70e0'
-      arms +=
-        `<path d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ` +
-        `${tx.toFixed(1)} ${ty.toFixed(1)}" fill="none" stroke="${color}" ` +
-        `stroke-width="5.6" stroke-linecap="round"/>`
-    }
-    return wrap(`
-      ${arms}
-      <ellipse cx="32" cy="24" rx="22" ry="17" fill="#534ab7"/>
-      <circle cx="23" cy="22" r="7.5" fill="#eafcff"/>
-      <circle cx="41" cy="22" r="7.5" fill="#eafcff"/>
-      <circle cx="23" cy="23" r="3.8" fill="#2c2c2a"/>
-      <circle cx="41" cy="23" r="3.8" fill="#2c2c2a"/>
-    `)
-  },
-
+  octopus: () => photoIcon('octopus'),
   // Same round-fruit build as `apple` (so the /o/ vs /a/ family reads as
   // fruit either way) but orange, not red, with a dimpled rind and a stubby
   // navel instead of apple's stem+leaf, so the two can never be confused.
-  orange: () =>
-    wrap(`
-      <circle cx="32" cy="36" r="24" fill="#ef9f27"/>
-      <circle cx="32" cy="13" r="3.2" fill="#712b13"/>
-      <path d="M32 13 Q40 7 46 13" fill="none" stroke="#3b9922" stroke-width="4" stroke-linecap="round"/>
-      <g fill="#d97f1f" opacity="0.7">
-        <circle cx="22" cy="28" r="1.6"/>
-        <circle cx="30" cy="24" r="1.6"/>
-        <circle cx="40" cy="30" r="1.6"/>
-        <circle cx="24" cy="42" r="1.6"/>
-        <circle cx="36" cy="46" r="1.6"/>
-        <circle cx="44" cy="38" r="1.6"/>
-        <circle cx="30" cy="50" r="1.6"/>
-      </g>
-      <path d="M18 26 Q24 20 30 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-    `),
-
+  orange: () => photoIcon('orange'),
   // A domed canopy (round top, scalloped bottom edge) on a straight pole --
   // the opposite silhouette from `top`'s pointed triangle spinning toy, so
   // the two never compete even though both are drawn in cool/warm blocks.
-  umbrella: () =>
-    wrap(`
-      <path d="M4 34 A28 28 0 0 1 32 6 A28 28 0 0 1 60 34 Z" fill="#e24b4a"/>
-      <path d="M4 34 A28 28 0 0 1 32 6 Z" fill="#378add"/>
-      <g stroke="#2c2c2a" stroke-width="1.6" fill="none">
-        <line x1="14" y1="16" x2="20" y2="32"/>
-        <line x1="32" y1="6" x2="32" y2="34"/>
-        <line x1="50" y1="16" x2="44" y2="32"/>
-      </g>
-      <path d="M4 34 Q4 40 10 36 Q16 40 22 36 Q28 40 34 36 Q40 40 46 36 Q52 40 58 36 Q60 35 60 34"
-        fill="none" stroke="#2c2c2a" stroke-width="2.2" stroke-linejoin="round"/>
-      <rect x="30" y="4" width="4" height="4" fill="#f4c95d"/>
-      <line x1="32" y1="34" x2="32" y2="54" stroke="#712b13" stroke-width="4"/>
-      <path d="M32 54 Q32 61 23 61" fill="none" stroke="#712b13" stroke-width="4" stroke-linecap="round"/>
-    `),
-
-  // -- Group 4 additions: L / F / B (chapter 6) --
-
+  umbrella: () => photoIcon('umbrella'),
   // A fluffy ring of overlapping fur tufts (computed, alternating radii) is
   // what separates lion from `dog`/`horse` -- a first draft used sharp
   // triangular spikes here (same technique as `shoutBurst`) and it rendered
@@ -913,17 +676,7 @@ const ICONS = {
   // root on the right) so it reads as "fin on the back," not "second ear."
   // Blue restored: deep teal-blue body, a lighter sky-blue belly stripe for
   // the classic two-tone fish read, navy fin/tail for contrast.
-  fish: () =>
-    wrap(`
-      <path d="M40 32 Q54 14 60 20 Q56 32 60 44 Q54 50 40 32 Z" fill="#0f4c81"/>
-      <path d="M6 32 Q8 12 27 10 Q46 12 46 32 Q46 52 27 54 Q8 52 6 32 Z" fill="#2f86c9"/>
-      <path d="M8 32 Q10 46 24 51 Q13 48 8 32 Z" fill="#bfe4fb"/>
-      <path d="M31 15 Q35 4 41 9 Q37 17 32 19 Z" fill="#0f4c81"/>
-      <circle cx="16" cy="26" r="6" fill="#fffef8"/>
-      <circle cx="15" cy="26" r="3.2" fill="#2c2c2a"/>
-      <path d="M8 36 Q12 39 17 38" fill="none" stroke="#0a3660" stroke-width="2.2" stroke-linecap="round"/>
-    `),
-
+  fish: () => photoIcon('fish'),
   // Chose a desk fan (wire-cage ring + pinwheel blades + stand) over a
   // folding hand fan: the circular cage-and-blade silhouette is a more
   // universal "fan" reading for a 5-year-old than a pleated paper wedge,
@@ -952,17 +705,7 @@ const ICONS = {
   // centre. The seams are deliberately thick; thin ones vanished at 60px and
   // left a plain orange disc that could pass for `orange`, which has no
   // black anywhere and carries a leaf and rind dots instead.
-  ball: () =>
-    wrap(`
-      <circle cx="32" cy="32" r="25" fill="#ef9f27" stroke="#2c2c2a" stroke-width="3.6"/>
-      <g fill="none" stroke="#2c2c2a" stroke-width="3.4" stroke-linecap="round">
-        <path d="M32 8 V56"/>
-        <path d="M8 32 H56"/>
-        <path d="M17 11 Q27 32 17 53"/>
-        <path d="M47 11 Q37 32 47 53"/>
-      </g>
-    `),
-
+  ball: () => photoIcon('ball'),
   // An OPEN corrugated box in three-quarter view: four flaps folded outward,
   // a dark interior through the mouth, and two front faces at different
   // shades for depth. The open mouth is what makes it read as "box" at a
@@ -1077,21 +820,7 @@ const ICONS = {
   // bird with legs, comb and tail fan" silhouette, so this is deliberately
   // the opposite -- one smooth floating oval, an oversized round head, a
   // flat orange bill, no legs at all, and water lines underneath.
-  duck: () =>
-    wrap(`
-      <polygon points="13,38 2,29 15,30" fill="#f4c95d"/>
-      <ellipse cx="29" cy="41" rx="22" ry="15" fill="#ffd43b"/>
-      <circle cx="44" cy="23" r="13" fill="#ffd43b"/>
-      <path d="M55 23 Q63 24 61 29 Q56 31 52 28 Z" fill="#ef9f27"/>
-      <path d="M21 39 Q29 33 38 39 Q32 48 21 45 Z" fill="#f4c95d"/>
-      <path d="M21 39 Q29 33 38 39" fill="none" stroke="#ef9f27" stroke-width="1.8"/>
-      <circle cx="44" cy="20" r="3.2" fill="#2c2c2a"/>
-      <circle cx="45.2" cy="19" r="1.1" fill="#f5f2ea"/>
-      <g fill="none" stroke="#0c447c" stroke-width="3" stroke-linecap="round">
-        <path d="M4 56 Q13 51 22 56 Q31 61 40 56 Q49 51 60 56"/>
-      </g>
-    `),
-
+  duck: () => photoIcon('duck'),
   // Standing ajar, hinged on the right. The gap is filled with pale daylight
   // rather than a dark room on purpose: a dark opening is invisible in
   // silhouette, so the whole icon flattened into a plain black rectangle.
@@ -1123,22 +852,7 @@ const ICONS = {
   // over a navy outline instead of plain blue fill, so they survive both the
   // cream button and a saturated blue one; `umbrella` keeps the canopy-and-
   // pole silhouette, so the two weather icons never converge.
-  rain: () =>
-    wrap(`
-      <g fill="#5dd6e0" stroke="#0c447c" stroke-width="2" stroke-linejoin="round">
-        <path d="M14 36 C17 43 20 46 20 50 A6 6 0 0 1 8 50 C8 46 11 43 14 36 Z"/>
-        <path d="M32 40 C35 47 38 50 38 54 A6 6 0 0 1 26 54 C26 50 29 47 32 40 Z"/>
-        <path d="M50 36 C53 43 56 46 56 50 A6 6 0 0 1 44 50 C44 46 47 43 50 36 Z"/>
-      </g>
-      <g fill="#b8b8b8">
-        <circle cx="19" cy="21" r="11"/>
-        <circle cx="33" cy="16" r="13"/>
-        <circle cx="46" cy="22" r="10"/>
-        <rect x="8" y="20" width="47" height="13" rx="6"/>
-      </g>
-      <rect x="12" y="27" width="40" height="6" rx="3" fill="#8e8e96"/>
-    `),
-
+  rain: () => photoIcon('rain'),
   // A steam locomotive, because `bus` and `car` already own the plain
   // box-on-two-wheels reading. Three cues do the separating and all three
   // survive 150px: the funnel with white smoke puffs floating clear above
@@ -1273,18 +987,7 @@ const ICONS = {
   // about it can reach `bus`/`car` (no wheels, no windows) or `fish` (the
   // blue oval body) -- the mast plus sail triangles dominate the outline,
   // and the navy wave line is the second "this floats" cue after the hull.
-  boat: () =>
-    wrap(`
-      <polygon points="33,4 44,7.5 33,11" fill="#ffd43b"/>
-      <rect x="30.5" y="8" width="3.5" height="33" fill="#8a5a33"/>
-      <polygon points="35,10 35,38 55,38" fill="#f5f2ea" stroke="#b8b8b8" stroke-width="1.8"/>
-      <polygon points="29,13 29,38 13,38" fill="#e24b4a"/>
-      <polygon points="6,40 58,40 50,52 14,52" fill="#712b13"/>
-      <rect x="6" y="40" width="52" height="4" fill="#f4c95d"/>
-      <path d="M2 57 Q10 52 18 57 Q26 62 34 57 Q42 52 50 57 Q58 62 62 57"
-        fill="none" stroke="#0c447c" stroke-width="3.4" stroke-linecap="round"/>
-    `),
-
+  boat: () => photoIcon('boat'),
   // A belted coat, front on. The sleeves stop 11 units short of the hem, so
   // the outline carries a notch on each side -- that pair of notches is what
   // reads as "two sleeves plus a body" instead of the shapeless blob a
@@ -1353,16 +1056,7 @@ const ICONS = {
   // the top (the crimped-edge/vent-slit look real pie photos show), bold
   // black outline. Kept away from `cake` the same way as before (wide/
   // shallow oval vs. cake's tall tiers), just with far fewer shapes.
-  pie: () =>
-    wrap(`
-      <ellipse cx="32" cy="40" rx="27" ry="9" fill="#a8641f"/>
-      <ellipse cx="32" cy="34" rx="27" ry="16" fill="#d9a45c" stroke="#1c1c1c" stroke-width="3.2"/>
-      <path d="M14 30 Q20 22 26 29" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
-      <path d="M28 24 Q32 17 36 24" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
-      <path d="M38 29 Q44 22 50 30" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.75"/>
-      <path d="M20 38 Q32 44 44 38" fill="none" stroke="#a8641f" stroke-width="2.6" stroke-linecap="round" opacity="0.6"/>
-    `),
-
+  pie: () => photoIcon('pie'),
   // The third IE picture. `lie` was the obvious candidate and was rejected --
   // see the report: it is a verb, and a figure lying down reads as "sleep",
   // which lands on `bed`. Fries are a concrete object a Korean 5-year-old
@@ -1401,59 +1095,14 @@ const ICONS = {
   // `duck` is also a big yellow oval with a round head, and a plain yellow
   // bee would have been its twin. The three short legs are the second half
   // of that split: the duck comment says it has no legs at all.
-  bee: () => {
-    const clipId = nextId('bee-clip')
-    return wrap(`
-      <ellipse cx="32" cy="20" rx="13" ry="7" transform="rotate(-24 32 20)"
-        fill="#eafcff" stroke="#b8b8b8" stroke-width="1.8"/>
-      <ellipse cx="44" cy="23" rx="11" ry="6" transform="rotate(16 44 23)"
-        fill="#eafcff" stroke="#b8b8b8" stroke-width="1.8"/>
-      <g stroke="#2c2c2a" stroke-width="2.6" stroke-linecap="round">
-        <path d="M25 48 L21 57"/>
-        <path d="M35 50 L34 59"/>
-        <path d="M44 48 L47 56"/>
-        <path d="M14 25 Q9 16 4 14"/>
-        <path d="M21 25 Q22 15 27 12"/>
-      </g>
-      <circle cx="4" cy="14" r="2.4" fill="#2c2c2a"/>
-      <circle cx="27" cy="12" r="2.4" fill="#2c2c2a"/>
-      <polygon points="52,41 61,44.5 52,48" fill="#2c2c2a"/>
-      <ellipse cx="35" cy="39" rx="18" ry="12.5" fill="#ffd43b"/>
-      <clipPath id="${clipId}"><ellipse cx="35" cy="39" rx="18" ry="12.5"/></clipPath>
-      <g clip-path="url(#${clipId})" fill="#2c2c2a">
-        <g transform="rotate(-12 35 39)">
-          <rect x="27" y="18" width="6.4" height="42"/>
-          <rect x="38" y="18" width="6.4" height="42"/>
-          <rect x="49" y="18" width="6.4" height="42"/>
-        </g>
-      </g>
-      <ellipse cx="35" cy="39" rx="18" ry="12.5" fill="none" stroke="#2c2c2a" stroke-width="2"/>
-      <circle cx="16" cy="33" r="9.5" fill="#2c2c2a"/>
-      <circle cx="13" cy="31" r="3.4" fill="#f5f2ea"/>
-      <circle cx="12.4" cy="31.6" r="1.6" fill="#2c2c2a"/>
-    `)
-  },
-
+  bee: () => photoIcon('bee'),
   // Three overlapping canopy lobes plus a trunk with root flare. The lobes
   // matter: a single dome on a stick is `umbrella`'s silhouette, and a ring
   // of small round tufts is `lion`'s mane. Three big lobes leave two notches
   // in the outline that neither of those has, and the bare branch poking out
   // to the left breaks the symmetry an umbrella canopy always has. No fruit
   // on it -- red dots would name it as `apple`.
-  tree: () =>
-    wrap(`
-      <path d="M26 37 L7 44" fill="none" stroke="#8a5a33" stroke-width="4" stroke-linecap="round"/>
-      <path d="M38 36 L52 42" fill="none" stroke="#8a5a33" stroke-width="3.4" stroke-linecap="round"/>
-      <path d="M22 61 Q27 55 27 36 H37 Q37 55 42 61 Z" fill="#8a5a33"/>
-      <rect x="30.4" y="38" width="3" height="20" fill="#712b13"/>
-      <circle cx="13" cy="32" r="11.5" fill="#3b9922"/>
-      <circle cx="51" cy="31" r="11.5" fill="#3b9922"/>
-      <circle cx="32" cy="20" r="16" fill="#3b9922"/>
-      <path d="M4 34 Q13 45 22 34 Q13 40 4 34 Z" fill="#256614"/>
-      <path d="M42 33 Q51 44 60 33 Q51 39 42 33 Z" fill="#256614"/>
-      <path d="M18 24 Q32 40 46 24 Q32 34 18 24 Z" fill="#256614"/>
-    `),
-
+  tree: () => photoIcon('tree'),
   // Round 3/4/5 (all rejected). Every prior attempt built the foot out of
   // `hand`'s own grammar -- a round/rect palm-like mass with digits fanning
   // or standing off its top edge -- and every one of them traded "floats
@@ -1543,21 +1192,7 @@ const ICONS = {
   // same tine/handle construction, just thicker ink and a more diagonal
   // rest-on-a-table angle, which is what made the reference read clearly as
   // cutlery rather than a comb.
-  fork: () =>
-    wrap(`
-      <g transform="rotate(-28 32 32)">
-        <path d="M19.8 11 L22 7 L24.2 11 L24.2 31 Q25.33 33 26.47 31 L26.47 11
-                 L28.67 7 L30.87 11 L30.87 31 Q32 33 33.13 31 L33.13 11
-                 L35.33 7 L37.53 11 L37.53 31 Q38.67 33 39.8 31 L39.8 11
-                 L42 7 L44.2 11 L44.2 31 C44.2 35 36.6 35.5 35.6 39
-                 L34.6 56 Q34.6 59.5 32 59.5 Q29.4 59.5 29.4 56 L28.4 39
-                 C27.4 35.5 19.8 35 19.8 31 Z"
-          fill="#c4c4c4" stroke="#1c1c1c" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M32 42 L31.7 55" fill="none" stroke="#8e8e96" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M22 13 L22 28" fill="none" stroke="#f5f2ea" stroke-width="1.4" stroke-linecap="round"/>
-      </g>
-    `),
-
+  fork: () => photoIcon('fork'),
   // An ear of corn: a kernel grid in two golds inside the cob outline, with
   // two husk leaves peeled forward from the base and a short silk tuft. The
   // grid is what names it -- a plain yellow capsule would be a lump, and
@@ -1608,6 +1243,43 @@ const ICONS = {
       <path d="M38 52 Q58 47 60 26 Z" fill="#ffffff" opacity="0.15"/>
     `)
   },
+
+  // -------------------------------------------------------------------
+  // Chapter 9-14 sound icons (Group 5-7), photo-cropped -- see the
+  // "PHOTO-CROP ROUND" header comment above and `photoIcon()`/
+  // `icon-photos.js` for the mechanism. Each maps to the new letter/
+  // digraph a phonics-chapter comment flagged as "아이콘 재고 0":
+  //   zebra  -- Z  (chapter 9)
+  //   watch  -- W  (chapter 9)
+  //   van    -- V  (chapter 10)
+  //   book   -- OO short/book sound (chapter 10)
+  //   yoyo   -- Y  (chapter 10)
+  //   fox    -- X word-final /ks/ (chapter 11, joins the existing `box`)
+  //   chips  -- CH (chapter 11)
+  //   shoe   -- SH (chapter 11, joins the existing `fish`)
+  //   thumb  -- TH voiceless (chapter 12)
+  //   queen  -- QU (chapter 12)
+  //   cloud  -- OU (chapter 12)
+  //   coin   -- OI (chapter 13)
+  //   glue   -- UE (chapter 13)
+  //   rubber -- ER (chapter 14)
+  // NG (chapter 9) needed no new icon -- the phonics comment already
+  // repurposes the existing `ring`/`king` art (both end in NG even though
+  // they'd only been used as R/K onset pictures before).
+  zebra: () => photoIcon('zebra'),
+  watch: () => photoIcon('watch'),
+  van: () => photoIcon('van'),
+  book: () => photoIcon('book'),
+  yoyo: () => photoIcon('yoyo'),
+  fox: () => photoIcon('fox'),
+  chips: () => photoIcon('chips'),
+  shoe: () => photoIcon('shoe'),
+  thumb: () => photoIcon('thumb'),
+  queen: () => photoIcon('queen'),
+  cloud: () => photoIcon('cloud'),
+  coin: () => photoIcon('coin'),
+  glue: () => photoIcon('glue'),
+  rubber: () => photoIcon('rubber'),
 
   // Generic letter/word tile -- embosses the actual letter(s) so the icon
   // itself carries shape-recognition value instead of being blank filler.

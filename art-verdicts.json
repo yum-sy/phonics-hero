@@ -582,5 +582,129 @@
   "icon:feet": {
     "v": "no",
     "at": "2026-08-25T02:04:57"
+  },
+  "char:fangor": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:17"
+  },
+  "char:snarl": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:17"
+  },
+  "char:grimjaw": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:18"
+  },
+  "char:thudfoot": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:19"
+  },
+  "char:bonecrash": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:20"
+  },
+  "char:wobblegear": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:22"
+  },
+  "char:ooze": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:22"
+  },
+  "char:magnetta": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:23"
+  },
+  "char:bricker": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:23"
+  },
+  "char:glitchking": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:24"
+  },
+  "char:springler": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:25"
+  },
+  "char:fuzzynap": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:26"
+  },
+  "char:boxxo": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:27"
+  },
+  "char:rollo": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:27"
+  },
+  "char:windup-duke": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:28"
+  },
+  "char:rustbot": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:43"
+  },
+  "char:sparkbot": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:43"
+  },
+  "char:fumebot": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:44"
+  },
+  "char:overclock": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:45"
+  },
+  "char:mirror-fade": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:53"
+  },
+  "char:static-lock": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:54"
+  },
+  "char:flare-static": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:54"
+  },
+  "char:nightshade": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:55"
+  },
+  "char:glitch-emperor": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:57"
+  },
+  "char:flipzag": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:58"
+  },
+  "char:corvid": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:59"
+  },
+  "char:slickspin": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:59"
+  },
+  "char:grabnar": {
+    "v": "ok",
+    "at": "2026-08-25T04:01:59"
+  },
+  "icon:fork": {
+    "v": "no",
+    "at": "2026-08-25T04:02:49"
+  },
+  "icon:pie": {
+    "v": "no",
+    "at": "2026-08-25T04:02:52"
+  },
+  "icon:nose": {
+    "v": "ok",
+    "at": "2026-08-25T04:03:12"
   }
 }
