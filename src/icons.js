@@ -1486,56 +1486,66 @@ const ICONS = {
   // Round 6 (rejected). Single top-down sole with five small toe DOTS
   // clustered along the top edge -- fixed the hand confusion, but still
   // didn't land as clearly "foot" as hoped.
-  // Round 7 redraw. User supplied reference images and named one directly:
-  // the classic paired "baby footprints" glyph (two teardrop soles, thick
-  // dark outline, five OVAL toes fanned across the top of each, one foot
-  // offset lower than the other like an actual pair of footsteps, a small
-  // arch dot and a short heel-crease stroke on the sole). Built to match
-  // that reference specifically rather than another from-scratch attempt:
-  // bold `ink`-weight stroke (3, matching this file's thick-outline family
-  // members) carries the silhouette even at a glance, ONE shared foot()
-  // helper mirrored via dir=+-1 and vertically offset (right foot drawn
-  // 6 units higher) reproduces the "mid-step" stagger the reference has,
-  // and toes are true ovals (wider than tall, rotated to fan outward from
-  // the ball) rather than circles or rectangles -- the shape the reference
-  // itself uses and a third silhouette family away from both `hand`'s
-  // fingers and round 6's dots.
+  // Round 7 (rejected). Paired "baby footprints" glyph (two teardrop soles,
+  // oval toes fanned across each) -- user's next pass sent a second,
+  // different reference and asked to match THAT one closely instead: a
+  // SINGLE foot with the ankle/leg attached, seen at an angle (leg entering
+  // top-left, heel bottom-left, toes fanning out to the bottom-right),
+  // scalloped toe bumps built into one continuous outline rather than
+  // separate ovals.
+  // Round 8 (rejected on self-render). Tried sculpting all five toe bumps
+  // directly into one continuous outline path (bumps-and-valleys as bezier
+  // control points). Hand-fit control points produced thin spiky teeth
+  // instead of rounded toes -- getting a smooth dome via a single quadratic
+  // per bump needs the tip ON the curve, not acting as its own control
+  // point, and doing that by hand across 5 bumps was fighting the tool.
+  // Round 9 redraw. Ankle+heel+sole as one plain silhouette (no toe
+  // scallops baked in), same diagonal composition (leg top-left, heel
+  // bottom-left, foot bulk sweeping down to a ball at bottom-right) plus
+  // five toe ELLIPSES as their own shapes overlapping the ball's edge --
+  // the same technique round 7's paired-footprints used successfully,
+  // repositioned along this reference's diagonal fan instead of a
+  // straight-up row. Centers computed along a baseline from the ball to
+  // the ankle, offset outward by a shrinking radius (big toe 9x5.5 down to
+  // pinky 5x3.5) and rotated to the baseline's own angle (~21 deg) so
+  // every toe's long axis points the same outward direction -- reliably
+  // round every time, unlike hand-tuned bezier control points.
   feet: () => {
     const skin = '#f5d3ab'
-    const ink = '#2b3a55'
-    const foot = (cx, dir, dy) => {
-      const s = (n) => (cx + dir * n).toFixed(1)
-      // [dx, rotation deg] -- five toes fanned across the ball, big toe
-      // innermost (closest to the midline) and rotated most upright, pinky
-      // outermost and rotated most outward, matching the reference's fan.
-      const toes = [
-        [-9, -22],
-        [-3.5, -8],
-        [2, 4],
-        [7, 16],
-        [11.5, 30],
-      ]
-      let toeShapes = ''
-      toes.forEach(([dx, rot]) => {
-        const tx = s(dx)
-        const ty = (dy + 14).toFixed(1)
-        toeShapes += `<ellipse cx="${tx}" cy="${ty}" rx="3.6" ry="5.2" fill="${skin}" stroke="${ink}" stroke-width="2.4" transform="rotate(${dir * rot} ${tx} ${ty})"/>`
-      })
-      return `
-        <path d="M${s(-11)},${dy + 24} Q${s(-13)},${dy + 6} ${s(-2)},${dy + 2}
-                 Q${s(9)},${dy - 2} ${s(12)},${dy + 14}
-                 Q${s(14)},${dy + 30} ${s(8)},${dy + 44}
-                 Q${s(0)},${dy + 54} ${s(-8)},${dy + 46}
-                 Q${s(-14)},${dy + 38} ${s(-11)},${dy + 24} Z"
-          fill="${skin}" stroke="${ink}" stroke-width="3"/>
-        <circle cx="${s(-2)}" cy="${dy + 34}" r="2" fill="${ink}"/>
-        <path d="M${s(2)},${dy + 40} Q${s(6)},${dy + 44} ${s(4)},${dy + 49}"
-          fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/>
-        ${toeShapes}`
-    }
+    const ink = '#1c1c1c'
+    // Five toe ellipses fanning off the ball, big toe nearest the sole
+    // (bottom) shrinking to the pinky nearest the ankle (top) -- drawn as
+    // their own shapes (not baked into the sole's own outline) so each one
+    // stays a clean rounded lobe instead of a hand-fit bezier spike. Same
+    // technique the paired-footprints round used, repositioned along this
+    // single foot's diagonal.
+    const toes = [
+      [44.6, 57.7, 9, 5.5],
+      [45.7, 49.3, 8, 5],
+      [46.7, 41.2, 7, 4.5],
+      [47.7, 33.1, 6, 4],
+      [48.7, 25.3, 5, 3.5],
+    ]
+    const angle = 20.6
+    const toeShapes = toes
+      .map(
+        ([cx, cy, rx, ry]) =>
+          `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${skin}" stroke="${ink}" stroke-width="3" transform="rotate(${angle} ${cx} ${cy})"/>`
+      )
+      .join('')
     return wrap(`
-      ${foot(20, 1, 6)}
-      ${foot(45, -1, 0)}
+      <path d="M16,2 L32,2
+               Q34,10 33,20
+               Q40,22 43,28
+               Q46,36 44,44
+               Q42,52 34,57
+               Q24,62 14,58
+               Q6,54 6,40
+               Q6,26 12,20
+               Q13,10 16,2 Z"
+        fill="${skin}" stroke="${ink}" stroke-width="3.4" stroke-linejoin="round"/>
+      ${toeShapes}
+      <path d="M14,10 Q12,20 13,32" fill="none" stroke="#e0ab78" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
     `)
   },
 
