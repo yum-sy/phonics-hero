@@ -809,7 +809,7 @@ export const chapter31 = {
     {
       "id": "c31s4",
       "order": 4,
-      "title": "카봇 Training",
+      "title": "Carbot Training",
       "villain": {
         "name": "Barricade",
         "art": "barricade",

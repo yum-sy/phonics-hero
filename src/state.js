@@ -1,13 +1,12 @@
 const STORAGE_KEY = 'carbot-phonics-progress-v1'
 
-// Content is still being reviewed stage-by-stage, so unlock gating is off
-// during development to let the parent jump straight to any stage. Vite
-// statically replaces import.meta.env.DEV, so a production build folds this
-// to `false` and drops the unlock branches entirely -- the dev convenience
-// cannot survive into a shipped bundle even if someone forgets a checklist
-// step. The typeof guard keeps the module importable outside Vite.
-const DEV_UNLOCK_ALL =
-  typeof import.meta.env !== 'undefined' && import.meta.env.DEV === true
+// Curriculum content is complete (33 chapters) and now needs real
+// stage-by-stage playtesting, so the dev-mode unlock-everything bypass is
+// off: progression must be earned in order, same as production, even
+// while running the dev server. Flip back to
+// `typeof import.meta.env !== 'undefined' && import.meta.env.DEV === true`
+// if free-jumping during content authoring is needed again.
+const DEV_UNLOCK_ALL = false
 
 function emptyProgress() {
   return { clearedStages: [], stars: {}, checkpoint: null }

@@ -178,6 +178,21 @@ function portraitHtml(svgHtml, revealed) {
   return revealed ? svgHtml : shadowArt(svgHtml)
 }
 
+// A locked card still shows the silhouette (that peek is the whole point --
+// "who's next" is part of the draw), just with a small padlock badge over
+// it so it reads as "not yet" rather than "cleared". Smaller and
+// bottom-right (vs. clearMarkHtml's top-right ✓) so the two never compete
+// for the same corner or get mistaken for each other.
+function lockBadgeHtml() {
+  return (
+    `<span class="lock-badge" aria-hidden="true" style="position:absolute;` +
+    `bottom:-2px;right:-2px;width:clamp(22px,2.6svh,32px);height:clamp(22px,2.6svh,32px);` +
+    `border-radius:50%;background:var(--ink,#2c2c2c);color:#fff;` +
+    `font-size:clamp(12px,1.5svh,17px);display:flex;align-items:center;justify-content:center;` +
+    `border:2px solid var(--surface)">🔒</span>`
+  )
+}
+
 // Overlaid on the node, not appended below it: the world/chapter/map screens
 // run at 1.2-1.9% vertical slack and a real device has already been seen to
 // scroll where headless does not, so a mark in the flow is the thing that
@@ -430,19 +445,18 @@ function worldSelectScreen() {
       const faceStage = firstChapter
         ? firstChapter.stages[firstChapter.stages.length - 1]
         : null
-      const inner =
-        unlocked && faceStage
-          ? portraitHtml(
-              heroArt(faceStage.hero),
-              isStageCleared(faceStage.id)
-            )
-          : '<i class="lock">🔒</i>'
+      const inner = faceStage
+        ? portraitHtml(
+            heroArt(faceStage.hero),
+            unlocked && isStageCleared(faceStage.id)
+          ) + (unlocked ? '' : lockBadgeHtml())
+        : '<i class="lock">🔒</i>'
       const [start, end] = world.chapterRange
       return `
         <button class="${cls}" data-world="${world.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked world"'
       }>
-          <div class="chapter-card-art">${inner}</div>
+          <div class="chapter-card-art" style="position:relative">${inner}</div>
           <div class="chapter-card-order">${world.title}</div>
           <div class="chapter-card-title range">Chapters ${start}-${end}</div>
           ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
@@ -495,17 +509,16 @@ function chapterSelectScreen(worldId) {
       if (cleared) cls += ' cleared'
       if (!unlocked) cls += ' locked'
       const faceStage = chapter.stages[chapter.stages.length - 1]
-      const inner = unlocked
-        ? portraitHtml(
-            villainArt(faceStage.villain),
-            isStageCleared(faceStage.id)
-          )
-        : '<i class="lock">🔒</i>'
+      const inner =
+        portraitHtml(
+          villainArt(faceStage.villain),
+          unlocked && isStageCleared(faceStage.id)
+        ) + (unlocked ? '' : lockBadgeHtml())
       return `
         <button class="${cls}" data-chapter="${chapter.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked chapter"'
       }>
-          <div class="chapter-card-art">${inner}</div>
+          <div class="chapter-card-art" style="position:relative">${inner}</div>
           <div class="chapter-card-order">Chapter ${chapter.order}</div>
           <div class="chapter-card-title">${unlocked ? chapter.title : '???'}</div>
           ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
@@ -557,18 +570,24 @@ function mapScreen(chapterId) {
       if (stage.chapterBoss) cls += ' boss'
       if (cleared) cls += ' cleared'
       if (!unlocked) cls += ' locked'
-      const inner = unlocked
-        ? stage.chapterBoss
-          ? portraitHtml(villainArt(stage.villain), cleared)
-          : String(stage.order)
-        : '<i class="lock">🔒</i>'
-      // position:relative only where a mark actually goes, so an uncleared
-      // node's markup is unchanged.
+      // A locked boss node still shows the villain silhouette (that peek
+      // is the point) with a small lock badge over it; a locked non-boss
+      // node has no art either way (just its order number when unlocked),
+      // so it keeps the plain lock glyph.
+      const inner = stage.chapterBoss
+        ? portraitHtml(villainArt(stage.villain), cleared) +
+          (unlocked ? '' : lockBadgeHtml())
+        : unlocked
+          ? String(stage.order)
+          : '<i class="lock">🔒</i>'
+      // position:relative only where a mark actually goes, so a plain
+      // number/lock-glyph node's markup is unchanged.
       const mark = cleared ? clearMarkHtml() : ''
+      const needsRelative = cleared || (stage.chapterBoss && !unlocked)
       return `
         <div class="stage-node-wrap">
           <button class="${cls}" ${
-        cleared ? 'style="position:relative"' : ''
+        needsRelative ? 'style="position:relative"' : ''
       } data-stage="${stage.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked stage"'
       }>${inner}${mark}</button>

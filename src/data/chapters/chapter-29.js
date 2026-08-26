@@ -801,7 +801,7 @@ export const chapter29 = {
     {
       "id": "c29s4",
       "order": 4,
-      "title": "DC 히어로 Training",
+      "title": "Hero Training",
       "villain": {
         "name": "Cindermask",
         "art": "cindermask",

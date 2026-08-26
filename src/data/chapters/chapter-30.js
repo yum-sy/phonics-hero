@@ -809,7 +809,7 @@ export const chapter30 = {
     {
       "id": "c30s4",
       "order": 4,
-      "title": "마리오(레고) Training",
+      "title": "Brick Training",
       "villain": {
         "name": "Rubblehorn",
         "art": "rubblehorn",

@@ -824,7 +824,7 @@ export const chapter32 = {
     {
       "id": "c32s4",
       "order": 4,
-      "title": "마블 히어로 Training",
+      "title": "Hero Training",
       "villain": {
         "name": "Snarltangle",
         "art": "snarltangle",

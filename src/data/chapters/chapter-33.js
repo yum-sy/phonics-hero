@@ -809,7 +809,7 @@ export const chapter33 = {
     {
       "id": "c33s4",
       "order": 4,
-      "title": "공룡 Training",
+      "title": "Dino Training",
       "villain": {
         "name": "Boghide",
         "art": "boghide",
