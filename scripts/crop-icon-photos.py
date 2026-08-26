@@ -376,6 +376,15 @@ if __name__ == "__main__":
     process_abs(D2, (10, 560, 222, 672), "rain", keep_largest=True)
     process_abs(C, (240, 610, 361, 712), "rat")
 
+    # sun: original crop top (y=623) cut into the rays -- the sun's actual
+    # color starts at y=618 (measured directly against the source sheet),
+    # so 623 sliced off the top two ray tips. Widened to y=610 and switched
+    # to keep_largest_component=True: at pad=5 the wider box pulled in the
+    # neighboring "Ss" label and a grid-line sliver as separate components,
+    # which keep_largest drops (pad=2 keeps the box tight enough that
+    # nothing else survives to compete on size).
+    process_abs(C, (373, 610, 544, 712), "sun", pad=2, keep_largest=True)
+
     # yoyo: D is only 2 cells wide with no clean grid helper -- crop its
     # left half directly, then reuse the same corner-box + trim pipeline.
     im = Image.open(os.path.join(REFS, D)).convert("RGB")

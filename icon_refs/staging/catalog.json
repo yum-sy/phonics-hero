@@ -98,10 +98,11 @@
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
     "cropBox": [
       373,
-      623,
+      610,
       544,
       712
     ],
+    "note": "top widened 623->610: original box cut the top ray tips (color starts at y=618, measured against source)",
     "croppedFile": "sun.png"
   },
   "rat": {
