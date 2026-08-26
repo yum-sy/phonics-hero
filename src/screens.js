@@ -187,13 +187,20 @@ function portraitHtml(svgHtml, revealed) {
 // art itself -- the art box has real margin around the figure, and a fixed
 // corner offset landed the badge out in that empty margin instead of next
 // to the silhouette.
+// No filled circle behind the glyph any more (사용자 지시: "검은 배경 없이
+// 자물쇠 아이콘만"). The badge used to be a solid dark disc so it read
+// clearly against any character art color -- dropping the disc means
+// contrast now has to come from the glyph itself, so a drop-shadow (not a
+// stroke/outline, which the emoji glyph doesn't support) stands in for it:
+// dark art gets a light-ish halo from the shadow spread, light art gets a
+// dark shadow, so 🔒 stays legible either way without a background shape.
 function lockBadgeHtml() {
   return (
     `<span class="lock-badge" aria-hidden="true" style="position:absolute;` +
     `bottom:14%;right:18%;width:clamp(20px,2.4svh,30px);height:clamp(20px,2.4svh,30px);` +
-    `border-radius:50%;background:var(--ink,#2c2c2c);color:#fff;` +
-    `font-size:clamp(11px,1.4svh,16px);display:flex;align-items:center;justify-content:center;` +
-    `border:2px solid var(--surface)">🔒</span>`
+    `display:flex;align-items:center;justify-content:center;` +
+    `font-size:clamp(16px,2.1svh,24px);` +
+    `filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)) drop-shadow(0 0 3px rgba(255,255,255,.5))">🔒</span>`
   )
 }
 
@@ -411,12 +418,82 @@ function fireBolt(fromEl) {
   return flightMs
 }
 
+// ---- transition countdown (visual cue for waitForTransition's hold) ----
+//
+// waitForTransition() was a silent Promise.all(audio, timer) -- correct as
+// a gate, but from the child's seat every correct/wrong answer produced up
+// to 600ms where nothing on screen changed at all ("그냥 마냥 기다리는" 느낌,
+// QA). This paints a small fixed-position bar that fills over minDelayMs.
+// It is purely cosmetic: nothing awaits it, and the real gate below is
+// untouched, so this can never make a transition slower or drift out of
+// sync with it -- worst case the bar finishes filling before the audio
+// queue drains and just sits full for the remainder, which reads as
+// "wrapping up" rather than "stuck", the opposite of the complaint.
+//
+// The keyframe/transition CSS is injected once here rather than added to
+// style.css -- that file is owned by the layout agent in this session, and
+// this is this module managing its own scratch element the same way
+// fireBolt() manages `.fx-bolt` via inline styles/custom properties instead
+// of a stylesheet rule.
+let transitionStyleInjected = false
+function ensureTransitionStyle() {
+  if (transitionStyleInjected) return
+  transitionStyleInjected = true
+  const style = document.createElement('style')
+  style.textContent = `
+    .transition-countdown {
+      position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+      width: min(120px, 30vw); height: 6px; border-radius: 3px;
+      background: rgba(0,0,0,.15); overflow: hidden; pointer-events: none;
+      z-index: 9999;
+    }
+    .transition-countdown > span {
+      display: block; height: 100%; width: 0%; border-radius: 3px;
+      background: var(--ink, #2c2c2c); opacity: .55;
+    }
+  `
+  document.head.appendChild(style)
+}
+
+// Starts the bar filling toward 100% over `ms` and returns a cleanup
+// function that removes it -- called from waitForTransition() regardless of
+// which of the two racing promises actually won, so the bar never outlives
+// the screen it was drawn over.
+function showTransitionCountdown(ms) {
+  ensureTransitionStyle()
+  const bar = document.createElement('div')
+  bar.className = 'transition-countdown'
+  bar.innerHTML = '<span></span>'
+  document.body.appendChild(bar)
+  const fill = bar.firstElementChild
+  // Two rAFs, not one: the element has to actually paint at width:0 first,
+  // or the browser coalesces the 0->100 change into the same frame and the
+  // bar just appears full instead of animating -- one rAF still lands
+  // inside the same paint as the initial style in some engines, two does
+  // not.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fill.style.transition = `width ${ms}ms linear`
+      fill.style.width = '100%'
+    })
+  })
+  let removed = false
+  return () => {
+    if (removed) return
+    removed = true
+    bar.remove()
+  }
+}
+
 // Waits for both a minimum visual-feedback delay AND the audio queue to
 // fully drain, whichever takes longer -- so a transition never cuts off
 // in-flight speech, but also never feels laggier than it needs to when
 // audio finishes quickly (e.g. speechSynthesis unavailable).
 function waitForTransition(minDelayMs) {
-  return Promise.all([whenAudioIdle(), sleep(minDelayMs)])
+  const removeCountdown = showTransitionCountdown(minDelayMs)
+  return Promise.all([whenAudioIdle(), sleep(minDelayMs)]).finally(
+    removeCountdown
+  )
 }
 
 // ---------- WORLD SELECT SCREEN ----------

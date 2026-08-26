@@ -38,6 +38,60 @@ export function unlockAudio() {
   // suspended on iOS. Warming the buffers here means the first drill sound of
   // the session is already decoded when the child reaches it.
   warmSoundAssets()
+  startSpeechWatchdog()
+}
+
+// ---- iOS/iPadOS Safari speech daemon watchdog ----
+//
+// This is a SEPARATE failure from every other one documented in this file
+// (lying `onend`, `cancel()` killing the queue, wrong-voice fallback): those
+// all still fire *some* event pump() can react to. This one does not.
+// Documented, widely-hit WebKit behaviour: after the on-device speech
+// daemon sits idle for roughly 15s, the *next* speak() call it receives is
+// dropped entirely -- no onstart, no onend, no onerror, no sound. Nothing in
+// pump()'s trust bit can distinguish that from a genuinely silent utterance,
+// because both look identical from script: a queued item whose engine event
+// never arrives (which is exactly why the safety timer exists) -- so this
+// project's own architecture cannot self-heal a device with this bug, only
+// route around it before it happens.
+//
+// This app is a poor fit for the failure window on top of that: think/tap
+// time between beats is frequently well over 15s (a 5-year-old reading a
+// word, deciding an answer), so "TTS stops working" reads as exactly the
+// symptom reported -- general, on multiple stages, not tied to one beat
+// type -- rather than a one-off.
+//
+// The standard mitigation (widely used by other TTS-driven web apps for the
+// same bug) is a periodic no-op pause()/resume(): idle, it is a no-op for
+// the engine's own state (nothing is speaking, so there is nothing to pause)
+// but resets whatever internal timer causes the daemon to go stale.
+// Deliberately NOT cancel() -- cancel() is the one call this module has
+// never used because it drops the whole queue; pause()/resume() drop
+// nothing.
+//
+// Gated on `!speechSynthesis.speaking` so this can never land mid-utterance:
+// pausing a real utterance the child is currently hearing (even for the
+// instant before resume() continues it) is an audible hiccup this project
+// does not need to risk for a fix aimed at the idle case.
+//
+// Started once, from the first real gesture (same call site as the rest of
+// unlockAudio's setup) rather than at module load: an interval ticking
+// before the page has ever spoken anything guards nothing yet and just
+// costs a timer for the lifetime of a screen that may never need audio.
+let speechWatchdogStarted = false
+function startSpeechWatchdog() {
+  if (speechWatchdogStarted) return
+  speechWatchdogStarted = true
+  if (!('speechSynthesis' in window)) return
+  setInterval(() => {
+    try {
+      if (window.speechSynthesis.speaking) return
+      window.speechSynthesis.pause()
+      window.speechSynthesis.resume()
+    } catch (e) {
+      // ignore -- worst case the daemon bug this exists to dodge comes back
+    }
+  }, 10000)
 }
 
 // ---- baked phoneme assets ----
