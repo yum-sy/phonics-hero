@@ -1,0 +1,1637 @@
+// Chapter 33 (공룡 theme, **world 5 finale -- last chapter in the app**): consonant blends THR + SHR -> boss words "THREE" + "SHRIMP". No new Jolly phonemes -- all 42
+// sounds finished at chapter 14; this is a pure blend/cumulative-review chapter
+// per the world-5 brief (leader-assigned art family: 공룡).
+//
+// Blends are NOT new SOUND_TABLE letterforms -- there is no measured 'st'/'tr'/
+// etc phoneme (that would need fresh say+afinfo measurement this session didn't
+// do). Instead each blend is taught the same way multi-letter boss words already
+// are (zip = Z+I+P, car = C+AR): sequential single-sound review of the component
+// letters (already in SOUND_TABLE, already taught by chapter 14), then a
+// listen-repeat blend demo (slot sounds -> blended word), then drag-build
+// assembly at the boss. All choose/multiselect/cycle quiz content only ever
+// references pre-existing single letterforms -- never a synthesized 'ST' sound.
+//
+// reviewTargets on every declaring stage is the frozen 41-letterform list
+// chapter 14 last shipped. This is valid ONLY if chapters 15-28 (written by
+// other sessions) also introduce no new letterforms, since validateChapters()
+// derives taughtSoFar from every beat.letter across the whole chapter list in
+// curriculum order -- flagged in the final report to the leader.
+//
+// Boss word slot decomposition (all letters/digraphs verified against
+// SOUND_TABLE before writing):
+//   THREE = TH+R+EE
+//   SHRIMP = SH+R+I+M+P
+
+export const chapter33 = {
+  "id": "chapter-33",
+  "order": 33,
+  "title": "Dragon Isle: Final Roar",
+  "stages": [
+    {
+      "id": "c33s1",
+      "order": 1,
+      "title": "Blend THR",
+      "villain": {
+        "name": "Gloomfang",
+        "art": "gloomfang",
+        "style": "dino-blink"
+      },
+      "hero": {
+        "name": "Blaze",
+        "art": "blaze",
+        "style": "dino-raptor"
+      },
+      "chapterBoss": false,
+      "beats": [
+        {
+          "id": "c33s1-teach",
+          "kind": "teach",
+          "art": "hero",
+          "letter": "TH",
+          "repeatAudio": [
+            "thhu"
+          ],
+          "instructionKo": "Blaze가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+        },
+        {
+          "id": "c33s1-r1",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "이 소리가 들어있는 단어예요! 따라 말해보세요.",
+          "words": [
+            "thumb",
+            "think"
+          ]
+        },
+        {
+          "id": "c33s1-break",
+          "kind": "break",
+          "art": "hero",
+          "letter": "R",
+          "repeatAudio": [
+            "rrr"
+          ],
+          "instructionKo": "이번엔 다른 소리예요! 함께 들어볼까요?"
+        },
+        {
+          "id": "c33s1-r2",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"ring\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "rrr",
+          "options": [
+            {
+              "id": "c33s1-r2-0",
+              "icon": "ring",
+              "label": "ring",
+              "correct": true
+            },
+            {
+              "id": "c33s1-r2-1",
+              "icon": "nut",
+              "label": "nut",
+              "correct": false
+            },
+            {
+              "id": "c33s1-r2-2",
+              "icon": "pig",
+              "label": "pig",
+              "correct": false
+            },
+            {
+              "id": "c33s1-r2-3",
+              "icon": "box",
+              "label": "box",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "ring"
+          }
+        },
+        {
+          "id": "c33s1-r3",
+          "kind": "multiselect",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "/f/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "options": [
+            {
+              "id": "c33s1-r3-0",
+              "icon": "fox",
+              "label": "fox",
+              "correct": true
+            },
+            {
+              "id": "c33s1-r3-1",
+              "icon": "king",
+              "label": "king",
+              "correct": false
+            },
+            {
+              "id": "c33s1-r3-2",
+              "icon": "fish",
+              "label": "fish",
+              "correct": true
+            },
+            {
+              "id": "c33s1-r3-3",
+              "icon": "egg",
+              "label": "egg",
+              "correct": false
+            },
+            {
+              "id": "c33s1-r3-4",
+              "icon": "fan",
+              "label": "fan",
+              "correct": true
+            }
+          ],
+          "readAloud": {
+            "targetText": "fox"
+          }
+        },
+        {
+          "id": "c33s1-r4-blend",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "TH와 R를 이어서 말하면 'THR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "words": [
+            {
+              "text": "TH",
+              "say": "thhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "EE",
+              "say": "ee"
+            },
+            "three"
+          ]
+        },
+        {
+          "id": "c33s1-finale",
+          "kind": "finale",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
+          "words": [
+            "three"
+          ]
+        }
+      ],
+      "recapKo": "TH와 R를 이으면 'THR' 소리가 돼요! THREE처럼요!",
+      "recapAudio": {
+        "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
+        "en": [
+          "thhu",
+          "rrr",
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "c33s2",
+      "order": 2,
+      "title": "THR Power-Up",
+      "villain": {
+        "name": "Mirefoot",
+        "art": "mirefoot",
+        "style": "dino-echo"
+      },
+      "hero": {
+        "name": "Blaze",
+        "art": "blaze",
+        "style": "dino-raptor"
+      },
+      "chapterBoss": false,
+      "beats": [
+        {
+          "id": "c33s2-r1-warmup",
+          "kind": "choose",
+          "scored": false,
+          "instructionKo": "이 소리를 내는 글자를 찾아보세요! (연습이에요)",
+          "promptAudio": "thhu",
+          "options": [
+            {
+              "id": "c33s2-r1-warmup-1",
+              "icon": "letterTile",
+              "label": "S",
+              "say": "sss",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r1-warmup-0",
+              "icon": "letterTile",
+              "label": "TH",
+              "say": "thhu",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r1-warmup-2",
+              "icon": "letterTile",
+              "label": "T",
+              "say": "tuh",
+              "correct": false
+            }
+          ]
+        },
+        {
+          "id": "c33s2-r2",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"boat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "buh",
+          "options": [
+            {
+              "id": "c33s2-r2-0",
+              "icon": "hen",
+              "label": "hen",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r2-1",
+              "icon": "boat",
+              "label": "boat",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r2-2",
+              "icon": "nut",
+              "label": "nut",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r2-3",
+              "icon": "cat",
+              "label": "cat",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "boat"
+          }
+        },
+        {
+          "id": "c33s2-r3-trace",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "손가락으로 TH와 R를 따라 그리면서 두 소리를 이어보세요!",
+          "words": [
+            {
+              "text": "TH",
+              "say": "thhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            }
+          ]
+        },
+        {
+          "id": "c33s2-r4-multi",
+          "kind": "multiselect",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "/p/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "options": [
+            {
+              "id": "c33s2-r4-multi-0",
+              "icon": "pig",
+              "label": "pig",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r4-multi-1",
+              "icon": "rat",
+              "label": "rat",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r4-multi-2",
+              "icon": "pen",
+              "label": "pen",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r4-multi-3",
+              "icon": "fish",
+              "label": "fish",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r4-multi-4",
+              "icon": "pot",
+              "label": "pot",
+              "correct": true
+            }
+          ],
+          "readAloud": {
+            "targetText": "pig"
+          }
+        },
+        {
+          "id": "c33s2-r5-hard",
+          "kind": "choose",
+          "scored": true,
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "promptAudio": "thhu",
+          "options": [
+            {
+              "id": "c33s2-r5-hard-1",
+              "icon": "letterTile",
+              "label": "S",
+              "say": "sss",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r5-hard-2",
+              "icon": "letterTile",
+              "label": "T",
+              "say": "tuh",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r5-hard-3",
+              "icon": "letterTile",
+              "label": "R",
+              "say": "rrr",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r5-hard-0",
+              "icon": "letterTile",
+              "label": "TH",
+              "say": "thhu",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r5-hard-4",
+              "icon": "letterTile",
+              "label": "P",
+              "say": "puh",
+              "correct": false
+            }
+          ],
+          "hits": 1,
+          "readAloud": {
+            "targetText": "TH",
+            "say": "thhu"
+          }
+        },
+        {
+          "id": "c33s2-r6-reversed",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "이 글자가 들어있는 그림을 찾아보세요!",
+          "promptLetter": "AR",
+          "options": [
+            {
+              "id": "c33s2-r6-reversed-0",
+              "icon": "bed",
+              "label": "bed",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r6-reversed-1",
+              "icon": "tie",
+              "label": "tie",
+              "correct": false
+            },
+            {
+              "id": "c33s2-r6-reversed-2",
+              "icon": "car",
+              "label": "car",
+              "correct": true
+            },
+            {
+              "id": "c33s2-r6-reversed-3",
+              "icon": "nut",
+              "label": "nut",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "car"
+          }
+        },
+        {
+          "id": "c33s2-r7-cycle",
+          "kind": "choose-sequence",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.",
+          "steps": [
+            {
+              "promptAudio": "thhu",
+              "options": [
+                {
+                  "id": "c33s2-r7-cycle-s0-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s0-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s0-2",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s0-3",
+                  "icon": "letterTile",
+                  "label": "TH",
+                  "say": "thhu",
+                  "correct": true
+                }
+              ]
+            },
+            {
+              "promptAudio": "rrr",
+              "options": [
+                {
+                  "id": "c33s2-r7-cycle-s1-0",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": true
+                },
+                {
+                  "id": "c33s2-r7-cycle-s1-1",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s1-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s1-3",
+                  "icon": "letterTile",
+                  "label": "P",
+                  "say": "puh",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "nnn",
+              "options": [
+                {
+                  "id": "c33s2-r7-cycle-s2-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s2-1",
+                  "icon": "letterTile",
+                  "label": "N",
+                  "say": "nnn",
+                  "correct": true
+                },
+                {
+                  "id": "c33s2-r7-cycle-s2-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s2-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "kuh",
+              "options": [
+                {
+                  "id": "c33s2-r7-cycle-s3-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s3-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s2-r7-cycle-s3-2",
+                  "icon": "letterTile",
+                  "label": "C",
+                  "say": "kuh",
+                  "correct": true
+                },
+                {
+                  "id": "c33s2-r7-cycle-s3-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c33s2-finale",
+          "kind": "finale",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "마지막 공격! 이 소리로 크게 외쳐보세요!",
+          "words": [
+            "three"
+          ]
+        }
+      ],
+      "recapKo": "THR 소리를 다시 연습했어요! 이제 THREE를 잘 만들 수 있어요.",
+      "recapAudio": {
+        "ko": "다시 연습했어요. 잘 들어보세요.",
+        "en": [
+          "thhu",
+          "rrr",
+          "three"
+        ]
+      }
+    },
+    {
+      "id": "c33s3",
+      "order": 3,
+      "title": "Blend SHR",
+      "villain": {
+        "name": "Tumblescale",
+        "art": "tumblescale",
+        "style": "dino-upside"
+      },
+      "hero": {
+        "name": "Titania",
+        "art": "titania",
+        "style": "dino-armored"
+      },
+      "chapterBoss": false,
+      "reviewTargets": [
+        "S",
+        "A",
+        "T",
+        "I",
+        "P",
+        "N",
+        "C",
+        "K",
+        "E",
+        "H",
+        "R",
+        "M",
+        "D",
+        "G",
+        "O",
+        "U",
+        "L",
+        "F",
+        "B",
+        "AI",
+        "J",
+        "OA",
+        "IE",
+        "EE",
+        "OR",
+        "Z",
+        "W",
+        "NG",
+        "V",
+        "OO",
+        "Y",
+        "X",
+        "CH",
+        "SH",
+        "TH",
+        "QU",
+        "OU",
+        "OI",
+        "UE",
+        "AR",
+        "ER"
+      ],
+      "beats": [
+        {
+          "id": "c33s3-teach",
+          "kind": "teach",
+          "art": "hero",
+          "letter": "SH",
+          "repeatAudio": [
+            "shhu"
+          ],
+          "instructionKo": "Titania가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+        },
+        {
+          "id": "c33s3-r1",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "이 소리가 들어있는 단어예요! 따라 말해보세요.",
+          "words": [
+            "shoe",
+            "ship"
+          ]
+        },
+        {
+          "id": "c33s3-break",
+          "kind": "break",
+          "art": "hero",
+          "letter": "R",
+          "repeatAudio": [
+            "rrr"
+          ],
+          "instructionKo": "이번엔 다른 소리예요! 함께 들어볼까요?"
+        },
+        {
+          "id": "c33s3-r2",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"hat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "huh",
+          "options": [
+            {
+              "id": "c33s3-r2-0",
+              "icon": "fox",
+              "label": "fox",
+              "correct": false
+            },
+            {
+              "id": "c33s3-r2-1",
+              "icon": "hat",
+              "label": "hat",
+              "correct": true
+            },
+            {
+              "id": "c33s3-r2-2",
+              "icon": "nut",
+              "label": "nut",
+              "correct": false
+            },
+            {
+              "id": "c33s3-r2-3",
+              "icon": "cat",
+              "label": "cat",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "hat"
+          }
+        },
+        {
+          "id": "c33s3-r3",
+          "kind": "multiselect",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "/m/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "options": [
+            {
+              "id": "c33s3-r3-0",
+              "icon": "moon",
+              "label": "moon",
+              "correct": true
+            },
+            {
+              "id": "c33s3-r3-1",
+              "icon": "fox",
+              "label": "fox",
+              "correct": false
+            },
+            {
+              "id": "c33s3-r3-2",
+              "icon": "mat",
+              "label": "mat",
+              "correct": true
+            },
+            {
+              "id": "c33s3-r3-3",
+              "icon": "duck",
+              "label": "duck",
+              "correct": false
+            },
+            {
+              "id": "c33s3-r3-4",
+              "icon": "man",
+              "label": "man",
+              "correct": true
+            }
+          ],
+          "readAloud": {
+            "targetText": "moon"
+          }
+        },
+        {
+          "id": "c33s3-r4-blend",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "SH와 R를 이어서 말하면 'SHR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "words": [
+            {
+              "text": "SH",
+              "say": "shhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "I",
+              "say": "ihh"
+            },
+            {
+              "text": "M",
+              "say": "mmm"
+            },
+            {
+              "text": "P",
+              "say": "puh"
+            },
+            "shrimp"
+          ]
+        },
+        {
+          "id": "c33s3-finale",
+          "kind": "finale",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
+          "words": [
+            "shrimp"
+          ]
+        }
+      ],
+      "recapKo": "SH와 R를 이으면 'SHR' 소리가 돼요! SHRIMP처럼요!",
+      "recapAudio": {
+        "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
+        "en": [
+          "shhu",
+          "rrr",
+          "shrimp"
+        ]
+      }
+    },
+    {
+      "id": "c33s4",
+      "order": 4,
+      "title": "공룡 Training",
+      "villain": {
+        "name": "Boghide",
+        "art": "boghide",
+        "style": "dino-swamp"
+      },
+      "hero": {
+        "name": "Skyra",
+        "art": "skyra",
+        "style": "dino-flyer"
+      },
+      "chapterBoss": false,
+      "reviewTargets": [
+        "S",
+        "A",
+        "T",
+        "I",
+        "P",
+        "N",
+        "C",
+        "K",
+        "E",
+        "H",
+        "R",
+        "M",
+        "D",
+        "G",
+        "O",
+        "U",
+        "L",
+        "F",
+        "B",
+        "AI",
+        "J",
+        "OA",
+        "IE",
+        "EE",
+        "OR",
+        "Z",
+        "W",
+        "NG",
+        "V",
+        "OO",
+        "Y",
+        "X",
+        "CH",
+        "SH",
+        "TH",
+        "QU",
+        "OU",
+        "OI",
+        "UE",
+        "AR",
+        "ER"
+      ],
+      "beats": [
+        {
+          "id": "c33s4-r1",
+          "kind": "choose",
+          "scored": true,
+          "instructionKo": "THR와 SHR 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
+          "promptAudio": "thhu",
+          "options": [
+            {
+              "id": "c33s4-r1-0",
+              "icon": "letterTile",
+              "label": "TH",
+              "say": "thhu",
+              "correct": true
+            },
+            {
+              "id": "c33s4-r1-1",
+              "icon": "letterTile",
+              "label": "S",
+              "say": "sss",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r1-2",
+              "icon": "letterTile",
+              "label": "T",
+              "say": "tuh",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r1-3",
+              "icon": "letterTile",
+              "label": "R",
+              "say": "rrr",
+              "correct": false
+            }
+          ],
+          "hits": 1,
+          "readAloud": {
+            "targetText": "TH",
+            "say": "thhu"
+          }
+        },
+        {
+          "id": "c33s4-r2",
+          "kind": "choose",
+          "scored": true,
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요!",
+          "promptAudio": "shhu",
+          "options": [
+            {
+              "id": "c33s4-r2-0",
+              "icon": "letterTile",
+              "label": "S",
+              "say": "sss",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r2-1",
+              "icon": "letterTile",
+              "label": "SH",
+              "say": "shhu",
+              "correct": true
+            },
+            {
+              "id": "c33s4-r2-2",
+              "icon": "letterTile",
+              "label": "T",
+              "say": "tuh",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r2-3",
+              "icon": "letterTile",
+              "label": "R",
+              "say": "rrr",
+              "correct": false
+            }
+          ],
+          "hits": 1,
+          "readAloud": {
+            "targetText": "SH",
+            "say": "shhu"
+          }
+        },
+        {
+          "id": "c33s4-r3-multi",
+          "kind": "multiselect",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "/d/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "options": [
+            {
+              "id": "c33s4-r3-multi-0",
+              "icon": "dog",
+              "label": "dog",
+              "correct": true
+            },
+            {
+              "id": "c33s4-r3-multi-1",
+              "icon": "fox",
+              "label": "fox",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r3-multi-2",
+              "icon": "duck",
+              "label": "duck",
+              "correct": true
+            },
+            {
+              "id": "c33s4-r3-multi-3",
+              "icon": "nut",
+              "label": "nut",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r3-multi-4",
+              "icon": "door",
+              "label": "door",
+              "correct": true
+            }
+          ],
+          "readAloud": {
+            "targetText": "dog"
+          }
+        },
+        {
+          "id": "c33s4-r4-hard",
+          "kind": "choose",
+          "scored": true,
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "promptAudio": "rrr",
+          "options": [
+            {
+              "id": "c33s4-r4-hard-0",
+              "icon": "letterTile",
+              "label": "S",
+              "say": "sss",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r4-hard-2",
+              "icon": "letterTile",
+              "label": "T",
+              "say": "tuh",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r4-hard-1",
+              "icon": "letterTile",
+              "label": "R",
+              "say": "rrr",
+              "correct": true
+            },
+            {
+              "id": "c33s4-r4-hard-3",
+              "icon": "letterTile",
+              "label": "P",
+              "say": "puh",
+              "correct": false
+            },
+            {
+              "id": "c33s4-r4-hard-4",
+              "icon": "letterTile",
+              "label": "N",
+              "say": "nnn",
+              "correct": false
+            }
+          ],
+          "hits": 1,
+          "readAloud": {
+            "targetText": "R",
+            "say": "rrr"
+          }
+        },
+        {
+          "id": "c33s4-r5-cycle",
+          "kind": "choose-sequence",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.",
+          "steps": [
+            {
+              "promptAudio": "thhu",
+              "options": [
+                {
+                  "id": "c33s4-r5-cycle-s0-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s0-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s0-2",
+                  "icon": "letterTile",
+                  "label": "TH",
+                  "say": "thhu",
+                  "correct": true
+                },
+                {
+                  "id": "c33s4-r5-cycle-s0-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "shhu",
+              "options": [
+                {
+                  "id": "c33s4-r5-cycle-s1-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s1-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s1-2",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s1-3",
+                  "icon": "letterTile",
+                  "label": "SH",
+                  "say": "shhu",
+                  "correct": true
+                }
+              ]
+            },
+            {
+              "promptAudio": "guh",
+              "options": [
+                {
+                  "id": "c33s4-r5-cycle-s2-0",
+                  "icon": "letterTile",
+                  "label": "G",
+                  "say": "guh",
+                  "correct": true
+                },
+                {
+                  "id": "c33s4-r5-cycle-s2-1",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s2-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s2-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "rrr",
+              "options": [
+                {
+                  "id": "c33s4-r5-cycle-s3-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s3-1",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": true
+                },
+                {
+                  "id": "c33s4-r5-cycle-s3-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s4-r5-cycle-s3-3",
+                  "icon": "letterTile",
+                  "label": "P",
+                  "say": "puh",
+                  "correct": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c33s4-r6-listenrepeat",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "단어를 하나씩 따라 말해보세요!",
+          "words": [
+            "three",
+            "shrimp"
+          ]
+        },
+        {
+          "id": "c33s4-finale",
+          "kind": "finale",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
+          "words": [
+            "three"
+          ]
+        }
+      ],
+      "recapKo": "THR와 SHR를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapAudio": {
+        "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
+        "en": [
+          "thhu",
+          "shhu"
+        ]
+      }
+    },
+    {
+      "id": "c33s5",
+      "order": 5,
+      "title": "Final Boss: THREE and SHRIMP!",
+      "villain": {
+        "name": "Voidjaw",
+        "art": "voidjaw",
+        "style": "dino-shadow-rex"
+      },
+      "hero": {
+        "name": "Elder Blaze",
+        "art": "elder-blaze",
+        "style": "dino-horned"
+      },
+      "chapterBoss": true,
+      "reviewTargets": [
+        "S",
+        "A",
+        "T",
+        "I",
+        "P",
+        "N",
+        "C",
+        "K",
+        "E",
+        "H",
+        "R",
+        "M",
+        "D",
+        "G",
+        "O",
+        "U",
+        "L",
+        "F",
+        "B",
+        "AI",
+        "J",
+        "OA",
+        "IE",
+        "EE",
+        "OR",
+        "Z",
+        "W",
+        "NG",
+        "V",
+        "OO",
+        "Y",
+        "X",
+        "CH",
+        "SH",
+        "TH",
+        "QU",
+        "OU",
+        "OI",
+        "UE",
+        "AR",
+        "ER"
+      ],
+      "beats": [
+        {
+          "id": "c33s5-teach",
+          "kind": "teach",
+          "instructionKo": "Blaze + Titania + Skyra가 최후의 합체를 해요! 지금까지 배운 모든 소리의 힘을 모아 THREE를 만들어요!",
+          "repeatAudio": [
+            "thhu",
+            "rrr",
+            "ee",
+            "three"
+          ]
+        },
+        {
+          "id": "c33s5-r1-warmup",
+          "kind": "drag-build",
+          "scored": false,
+          "instructionKo": "글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)",
+          "letters": [
+            {
+              "text": "TH",
+              "say": "thhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "EE",
+              "say": "ee"
+            }
+          ],
+          "target": [
+            "TH",
+            "R",
+            "EE"
+          ]
+        },
+        {
+          "id": "c33s5-r2",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "천천히 따라 말해보세요.",
+          "words": [
+            {
+              "text": "TH",
+              "say": "thhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "EE",
+              "say": "ee"
+            },
+            "three"
+          ]
+        },
+        {
+          "id": "c33s5-break",
+          "kind": "break",
+          "art": "hero",
+          "instructionKo": "이번엔 SHRIMP예요! 이게 진짜 마지막 소리 합체예요! 함께 외쳐볼까요?",
+          "repeatAudio": [
+            "shhu",
+            "rrr",
+            "ihh",
+            "mmm",
+            "puh",
+            "shrimp"
+          ]
+        },
+        {
+          "id": "c33s5-r3-quickfire",
+          "kind": "choose-sequence",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.",
+          "steps": [
+            {
+              "promptAudio": "thhu",
+              "options": [
+                {
+                  "id": "c33s5-r3-quickfire-s0-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s0-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s0-2",
+                  "icon": "letterTile",
+                  "label": "TH",
+                  "say": "thhu",
+                  "correct": true
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s0-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "shhu",
+              "options": [
+                {
+                  "id": "c33s5-r3-quickfire-s1-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s1-1",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s1-2",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s1-3",
+                  "icon": "letterTile",
+                  "label": "SH",
+                  "say": "shhu",
+                  "correct": true
+                }
+              ]
+            },
+            {
+              "promptAudio": "fff",
+              "options": [
+                {
+                  "id": "c33s5-r3-quickfire-s2-0",
+                  "icon": "letterTile",
+                  "label": "F",
+                  "say": "fff",
+                  "correct": true
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s2-1",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s2-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s2-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "promptAudio": "buh",
+              "options": [
+                {
+                  "id": "c33s5-r3-quickfire-s3-0",
+                  "icon": "letterTile",
+                  "label": "S",
+                  "say": "sss",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s3-1",
+                  "icon": "letterTile",
+                  "label": "B",
+                  "say": "buh",
+                  "correct": true
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s3-2",
+                  "icon": "letterTile",
+                  "label": "T",
+                  "say": "tuh",
+                  "correct": false
+                },
+                {
+                  "id": "c33s5-r3-quickfire-s3-3",
+                  "icon": "letterTile",
+                  "label": "R",
+                  "say": "rrr",
+                  "correct": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c33s5-r4",
+          "kind": "drag-build",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.",
+          "letters": [
+            {
+              "text": "EE",
+              "say": "ee"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "TH",
+              "say": "thhu"
+            }
+          ],
+          "target": [
+            "TH",
+            "R",
+            "EE"
+          ],
+          "readAloud": {
+            "targetText": "three"
+          }
+        },
+        {
+          "id": "c33s5-r5-wordspot",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "진짜 단어를 찾아보세요!",
+          "options": [
+            {
+              "id": "c33s5-w1",
+              "icon": "letterTile",
+              "label": "REETH",
+              "correct": false
+            },
+            {
+              "id": "c33s5-w3",
+              "icon": "letterTile",
+              "label": "THREE",
+              "correct": true
+            },
+            {
+              "id": "c33s5-w2",
+              "icon": "letterTile",
+              "label": "EETHR",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "three"
+          }
+        },
+        {
+          "id": "c33s5-r6",
+          "kind": "drag-build",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "이제 SHRIMP를 만들어요! 순서대로 옮겨보세요.",
+          "letters": [
+            {
+              "text": "P",
+              "say": "puh"
+            },
+            {
+              "text": "M",
+              "say": "mmm"
+            },
+            {
+              "text": "I",
+              "say": "ihh"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "SH",
+              "say": "shhu"
+            }
+          ],
+          "target": [
+            "SH",
+            "R",
+            "I",
+            "M",
+            "P"
+          ],
+          "readAloud": {
+            "targetText": "shrimp"
+          }
+        },
+        {
+          "id": "c33s5-r7-bonus",
+          "kind": "listen-repeat",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "SHRIMP도 천천히 따라 말해보세요.",
+          "words": [
+            {
+              "text": "SH",
+              "say": "shhu"
+            },
+            {
+              "text": "R",
+              "say": "rrr"
+            },
+            {
+              "text": "I",
+              "say": "ihh"
+            },
+            {
+              "text": "M",
+              "say": "mmm"
+            },
+            {
+              "text": "P",
+              "say": "puh"
+            },
+            "shrimp"
+          ]
+        },
+        {
+          "id": "c33s5-finale",
+          "kind": "finale",
+          "scored": true,
+          "hits": 2,
+          "instructionKo": "카봇 파닉스 대작전, 진짜 마지막 공격! 온 힘을 다해 크게 외쳐보세요!",
+          "words": [
+            "three",
+            "shrimp"
+          ]
+        }
+      ],
+      "recapKo": "TH-R-EE는 THREE, SH-R-I-M-P는 SHRIMP! 단어 두 개를 완성했어요! 카봇 파닉스 대작전 완전 정복! 42개 소리를 모두 배우고 마지막 보스까지 무찔렀어요! 정말 대단해요!",
+      "recapAudio": {
+        "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
+        "en": [
+          "three",
+          "shrimp"
+        ]
+      }
+    }
+  ]
+}
