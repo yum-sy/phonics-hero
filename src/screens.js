@@ -1004,7 +1004,7 @@ function renderHealthShell(runtime) {
       <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
       <div class="battle-scene">
         <div class="villain-slot">
-          <div class="nameplate">
+          <div class="nameplate" id="villain-nameplate" role="button" tabindex="0" aria-label="Hear ${stage.villain.name}'s name">
             <div class="nameplate-name">${stage.villain.name}</div>
             <div class="health-track" role="img" aria-label="Villain health">
               <div class="health-fill" id="health-fill" style="width:100%"></div>
@@ -1031,6 +1031,14 @@ function renderHealthShell(runtime) {
     const chapter = getChapterForStage(stage.id)
     renderMap(chapter.id)
   })
+
+  // The nameplate reads as a button (QA: a child tapped "Noisebot" expecting
+  // to hear it) but never spoke anything -- it was purely decorative. Wired
+  // to the same tap-speech path as every option/tile so tapping a villain's
+  // name is never a dead end.
+  onTap(document.getElementById('villain-nameplate'), () =>
+    speakTap(stage.villain.name)
+  )
 }
 
 function updateHealthBar(runtime) {
