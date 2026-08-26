@@ -938,7 +938,7 @@ const HERO_PALETTES = {
   // 챕터 22 (카봇 재순환, SC/SN/MP). 챕터1·12·20 과 갈리게 -- teal-green/
   // burnt-orange/slate-blue/crimson-magenta.
   'ridgebolt': { bodyColor: '#3f8f6b', accent: '#1c4030', variant: 'crest-double', emblem: 'SC' },
-  'skidfire': { bodyColor: '#d9662f', accent: '#6b2f14', variant: 'vent-slats', emblem: 'SN' },
+  'skidfire': { bodyColor: '#d9662f', accent: '#6b2f14', variant: 'vent-slats', emblem: 'MP' },
   'cragrunner': { bodyColor: '#6b7a8f', accent: '#303a45', variant: 'wedge', emblem: 'MP' },
   'titancore': { style: 'robot-deluxe', bodyColor: '#b03a5a', accent: '#f4c95d' },
 
@@ -946,31 +946,31 @@ const HERO_PALETTES = {
   // 구체 archetype 을 배정해야 한다. 챕터16/29 순서 관례(ray/jett/cloak/
   // boss)그대로, 색은 dc 관례대로 히어로는 오버라이드하지 않는다.
   'halo-c23': { style: 'dc-ray', emblem: 'NT' },
-  'vex-c23': { style: 'dc-jett', emblem: 'ND' },
+  'vex-c23': { style: 'dc-jett', emblem: 'FT' },
   'quill-c23': { style: 'dc-cloak', emblem: 'FT' },
   'halo-ultra-c23': { style: 'dc-boss' },
 
   // 챕터 24 (마블 히어로, NCH/THR/STR). 챕터2·8·19 와 갈리게.
   'inky-c24': { style: 'superhero-acrobat', bodyColor: '#7d34b2', accent: '#371a4d', capeColor: '#371a4d', inkColor: '#210e2f', emblem: 'NCH' },
-  'nord-c24': { style: 'superhero-thunder', bodyColor: '#b25e34', accent: '#eee3dd', capeColor: '#4d2b1a', inkColor: '#2f190e', emblem: 'THR' },
+  'nord-c24': { style: 'superhero-thunder', bodyColor: '#b25e34', accent: '#eee3dd', capeColor: '#4d2b1a', inkColor: '#2f190e', emblem: 'STR' },
   'pip-c24': { style: 'superhero-shield', bodyColor: '#34b253', accent: '#ddeee1', capeColor: '#1a4d26', inkColor: '#0e2f16', emblem: 'STR' },
   'captain-pin-c24': { style: 'superhero-armor', bodyColor: '#b23488', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#4d1a3c', maskColor: '#2f1226', visorColor: '#8ef0ff', inkColor: '#2f0e24', emblem: '★' },
 
   // 챕터 25 (마리오 재순환, SCR/SHR/NK)
   'bounce-c25': { emblem: 'SCR' },
-  'zoomer-c25': { emblem: 'SHR' },
+  'zoomer-c25': { emblem: 'NK' },
   'blocky-c25': { emblem: 'NK' },
   'turbo-gum-c25': {},
 
   // 챕터 26 (공룡 재순환, LT/LP/LF)
   'fizz-c26': { emblem: 'LT' },
-  'talon-c26': { emblem: 'LP' },
+  'talon-c26': { emblem: 'LF' },
   'wingo-c26': { emblem: 'LF' },
   'roara-c26': {},
 
   // 챕터 27 (토이스토리 재순환, LK/PT/XT)
   'sarge-c27': { emblem: 'LK' },
-  'pluma-c27': { emblem: 'PT' },
+  'pluma-c27': { emblem: 'XT' },
   'blocko-jr-c27': { emblem: 'XT' },
   'captain-blockhead-c27': {},
 
