@@ -882,6 +882,137 @@ const HERO_PALETTES = {
   // 소유 없음)로 명시.
   'drillbit': { style: 'creature-drillo', emblem: '★' },
   'captain-ember': { style: 'creature-boss' },
+
+  // ==========================================================================
+  // 챕터 15~33 (월드 3~5). 전부 블렌드/누적복습 챕터 -- SOUND_TABLE 신규
+  // 표기 없음(HANDOFF.md 참고). 대부분은 style 이 챕터 데이터에 이미 구체
+  // 지정돼 있어 emblem 만 있으면 되고(비-로봇/비-마블/비-dc제네릭 계열의
+  // 관례 그대로), 로봇/마블(superhero)/챕터23(dc-hero 제네릭)만 색·style
+  // 오버라이드가 필요하다.
+  // ==========================================================================
+
+  // 챕터 15 (공룡 3회차, ST/SN)
+  'fernclaw-c15': { emblem: 'ST' },
+  'bristleback-c15': { emblem: 'SN' },
+  'skyfin-c15': { emblem: 'SN' },
+  'duskmaw-c15': {},
+
+  // 챕터 16 (DC 히어로, TR/FR)
+  'sparkline-c16': { emblem: 'TR' },
+  'vantage-c16': { emblem: 'FR' },
+  'nightveil-c16': { emblem: 'FR' },
+  'ironclad-c16': {},
+
+  // 챕터 17 (토이스토리, CL/GL)
+  'rook-c17': { emblem: 'CL' },
+  'snuggles-c17': { emblem: 'GL' },
+  'stax-c17': { emblem: 'GL' },
+  'bigtop-c17': {},
+
+  // 챕터 18 (포켓몬, ND/NT)
+  'rocketail-c18': { emblem: 'ND' },
+  'magnetip-c18': { emblem: 'NT' },
+  'drillbit-c18': { emblem: 'NT' },
+  'redcap-c18': {},
+
+  // 챕터 19 (마블 히어로, NK/FT). 색은 챕터2(inky/pip/nord/captain-pin)·
+  // 챕터8(comet/halo/torque/captain-nova)과 갈리게 신규 hue 배정.
+  'vaultleap-c19': { style: 'superhero-acrobat', bodyColor: '#34b253', accent: '#1a4d26', capeColor: '#1a4d26', inkColor: '#0e2f16', emblem: 'NK' },
+  'bastion-c19': { style: 'superhero-shield', bodyColor: '#7d34b2', accent: '#e7ddee', capeColor: '#371a4d', inkColor: '#210e2f', emblem: 'FT' },
+  'voltarc-c19': { style: 'superhero-thunder', bodyColor: '#b27334', accent: '#eee6dd', capeColor: '#4d331a', inkColor: '#2f1f0e', emblem: 'FT' },
+  'ironvow-c19': { style: 'superhero-armor', bodyColor: '#3492b2', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#1a404d', maskColor: '#12262f', visorColor: '#8ef0ff', inkColor: '#0e272f', emblem: '★' },
+
+  // 챕터 20 (카봇, SP/SK). 챕터1(green/orange/blue)·챕터12(teal/purple/gold)
+  // 와 갈리게 -- pink-red/sky-blue/steel-blue/amber-gold.
+  'gearspin-c20': { bodyColor: '#d1467a', accent: '#6b1f3a', variant: 'wedge', emblem: 'SP' },
+  'turbolt-c20': { bodyColor: '#3f9fd1', accent: '#1a4566', variant: 'spoiler-wide', emblem: 'SK' },
+  'chromewing-c20': { style: 'robot-deluxe', bodyColor: '#5a7ba8', accent: '#f4c95d', emblem: 'SK' },
+  'titanvolt-c20': { style: 'robot-deluxe', bodyColor: '#d9992a', accent: '#f4c95d' },
+
+  // 챕터 21 (마리오, PL/DR)
+  'hopkin-c21': { emblem: 'PL' },
+  'coilster-c21': { emblem: 'DR' },
+  'blockhart-c21': { emblem: 'DR' },
+  'megashroom-c21': {},
+
+  // 챕터 22 (카봇 재순환, SC/SN/MP). 챕터1·12·20 과 갈리게 -- teal-green/
+  // burnt-orange/slate-blue/crimson-magenta.
+  'ridgebolt': { bodyColor: '#3f8f6b', accent: '#1c4030', variant: 'crest-double', emblem: 'SC' },
+  'skidfire': { bodyColor: '#d9662f', accent: '#6b2f14', variant: 'vent-slats', emblem: 'SN' },
+  'cragrunner': { bodyColor: '#6b7a8f', accent: '#303a45', variant: 'wedge', emblem: 'MP' },
+  'titancore': { style: 'robot-deluxe', bodyColor: '#b03a5a', accent: '#f4c95d' },
+
+  // 챕터 23 (DC 히어로, 챕터 데이터가 제네릭 'dc-hero' 만 선언 -- art.js 가
+  // 구체 archetype 을 배정해야 한다. 챕터16/29 순서 관례(ray/jett/cloak/
+  // boss)그대로, 색은 dc 관례대로 히어로는 오버라이드하지 않는다.
+  'halo-c23': { style: 'dc-ray', emblem: 'NT' },
+  'vex-c23': { style: 'dc-jett', emblem: 'ND' },
+  'quill-c23': { style: 'dc-cloak', emblem: 'FT' },
+  'halo-ultra-c23': { style: 'dc-boss' },
+
+  // 챕터 24 (마블 히어로, NCH/THR/STR). 챕터2·8·19 와 갈리게.
+  'inky-c24': { style: 'superhero-acrobat', bodyColor: '#7d34b2', accent: '#371a4d', capeColor: '#371a4d', inkColor: '#210e2f', emblem: 'NCH' },
+  'nord-c24': { style: 'superhero-thunder', bodyColor: '#b25e34', accent: '#eee3dd', capeColor: '#4d2b1a', inkColor: '#2f190e', emblem: 'THR' },
+  'pip-c24': { style: 'superhero-shield', bodyColor: '#34b253', accent: '#ddeee1', capeColor: '#1a4d26', inkColor: '#0e2f16', emblem: 'STR' },
+  'captain-pin-c24': { style: 'superhero-armor', bodyColor: '#b23488', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#4d1a3c', maskColor: '#2f1226', visorColor: '#8ef0ff', inkColor: '#2f0e24', emblem: '★' },
+
+  // 챕터 25 (마리오 재순환, SCR/SHR/NK)
+  'bounce-c25': { emblem: 'SCR' },
+  'zoomer-c25': { emblem: 'SHR' },
+  'blocky-c25': { emblem: 'NK' },
+  'turbo-gum-c25': {},
+
+  // 챕터 26 (공룡 재순환, LT/LP/LF)
+  'fizz-c26': { emblem: 'LT' },
+  'talon-c26': { emblem: 'LP' },
+  'wingo-c26': { emblem: 'LF' },
+  'roara-c26': {},
+
+  // 챕터 27 (토이스토리 재순환, LK/PT/XT)
+  'sarge-c27': { emblem: 'LK' },
+  'pluma-c27': { emblem: 'PT' },
+  'blocko-jr-c27': { emblem: 'XT' },
+  'captain-blockhead-c27': {},
+
+  // 챕터 28 (포켓몬 재순환, TW/CT/GL)
+  'sparkit-c28': { emblem: 'TW' },
+  'magnix-c28': { emblem: 'CT' },
+  'drillbit-c28': { emblem: 'GL' },
+  'captain-ember-c28': {},
+
+  // 챕터 29 (DC 히어로 재순환, ST/TR). stage4 는 새 블렌드 없는 복습
+  // 스테이지라 drillbit(챕터14) 관례대로 emblem '★'.
+  'sable': { emblem: 'ST' },
+  'vex': { emblem: 'TR' },
+  'halcyon': { emblem: '★' },
+  'sable-prime': {},
+
+  // 챕터 30 (마리오 재순환, CL/FR, stage4 복습)
+  'bolty': { emblem: 'CL' },
+  'ricochet': { emblem: 'FR' },
+  'coggo': { emblem: '★' },
+  'captain-bolty': {},
+
+  // 챕터 31 (카봇 재순환, TW/SN, stage4 복습). 챕터1·12·20·22 와 갈리게.
+  // 'torque' 슬러그는 챕터8 superhero-thunder Torque 와 충돌해서(같은 키,
+  // 다른 style/색) chapter-31.js 를 'torque-c31' 로 고쳤다(리더 수정).
+  'torque-c31': { bodyColor: '#2f6fb0', accent: '#14314f', variant: 'spoiler-wide', emblem: 'TW' },
+  'skidder': { bodyColor: '#d98f2f', accent: '#6b4614', variant: 'crest-double', emblem: 'SN' },
+  'ratchett': { bodyColor: '#b03a8a', accent: '#4f1a3d', variant: 'vent-slats', emblem: '★' },
+  'torque-ultra': { style: 'robot-deluxe', bodyColor: '#4a2f8a', accent: '#f4c95d' },
+
+  // 챕터 32 (마블 히어로 재순환, STR/NCH, stage4 복습). 챕터2·8·19·24 와
+  // 갈리게.
+  'glide': { style: 'superhero-acrobat', bodyColor: '#b27334', accent: '#4d331a', capeColor: '#4d331a', inkColor: '#2f1f0e', emblem: 'STR' },
+  'bastion': { style: 'superhero-shield', bodyColor: '#349db2', accent: '#ddebee', capeColor: '#1a444d', inkColor: '#0e2a2f', emblem: 'NCH' },
+  'voltbeam': { style: 'superhero-thunder', bodyColor: '#b2343e', accent: '#eeddde', capeColor: '#4d1a1e', inkColor: '#2f0e11', emblem: '★' },
+  'captain-glide': { style: 'superhero-armor', bodyColor: '#5e34b2', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#2a1a4d', maskColor: '#1c1230', visorColor: '#8ef0ff', inkColor: '#190e2f', emblem: '★' },
+
+  // 챕터 33 (공룡 재순환, THR/SHR, stage4 복습, **최종 챕터**)
+  'blaze': { emblem: 'THR' },
+  'titania': { emblem: 'SHR' },
+  'skyra': { emblem: '★' },
+  'elder-blaze': {},
 }
 
 const VILLAIN_PALETTES = {
@@ -982,6 +1113,157 @@ const VILLAIN_PALETTES = {
   'grabnar': { style: 'creature-grabby', bodyColor: '#d43a55', accent: '#5f1a26' },
   'corvid': { style: 'creature-corky', bodyColor: '#2a8ab0', accent: '#123e4f' },
   'glitch-emperor': { style: 'creature-glitch', bodyColor: '#8a9a2a', accent: '#3e4512' },
+
+  // ==========================================================================
+  // 챕터 15~33 빌런 (월드 3~5). 히어로와 달리 빌런은 매번 색을 다르게 --
+  // 같은 style 이 재순환되는 슬롯마다 이전 등장 챕터와 hue 가 겹치지 않게
+  // HSL 휠에서 최대한 먼 각도를 골랐다(각 슬롯 주석에 이전 등장 챕터 표기).
+  // ==========================================================================
+
+  // 챕터 15 (공룡 3회차 빌런) -- 챕터3/9 의 hue 와 갈리게.
+  'snaggle-c15': { style: 'dino-blink', bodyColor: '#39ac4c', accent: '#174f20' },
+  'rustjaw-c15': { style: 'dino-echo', bodyColor: '#9939ac', accent: '#46174f' },
+  'mudback-c15': { style: 'dino-upside', bodyColor: '#69ac39', accent: '#2e4f17' },
+  'coldfang-c15': { style: 'dino-swamp', bodyColor: '#8f39ac', accent: '#41174f' },
+  'voidrex-c15': { style: 'dino-shadow-rex', bodyColor: '#ac9939', accent: '#4f4617' },
+
+  // 챕터 16 (DC 히어로 빌런) -- 챕터7 함수 기본색과 갈리게(dc.js 함수
+  // 자체 기본색이 이 슬롯들의 "1회차"이므로 그 hue 와 갈리게 계산).
+  'smogface-c16': { style: 'dc-blackout', bodyColor: '#68862d', accent: '#303f12' },
+  'mirrorfall-c16': { style: 'dc-mirage', bodyColor: '#2d864a', accent: '#123f21' },
+  'trafficjam-c16': { style: 'dc-gridlock', bodyColor: '#432d86', accent: '#1e123f' },
+  'glareout-c16': { style: 'dc-floodlight', bodyColor: '#2d6886', accent: '#12303f' },
+  'duskfall-c16': { style: 'dc-nightfall', bodyColor: '#59862d', accent: '#293f12' },
+
+  // 챕터 17 (토이스토리 빌런) -- 챕터6/11 과 갈리게.
+  'wobblina-c17': { style: 'toy-wobbly', bodyColor: '#3939ac', accent: '#17174f' },
+  'tanglewire-c17': { style: 'toy-tangly', bodyColor: '#ac7339', accent: '#4f3317' },
+  'boxel-c17': { style: 'toy-boxxy', bodyColor: '#39acac', accent: '#174f4f' },
+  'tumbleton-c17': { style: 'toy-tumbles', bodyColor: '#56ac39', accent: '#254f17' },
+  'windup-king-c17': { style: 'toy-wind-down', bodyColor: '#39ac69', accent: '#174f2e' },
+
+  // 챕터 18 (포켓몬 빌런) -- 챕터4/14 와 갈리게.
+  'flippen-c18': { style: 'creature-flippy', bodyColor: '#3960ac', accent: '#172a4f' },
+  'slipster-c18': { style: 'creature-slippy', bodyColor: '#ac3956', accent: '#4f1725' },
+  'grabnip-c18': { style: 'creature-grabby', bodyColor: '#39ac99', accent: '#174f46' },
+  'corkle-c18': { style: 'creature-corky', bodyColor: '#ac5639', accent: '#4f2517' },
+  'munchor-c18': { style: 'creature-glitch', bodyColor: '#4d39ac', accent: '#20174f' },
+
+  // 챕터 19 (마블 빌런) -- 챕터2/8 과 갈리게. collarColor 도 각 hue 의
+  // 어두운 톤으로 새로 계산(supervillain-* 함수는 collarColor 파라미터를
+  // 받는다).
+  'mistveil-c19': { style: 'supervillain-fog', bodyColor: '#ac39ac', accent: '#4f174f', collarColor: '#260d26' },
+  'wipeout-c19': { style: 'supervillain-eraser', bodyColor: '#7cac39', accent: '#384f17', collarColor: '#1c260d' },
+  'haltmark-c19': { style: 'supervillain-stop', bodyColor: '#394cac', accent: '#17204f', collarColor: '#0d1126' },
+  'scramblor-c19': { style: 'supervillain-jumble', bodyColor: '#ac39ac', accent: '#4f174f', collarColor: '#260d26' },
+  'umbraking-c19': { style: 'supervillain-king', bodyColor: '#43ac39', accent: '#1c4f17', collarColor: '#0f260d' },
+
+  // 챕터 20 (카봇 빌런) -- 챕터1(회색/보라/암회색/주황)·챕터12(앰버브라운/
+  // 모브/블루그레이/올리브/암적)와 갈리게. 로봇 계열 5종(robot x3 +
+  // robot-deluxe x2), variant 는 hook-claw/saw-crown/twin-horn 순환.
+  'rustbolt-c20': { bodyColor: '#a8452a', accent: '#4f1e12', variant: 'hook-claw' },
+  'scraphook-c20': { bodyColor: '#7a8f3a', accent: '#333d19', variant: 'saw-crown' },
+  'ironmaw-c20': { bodyColor: '#4a5f7a', accent: '#22303f', variant: 'twin-horn' },
+  'voltcrusher-c20': { style: 'robot-deluxe', bodyColor: '#8a3ab0', accent: '#3d1a4f' },
+  'direforge-c20': { style: 'robot-deluxe', bodyColor: '#c9481f', accent: '#5c200e' },
+
+  // 챕터 21 (마리오 빌런) -- 챕터5/10 과 갈리게.
+  'flipnik-c21': { style: 'plat-flip', bodyColor: '#aca339', accent: '#4f4a17' },
+  'oozelle-c21': { style: 'plat-slime', bodyColor: '#ac39ac', accent: '#4f174f' },
+  'magnojack-c21': { style: 'plat-magnetjack', bodyColor: '#39ac99', accent: '#174f46' },
+  'brickle-c21': { style: 'plat-brick', bodyColor: '#397cac', accent: '#17384f' },
+  'glitchmar-c21': { style: 'plat-glitch', bodyColor: '#7cac39', accent: '#384f17' },
+
+  // 챕터 22 (카봇 빌런 재순환) -- 챕터1·12·20 과 갈리게. 로봇 5종
+  // (robot x4 + robot-deluxe x1), variant 4종 순환.
+  'fangwrench': { bodyColor: '#8a5a2e', accent: '#402a12', variant: 'hook-claw' },
+  'grimtorque': { bodyColor: '#5a8a3a', accent: '#294012', variant: 'saw-crown' },
+  'skitterjack': { bodyColor: '#2f8fa8', accent: '#153f4a', variant: 'twin-horn' },
+  'fumescrap': { bodyColor: '#8a3a6b', accent: '#401931', variant: 'spike-back' },
+  'voltmaw': { style: 'robot-deluxe', bodyColor: '#3a4a8a', accent: '#1a2140' },
+
+  // 챕터 23 (DC 빌런, 챕터 데이터가 제네릭 'dc-hero' 만 선언 -- 챕터16/29
+  // 순서 관례대로 blackout/mirage/gridlock/floodlight/nightfall(보스) 배정.
+  // 색은 챕터7 기본값·챕터16·챕터29 와 갈리게.
+  'ashveil': { style: 'dc-blackout', bodyColor: '#862d3c', accent: '#3f121a' },
+  'nightcoil': { style: 'dc-mirage', bodyColor: '#2d3b86', accent: '#121a3f' },
+  'grimstatic': { style: 'dc-gridlock', bodyColor: '#2d8670', accent: '#123f34' },
+  'duskframe': { style: 'dc-floodlight', bodyColor: '#3c862d', accent: '#1a3f12' },
+  'umbral-king': { style: 'dc-nightfall', bodyColor: '#862d2d', accent: '#3f1212' },
+
+  // 챕터 24 (마블 빌런 재순환) -- 챕터2/8/19 와 갈리게.
+  'fizzlecrack': { style: 'supervillain-fog', bodyColor: '#39ac39', accent: '#174f17', collarColor: '#0d260d' },
+  'benchwraith': { style: 'supervillain-eraser', bodyColor: '#6939ac', accent: '#2e174f', collarColor: '#170d26' },
+  'echofang': { style: 'supervillain-stop', bodyColor: '#ac3986', accent: '#4f173c', collarColor: '#260d1e' },
+  'strapwire': { style: 'supervillain-jumble', bodyColor: '#3956ac', accent: '#17254f', collarColor: '#0d1326' },
+  'overload-prime': { style: 'supervillain-king', bodyColor: '#ac8f39', accent: '#4f4117', collarColor: '#26200d' },
+
+  // 챕터 25 (마리오 빌런 재순환) -- 챕터5/10/21 과 갈리게.
+  'scrapflip': { style: 'plat-flip', bodyColor: '#39ac56', accent: '#174f25' },
+  'sludgemaw': { style: 'plat-slime', bodyColor: '#394cac', accent: '#17204f' },
+  'magnashrimp': { style: 'plat-magnetjack', bodyColor: '#69ac39', accent: '#2e4f17' },
+  'brickspike': { style: 'plat-brick', bodyColor: '#9939ac', accent: '#46174f' },
+  'glitchsink': { style: 'plat-glitch', bodyColor: '#6939ac', accent: '#2e174f' },
+
+  // 챕터 26 (공룡 빌런 재순환) -- 챕터3/9/15 와 갈리게.
+  'grimtusk': { style: 'dino-blink', bodyColor: '#a3ac39', accent: '#4a4f17' },
+  'duskfang': { style: 'dino-echo', bodyColor: '#4dac39', accent: '#204f17' },
+  'marrowjaw': { style: 'dino-upside', bodyColor: '#ac7339', accent: '#4f3317' },
+  'ashclaw': { style: 'dino-swamp', bodyColor: '#397cac', accent: '#17384f' },
+  'boneshade': { style: 'dino-shadow-rex', bodyColor: '#39ac56', accent: '#174f25' },
+
+  // 챕터 27 (토이스토리 빌런 재순환) -- 챕터6/11/17 과 갈리게.
+  'milkspill': { style: 'toy-wobbly', bodyColor: '#ac3999', accent: '#4f1746' },
+  'creakwind': { style: 'toy-tangly', bodyColor: '#69ac39', accent: '#2e4f17' },
+  'tumblewick': { style: 'toy-boxxy', bodyColor: '#4dac39', accent: '#204f17' },
+  'fraywire': { style: 'toy-tumbles', bodyColor: '#8f39ac', accent: '#41174f' },
+  'windup-baron': { style: 'toy-wind-down', bodyColor: '#ac397c', accent: '#4f1738' },
+
+  // 챕터 28 (포켓몬 빌런 재순환) -- 챕터4/14/18 과 갈리게.
+  'twistfang': { style: 'creature-flippy', bodyColor: '#39ac4c', accent: '#174f20' },
+  'rattlecoil': { style: 'creature-slippy', bodyColor: '#5639ac', accent: '#25174f' },
+  'antlurk': { style: 'creature-grabby', bodyColor: '#86ac39', accent: '#3c4f17' },
+  'gluckmire': { style: 'creature-corky', bodyColor: '#56ac39', accent: '#254f17' },
+  'static-muncher': { style: 'creature-glitch', bodyColor: '#39ac86', accent: '#174f3c' },
+
+  // 챕터 29 (DC 빌런 재순환) -- 챕터7/16/23 과 갈리게. duskfang-c29 는
+  // 챕터26 의 'duskfang'(dino-echo) 과 이름이 겹쳐서 리더가 art 슬러그를
+  // 미리 'duskfang-c29' 로 고쳐뒀다(HANDOFF.md 참고) -- 이 키를 그대로 쓴다.
+  'fracture': { style: 'dc-blackout', bodyColor: '#2d8677', accent: '#123f38' },
+  'warpshade': { style: 'dc-mirage', bodyColor: '#86772d', accent: '#3f3812' },
+  'grimhollow': { style: 'dc-gridlock', bodyColor: '#862d43', accent: '#3f121e' },
+  'cindermask': { style: 'dc-floodlight', bodyColor: '#772d86', accent: '#38123f' },
+  'duskfang-c29': { style: 'dc-nightfall', bodyColor: '#2d8686', accent: '#123f3f' },
+
+  // 챕터 30 (마리오 빌런 재순환) -- 챕터5/10/21/25 와 갈리게.
+  'sproing': { style: 'plat-flip', bodyColor: '#ac3969', accent: '#4f172e' },
+  'muckle': { style: 'plat-slime', bodyColor: '#ac4d39', accent: '#4f2017' },
+  'clampjaw': { style: 'plat-magnetjack', bodyColor: '#4339ac', accent: '#1c174f' },
+  'rubblehorn': { style: 'plat-brick', bodyColor: '#39ac39', accent: '#174f17' },
+  'faultline': { style: 'plat-glitch', bodyColor: '#ac8639', accent: '#4f3c17' },
+
+  // 챕터 31 (카봇 빌런 재순환) -- 챕터1·12·20·22 와 갈리게. 로봇 5종 전부
+  // plain 'robot'(deluxe 없음), variant 4종 순환(5번째는 재사용, 색으로
+  // 구분).
+  'corrode': { bodyColor: '#6b7a2f', accent: '#303614', variant: 'hook-claw' },
+  'jamlock': { bodyColor: '#2f8a5f', accent: '#143d2a', variant: 'saw-crown' },
+  'shredfang': { bodyColor: '#8a2f3a', accent: '#3d1519', variant: 'twin-horn' },
+  'barricade': { bodyColor: '#8a6b2f', accent: '#3d3014', variant: 'spike-back' },
+  'voltrust': { bodyColor: '#2f5a8a', accent: '#142640', variant: 'hook-claw' },
+
+  // 챕터 32 (마블 빌런 재순환) -- 챕터2·8·19·24 와 갈리게.
+  'mistveil': { style: 'supervillain-fog', bodyColor: '#ac394d', accent: '#4f1720', collarColor: '#260d11' },
+  'wipeout': { style: 'supervillain-eraser', bodyColor: '#39ac69', accent: '#174f2e', collarColor: '#0d2617' },
+  'deadbolt': { style: 'supervillain-stop', bodyColor: '#39ac60', accent: '#174f2a', collarColor: '#0d2615' },
+  'snarltangle': { style: 'supervillain-jumble', bodyColor: '#ac5639', accent: '#4f2517', collarColor: '#26130d' },
+  'lord-static': { style: 'supervillain-king', bodyColor: '#39a3ac', accent: '#174a4f', collarColor: '#0d2426' },
+
+  // 챕터 33 (공룡 빌런 재순환, **최종 챕터**) -- 챕터3·9·15·26 과 갈리게.
+  'gloomfang': { style: 'dino-blink', bodyColor: '#3999ac', accent: '#17464f' },
+  'mirefoot': { style: 'dino-echo', bodyColor: '#ac394d', accent: '#4f1720' },
+  'tumblescale': { style: 'dino-upside', bodyColor: '#39ac7c', accent: '#174f38' },
+  'boghide': { style: 'dino-swamp', bodyColor: '#ac3939', accent: '#4f1717' },
+  'voidjaw': { style: 'dino-shadow-rex', bodyColor: '#ac397c', accent: '#4f1738' },
 }
 
 // style -> art function. Later worlds cycle through more looks (dinosaur,
