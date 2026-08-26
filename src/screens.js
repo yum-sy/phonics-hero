@@ -182,13 +182,17 @@ function portraitHtml(svgHtml, revealed) {
 // "who's next" is part of the draw), just with a small padlock badge over
 // it so it reads as "not yet" rather than "cleared". Smaller and
 // bottom-right (vs. clearMarkHtml's top-right ✓) so the two never compete
-// for the same corner or get mistaken for each other.
+// for the same corner or get mistaken for each other. Percentage inset
+// (not a fixed px offset off the box edge) so it sits against the character
+// art itself -- the art box has real margin around the figure, and a fixed
+// corner offset landed the badge out in that empty margin instead of next
+// to the silhouette.
 function lockBadgeHtml() {
   return (
     `<span class="lock-badge" aria-hidden="true" style="position:absolute;` +
-    `bottom:-2px;right:-2px;width:clamp(22px,2.6svh,32px);height:clamp(22px,2.6svh,32px);` +
+    `bottom:14%;right:18%;width:clamp(20px,2.4svh,30px);height:clamp(20px,2.4svh,30px);` +
     `border-radius:50%;background:var(--ink,#2c2c2c);color:#fff;` +
-    `font-size:clamp(12px,1.5svh,17px);display:flex;align-items:center;justify-content:center;` +
+    `font-size:clamp(11px,1.4svh,16px);display:flex;align-items:center;justify-content:center;` +
     `border:2px solid var(--surface)">🔒</span>`
   )
 }
@@ -296,6 +300,11 @@ function onTap(el, handler) {
   el.addEventListener('pointerdown', (e) => {
     // A right/middle mouse button is not a tap.
     if (e.pointerType === 'mouse' && e.button !== 0) return
+    // Native `disabled` stops `click`, but WebKit still dispatches
+    // `pointerdown` on a disabled button -- without this check, a locked
+    // world/chapter/stage card was tappable through the very attribute meant
+    // to lock it.
+    if (el.disabled) return
     handler(e)
   })
   // pointercancel too: the browser can end a touch without a pointerup, and
