@@ -127,9 +127,30 @@ function renderStage(stageId) {
 // labels to save the 48 long ones, and letting the word break would print
 // "umbrel/la" -- a false syllable boundary in front of a child who is being
 // taught to read by sound.
-function optionLabelHtml(opt) {
+// `veilUntilPicked` implements the "no reading your way to the answer"
+// requirement: a picture option's spelled-out word label is the same text a
+// literate 5-year-old can string-compare against the prompt without ever
+// listening to the sound, which defeats the whole point of a listen-and-
+// discriminate round. Veiling only ever applies to picture icons (never
+// letterTile -- see the block comment above this function for why those stay
+// sr-only or fully visible on their own track) and only when the CALLER
+// passes true, which callers do for every sound-discrimination round
+// (`choose`'s odd-one-out/hard/warmup shapes, every `choose-sequence` step,
+// `multiselect`) but NOT for `choose` beats carrying `promptLetter` --
+// "reversed" rounds show the target letter on screen and ask the child to
+// find the matching picture, so the comparison is letter-shape-to-picture,
+// not sound-to-picture, and the label was never the shortcut there.
+// wordspot-style beats (icon: 'letterTile', label.length > 2, e.g. "SAT")
+// are unaffected regardless of the flag because they are gated on icon, not
+// on length -- that round IS a reading task by design.
+// CSS (`.option-label-veiled`) hides it with opacity, not visibility/
+// display/aria-hidden, so screen readers still announce it immediately --
+// only sighted children get the "tap first" gate.
+function optionLabelHtml(opt, veilUntilPicked = false) {
   const isLetterformTile = opt.icon === 'letterTile' && opt.label.length <= 2
-  const cls = isLetterformTile ? 'option-label sr-only' : 'option-label'
+  const isPictureIcon = !!opt.icon && opt.icon !== 'letterTile'
+  let cls = isLetterformTile ? 'option-label sr-only' : 'option-label'
+  if (veilUntilPicked && isPictureIcon) cls += ' option-label-veiled'
   const len = Math.max(...opt.label.split(/\s+/).map((w) => w.length))
   return `<span class="${cls}" style="--label-len:${len}">${opt.label}</span>`
 }
@@ -1646,7 +1667,7 @@ function renderChooseBeat(runtime, beat) {
       (opt) => `
       <button class="option-btn" data-id="${opt.id}">
         <span class="option-emoji">${wordIcon(opt.icon, opt.label)}</span>
-        ${optionLabelHtml(opt)}
+        ${optionLabelHtml(opt, !beat.promptLetter)}
       </button>`
     )
     .join('')
@@ -1802,7 +1823,7 @@ function renderChooseSequenceBeat(runtime, beat) {
         (opt) => `
         <button class="option-btn" data-id="${opt.id}">
           <span class="option-emoji">${wordIcon(opt.icon, opt.label)}</span>
-          ${optionLabelHtml(opt)}
+          ${optionLabelHtml(opt, true)}
         </button>`
       )
       .join('')
@@ -1880,7 +1901,7 @@ function renderMultiselectBeat(runtime, beat) {
       (opt) => `
       <button class="option-btn" data-id="${opt.id}">
         <span class="option-emoji">${wordIcon(opt.icon, opt.label)}</span>
-        ${optionLabelHtml(opt)}
+        ${optionLabelHtml(opt, true)}
       </button>`
     )
     .join('')

@@ -1012,6 +1012,20 @@ button {
   flex: 0 0 auto;
 }
 
+/* A picture option's spelling is a shortcut past listening -- veiled by
+   opacity (not visibility/display), so it takes zero layout space either
+   way (no scroll regression) and a screen reader still announces it before
+   any tap, same as sighted children get it after one. `.selected` already
+   exists for tap state (see wireConfirmGrid), so no new class or JS state is
+   needed to gate the reveal -- one tap shows it, deselecting (single-select
+   re-pick, or a wrong multiselect pick getting dropped) hides it again. */
+.option-label-veiled {
+  opacity: 0;
+}
+.option-btn.selected .option-label-veiled {
+  opacity: 1;
+}
+
 .build-slots {
   display: flex;
   gap: 16px;
