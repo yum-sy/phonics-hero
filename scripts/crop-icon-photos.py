@@ -283,6 +283,21 @@ def process_standalone(source, name, tol=16, pad=5, keep_largest=False):
     process_abs(source, (0, 0, w, h), name, tol=tol, pad=pad, keep_largest=keep_largest)
 
 
+def process_final(name):
+    """Copies an already-finished crop straight into public/icons/, with no
+    further flood-fill/trim/bbox work. Used for `icon_refs/finals/<name>.png`
+    -- crops that were produced by an independent, already-verified pipeline
+    (e.g. a batch of parallel one-off crop passes each hand-checked by the
+    lead before landing) rather than derived here from a flashcard sheet.
+    Re-running this script is still reproducible: the finished PNG is a
+    checked-in file, not a temp artifact, so the output is deterministic.
+    """
+    im = Image.open(os.path.join(REFS, "finals", f"{name}.png")).convert("RGBA")
+    outpath = os.path.join(OUT, f"{name}.png")
+    im.save(outpath)
+    print(name, "-> (final, copied)", outpath, im.size)
+
+
 def process(sheet, cols, rows, row, col, frac_box, name, tol=16, pad=5):
     cell = load_grid_cell(sheet, cols, rows, row, col)
     cw, ch = cell.size
@@ -504,3 +519,24 @@ if __name__ == "__main__":
     # asset (56x71 RGBA, already background-removed and user-verified) with
     # no reproducible process_*() call here. If it ever needs reprocessing,
     # a new source image will have to be sourced first.
+
+    # 2026-08-26 seven-way parallel crop batch -- chips/box/cake/horse/cup/
+    # octopus/tap were each background-removed and tight-cropped
+    # independently (one agent per icon, no shared source sheet), then
+    # lead-verified by eye against a rendered contact sheet before landing.
+    # Finished PNGs are checked in at icon_refs/finals/<name>.png so
+    # process_final() can copy them straight into public/icons/ without
+    # re-deriving the flood-fill/trim/bbox steps this script does for the
+    # flashcard-sheet crops above. box/cake/horse/cup/octopus replace
+    # earlier crops (cake/cup/octopus previously came off the flashcard
+    # sheets via process()/process_abs() calls now superseded by this
+    # batch -- see icon_refs/staging/catalog.json for that history); chips
+    # replaces the hand-drawn potato-chip-bag SVG in src/icons.js; box and
+    # horse replace hand-drawn SVGs too. tap is a *meaning* change, not
+    # just an art refresh: the old tap (hand-drawn and this batch's
+    # predecessor alike) illustrated a kitchen faucet ("water tap"), but
+    # the app teaches tap as the finger gesture ("tap the screen") --
+    # this crop is a hand touching a screen with a touch-ring, matching
+    # the word the app actually means.
+    for _name in ("chips", "box", "cake", "horse", "cup", "octopus", "tap"):
+        process_final(_name)

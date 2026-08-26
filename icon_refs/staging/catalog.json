@@ -74,15 +74,9 @@
     "note": "cropBox replaced again 2026-08-25 (real-device pass): the prior 'fix' (460,302,520,426) still clipped the left tip and top point -- it was inset too far from the cell. New box is the full cell (row2,col2) inset 4px, keep_largest drops the 'Kk' label."
   },
   "cup": {
-    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
-    "cropBox": [
-      7,
-      480,
-      178,
-      569
-    ],
-    "croppedFile": "cup.png",
-    "note": "reference shows a mug, not a teacup -- closest match available"
+    "source": "icon_refs/finals/cup.png",
+    "note": "2026-08-26: replaced by an independently produced final crop (mug + green oval background accent, seven-way parallel batch, lead-verified) -- superseded the prior flashcard-sheet crop (source 스크린샷 2026-08-25 오전 11.07.55.png, cropBox [7,480,178,569], which itself noted 'reference shows a mug, not a teacup -- closest match available'). See scripts/crop-icon-photos.py's process_final('cup').",
+    "croppedFile": "cup.png"
   },
   "nose": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -96,15 +90,9 @@
     "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (190,480,361,569) started 47px too far down, cutting the nose bridge/top; new box is the full cell (row3,col1) inset 4px, keep_largest drops the 'Nn' label."
   },
   "octopus": {
-    "source": "스크린샷 2026-08-25 오전 11.07.55.png",
-    "cropBox": [
-      370,
-      433,
-      545,
-      568
-    ],
-    "croppedFile": "octopus.png",
-    "note": "cropBox replaced 2026-08-25 real-device clipping fix: old box (373,480,544,569) cut the left tentacle tips; new box is the full cell (row3,col2) inset 4px, keep_largest drops the 'Oo' label."
+    "source": "icon_refs/finals/octopus.png",
+    "note": "2026-08-26: replaced by an independently produced final crop (seven-way parallel batch, lead-verified) -- superseded the prior flashcard-sheet crop (source 스크린샷 2026-08-25 오전 11.07.55.png, cropBox [370,433,545,568]). See scripts/crop-icon-photos.py's process_final('octopus').",
+    "croppedFile": "octopus.png"
   },
   "sun": {
     "source": "스크린샷 2026-08-25 오전 11.07.55.png",
@@ -255,13 +243,8 @@
     "croppedFile": "pie.png"
   },
   "cake": {
-    "source": "스크린샷 2026-08-25 오전 11.14.29.png",
-    "cropBox": [
-      10,
-      389,
-      118,
-      468
-    ],
+    "source": "icon_refs/finals/cake.png",
+    "note": "2026-08-26: replaced by an independently produced final crop (one of a seven-way parallel batch, lead-verified by eye) -- superseded the prior flashcard-sheet crop (source 스크린샷 2026-08-25 오전 11.14.29.png, cropBox [10,389,118,468], recorded here for history). See scripts/crop-icon-photos.py's process_final('cake') and CLAUDE.md's 2026-08-26 icon batch note.",
     "croppedFile": "cake.png"
   },
   "dog": {
@@ -340,7 +323,12 @@
   },
   "gum": {
     "source": "gum.png",
-    "cropBox": [258, 0, 498, 154],
+    "cropBox": [
+      258,
+      0,
+      498,
+      154
+    ],
     "croppedFile": "gum.png",
     "note": "2026-08-26 8-agent parallel photo batch: source has a \"gum\" caption word beside the package art (not stacked like a flashcard); cropBox starts right after the word ends so only the package survives, keep_largest drops any residual fragment. See scripts/crop-icon-photos.py."
   },
@@ -352,7 +340,12 @@
   },
   "jug": {
     "source": "jug.png",
-    "cropBox": [40, 40, 436, 456],
+    "cropBox": [
+      40,
+      40,
+      436,
+      456
+    ],
     "croppedFile": "jug.png",
     "note": "2026-08-26 8-agent parallel photo batch: source wraps the jug in a circular decorative badge (navy corners + a thin antialiased ring) that ordinary border flood-fill can't fully clear -- the ring's gradient blend survives as a faint circle. cropBox is inset past the ring (re-derived from a pixel scan of where the ring's antialiasing ends and pure white begins on all four sides), then flood-fill only sees clean white outside the jug. See scripts/crop-icon-photos.py."
   },
@@ -376,8 +369,33 @@
   },
   "ant": {
     "source": "스크린샷 2026-08-25 오후 6.54.17.png",
-    "cropBox": [18, 21, 151, 168],
+    "cropBox": [
+      18,
+      21,
+      151,
+      168
+    ],
     "croppedFile": "ant.png",
     "note": "2026-08-26: re-cropped after a failed pixel-level separation attempt mangled one of two overlapping ants into a red blob (source cell resolution too low, ~150x115px). This crops the row0/col0 \"a\" cell's two ants (maroon + brown) as a single intact cluster instead -- both fully visible reads as \"ant\" fine at icon size -- and keep_largest drops the neighboring \"a\" caption letter. See scripts/crop-icon-photos.py."
+  },
+  "chips": {
+    "source": "icon_refs/finals/chips.png",
+    "note": "2026-08-26: new photo crop of a potato-chip bag (seven-way parallel batch, lead-verified), replacing the hand-drawn SVG that had itself replaced an earlier flashcard-sheet crop (that crop read as a duplicate of `fries` -- see src/icons.js history comment on `chips`). See scripts/crop-icon-photos.py's process_final('chips').",
+    "croppedFile": "chips.png"
+  },
+  "box": {
+    "source": "icon_refs/finals/box.png",
+    "note": "2026-08-26: new photo crop of an open corrugated box (seven-way parallel batch, lead-verified), replacing the hand-drawn SVG. See scripts/crop-icon-photos.py's process_final('box').",
+    "croppedFile": "box.png"
+  },
+  "horse": {
+    "source": "icon_refs/finals/horse.png",
+    "note": "2026-08-26: new photo crop of a horse head in profile (seven-way parallel batch, lead-verified), replacing the hand-drawn SVG. See scripts/crop-icon-photos.py's process_final('horse').",
+    "croppedFile": "horse.png"
+  },
+  "tap": {
+    "source": "icon_refs/finals/tap.png",
+    "note": "2026-08-26: MEANING change, not just an art refresh -- previous `tap` art (hand-drawn faucet, and this batch's initial photo crop before the correction) illustrated a kitchen water tap, but the app teaches `tap` as the finger-tap screen gesture. This crop is a hand touching a screen with a touch-ring. Seven-way parallel batch, lead-verified. See scripts/crop-icon-photos.py's process_final('tap').",
+    "croppedFile": "tap.png"
   }
 }

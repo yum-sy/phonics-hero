@@ -163,29 +163,15 @@ const ICONS = {
   // context on the prior art before the photo switch.
   top: () => photoIcon('top'),
 
-  // Round 2 redraw. Round 1 kept the same "handle block + spout block"
-  // skeleton and was rejected as unclear. This one leads with a much
-  // thicker, larger-radius gooseneck pipe (kitchen-faucet clipart reads
-  // overwhelmingly as one bold curved tube, not a thin elbow), mounted flush
-  // to a wall tile so the pipe visibly emerges FROM something instead of
-  // floating, with a single fat lever handle -- not rotated at an odd
-  // angle -- perpendicular off the base, and an oversized water drop.
-  tap: () =>
-    wrap(`
-      <rect x="6" y="16" width="15" height="30" rx="2.4" fill="#dfe4e8"/>
-      <line x1="6" y1="24" x2="21" y2="24" stroke="#c3cad0" stroke-width="1.6"/>
-      <line x1="6" y1="34" x2="21" y2="34" stroke="#c3cad0" stroke-width="1.6"/>
-      <path d="M17 22 Q17 12 28 12 Q46 12 46 26 L46 38"
-        fill="none" stroke="#9aa0a6" stroke-width="13" stroke-linecap="round"/>
-      <path d="M17 22 Q17 12 28 12 Q46 12 46 26 L46 38"
-        fill="none" stroke="#e3e8ec" stroke-width="5.5" stroke-linecap="round"/>
-      <g transform="rotate(6 14 24)">
-        <rect x="1" y="20" width="22" height="8.5" rx="4.2" fill="#5dd6e0" stroke="#378add" stroke-width="1.8"/>
-        <circle cx="21" cy="24.2" r="5.4" fill="#5dd6e0" stroke="#378add" stroke-width="1.8"/>
-      </g>
-      <path d="M44 42 Q52 50 48 58 A6.5 6.5 0 0 1 36 58 Q32 50 44 42 Z" fill="#5dd6e0" stroke="#0c447c" stroke-width="2.2"/>
-      <path d="M44 46 Q47 51 45 55" fill="none" stroke="#eafcff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
-    `),
+  // 2026-08-26: MEANING changed, not just the art. The app teaches `tap` as
+  // the finger gesture ("tap the screen"), but every prior version of this
+  // icon (the hand-drawn gooseneck-faucet SVG below, kept for history) drew
+  // a kitchen water tap -- the wrong sense of the word entirely. Replaced
+  // with a photo crop of a hand touching a screen with a touch-ring (see
+  // scripts/crop-icon-photos.py's "tap" entry / icon_refs/finals/tap.png).
+  // History above (why the faucet redraw led with a thick gooseneck) kept
+  // for context on the prior (wrong-meaning) art only.
+  tap: () => photoIcon('tap'),
 
   // -- Group 1 remainder: I / P / N (chapter 2) --
 
@@ -443,18 +429,11 @@ const ICONS = {
   // reads as a box, and the lid-and-handles silhouette of `pot` shares none
   // of these three cues.
   cake: () => photoIcon('cake'),
-  // Profile head with ears and a mane, so the front-facing round `dog` face
-  // never comes close: the long muzzle is the whole silhouette.
-  horse: () =>
-    wrap(`
-      <path d="M7 37 L18 22 Q23 14 31 14 L25 1 L36 11 L43 1 L47 17
-          Q52 21 54 30 L58 58 L36 58 Q25 54 19 44 L7 41 Z"
-        fill="#8a5a33"/>
-      <path d="M45 14 L52 26 L58 56 L48 56 L45 30 L38 16 Z" fill="#2c2c2a"/>
-      <polygon points="9,37 18,26 22,29 13,40" fill="#f5f2ea"/>
-      <circle cx="27" cy="27" r="3" fill="#2c2c2a"/>
-      <ellipse cx="12" cy="34" rx="2.2" ry="1.8" fill="#2c2c2a"/>
-    `),
+  // 2026-08-26: replaced with a photo crop of a horse's head in profile
+  // (see scripts/crop-icon-photos.py's "horse" entry). History above (why
+  // profile-with-mane beats the front-facing `dog` face) kept for context
+  // on the prior hand-drawn art.
+  horse: () => photoIcon('horse'),
 
   // Four solid quadrants make the spars readable without drawing hairlines,
   // and the bowed tail is what separates the diamond from the `star`.
@@ -626,23 +605,11 @@ const ICONS = {
   // left a plain orange disc that could pass for `orange`, which has no
   // black anywhere and carries a leaf and rind dots instead.
   ball: () => photoIcon('ball'),
-  // An OPEN corrugated box in three-quarter view: four flaps folded outward,
-  // a dark interior through the mouth, and two front faces at different
-  // shades for depth. The open mouth is what makes it read as "box" at a
-  // glance, and it also pushes it further from `gift` (closed box with a
-  // bow) and from `pot` (lidded vessel with handles).
-  box: () =>
-    wrap(`
-      <g stroke="#8a5a33" stroke-width="1.3" stroke-linejoin="round">
-        <polygon points="9,31 32,21 27,7 4,17" fill="#d9a96b"/>
-        <polygon points="32,21 55,31 60,17 37,7" fill="#d9a96b"/>
-        <polygon points="9,31 32,41 29,52 3,42" fill="#c9975c"/>
-        <polygon points="32,41 55,31 61,42 35,52" fill="#c9975c"/>
-      </g>
-      <polygon points="9,31 32,21 55,31 32,41" fill="#6b4423"/>
-      <polygon points="9,31 32,41 32,57 9,47" fill="#a87a45"/>
-      <polygon points="32,41 55,31 55,47 32,57" fill="#c9975c"/>
-    `),
+  // 2026-08-26: replaced with a photo crop of an open corrugated box (see
+  // scripts/crop-icon-photos.py's "box" entry). History above (why the
+  // open-mouth three-quarter view beat a closed box) kept for context on
+  // the prior hand-drawn art.
+  box: () => photoIcon('box'),
 
   // -- Chapter 4 gaps: M (man, mat, map) and D (duck, door) --
 
@@ -1068,48 +1035,15 @@ const ICONS = {
   book: () => photoIcon('book'),
   yoyo: () => photoIcon('yoyo'),
   fox: () => photoIcon('fox'),
-  // A potato-chip bag, redrawn by hand after the photo-crop version (still a
-  // reference-sheet fries carton at these proportions) read as a duplicate
-  // of `fries` -- same red carton, same yellow sticks poking up. This is
-  // deliberately the opposite build on every axis fries uses: a tall
-  // standing pouch (not a wide short carton) with a jagged heat-sealed
-  // crimp on top and a folded seam band at the bottom (fries has neither --
-  // it is an open-top box), green (not red -- the only other green in the
-  // set is `snake`'s cord-thin body, nothing bag-shaped), and the chips
-  // themselves are ruffled ovals with a wavy scalloped rim, not straight
-  // rods -- the single detail meant to kill the fries confusion even in a
-  // hard greyscale cutout where the color split disappears. Style/palette
-  // are original, not traced from any reference image.
-  chips: () => {
-    const clipId = nextId('chips-clip')
-    const bagTop =
-      'M15 20 L18.5 11 L23 18 L27.5 10 L32 18 L36.5 10 L41 18 L45.5 11 L49 20 Z'
-    const bagBody =
-      'M15 20 Q13 34 14.5 46 L49.5 46 Q51 34 49 20 Z'
-    const bagFold = 'M14.5 46 Q14 51 17 56 L47 56 Q50 51 49.5 46 Z'
-    // Ruffled chip: a lumpy oval built from alternating wide/narrow curves
-    // around the rim instead of a smooth ellipse, so the scallop reads even
-    // at a hard cutout.
-    const chip = (cx, cy, s, rot) =>
-      `<g transform="translate(${cx} ${cy}) rotate(${rot}) scale(${s})">` +
-      `<path d="M-11 1 Q-9 -7 -3 -6 Q1 -9 6 -5 Q12 -6 11 1 Q13 6 6 7 Q2 10 -2 7 Q-9 9 -11 3 Z" ` +
-      `fill="#f0c987" stroke="#a5672a" stroke-width="1.8" stroke-linejoin="round"/>` +
-      `<path d="M-6 -2 Q0 -4.5 5 -1" fill="none" stroke="#c9975c" stroke-width="1.3" stroke-linecap="round"/>` +
-      `</g>`
-    return wrap(`
-      <g>${chip(24, 8, 1.35, -18)}${chip(33, 4, 1.5, 10)}${chip(41, 9, 1.3, 28)}</g>
-      <path d="${bagBody}" fill="#2f9e5c"/>
-      <path d="${bagTop}" fill="#2f9e5c"/>
-      <clipPath id="${clipId}"><path d="${bagBody}"/></clipPath>
-      <path d="M32 20 L49.5 20 Q51 34 49.5 46 L36 46 Q34 34 32 20 Z" fill="#3fb86e" clip-path="url(#${clipId})"/>
-      <path d="${bagFold}" fill="#1c7a43"/>
-      <line x1="17.5" y1="51" x2="46.5" y2="51" stroke="#0f5c30" stroke-width="1.6"/>
-      <ellipse cx="32" cy="33" rx="9" ry="6.5" fill="#e7d9a8" stroke="#a5672a" stroke-width="1.6"/>
-      <path d="${bagBody}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
-      <path d="${bagTop}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
-      <path d="${bagFold}" fill="none" stroke="#2c2c2a" stroke-width="2.4" stroke-linejoin="round"/>
-    `)
-  },
+  // 2026-08-26: replaced with a new photo crop of a potato-chip bag (see
+  // scripts/crop-icon-photos.py's "chips" entry / icon_refs/finals/
+  // chips.png) -- a fresh crop, not the earlier reference-sheet fries-
+  // carton crop this hand-drawn SVG itself was drawn to replace. History
+  // above (why the hand-drawn bag needed to be the opposite build from
+  // `fries` on every axis) kept for context; that reasoning still applies
+  // to the new crop -- it is a tall standing green bag with scalloped
+  // chips, not a red carton of straight fries.
+  chips: () => photoIcon('chips'),
   shoe: () => photoIcon('shoe'),
   thumb: () => photoIcon('thumb'),
   queen: () => photoIcon('queen'),
