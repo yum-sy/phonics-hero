@@ -59,7 +59,7 @@ export const chapter28 = {
           "instructionKo": "Sparkit가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "twin"
+            "tuh"
           ]
         },
         {
@@ -94,7 +94,7 @@ export const chapter28 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "twig"
+            "weh"
           ]
         },
         {
@@ -102,7 +102,7 @@ export const chapter28 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"leg\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"leg\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "lll",
           "options": [
             {
@@ -139,7 +139,7 @@ export const chapter28 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"tree\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"tree\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ee",
           "options": [
             {
@@ -176,7 +176,7 @@ export const chapter28 = {
           "kind": "multiselect",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"dog\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "instructionKo": "\"dog\"와 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
           "options": [
             {
               "id": "c28s1-r4-c2",
@@ -266,7 +266,7 @@ export const chapter28 = {
           "instructionKo": "Sparkit가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "twin"
+            "tuh"
           ]
         },
         {
@@ -364,7 +364,7 @@ export const chapter28 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "twig"
+            "weh"
           ]
         },
         {
@@ -372,7 +372,7 @@ export const chapter28 = {
           "kind": "multiselect",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"fork\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "instructionKo": "\"fork\"와 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
           "options": [
             {
               "id": "c28s2-r4-multiselect-w1",
@@ -541,7 +541,7 @@ export const chapter28 = {
           "instructionKo": "Magnix가 \"act\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "act"
+            "kuh"
           ]
         },
         {
@@ -575,7 +575,7 @@ export const chapter28 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"apple\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"apple\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "aaa",
           "options": [
             {
@@ -635,7 +635,7 @@ export const chapter28 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "duct"
+            "tuh"
           ]
         },
         {
@@ -812,7 +812,7 @@ export const chapter28 = {
           "instructionKo": "Drillbit가 \"glue\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "glue"
+            "guh"
           ]
         },
         {
@@ -846,7 +846,7 @@ export const chapter28 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"mat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"mat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "mmm",
           "options": [
             {
@@ -906,7 +906,7 @@ export const chapter28 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "glad"
+            "lll"
           ]
         },
         {
@@ -1408,7 +1408,7 @@ export const chapter28 = {
         {
           "id": "c28s5-break",
           "kind": "break",
-          "instructionKo": "이번엔 glue이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 glue가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "guh",
@@ -1660,7 +1660,7 @@ export const chapter28 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 glue을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 glue를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "UE",
@@ -1718,7 +1718,7 @@ export const chapter28 = {
           ]
         }
       ],
-      "recapKo": "TWIN와 GLUE, 단어 두 개를 만들었어요! 챕터 클리어!",
+      "recapKo": "TWIN과 GLUE, 단어 두 개를 만들었어요! 챕터 28 클리어! 월드 4 완성!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

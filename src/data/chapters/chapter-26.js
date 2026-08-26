@@ -4,7 +4,10 @@
 // -- SOUND_TABLE에 새 표기를 추가하지 않았다(신규 오디오 에셋 불필요).
 //
 // 계열: 공룡(dinosaurs.js), 히어로는 Fizz/Talon/Wingo/Roara 재사용(-c26)
-// 블렌드: LT (belt/melt) / LP (help/gulp) / LF (self/golf)
+// 블렌드: LT (belt/melt) / LF (self/golf) -- 스테이지3은 원래 LP
+// (help/gulp)를 가르쳤으나 보스가 실제로 쓰는 블렌드와 무관한 고아
+// 콘텐츠였다(리더 QA 감사로 발견, 2026-08). 보스가 실제로 조립하는 두 번째
+// 블렌드(LF)의 소개 스테이지로 교체했다(챕터15 패턴과 일치).
 // 보스 단어: BELT(B+E+L+T) + SELF(S+E+L+F)
 // 아이콘: icon 재고 없음 -- 전부 단어 기반
 //
@@ -59,7 +62,7 @@ export const chapter26 = {
           "instructionKo": "Fizz가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "belt"
+            "lll"
           ]
         },
         {
@@ -94,7 +97,7 @@ export const chapter26 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "melt"
+            "tuh"
           ]
         },
         {
@@ -102,7 +105,7 @@ export const chapter26 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"chips\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"chips\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ch",
           "options": [
             {
@@ -266,7 +269,7 @@ export const chapter26 = {
           "instructionKo": "Fizz가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "belt"
+            "lll"
           ]
         },
         {
@@ -300,7 +303,7 @@ export const chapter26 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"igloo\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"igloo\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ihh",
           "options": [
             {
@@ -364,7 +367,7 @@ export const chapter26 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "melt"
+            "tuh"
           ]
         },
         {
@@ -372,7 +375,7 @@ export const chapter26 = {
           "kind": "multiselect",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"umbrella\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "instructionKo": "\"umbrella\"와 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
           "options": [
             {
               "id": "c26s2-r4-multiselect-w2",
@@ -522,7 +525,7 @@ export const chapter26 = {
     {
       "id": "c26-stage-3",
       "order": 3,
-      "title": "Power of LP",
+      "title": "A Self Sound",
       "villain": {
         "name": "Marrowjaw",
         "art": "marrowjaw",
@@ -538,85 +541,22 @@ export const chapter26 = {
         {
           "id": "c26s3-teach",
           "kind": "teach",
-          "instructionKo": "Talon가 \"help\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "Talon이 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "help"
+            "lll"
           ]
         },
         {
-          "id": "c26s3-r1-warmup",
-          "kind": "choose",
-          "scored": false,
-          "instructionKo": "진짜 단어를 찾아보세요! (연습이에요)",
-          "options": [
-            {
-              "id": "c26s3-r1-warmup-o0",
-              "icon": "letterTile",
-              "label": "HEPL",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r1-warmup-o1",
-              "icon": "letterTile",
-              "label": "HLPE",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r1-warmup-oc",
-              "icon": "letterTile",
-              "label": "HELP",
-              "correct": true
-            }
-          ]
-        },
-        {
-          "id": "c26s3-r2",
-          "kind": "choose",
-          "scored": true,
-          "hits": 1,
-          "instructionKo": "\"fan\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "fff",
-          "options": [
-            {
-              "id": "c26s3-r2-oc",
-              "icon": "fan",
-              "label": "fan",
-              "correct": true
-            },
-            {
-              "id": "c26s3-r2-o0",
-              "icon": "ball",
-              "label": "ball",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r2-o1",
-              "icon": "jam",
-              "label": "jam",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r2-o2",
-              "icon": "bee",
-              "label": "bee",
-              "correct": false
-            }
-          ],
-          "readAloud": {
-            "targetText": "fan"
-          }
-        },
-        {
-          "id": "c26s3-r3-blenddemo",
+          "id": "c26s3-r1",
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
           "instructionKo": "소리를 하나씩 듣고, 이어서 단어를 말해보세요!",
           "words": [
             {
-              "text": "H",
-              "say": "huh"
+              "text": "S",
+              "say": "sss"
             },
             {
               "text": "E",
@@ -627,10 +567,10 @@ export const chapter26 = {
               "say": "lll"
             },
             {
-              "text": "P",
-              "say": "puh"
+              "text": "F",
+              "say": "fff"
             },
-            "help"
+            "self"
           ]
         },
         {
@@ -639,139 +579,134 @@ export const chapter26 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "gulp"
+            "fff"
           ]
+        },
+        {
+          "id": "c26s3-r2",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"rain\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "rrr",
+          "options": [
+            {
+              "id": "c26s3-r2-oc",
+              "icon": "rain",
+              "label": "rain",
+              "correct": true
+            },
+            {
+              "id": "c26s3-r2-o0",
+              "icon": "van",
+              "label": "van",
+              "correct": false
+            },
+            {
+              "id": "c26s3-r2-o1",
+              "icon": "yoyo",
+              "label": "yoyo",
+              "correct": false
+            },
+            {
+              "id": "c26s3-r2-o2",
+              "icon": "moon",
+              "label": "moon",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "rain"
+          }
+        },
+        {
+          "id": "c26s3-r3",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"nut\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "nnn",
+          "options": [
+            {
+              "id": "c26s3-r3-oc",
+              "icon": "nut",
+              "label": "nut",
+              "correct": true
+            },
+            {
+              "id": "c26s3-r3-o0",
+              "icon": "shoe",
+              "label": "shoe",
+              "correct": false
+            },
+            {
+              "id": "c26s3-r3-o1",
+              "icon": "thumb",
+              "label": "thumb",
+              "correct": false
+            },
+            {
+              "id": "c26s3-r3-o2",
+              "icon": "queen",
+              "label": "queen",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "nut"
+          }
         },
         {
           "id": "c26s3-r4-multiselect",
           "kind": "multiselect",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"apple\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "instructionKo": "\"ball\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
           "options": [
             {
+              "id": "c26s3-r4-multiselect-c0",
+              "icon": "ball",
+              "label": "ball",
+              "correct": true
+            },
+            {
               "id": "c26s3-r4-multiselect-c1",
-              "icon": "ant",
-              "label": "ant",
+              "icon": "box",
+              "label": "box",
+              "correct": true
+            },
+            {
+              "id": "c26s3-r4-multiselect-c2",
+              "icon": "bed",
+              "label": "bed",
               "correct": true
             },
             {
               "id": "c26s3-r4-multiselect-w0",
-              "icon": "watch",
-              "label": "watch",
+              "icon": "nose",
+              "label": "nose",
               "correct": false
             },
             {
               "id": "c26s3-r4-multiselect-w1",
-              "icon": "van",
-              "label": "van",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r4-multiselect-w2",
-              "icon": "yoyo",
-              "label": "yoyo",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r4-multiselect-c0",
-              "icon": "apple",
-              "label": "apple",
-              "correct": true
-            }
-          ],
-          "readAloud": {
-            "targetText": "apple"
-          }
-        },
-        {
-          "id": "c26s3-r5-hard",
-          "kind": "choose",
-          "scored": true,
-          "instructionKo": "진짜 단어를 찾아보세요! (조금 어려워요)",
-          "options": [
-            {
-              "id": "c26s3-r5-hard-o0",
-              "icon": "letterTile",
-              "label": "PLEH",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r5-hard-o1",
-              "icon": "letterTile",
-              "label": "LPEH",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r5-hard-oc",
-              "icon": "letterTile",
-              "label": "HELP",
-              "correct": true
-            },
-            {
-              "id": "c26s3-r5-hard-o2",
-              "icon": "letterTile",
-              "label": "EPLH",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r5-hard-o3",
-              "icon": "letterTile",
-              "label": "PELH",
-              "correct": false
-            }
-          ],
-          "hits": 1,
-          "readAloud": {
-            "targetText": "help"
-          }
-        },
-        {
-          "id": "c26s3-r6-reversed",
-          "kind": "choose",
-          "scored": true,
-          "hits": 1,
-          "instructionKo": "\"ring\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "ngh",
-          "options": [
-            {
-              "id": "c26s3-r6-reversed-o0",
-              "icon": "van",
-              "label": "van",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r6-reversed-oc",
-              "icon": "ring",
-              "label": "ring",
-              "correct": true
-            },
-            {
-              "id": "c26s3-r6-reversed-o1",
-              "icon": "moon",
-              "label": "moon",
-              "correct": false
-            },
-            {
-              "id": "c26s3-r6-reversed-o2",
-              "icon": "book",
-              "label": "book",
+              "icon": "cup",
+              "label": "cup",
               "correct": false
             }
           ],
           "readAloud": {
-            "targetText": "ring"
+            "targetText": "ball"
           }
         },
         {
-          "id": "c26s3-r7-listenrepeat",
+          "id": "c26s3-r5",
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
           "instructionKo": "단어를 하나씩 따라 말해보세요!",
           "words": [
-            "help",
-            "gulp"
+            "self",
+            "golf"
           ]
         },
         {
@@ -781,16 +716,16 @@ export const chapter26 = {
           "hits": 1,
           "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
           "words": [
-            "help"
+            "self"
           ]
         }
       ],
-      "recapKo": "help에는 두 소리가 이어져 있어요 — help, gulp!",
+      "recapKo": "새로운 소리 조합을 찾았어요! self, golf — 둘 다 이 소리가 들어있어요!",
       "recapAudio": {
-        "ko": "두 소리가 이어진 단어를 배웠어요. 잘 들어보세요.",
+        "ko": "새로운 소리 조합을 배웠어요. 잘 들어보세요.",
         "en": [
-          "help",
-          "gulp"
+          "self",
+          "golf"
         ]
       }
     },
@@ -816,7 +751,7 @@ export const chapter26 = {
           "instructionKo": "Wingo가 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "self"
+            "lll"
           ]
         },
         {
@@ -850,7 +785,7 @@ export const chapter26 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"box\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"box\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ksuh",
           "options": [
             {
@@ -914,7 +849,7 @@ export const chapter26 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "golf"
+            "fff"
           ]
         },
         {
@@ -1006,7 +941,7 @@ export const chapter26 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"coat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"coat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "oh",
           "options": [
             {
@@ -1348,7 +1283,7 @@ export const chapter26 = {
         {
           "id": "c26s5-teach",
           "kind": "teach",
-          "instructionKo": "Roara가 합체해요! 먼저 belt을 만들어요.",
+          "instructionKo": "Roara가 합체해요! 먼저 belt를 만들어요.",
           "repeatAudio": [
             "buh",
             "eh",

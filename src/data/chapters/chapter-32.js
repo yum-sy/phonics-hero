@@ -51,7 +51,7 @@ export const chapter32 = {
           "repeatAudio": [
             "sss"
           ],
-          "instructionKo": "Glide가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "Glide가 세 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c32s1-r1",
@@ -169,7 +169,7 @@ export const chapter32 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "S와 T를 이어서 말하면 'STR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "S, T, R을 이어서 말하면 'STR' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "S",
@@ -205,7 +205,7 @@ export const chapter32 = {
           ]
         }
       ],
-      "recapKo": "S와 T를 이으면 'STR' 소리가 돼요! STRING처럼요!",
+      "recapKo": "S, T, R을 이으면 'STR' 소리가 돼요! STRING처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -266,7 +266,7 @@ export const chapter32 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"bus\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"bus\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "buh",
           "options": [
             {
@@ -303,7 +303,7 @@ export const chapter32 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 S와 T를 따라 그리면서 두 소리를 이어보세요!",
+          "instructionKo": "손가락으로 S와 T를 따라 그리면서 소리를 이어보세요! (R까지 이으면 STR이 돼요)",
           "words": [
             {
               "text": "S",
@@ -595,7 +595,7 @@ export const chapter32 = {
           ]
         }
       ],
-      "recapKo": "STR 소리를 다시 연습했어요! 이제 STRING를 잘 만들 수 있어요.",
+      "recapKo": "STR 소리를 다시 연습했어요! 이제 STRING을 잘 만들 수 있어요.",
       "recapAudio": {
         "ko": "다시 연습했어요. 잘 들어보세요.",
         "en": [
@@ -672,7 +672,7 @@ export const chapter32 = {
           "repeatAudio": [
             "nnn"
           ],
-          "instructionKo": "Bastion가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "Bastion이 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c32s3-r1",
@@ -700,7 +700,7 @@ export const chapter32 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"hand\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"hand\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "huh",
           "options": [
             {
@@ -779,7 +779,7 @@ export const chapter32 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "N와 CH를 이어서 말하면 'NCH' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "N과 CH를 이어서 말하면 'NCH' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "B",
@@ -811,7 +811,7 @@ export const chapter32 = {
           ]
         }
       ],
-      "recapKo": "N와 CH를 이으면 'NCH' 소리가 돼요! BENCH처럼요!",
+      "recapKo": "N과 CH를 이으면 'NCH' 소리가 돼요! BENCH처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -884,7 +884,7 @@ export const chapter32 = {
           "id": "c32s4-r1",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "STR와 NCH 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
+          "instructionKo": "STR과 NCH 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "sss",
           "options": [
             {
@@ -1218,7 +1218,7 @@ export const chapter32 = {
           ]
         }
       ],
-      "recapKo": "STR와 NCH를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapKo": "STR과 NCH를 다시 연습했어요! 이제 합체할 준비 완료예요!",
       "recapAudio": {
         "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
         "en": [
@@ -1289,7 +1289,7 @@ export const chapter32 = {
         {
           "id": "c32s5-teach",
           "kind": "teach",
-          "instructionKo": "Glide + Bastion + Voltbeam가 합체해요! 먼저 STRING를 만들어요.",
+          "instructionKo": "Glide + Bastion + Voltbeam이 합체해요! 먼저 STRING을 만들어요.",
           "repeatAudio": [
             "sss",
             "tuh",

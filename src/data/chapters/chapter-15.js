@@ -249,7 +249,7 @@ export const chapter15 = {
           ]
         }
       ],
-      "recapKo": "S과 T 소리를 이어봤어요! star처럼요.",
+      "recapKo": "S와 T 소리를 이어봤어요! star처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -310,7 +310,7 @@ export const chapter15 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"umbrella\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"umbrella\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "uh",
           "options": [
             {
@@ -768,7 +768,7 @@ export const chapter15 = {
         "AR",
         "ER"
       ],
-      "recapKo": "S과 N 소리를 이어봤어요! snake처럼요.",
+      "recapKo": "S와 N 소리를 이어봤어요! snake처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -829,7 +829,7 @@ export const chapter15 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"apple\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"apple\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "aaa",
           "options": [
             {
@@ -866,7 +866,7 @@ export const chapter15 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 N를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 N을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "N",
@@ -877,7 +877,7 @@ export const chapter15 = {
         {
           "id": "c15s4-break-79",
           "kind": "break",
-          "instructionKo": "S랑 N를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "S랑 N을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -1665,7 +1665,7 @@ export const chapter15 = {
           ]
         }
       ],
-      "recapKo": "STAR와 SNAP를 만들었어요! 챕터 15 클리어!",
+      "recapKo": "STAR와 SNAP을 만들었어요! 챕터 15 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

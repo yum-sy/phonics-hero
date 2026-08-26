@@ -158,7 +158,7 @@ export const chapter33 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "TH와 R를 이어서 말하면 'THR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "TH와 R을 이어서 말하면 'THR' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "TH",
@@ -186,7 +186,7 @@ export const chapter33 = {
           ]
         }
       ],
-      "recapKo": "TH와 R를 이으면 'THR' 소리가 돼요! THREE처럼요!",
+      "recapKo": "TH와 R을 이으면 'THR' 소리가 돼요! THREE처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -247,7 +247,7 @@ export const chapter33 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"boat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"boat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "buh",
           "options": [
             {
@@ -284,7 +284,7 @@ export const chapter33 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 TH와 R를 따라 그리면서 두 소리를 이어보세요!",
+          "instructionKo": "손가락으로 TH와 R을 따라 그리면서 두 소리를 이어보세요!",
           "words": [
             {
               "text": "TH",
@@ -760,7 +760,7 @@ export const chapter33 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "SH와 R를 이어서 말하면 'SHR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "SH와 R을 이어서 말하면 'SHR' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "SH",
@@ -796,7 +796,7 @@ export const chapter33 = {
           ]
         }
       ],
-      "recapKo": "SH와 R를 이으면 'SHR' 소리가 돼요! SHRIMP처럼요!",
+      "recapKo": "SH와 R을 이으면 'SHR' 소리가 돼요! SHRIMP처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -869,7 +869,7 @@ export const chapter33 = {
           "id": "c33s4-r1",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "THR와 SHR 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
+          "instructionKo": "THR과 SHR 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "thhu",
           "options": [
             {
@@ -1203,7 +1203,7 @@ export const chapter33 = {
           ]
         }
       ],
-      "recapKo": "THR와 SHR를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapKo": "THR과 SHR을 다시 연습했어요! 이제 합체할 준비 완료예요!",
       "recapAudio": {
         "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
         "en": [
@@ -1548,7 +1548,7 @@ export const chapter33 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 SHRIMP를 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 SHRIMP을 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "P",

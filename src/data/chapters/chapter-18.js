@@ -70,7 +70,7 @@ export const chapter18 = {
         {
           "id": "c18s1-teach-443",
           "kind": "teach",
-          "instructionKo": "Rocketail가 N과 D 소리를 나란히 들려줘요! 이번엔 단어 끝에서 나요.",
+          "instructionKo": "Rocketail이 N과 D 소리를 나란히 들려줘요! 이번엔 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -158,7 +158,7 @@ export const chapter18 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"door\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"door\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "duh",
           "options": [
             {
@@ -310,7 +310,7 @@ export const chapter18 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"boat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"boat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "oh",
           "options": [
             {
@@ -829,7 +829,7 @@ export const chapter18 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"elephant\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"elephant\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "eh",
           "options": [
             {
@@ -1393,7 +1393,7 @@ export const chapter18 = {
         {
           "id": "c18s5-break-564",
           "kind": "break",
-          "instructionKo": "이번엔 ant이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 ant가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "aaa",
@@ -1612,7 +1612,7 @@ export const chapter18 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 ant을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 ant를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "N",

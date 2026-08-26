@@ -4,9 +4,15 @@
 // -- SOUND_TABLE에 새 표기를 추가하지 않았다(신규 오디오 에셋 불필요).
 //
 // 계열: DC 히어로(dc.js), style dc-hero
-// 블렌드: NT (ant/tent, icon ant) / ND (hand/sand, icon hand) / FT (gift/raft, icon gift)
-// 보스 단어: ANT(A+N+T) + GIFT(G+I+F+T)
-// 아이콘: ant, hand, gift (모두 기존 재고)
+// 블렌드: NT (ant/tent, icon ant) / FT (gift/raft, icon gift) -- 스테이지3은
+// 원래 ND(hand/sand)를 가르쳤으나 보스가 실제로 쓰는 블렌드와 무관한 고아
+// 콘텐츠였다(리더 QA 감사로 발견, 2026-08). 보스가 실제로 조립하는 두 번째
+// 블렌드(FT)의 소개 스테이지로 교체했다 -- 챕터15 패턴(스테이지1-2/3-4가 각각
+// 보스에 쓰이는 블렌드 하나씩을 담당)과 일치시킨다.
+// 보스 단어: TENT(T+E+N+T) + GIFT(G+I+F+T) -- 원래 보스 단어 ANT가 챕터18
+// (SAND+ANT)과 중복이라 TENT로 교체했다(NT 블렌드는 그대로 유지).
+// 아이콘: ant, hand, gift (모두 기존 재고, hand는 더 이상 보스 경로에 쓰이지
+// 않지만 스테이지1/2 소개용으로 남아있다)
 //
 // ============================================================================
 // 구조 (chapter-09/29 템플릿 그대로: 5스테이지, 블렌드 3개를 스테이지1-2 /
@@ -59,7 +65,7 @@ export const chapter23 = {
           "instructionKo": "Halo가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "ant"
+            "nnn"
           ]
         },
         {
@@ -90,7 +96,7 @@ export const chapter23 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "tent"
+            "tuh"
           ]
         },
         {
@@ -98,7 +104,7 @@ export const chapter23 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"horse\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"horse\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "huh",
           "options": [
             {
@@ -262,7 +268,7 @@ export const chapter23 = {
           "instructionKo": "Halo가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "ant"
+            "nnn"
           ]
         },
         {
@@ -296,7 +302,7 @@ export const chapter23 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"tree\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"tree\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ee",
           "options": [
             {
@@ -356,7 +362,7 @@ export const chapter23 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "tent"
+            "tuh"
           ]
         },
         {
@@ -514,7 +520,7 @@ export const chapter23 = {
     {
       "id": "c23-stage-3",
       "order": 3,
-      "title": "Power of ND",
+      "title": "A Gift Sound",
       "villain": {
         "name": "Grimstatic",
         "art": "grimstatic",
@@ -530,99 +536,36 @@ export const chapter23 = {
         {
           "id": "c23s3-teach",
           "kind": "teach",
-          "instructionKo": "Vex가 \"hand\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "Vex가 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "hand"
+            "fff"
           ]
         },
         {
-          "id": "c23s3-r1-warmup",
-          "kind": "choose",
-          "scored": false,
-          "instructionKo": "진짜 단어를 찾아보세요! (연습이에요)",
-          "options": [
-            {
-              "id": "c23s3-r1-warmup-o0",
-              "icon": "letterTile",
-              "label": "NDHA",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r1-warmup-o1",
-              "icon": "letterTile",
-              "label": "DNHA",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r1-warmup-oc",
-              "icon": "letterTile",
-              "label": "HAND",
-              "correct": true
-            }
-          ]
-        },
-        {
-          "id": "c23s3-r2",
-          "kind": "choose",
-          "scored": true,
-          "hits": 1,
-          "instructionKo": "\"yoyo\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "yyuh",
-          "options": [
-            {
-              "id": "c23s3-r2-oc",
-              "icon": "yoyo",
-              "label": "yoyo",
-              "correct": true
-            },
-            {
-              "id": "c23s3-r2-o0",
-              "icon": "box",
-              "label": "box",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r2-o1",
-              "icon": "chips",
-              "label": "chips",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r2-o2",
-              "icon": "shoe",
-              "label": "shoe",
-              "correct": false
-            }
-          ],
-          "readAloud": {
-            "targetText": "yoyo"
-          }
-        },
-        {
-          "id": "c23s3-r3-blenddemo",
+          "id": "c23s3-r1",
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
           "instructionKo": "소리를 하나씩 듣고, 이어서 단어를 말해보세요!",
           "words": [
             {
-              "text": "H",
-              "say": "huh"
+              "text": "G",
+              "say": "guh"
             },
             {
-              "text": "A",
-              "say": "aaa"
+              "text": "I",
+              "say": "ihh"
             },
             {
-              "text": "N",
-              "say": "nnn"
+              "text": "F",
+              "say": "fff"
             },
             {
-              "text": "D",
-              "say": "duh"
+              "text": "T",
+              "say": "tuh"
             },
-            "hand"
+            "gift"
           ]
         },
         {
@@ -631,139 +574,134 @@ export const chapter23 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "sand"
+            "tuh"
           ]
+        },
+        {
+          "id": "c23s3-r2",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"man\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "mmm",
+          "options": [
+            {
+              "id": "c23s3-r2-oc",
+              "icon": "man",
+              "label": "man",
+              "correct": true
+            },
+            {
+              "id": "c23s3-r2-o0",
+              "icon": "lion",
+              "label": "lion",
+              "correct": false
+            },
+            {
+              "id": "c23s3-r2-o1",
+              "icon": "fox",
+              "label": "fox",
+              "correct": false
+            },
+            {
+              "id": "c23s3-r2-o2",
+              "icon": "net",
+              "label": "net",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "man"
+          }
+        },
+        {
+          "id": "c23s3-r3",
+          "kind": "choose",
+          "scored": true,
+          "hits": 1,
+          "instructionKo": "\"cat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "promptAudio": "kuh",
+          "options": [
+            {
+              "id": "c23s3-r3-oc",
+              "icon": "cat",
+              "label": "cat",
+              "correct": true
+            },
+            {
+              "id": "c23s3-r3-o0",
+              "icon": "sun",
+              "label": "sun",
+              "correct": false
+            },
+            {
+              "id": "c23s3-r3-o1",
+              "icon": "hen",
+              "label": "hen",
+              "correct": false
+            },
+            {
+              "id": "c23s3-r3-o2",
+              "icon": "dog",
+              "label": "dog",
+              "correct": false
+            }
+          ],
+          "readAloud": {
+            "targetText": "cat"
+          }
         },
         {
           "id": "c23s3-r4-multiselect",
           "kind": "multiselect",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"sun\"과 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
+          "instructionKo": "\"fish\"와 같은 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!",
           "options": [
             {
               "id": "c23s3-r4-multiselect-c0",
-              "icon": "sun",
-              "label": "sun",
+              "icon": "fish",
+              "label": "fish",
               "correct": true
             },
             {
               "id": "c23s3-r4-multiselect-c1",
-              "icon": "sock",
-              "label": "sock",
-              "correct": true
-            },
-            {
-              "id": "c23s3-r4-multiselect-c2",
-              "icon": "star",
-              "label": "star",
+              "icon": "fan",
+              "label": "fan",
               "correct": true
             },
             {
               "id": "c23s3-r4-multiselect-w0",
-              "icon": "coat",
-              "label": "coat",
+              "icon": "van",
+              "label": "van",
               "correct": false
             },
             {
               "id": "c23s3-r4-multiselect-w1",
-              "icon": "apple",
-              "label": "apple",
+              "icon": "door",
+              "label": "door",
+              "correct": false
+            },
+            {
+              "id": "c23s3-r4-multiselect-w2",
+              "icon": "gum",
+              "label": "gum",
               "correct": false
             }
           ],
           "readAloud": {
-            "targetText": "sun"
+            "targetText": "fish"
           }
         },
         {
-          "id": "c23s3-r5-hard",
-          "kind": "choose",
-          "scored": true,
-          "instructionKo": "진짜 단어를 찾아보세요! (조금 어려워요)",
-          "options": [
-            {
-              "id": "c23s3-r5-hard-o0",
-              "icon": "letterTile",
-              "label": "ANDH",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r5-hard-oc",
-              "icon": "letterTile",
-              "label": "HAND",
-              "correct": true
-            },
-            {
-              "id": "c23s3-r5-hard-o1",
-              "icon": "letterTile",
-              "label": "AHND",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r5-hard-o2",
-              "icon": "letterTile",
-              "label": "NHAD",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r5-hard-o3",
-              "icon": "letterTile",
-              "label": "HNAD",
-              "correct": false
-            }
-          ],
-          "hits": 1,
-          "readAloud": {
-            "targetText": "hand"
-          }
-        },
-        {
-          "id": "c23s3-r6-reversed",
-          "kind": "choose",
-          "scored": true,
-          "hits": 1,
-          "instructionKo": "이 소리들이 들어있는 그림을 찾아보세요!",
-          "promptLetter": "ND",
-          "options": [
-            {
-              "id": "c23s3-r6-o0",
-              "icon": "lion",
-              "label": "lion",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r6-oc",
-              "icon": "hand",
-              "label": "hand",
-              "correct": true
-            },
-            {
-              "id": "c23s3-r6-o1",
-              "icon": "cup",
-              "label": "cup",
-              "correct": false
-            },
-            {
-              "id": "c23s3-r6-o2",
-              "icon": "hen",
-              "label": "hen",
-              "correct": false
-            }
-          ],
-          "readAloud": {
-            "targetText": "hand"
-          }
-        },
-        {
-          "id": "c23s3-r7-listenrepeat",
+          "id": "c23s3-r5",
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
           "instructionKo": "단어를 하나씩 따라 말해보세요!",
           "words": [
-            "hand",
-            "sand"
+            "gift",
+            "raft"
           ]
         },
         {
@@ -773,16 +711,16 @@ export const chapter23 = {
           "hits": 1,
           "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
           "words": [
-            "hand"
+            "gift"
           ]
         }
       ],
-      "recapKo": "hand에는 두 소리가 이어져 있어요 — hand, sand!",
+      "recapKo": "새로운 소리 조합을 찾았어요! gift, raft — 둘 다 이 소리가 들어있어요!",
       "recapAudio": {
-        "ko": "두 소리가 이어진 단어를 배웠어요. 잘 들어보세요.",
+        "ko": "새로운 소리 조합을 배웠어요. 잘 들어보세요.",
         "en": [
-          "hand",
-          "sand"
+          "gift",
+          "raft"
         ]
       }
     },
@@ -805,10 +743,10 @@ export const chapter23 = {
         {
           "id": "c23s4-teach",
           "kind": "teach",
-          "instructionKo": "Quill가 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "Quill이 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
-            "gift"
+            "fff"
           ]
         },
         {
@@ -842,7 +780,7 @@ export const chapter23 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"coat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"coat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "oh",
           "options": [
             {
@@ -906,7 +844,7 @@ export const chapter23 = {
           "instructionKo": "함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
-            "raft"
+            "tuh"
           ]
         },
         {
@@ -1281,7 +1219,7 @@ export const chapter23 = {
     {
       "id": "c23-stage-5",
       "order": 5,
-      "title": "Boss: ANT and GIFT!",
+      "title": "Boss: TENT and GIFT!",
       "villain": {
         "name": "Umbral King",
         "art": "umbral-king",
@@ -1340,12 +1278,13 @@ export const chapter23 = {
         {
           "id": "c23s5-teach",
           "kind": "teach",
-          "instructionKo": "Halo Ultra가 합체해요! 먼저 ant을 만들어요.",
+          "instructionKo": "Halo Ultra가 합체해요! 먼저 tent를 만들어요.",
           "repeatAudio": [
-            "aaa",
+            "tuh",
+            "eh",
             "nnn",
             "tuh",
-            "ant"
+            "tent"
           ]
         },
         {
@@ -1355,8 +1294,12 @@ export const chapter23 = {
           "instructionKo": "글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)",
           "letters": [
             {
-              "text": "A",
-              "say": "aaa"
+              "text": "T",
+              "say": "tuh"
+            },
+            {
+              "text": "E",
+              "say": "eh"
             },
             {
               "text": "N",
@@ -1368,7 +1311,8 @@ export const chapter23 = {
             }
           ],
           "target": [
-            "A",
+            "T",
+            "E",
             "N",
             "T"
           ]
@@ -1381,8 +1325,12 @@ export const chapter23 = {
           "instructionKo": "천천히 따라 말해보세요.",
           "words": [
             {
-              "text": "A",
-              "say": "aaa"
+              "text": "T",
+              "say": "tuh"
+            },
+            {
+              "text": "E",
+              "say": "eh"
             },
             {
               "text": "N",
@@ -1392,13 +1340,13 @@ export const chapter23 = {
               "text": "T",
               "say": "tuh"
             },
-            "ant"
+            "tent"
           ]
         },
         {
           "id": "c23s5-break",
           "kind": "break",
-          "instructionKo": "이번엔 gift이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 gift가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "guh",
@@ -1598,17 +1546,22 @@ export const chapter23 = {
               "say": "tuh"
             },
             {
-              "text": "A",
-              "say": "aaa"
+              "text": "E",
+              "say": "eh"
+            },
+            {
+              "text": "T",
+              "say": "tuh"
             }
           ],
           "target": [
-            "A",
+            "T",
+            "E",
             "N",
             "T"
           ],
           "readAloud": {
-            "targetText": "ant"
+            "targetText": "tent"
           }
         },
         {
@@ -1646,7 +1599,7 @@ export const chapter23 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 gift을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 gift를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "F",
@@ -1706,18 +1659,18 @@ export const chapter23 = {
           "kind": "finale",
           "scored": true,
           "hits": 2,
-          "instructionKo": "마지막 합체 공격! ANT! GIFT!",
+          "instructionKo": "마지막 합체 공격! TENT! GIFT!",
           "words": [
-            "ant",
+            "tent",
             "gift"
           ]
         }
       ],
-      "recapKo": "ANT와 GIFT, 단어 두 개를 만들었어요! 챕터 클리어!",
+      "recapKo": "TENT와 GIFT, 단어 두 개를 만들었어요! 챕터 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [
-          "ant",
+          "tent",
           "gift"
         ]
       }

@@ -70,7 +70,7 @@ export const chapter16 = {
         {
           "id": "c16s1-teach-149",
           "kind": "teach",
-          "instructionKo": "Sparkline가 T와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "Sparkline이 T와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "tuh"
@@ -249,7 +249,7 @@ export const chapter16 = {
           ]
         }
       ],
-      "recapKo": "T과 R 소리를 이어봤어요! train처럼요.",
+      "recapKo": "T와 R 소리를 이어봤어요! train처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -347,7 +347,7 @@ export const chapter16 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 R를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 R을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "R",
@@ -358,7 +358,7 @@ export const chapter16 = {
         {
           "id": "c16s2-break-180",
           "kind": "break",
-          "instructionKo": "T랑 R를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "T랑 R을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "rrr"
@@ -597,7 +597,7 @@ export const chapter16 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"fox\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"fox\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "fff",
           "options": [
             {
@@ -634,7 +634,7 @@ export const chapter16 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"rubber\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"rubber\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "rrr",
           "options": [
             {
@@ -768,7 +768,7 @@ export const chapter16 = {
         "AR",
         "ER"
       ],
-      "recapKo": "F과 R 소리를 이어봤어요! fries처럼요.",
+      "recapKo": "F와 R 소리를 이어봤어요! fries처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -829,7 +829,7 @@ export const chapter16 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"tie\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"tie\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "tuh",
           "options": [
             {
@@ -866,7 +866,7 @@ export const chapter16 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 R를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 R을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "R",
@@ -877,7 +877,7 @@ export const chapter16 = {
         {
           "id": "c16s4-break-226",
           "kind": "break",
-          "instructionKo": "F랑 R를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "F랑 R을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "rrr"
@@ -1325,7 +1325,7 @@ export const chapter16 = {
         {
           "id": "c16s5-teach-267",
           "kind": "teach",
-          "instructionKo": "Ironclad가 합체해요! 먼저 trap를 만들어요.",
+          "instructionKo": "Ironclad가 합체해요! 먼저 trap을 만들어요.",
           "repeatAudio": [
             "tuh",
             "rrr",
@@ -1393,7 +1393,7 @@ export const chapter16 = {
         {
           "id": "c16s5-break-270",
           "kind": "break",
-          "instructionKo": "이번엔 frog이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 frog가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "fff",
@@ -1613,7 +1613,7 @@ export const chapter16 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 frog을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 frog를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "R",
@@ -1680,7 +1680,7 @@ export const chapter16 = {
           ]
         }
       ],
-      "recapKo": "TRAP와 FROG를 만들었어요! 챕터 16 클리어!",
+      "recapKo": "TRAP과 FROG를 만들었어요! 챕터 16 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

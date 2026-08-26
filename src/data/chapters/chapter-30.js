@@ -158,7 +158,7 @@ export const chapter30 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "C와 L를 이어서 말하면 'CL' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "C와 L을 이어서 말하면 'CL' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "C",
@@ -190,7 +190,7 @@ export const chapter30 = {
           ]
         }
       ],
-      "recapKo": "C와 L를 이으면 'CL' 소리가 돼요! CLOUD처럼요!",
+      "recapKo": "C와 L을 이으면 'CL' 소리가 돼요! CLOUD처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -251,7 +251,7 @@ export const chapter30 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"bed\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"bed\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "buh",
           "options": [
             {
@@ -288,7 +288,7 @@ export const chapter30 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 C와 L를 따라 그리면서 두 소리를 이어보세요!",
+          "instructionKo": "손가락으로 C와 L을 따라 그리면서 두 소리를 이어보세요!",
           "words": [
             {
               "text": "C",
@@ -764,7 +764,7 @@ export const chapter30 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "F와 R를 이어서 말하면 'FR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "F와 R을 이어서 말하면 'FR' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "F",
@@ -796,7 +796,7 @@ export const chapter30 = {
           ]
         }
       ],
-      "recapKo": "F와 R를 이으면 'FR' 소리가 돼요! FROG처럼요!",
+      "recapKo": "F와 R을 이으면 'FR' 소리가 돼요! FROG처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -869,7 +869,7 @@ export const chapter30 = {
           "id": "c30s4-r1",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "CL와 FR 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
+          "instructionKo": "CL과 FR 소리를 다시 연습해요! 이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "kuh",
           "options": [
             {
@@ -1203,7 +1203,7 @@ export const chapter30 = {
           ]
         }
       ],
-      "recapKo": "CL와 FR를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapKo": "CL과 FR을 다시 연습했어요! 이제 합체할 준비 완료예요!",
       "recapAudio": {
         "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
         "en": [

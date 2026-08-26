@@ -51,7 +51,7 @@ export const chapter29 = {
           "repeatAudio": [
             "sss"
           ],
-          "instructionKo": "Sable가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "Sable이 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c29s1-r1",
@@ -760,7 +760,7 @@ export const chapter29 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "T와 R를 이어서 말하면 'TR' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "T와 R을 이어서 말하면 'TR' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "T",
@@ -788,7 +788,7 @@ export const chapter29 = {
           ]
         }
       ],
-      "recapKo": "T와 R를 이으면 'TR' 소리가 돼요! TREE처럼요!",
+      "recapKo": "T와 R을 이으면 'TR' 소리가 돼요! TREE처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -1195,7 +1195,7 @@ export const chapter29 = {
           ]
         }
       ],
-      "recapKo": "ST와 TR를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapKo": "ST와 TR을 다시 연습했어요! 이제 합체할 준비 완료예요!",
       "recapAudio": {
         "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
         "en": [
@@ -1266,7 +1266,7 @@ export const chapter29 = {
         {
           "id": "c29s5-teach",
           "kind": "teach",
-          "instructionKo": "Sable + Vex + Halcyon가 합체해요! 먼저 STAR를 만들어요.",
+          "instructionKo": "Sable + Vex + Halcyon이 합체해요! 먼저 STAR를 만들어요.",
           "repeatAudio": [
             "sss",
             "tuh",
@@ -1596,7 +1596,7 @@ export const chapter29 = {
           ]
         }
       ],
-      "recapKo": "S-T-AR는 STAR, T-R-EE는 TREE! 단어 두 개를 만들었어요! 챕터 29 클리어!",
+      "recapKo": "S-T-AR은 STAR, T-R-EE는 TREE! 단어 두 개를 만들었어요! 챕터 29 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

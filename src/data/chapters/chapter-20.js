@@ -70,7 +70,7 @@ export const chapter20 = {
         {
           "id": "c20s1-teach-737",
           "kind": "teach",
-          "instructionKo": "Gearspin가 S와 P 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "Gearspin이 S와 P 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -212,7 +212,7 @@ export const chapter20 = {
           ]
         }
       ],
-      "recapKo": "S과 P 소리를 이어봤어요! spin처럼요.",
+      "recapKo": "S와 P 소리를 이어봤어요! spin처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -273,7 +273,7 @@ export const chapter20 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"coat\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"coat\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "oh",
           "options": [
             {
@@ -694,7 +694,7 @@ export const chapter20 = {
         "AR",
         "ER"
       ],
-      "recapKo": "S과 K 소리를 이어봤어요! skip처럼요.",
+      "recapKo": "S와 K 소리를 이어봤어요! skip처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -755,7 +755,7 @@ export const chapter20 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"insect\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"insect\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ihh",
           "options": [
             {
@@ -1251,7 +1251,7 @@ export const chapter20 = {
         {
           "id": "c20s5-teach-845",
           "kind": "teach",
-          "instructionKo": "Titanvolt가 합체해요! 먼저 spin를 만들어요.",
+          "instructionKo": "Titanvolt가 합체해요! 먼저 spin을 만들어요.",
           "repeatAudio": [
             "sss",
             "puh",
@@ -1606,7 +1606,7 @@ export const chapter20 = {
           ]
         }
       ],
-      "recapKo": "SPIN와 SKIP를 만들었어요! 챕터 20 클리어!",
+      "recapKo": "SPIN과 SKIP을 만들었어요! 챕터 20 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

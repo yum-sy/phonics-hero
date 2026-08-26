@@ -249,7 +249,7 @@ export const chapter17 = {
           ]
         }
       ],
-      "recapKo": "C과 L 소리를 이어봤어요! cloud처럼요.",
+      "recapKo": "C와 L 소리를 이어봤어요! cloud처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -347,7 +347,7 @@ export const chapter17 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 L를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 L을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "L",
@@ -358,7 +358,7 @@ export const chapter17 = {
         {
           "id": "c17s2-break-327",
           "kind": "break",
-          "instructionKo": "C랑 L를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "C랑 L을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -762,7 +762,7 @@ export const chapter17 = {
         "AR",
         "ER"
       ],
-      "recapKo": "G과 L 소리를 이어봤어요! glue처럼요.",
+      "recapKo": "G와 L 소리를 이어봤어요! glue처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -823,7 +823,7 @@ export const chapter17 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"pie\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"pie\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "puh",
           "options": [
             {
@@ -860,7 +860,7 @@ export const chapter17 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 L를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 L을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "L",
@@ -871,7 +871,7 @@ export const chapter17 = {
         {
           "id": "c17s4-break-373",
           "kind": "break",
-          "instructionKo": "G랑 L를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "G랑 L을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -1319,7 +1319,7 @@ export const chapter17 = {
         {
           "id": "c17s5-teach-414",
           "kind": "teach",
-          "instructionKo": "BigTop가 합체해요! 먼저 clap를 만들어요.",
+          "instructionKo": "BigTop가 합체해요! 먼저 clap을 만들어요.",
           "repeatAudio": [
             "kuh",
             "lll",
@@ -1387,7 +1387,7 @@ export const chapter17 = {
         {
           "id": "c17s5-break-417",
           "kind": "break",
-          "instructionKo": "이번엔 glue이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 glue가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "guh",
@@ -1606,7 +1606,7 @@ export const chapter17 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 glue을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 glue를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "L",
@@ -1664,7 +1664,7 @@ export const chapter17 = {
           ]
         }
       ],
-      "recapKo": "CLAP와 GLUE를 만들었어요! 챕터 17 클리어!",
+      "recapKo": "CLAP과 GLUE를 만들었어요! 챕터 17 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

@@ -70,7 +70,7 @@ export const chapter21 = {
         {
           "id": "c21s1-teach-874",
           "kind": "teach",
-          "instructionKo": "Hopkin가 P와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "Hopkin이 P와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "puh"
@@ -212,7 +212,7 @@ export const chapter21 = {
           ]
         }
       ],
-      "recapKo": "P과 L 소리를 이어봤어요! plum처럼요.",
+      "recapKo": "P와 L 소리를 이어봤어요! plum처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -273,7 +273,7 @@ export const chapter21 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"bed\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"bed\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "buh",
           "options": [
             {
@@ -310,7 +310,7 @@ export const chapter21 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 L를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 L을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "L",
@@ -321,7 +321,7 @@ export const chapter21 = {
         {
           "id": "c21s2-break-900",
           "kind": "break",
-          "instructionKo": "P랑 L를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "P랑 L을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -560,7 +560,7 @@ export const chapter21 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"dog\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"dog\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "duh",
           "options": [
             {
@@ -597,7 +597,7 @@ export const chapter21 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"rubber\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"rubber\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "rrr",
           "options": [
             {
@@ -694,7 +694,7 @@ export const chapter21 = {
         "AR",
         "ER"
       ],
-      "recapKo": "D과 R 소리를 이어봤어요! drum처럼요.",
+      "recapKo": "D와 R 소리를 이어봤어요! drum처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -792,7 +792,7 @@ export const chapter21 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "손가락으로 R를 따라 그리면서 소리를 내보세요!",
+          "instructionKo": "손가락으로 R을 따라 그리면서 소리를 내보세요!",
           "words": [
             {
               "text": "R",
@@ -803,7 +803,7 @@ export const chapter21 = {
         {
           "id": "c21s4-break-943",
           "kind": "break",
-          "instructionKo": "D랑 R를 이어서 다시 외쳐볼까요?",
+          "instructionKo": "D랑 R을 이어서 다시 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "rrr"
@@ -1251,7 +1251,7 @@ export const chapter21 = {
         {
           "id": "c21s5-teach-984",
           "kind": "teach",
-          "instructionKo": "Megashroom가 합체해요! 먼저 plum를 만들어요.",
+          "instructionKo": "Megashroom이 합체해요! 먼저 plum을 만들어요.",
           "repeatAudio": [
             "puh",
             "lll",
@@ -1606,7 +1606,7 @@ export const chapter21 = {
           ]
         }
       ],
-      "recapKo": "PLUM와 DRUM를 만들었어요! 챕터 21 클리어!",
+      "recapKo": "PLUM과 DRUM을 만들었어요! 챕터 21 클리어! 월드 3 완성!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [

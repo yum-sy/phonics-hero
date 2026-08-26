@@ -1,4 +1,4 @@
-// Chapter 31 (카봇 theme): consonant blends TW + SN -> boss words "TWIN" + "SNAP". No new Jolly phonemes -- all 42
+// Chapter 31 (카봇 theme): consonant blends TW + SN -> boss words "TWIG" + "SNAP". No new Jolly phonemes -- all 42
 // sounds finished at chapter 14; this is a pure blend/cumulative-review chapter
 // per the world-5 brief (leader-assigned art family: 카봇).
 //
@@ -19,7 +19,8 @@
 //
 // Boss word slot decomposition (all letters/digraphs verified against
 // SOUND_TABLE before writing):
-//   TWIN = T+W+I+N
+//   TWIG = T+W+I+G (originally TWIN, changed to avoid a duplicate boss word
+//   with chapter-28's TWIN -- leader QA audit, 2026-08)
 //   SNAP = S+N+A+P
 
 export const chapter31 = {
@@ -173,10 +174,10 @@ export const chapter31 = {
               "say": "ihh"
             },
             {
-              "text": "N",
-              "say": "nnn"
+              "text": "G",
+              "say": "guh"
             },
-            "twin"
+            "twig"
           ]
         },
         {
@@ -186,17 +187,17 @@ export const chapter31 = {
           "hits": 1,
           "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
           "words": [
-            "twin"
+            "twig"
           ]
         }
       ],
-      "recapKo": "T와 W를 이으면 'TW' 소리가 돼요! TWIN처럼요!",
+      "recapKo": "T와 W를 이으면 'TW' 소리가 돼요! TWIG처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
           "tuh",
           "weh",
-          "twin"
+          "twig"
         ]
       }
     },
@@ -251,7 +252,7 @@ export const chapter31 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"bee\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"bee\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "buh",
           "options": [
             {
@@ -576,17 +577,17 @@ export const chapter31 = {
           "hits": 1,
           "instructionKo": "마지막 공격! 이 소리로 크게 외쳐보세요!",
           "words": [
-            "twin"
+            "twig"
           ]
         }
       ],
-      "recapKo": "TW 소리를 다시 연습했어요! 이제 TWIN를 잘 만들 수 있어요.",
+      "recapKo": "TW 소리를 다시 연습했어요! 이제 TWIG을 잘 만들 수 있어요.",
       "recapAudio": {
         "ko": "다시 연습했어요. 잘 들어보세요.",
         "en": [
           "tuh",
           "weh",
-          "twin"
+          "twig"
         ]
       }
     },
@@ -685,7 +686,7 @@ export const chapter31 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"horse\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"horse\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "huh",
           "options": [
             {
@@ -764,7 +765,7 @@ export const chapter31 = {
           "kind": "listen-repeat",
           "scored": true,
           "hits": 1,
-          "instructionKo": "S와 N를 이어서 말하면 'SN' 소리가 돼요! 천천히 따라 말해보세요.",
+          "instructionKo": "S와 N을 이어서 말하면 'SN' 소리가 돼요! 천천히 따라 말해보세요.",
           "words": [
             {
               "text": "S",
@@ -796,7 +797,7 @@ export const chapter31 = {
           ]
         }
       ],
-      "recapKo": "S와 N를 이으면 'SN' 소리가 돼요! SNAP처럼요!",
+      "recapKo": "S와 N을 이으면 'SN' 소리가 돼요! SNAP처럼요!",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -1188,7 +1189,7 @@ export const chapter31 = {
           "hits": 1,
           "instructionKo": "단어를 하나씩 따라 말해보세요!",
           "words": [
-            "twin",
+            "twig",
             "snap"
           ]
         },
@@ -1199,11 +1200,11 @@ export const chapter31 = {
           "hits": 1,
           "instructionKo": "마지막 공격! 큰 소리로 말해보세요!",
           "words": [
-            "twin"
+            "twig"
           ]
         }
       ],
-      "recapKo": "TW와 SN를 다시 연습했어요! 이제 합체할 준비 완료예요!",
+      "recapKo": "TW와 SN을 다시 연습했어요! 이제 합체할 준비 완료예요!",
       "recapAudio": {
         "ko": "두 블렌드를 다시 연습했어요. 이제 준비됐어요.",
         "en": [
@@ -1215,7 +1216,7 @@ export const chapter31 = {
     {
       "id": "c31s5",
       "order": 5,
-      "title": "Boss: TWIN and SNAP!",
+      "title": "Boss: TWIG and SNAP!",
       "villain": {
         "name": "Voltrust",
         "art": "voltrust",
@@ -1274,13 +1275,13 @@ export const chapter31 = {
         {
           "id": "c31s5-teach",
           "kind": "teach",
-          "instructionKo": "Torque + Skidder + Ratchett가 합체해요! 먼저 TWIN를 만들어요.",
+          "instructionKo": "Torque + Skidder + Ratchett가 합체해요! 먼저 TWIG을 만들어요.",
           "repeatAudio": [
             "tuh",
             "weh",
             "ihh",
-            "nnn",
-            "twin"
+            "guh",
+            "twig"
           ]
         },
         {
@@ -1302,15 +1303,15 @@ export const chapter31 = {
               "say": "ihh"
             },
             {
-              "text": "N",
-              "say": "nnn"
+              "text": "G",
+              "say": "guh"
             }
           ],
           "target": [
             "T",
             "W",
             "I",
-            "N"
+            "G"
           ]
         },
         {
@@ -1333,10 +1334,10 @@ export const chapter31 = {
               "say": "ihh"
             },
             {
-              "text": "N",
-              "say": "nnn"
+              "text": "G",
+              "say": "guh"
             },
-            "twin"
+            "twig"
           ]
         },
         {
@@ -1501,8 +1502,8 @@ export const chapter31 = {
           "instructionKo": "이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.",
           "letters": [
             {
-              "text": "N",
-              "say": "nnn"
+              "text": "G",
+              "say": "guh"
             },
             {
               "text": "I",
@@ -1521,10 +1522,10 @@ export const chapter31 = {
             "T",
             "W",
             "I",
-            "N"
+            "G"
           ],
           "readAloud": {
-            "targetText": "twin"
+            "targetText": "twig"
           }
         },
         {
@@ -1537,24 +1538,24 @@ export const chapter31 = {
             {
               "id": "c31s5-w1",
               "icon": "letterTile",
-              "label": "WINT",
+              "label": "WIGT",
               "correct": false
             },
             {
               "id": "c31s5-w2",
               "icon": "letterTile",
-              "label": "INTW",
+              "label": "IGTW",
               "correct": false
             },
             {
               "id": "c31s5-w3",
               "icon": "letterTile",
-              "label": "TWIN",
+              "label": "TWIG",
               "correct": true
             }
           ],
           "readAloud": {
-            "targetText": "twin"
+            "targetText": "twig"
           }
         },
         {
@@ -1562,7 +1563,7 @@ export const chapter31 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 SNAP를 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 SNAP을 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "P",
@@ -1622,18 +1623,18 @@ export const chapter31 = {
           "kind": "finale",
           "scored": true,
           "hits": 2,
-          "instructionKo": "마지막 합체 공격! TWIN! SNAP!",
+          "instructionKo": "마지막 합체 공격! TWIG! SNAP!",
           "words": [
-            "twin",
+            "twig",
             "snap"
           ]
         }
       ],
-      "recapKo": "T-W-I-N는 TWIN, S-N-A-P는 SNAP! 단어 두 개를 만들었어요! 챕터 31 클리어!",
+      "recapKo": "T-W-I-G는 TWIG, S-N-A-P는 SNAP! 단어 두 개를 만들었어요! 챕터 31 클리어!",
       "recapAudio": {
         "ko": "단어 두 개를 만들었어요! 잘 들어보세요.",
         "en": [
-          "twin",
+          "twig",
           "snap"
         ]
       }

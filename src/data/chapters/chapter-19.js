@@ -121,7 +121,7 @@ export const chapter19 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"nose\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"nose\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "nnn",
           "options": [
             {
@@ -310,7 +310,7 @@ export const chapter19 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"bee\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"bee\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "ee",
           "options": [
             {
@@ -546,7 +546,7 @@ export const chapter19 = {
         {
           "id": "c19s3-teach-639",
           "kind": "teach",
-          "instructionKo": "Bastion가 F와 T 소리를 나란히 들려줘요! 단어 끝에서 나요.",
+          "instructionKo": "Bastion이 F와 T 소리를 나란히 들려줘요! 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "fff"
@@ -597,7 +597,7 @@ export const chapter19 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "\"fox\"과 같은 소리로 시작하는 걸 찾아보세요!",
+          "instructionKo": "\"fox\"와 같은 소리로 시작하는 걸 찾아보세요!",
           "promptAudio": "fff",
           "options": [
             {
@@ -768,7 +768,7 @@ export const chapter19 = {
         "AR",
         "ER"
       ],
-      "recapKo": "F과 T 소리를 이어봤어요! gift처럼요.",
+      "recapKo": "F와 T 소리를 이어봤어요! gift처럼요.",
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
@@ -1393,7 +1393,7 @@ export const chapter19 = {
         {
           "id": "c19s5-break-711",
           "kind": "break",
-          "instructionKo": "이번엔 gift이에요! 함께 외쳐볼까요?",
+          "instructionKo": "이번엔 gift가에요! 함께 외쳐볼까요?",
           "art": "hero",
           "repeatAudio": [
             "guh",
@@ -1613,7 +1613,7 @@ export const chapter19 = {
           "kind": "drag-build",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이제 gift을 만들어요! 순서대로 옮겨보세요.",
+          "instructionKo": "이제 gift를 만들어요! 순서대로 옮겨보세요.",
           "letters": [
             {
               "text": "I",
