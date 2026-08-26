@@ -744,6 +744,14 @@
   }
 
   async function run() {
+    // ?unlock=1 marks every stage cleared before the shot runs, so a
+    // clickStage()/isolate() shot can reach a stage past
+    // HAND_AUTHORED_MAX_CHAPTER_ORDER-worth of progression even with
+    // DEV_UNLOCK_ALL off (state.js, deliberately off so it doesn't leak into
+    // an on-device build). Diagnostic-only: real progression is never
+    // touched, this mutates only the in-memory stage list this probe run
+    // imported.
+    if (params.get('unlock')) __allStages.forEach((s) => markStageCleared(s.id, 3))
     if (params.get('css')) cssOverride(params.get('css'))
     if (params.get('nat')) naturalMode()
     // ?iso=<stageId>:<kind>[:nth] isolates any beat in the curriculum without

@@ -75,11 +75,28 @@ body {
   color: var(--text);
   font-family: -apple-system, 'SF Pro Rounded', 'Apple SD Gothic Neo', system-ui,
     sans-serif;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-    env(safe-area-inset-bottom) env(safe-area-inset-left);
   user-select: none;
 }
 
+/* The safe-area padding used to live here, on `body`, one level above
+   #app's own `min-height: 100svh`. That stacked two independent height
+   claims: body became >=100svh and THEN grew by the inset padding on top of
+   that, so on an iPad Pro (Face ID, no home button -- `viewport-fit=cover`
+   in index.html makes Safari report a real, non-zero
+   safe-area-inset-bottom for the home-indicator strip even in a plain
+   browser tab, not just an installed PWA) the document became exactly
+   safe-area-inset-bottom taller than the viewport. That is the "scrolls by
+   exactly the blue strip at the bottom" defect reported on-device --
+   invisible to any headless-Chrome measurement, because headless Chrome has
+   no notion of a device safe area and always reports the inset as 0.
+   The inset now lives on `.screen` instead (below), skipping `body` and
+   `#app` entirely: neither has a background of its own, so parking the
+   padding on either one would still have left the safe-area gutter painted
+   in `body`'s plain `--bg` blue -- no longer scrolling, but still the
+   "yellow rectangle with a blue margin" look reported on-device. Each
+   `.screen` variant carries its own flat colour (yellow/cream/etc.), so its
+   own padding is the one place the inset can go where that colour paints
+   all the way to the physical edge and only the CONTENT gets pushed in. */
 #app {
   min-height: 100svh;
   display: flex;
@@ -101,8 +118,17 @@ button {
   margin: 0 auto;
   /* Trimmed from 16/20 to 10/14: on a portrait iPad the stage screen spends
      432px of its 1194px on chrome before any learning content, so every
-     non-text pixel here is one the letters and words do not get. */
-  padding: 10px 20px 14px;
+     non-text pixel here is one the letters and words do not get.
+     The env() terms are the device safe-area inset (see the #app comment
+     above) -- added on top of the existing UI padding with `+`, not
+     replacing it, so content still keeps its old clearance from the edge
+     even where the inset is 0 (every device without a home-indicator
+     gesture bar). `max-width: 800px` caps `.screen` well inside a portrait
+     iPad's width, so the left/right insets only ever matter on a narrower
+     device. */
+  padding: calc(10px + env(safe-area-inset-top))
+    calc(20px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom))
+    calc(20px + env(safe-area-inset-left));
 }
 
 /* Each screen gets its own colour field -- flat, saturated, cartoon. */
@@ -1519,7 +1545,12 @@ button {
 @media (orientation: landscape) and (max-height: 900px) {
   .screen {
     max-width: 1080px;
-    padding: 12px 24px 16px;
+    /* Same `+ env()` composition as the base rule (see its comment) --
+       landscape does not drop the safe-area inset, it just starts from a
+       different UI-padding baseline. */
+    padding: calc(12px + env(safe-area-inset-top))
+      calc(24px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom))
+      calc(24px + env(safe-area-inset-left));
   }
 
   /* Map: lay stage nodes out in a wrapping row instead of one tall
