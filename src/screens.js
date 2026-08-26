@@ -2140,6 +2140,7 @@ function renderReward(runtime) {
       <button class="primary-btn" id="back-to-map">◀ Back to Map</button>
     </div>
   `
+  fitRecapLine()
   // recapKo now has plain English letters/words mixed into the Korean
   // explanation (deliberate -- environmental print on screen), so speaking
   // *that* string with speakKO would read the English through a Korean
@@ -2153,4 +2154,36 @@ function renderReward(runtime) {
       const chapter = getChapterForStage(stage.id)
       renderMap(chapter.id)
     })
+}
+
+// The reward screen is the one place the app's "no scroll, ever" rule was
+// broken on a real device: chapter 33's final recapKo (108 chars) wrapped to
+// 6 lines and overflowed the viewport by 225px, while chapter 4's 104-char
+// recapKo -- only 4 characters shorter -- wraps to 3 lines and fits with
+// room to spare (measured: 432px vs 216px). Wrapping of mixed Korean/English
+// text is not linear in character count, so a static font-size formula
+// keyed on length (the `.beat-equation` pattern) cannot be trusted to
+// predict every future recapKo's line count -- it would either undersize
+// short recaps to survive a worst case that hasn't been written yet, or
+// stay wrong the next time someone writes a long one. Measuring the actual
+// rendered overflow after layout and shrinking until it is gone is the only
+// thing that is correct for every string, not just the ones on hand today.
+// Runs once per reward screen (never in a hot loop), so a handful of
+// synchronous reflows cost nothing noticeable.
+function fitRecapLine() {
+  const recap = document.querySelector('.recap-line')
+  if (!recap) return
+  const de = document.documentElement
+  // 28px, not the CSS clamp's existing 30/40px floor: this is a last-resort
+  // safety net for text nobody has measured yet, so it is allowed to go
+  // slightly smaller than the floor tuned for known content.
+  const FLOOR_PX = 28
+  let fontSize = parseFloat(getComputedStyle(recap).fontSize)
+  for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
+    const overflowY =
+      Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight
+    if (overflowY <= 0) break
+    fontSize -= 2
+    recap.style.fontSize = `${fontSize}px`
+  }
 }

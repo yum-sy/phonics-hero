@@ -95,7 +95,16 @@
     } catch {}
     return await import('/src/data/chapters/index.js')
   }
-  const { getStageById } = await dataModule()
+  const { getStageById, stages: __allStages } = await dataModule()
+  async function stateModule() {
+    try {
+      const src = await (await fetch('/src/screens.js')).text()
+      const m = src.match(/from\s+['"]([^'"]*state\.js[^'"]*)['"]/)
+      if (m) return await import(new URL(m[1], location.origin + '/src/').href)
+    } catch {}
+    return await import('/src/state.js')
+  }
+  const { markStageCleared } = await stateModule()
 
   // Stage ids carry the chapter number as a `cN` prefix (bare `stage-N` ids
   // are legacy chapter-1). Generalized so new chapters don't need a new
@@ -168,6 +177,38 @@
     boss4: () => clickStage('chapter-4', 4),
     boss4after: async () => { await clickStage('chapter-4', 4); await wait(1700); await dismissIntro() },
     reward4: () => emptyStage('c4-stage-1'),
+    // The reward screen's only real-world scroll report (QA, on-device):
+    // chapter 33's final-boss recapKo is 108 characters and wraps to 6
+    // lines, overflowing the viewport by 225px. reward33 is that exact
+    // stage's reward screen; reward4d is a 104-character recapKo (chapter
+    // 4's stage 4) that wraps to only 3 lines despite being nearly as long
+    // -- word-wrap of mixed Korean/English text is not linear in character
+    // count, so both ends of that gap need their own shot rather than
+    // trusting one to stand in for the other. Both are chapters past
+    // HAND_AUTHORED_MAX_CHAPTER_ORDER-worth of progression, and
+    // DEV_UNLOCK_ALL is off (see state.js), so the target stage's node is
+    // locked on a fresh load -- mark every other stage cleared first so
+    // clickStage() can actually reach it.
+    reward4d: async () => {
+      __allStages.forEach((s) => { if (s.id !== 'c4-stage-4') markStageCleared(s.id, 3) })
+      await emptyStage('c4-stage-4')
+    },
+    reward33: async () => {
+      __allStages.forEach((s) => { if (s.id !== 'c33s5') markStageCleared(s.id, 3) })
+      const stage = getStageById('c33s5')
+      stage.beats = []
+      // withGeneratedReview() (screens.js) splices in a review beat whenever
+      // stage.reviewTargets exists and chapter.order > 8, even after beats
+      // was just emptied above -- chapter 33 has reviewTargets, so without
+      // this it would still render a choose-sequence instead of jumping
+      // straight to the reward screen. Only affects this in-memory probe
+      // run, never the real app (chapters/index.js's own stage object).
+      stage.reviewTargets = null
+      await clickStage('chapter-33', 4)
+      await wait(1700)
+      if (document.getElementById('boss-intro')) await dismissIntro()
+      await wait(300)
+    },
     // Chapters 5-7 had no coverage at all, so a layout regression in the
     // newest three chapters' art families could not be measured. An
     // unknown shot renders nothing and still reports NOSCROLL gap=100%,
@@ -412,6 +453,8 @@
     // redistributed into the sprites and into slack for the victory pose.
     reward1: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     reward4: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    reward4d: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    reward33: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     victory: { has: ['.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     // #boss-intro-hint is `visibility:hidden` until the invite timer fires,
     // and the visibility filter is what makes requiring it meaningful: this

@@ -1498,10 +1498,11 @@ button {
 .recap-line {
   font-size: clamp(40px, 5.03svh, 60px);
   color: var(--text);
-  /* Widened from 560px: the recap is the longest Korean sentence in the app
-     and at 560px it ran to four lines (216px). The extra width takes it to
-     three at exactly the same font size -- 54px reclaimed for nothing. */
-  max-width: 700px;
+  /* Widened from 560px -> 700px -> 760px (the screen's own content-box
+     ceiling: .screen is 800px max-width minus its 20px side padding). Wider
+     is strictly better here since it gives long recapKo strings more room
+     per line before fitRecapLine() (screens.js) has to shrink the font. */
+  max-width: 760px;
   margin: 0;
 }
 
