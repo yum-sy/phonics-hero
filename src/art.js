@@ -1384,6 +1384,18 @@ export function heroArt(heroOrName) {
   return resolveArt(heroOrName, HERO_PALETTES, HERO_STYLES)
 }
 
+// Looks up a hero's emblem without rendering its SVG -- used by the boss
+// combine-intro to tell "two different characters teaching the same sound"
+// apart from "two different characters teaching two different sounds"
+// (a chapter's non-boss heroes aren't 1:1 with its taught sounds: a sound
+// can span 2 stages that either share one hero or use two, so hero identity
+// alone can't answer "how many distinct things does this chapter combine").
+export function heroEmblem(heroOrName) {
+  const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
+  const entry = HERO_PALETTES[spec.art] || HERO_PALETTES[spec.name] || {}
+  return entry.emblem
+}
+
 export function villainArt(heroOrName) {
   return resolveArt(heroOrName, VILLAIN_PALETTES, VILLAIN_STYLES)
 }
