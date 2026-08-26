@@ -93,13 +93,7 @@ function nextId(prefix) {
 
 const ICONS = {
   sun: () => photoIcon('sun'),
-  snake: () =>
-    wrap(`
-      <path d="M10 20 Q10 8 22 8 Q34 8 34 18 Q34 28 22 28 Q14 28 14 34 Q14 44 26 44 Q46 44 46 30"
-        fill="none" stroke="#3b9922" stroke-width="9" stroke-linecap="round"/>
-      <polygon points="46,30 58,26 58,34" fill="#e24b4a"/>
-      <circle cx="22" cy="10" r="2.4" fill="#161615"/>
-    `),
+  snake: () => photoIcon('snake'),
 
   dog: () => photoIcon('dog'),
   // Flashcard-style redraw (2026-08 icon prototype round): a real tube sock
@@ -154,65 +148,20 @@ const ICONS = {
       <circle cx="46" cy="48" r="3" fill="#b8b8b8"/>
     `),
 
-  // Round 3 redraw against 4 user-supplied ant-clipart photos (classic
-  // red ant, an "A is for Ant" card, a blue variant, a b/w silhouette).
-  // Round 2 was rejected as spider/goat-like for two specific reasons the
-  // references make obvious: the antennae were straight zigzag segments
-  // (read as horns) instead of one smooth insect-antenna curve, and the
-  // thorax circle (r=7.6) was drawn BIGGER than the head (r=6.4) -- the
-  // opposite of a wasp-waist pinch, so the "waist" never read as a waist.
-  // Also the legs kept diverging outward past the knee instead of bending
-  // back toward the body, which is what made them look like spread/splayed
-  // spider legs rather than legs supporting the body from below. Fixed
-  // all three: thorax is now clearly the smallest of the three lobes
-  // (head 6.4 > thorax 5.0 < abdomen 16x12.8, abdomen still the largest as
-  // every reference shows), antennae are single Q-curves with no angle
-  // break, and each leg's second segment bends back toward the midline
-  // instead of continuing outward, so the stance reads as "legs bent under
-  // the body" instead of "legs planted wide".
-  // Round 3 redraw. Rejected again as an all-#2c2c2a silhouette (same black
-  // as `insect`'s outline strokes and most other line-art) with legs thinner
-  // than the antennae -- at button size it read as a scribble, not a bug.
-  // This one gives the body a warm rust-brown fill (real ants read
-  // red-brown/black in picture books, not pure ink-black) with a lighter
-  // highlight patch per segment for the layered-shading convention, a much
-  // bigger cartoon eye with a white catch-light, visible mandible, and
-  // fewer/thicker legs so the silhouette reads as three body blobs + bent
-  // legs at 150px instead of dissolving into thin lines.
-  ant: () =>
-    wrap(`
-      <ellipse cx="43" cy="35" rx="17" ry="12.6" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
-      <path d="M35 28 Q43 24 51 29 Q45 31 35 28 Z" fill="#a5502a" opacity="0.8"/>
-      <circle cx="24" cy="30" r="7.4" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
-      <path d="M19 26 Q24 23 29 27 Q24 28 19 26 Z" fill="#a5502a" opacity="0.8"/>
-      <circle cx="11" cy="26" r="6.8" fill="#7a3319" stroke="#2c2c2a" stroke-width="2.6"/>
-      <path d="M6 22 Q11 20 16 23" fill="none" stroke="#a5502a" stroke-width="2.4" stroke-linecap="round" opacity="0.8"/>
-      <path d="M8 21 Q3 11 7 3" fill="none" stroke="#2c2c2a" stroke-width="3.2" stroke-linecap="round"/>
-      <path d="M14 20 Q19 10 26 5" fill="none" stroke="#2c2c2a" stroke-width="3.2" stroke-linecap="round"/>
-      <circle cx="7" cy="3" r="2.2" fill="#2c2c2a"/>
-      <circle cx="26" cy="5" r="2.2" fill="#2c2c2a"/>
-      <path d="M4 27 L11 31 L4 33 Z" fill="#2c2c2a"/>
-      <circle cx="9" cy="24" r="3.4" fill="#f5f2ea"/>
-      <circle cx="8.3" cy="24" r="1.6" fill="#2c2c2a"/>
-      <g stroke="#2c2c2a" stroke-width="5.2" stroke-linecap="round" fill="none">
-        <path d="M20 33 L12 42 L15 53"/>
-        <path d="M31 37 L33 48 L29 58"/>
-        <path d="M46 40 L55 48 L53 59"/>
-      </g>
-    `),
+  // 2026-08-26: replaced with a photo crop (two overlapping clipart ants,
+  // maroon + brown, cropped as a single cluster from a licensed insect
+  // flashcard sheet) -- see scripts/crop-icon-photos.py's "ant" entry.
+  // Superseded the hand-drawn SVG below (kept redraws never passed review
+  // through three rounds -- history retained for context on what was
+  // already tried and rejected).
+  ant: () => photoIcon('ant'),
 
   apple: () => photoIcon('apple'),
-  // User: "top은 그냥 원래 이미지로 돌아가자" -- round 2's disc-over-cone
-  // redesign read as a mushroom/umbrella, not a spinning top. Reverted to
-  // the original triangle-body top verbatim.
-  top: () =>
-    wrap(`
-      <polygon points="16,12 48,12 40,46 24,46" fill="#534ab7"/>
-      <rect x="16" y="12" width="32" height="9" fill="#f4c95d"/>
-      <rect x="16" y="26" width="32" height="6" fill="#eafcff"/>
-      <polygon points="24,46 40,46 32,58" fill="#26215c"/>
-      <rect x="28" y="4" width="8" height="10" rx="2" fill="#26215c"/>
-    `),
+  // 2026-08-26: replaced with a photo crop (rotation motion-lines kept) --
+  // see scripts/crop-icon-photos.py's "top" entry. History above (why the
+  // hand-drawn triangle body beat a disc-over-cone redesign) kept for
+  // context on the prior art before the photo switch.
+  top: () => photoIcon('top'),
 
   // Round 2 redraw. Round 1 kept the same "handle block + spout block"
   // skeleton and was rejected as unclear. This one leads with a much
@@ -240,18 +189,12 @@ const ICONS = {
 
   // -- Group 1 remainder: I / P / N (chapter 2) --
 
-  // The spilled puddle and falling drop carry the "ink" reading; the bottle
-  // alone would just read as a jar at 60px.
-  ink: () =>
-    wrap(`
-      <ellipse cx="34" cy="56" rx="20" ry="5" fill="#0c447c"/>
-      <ellipse cx="14" cy="52" rx="5" ry="4" fill="#0c447c"/>
-      <rect x="16" y="24" width="32" height="28" rx="6" fill="#eafcff"/>
-      <path d="M16 34 H48 V46 Q48 52 42 52 H22 Q16 52 16 46 Z" fill="#0c447c"/>
-      <rect x="26" y="14" width="12" height="12" fill="#eafcff"/>
-      <rect x="22" y="6" width="20" height="10" rx="3" fill="#2c2c2a"/>
-      <rect x="20" y="26" width="24" height="6" rx="3" fill="#b8b8b8"/>
-    `),
+  // 2026-08-26: replaced with a photo crop (ink bottle + highlighter
+  // marker, both kept -- see scripts/crop-icon-photos.py's "ink" entry,
+  // note keep_largest=False there since the two are disconnected shapes).
+  // History above (why the spilled-puddle reading mattered) kept for
+  // context on the prior hand-drawn art.
+  ink: () => photoIcon('ink'),
 
   // Round 2 redraw. Thin light-gray brick lines (stroke 2.5, #b8b8b8) washed
   // out at button size, and the arch reused ink's exact navy (#0c447c) --
@@ -561,23 +504,11 @@ const ICONS = {
   // the bow loops and the vertical+horizontal ribbon cross are the shapes
   // that make it read as "present" rather than "box" at 60px.
   gift: () => photoIcon('gift'),
-  // A stick of gum sliding out of a torn wrapper. Two earlier drafts failed:
-  // a blue wrapped stick was an unreadable object, and bare pink slabs read
-  // as an eraser. The wrapper is what names the object and the pink is what
-  // names it as gum, so both have to be visible at once -- hence the zigzag
-  // torn edge with the gum emerging past it. Slabs, never spheres: gumballs
-  // would collide with `ball`. No bow and a diagonal stick shape keep it
-  // clear of `gift`'s upright knotted box.
-  gum: () =>
-    wrap(`
-      <g transform="rotate(-20 32 32)">
-        <rect x="16" y="23" width="42" height="18" rx="5" fill="#f0a0b4"/>
-        <rect x="24" y="26" width="32" height="5" rx="2.5" fill="#f9d3de"/>
-        <path d="M6 21 H32 L27 26 L32 32 L27 37 L32 43 H6 Q2 43 2 39 V25 Q2 21 6 21 Z"
-          fill="#dfe4e8" stroke="#b8b8b8" stroke-width="1.2"/>
-        <rect x="3" y="28" width="26" height="8" fill="#378add"/>
-      </g>
-    `),
+  // 2026-08-26: replaced with a photo crop (a "BUBBLE GUM" package, caption
+  // word excluded from the crop -- see scripts/crop-icon-photos.py's "gum"
+  // entry). History above (why a package beats a bare stick/slab) kept for
+  // context on the prior hand-drawn art.
+  gum: () => photoIcon('gum'),
 
   // A real octopus has eight arms, so all eight are drawn. Two things make
   // them survive 60px. Arm tips are spread on an even arc by computation --
@@ -625,22 +556,11 @@ const ICONS = {
     `)
   },
 
-  // One continuous limb: the thigh and shin are two overlapping strokes of
-  // the SAME color, so the knee bend has no seam -- an earlier version built
-  // it from a rect, a circle joint and an offset rect and read as a broken
-  // leg. The thigh stroke is wider than the shin to give a natural taper.
-  // Shorts and a shoe (not five fingers) keep it clear of `hand`.
-  leg: () =>
-    wrap(`
-      <g fill="none" stroke="#e0a273" stroke-linecap="round">
-        <path d="M31 13 L32 31" stroke-width="18"/>
-        <path d="M32 28 Q32 39 35 46" stroke-width="13"/>
-      </g>
-      <rect x="19" y="2" width="24" height="17" rx="5" fill="#378add"/>
-      <path d="M29 43 Q35 45 41 43 L41 48 Q35 50 29 48 Z" fill="#f5f2ea"/>
-      <path d="M29 46 H38 Q42 46 44 51 L53 55 Q56 57 53 59 H32 Q28 59 28 54 Z" fill="#2c2c2a"/>
-      <rect x="27" y="57" width="29" height="3.4" rx="1.7" fill="#b8b8b8"/>
-    `),
+  // 2026-08-26: replaced with a photo crop -- see
+  // scripts/crop-icon-photos.py's "leg" entry. History above (the
+  // continuous-limb no-seam construction) kept for context on the prior
+  // hand-drawn art.
+  leg: () => photoIcon('leg'),
 
   // Round 2 redraw. Round 1 kept an ellipse-body-plus-triangle-tail skeleton
   // and only added surface texture, which read as the same silhouette.
@@ -772,28 +692,12 @@ const ICONS = {
   // the chip silhouette, which is always square. Deliberately cool
   // indigo/cyan while `map` is warm gold parchment -- the two /m/ pictures
   // can appear in the same multiselect.
-  mat: () => {
-    const fringe = (y, dir) => {
-      let d = `M8 ${y}`
-      for (let i = 0; i < 10; i++) {
-        const x2 = (8 + (i + 1) * 4.8).toFixed(1)
-        d += ` A2.4 2.4 0 0 ${dir} ${x2} ${y}`
-      }
-      return d
-    }
-    return wrap(`
-      <path d="${fringe(16, 0)}" fill="none" stroke="#26215c" stroke-width="2.2"/>
-      <path d="${fringe(48, 1)}" fill="none" stroke="#26215c" stroke-width="2.2"/>
-      <rect x="8" y="16" width="48" height="32" rx="4" fill="#534ab7"/>
-      <rect x="8" y="16" width="48" height="32" rx="4" fill="none" stroke="#26215c" stroke-width="2.6"/>
-      <rect x="13" y="21" width="38" height="22" rx="2" fill="none" stroke="#5dd6e0" stroke-width="2"/>
-      <g fill="#5dd6e0">
-        <polygon points="20,26 25,32 20,38 15,32"/>
-        <polygon points="32,26 37,32 32,38 27,32"/>
-        <polygon points="44,26 49,32 44,38 39,32"/>
-      </g>
-    `)
-  },
+  // 2026-08-26: replaced with a photo crop (a checkered picnic-mat
+  // illustration, its green grass backdrop flood-filled away -- see
+  // scripts/crop-icon-photos.py's "mat" entry). History above (why the
+  // rebuild avoided a chip-package silhouette) kept for context on the
+  // prior hand-drawn art.
+  mat: () => photoIcon('mat'),
 
   // Treasure map: torn parchment edge, a green island, a dashed route and a
   // planted flag. The flag replaces the conventional X mark on purpose -- an
@@ -962,26 +866,12 @@ const ICONS = {
   // (same one-path-with-a-real-hole technique the `key` icon uses for its
   // bow), so the loop you'd hook a finger through is actual background,
   // not just a paler fill -- round 1's handle had no such hole.
-  jug: () => {
-    const clipId = nextId('jug-clip')
-    const body =
-      'M22 8 L18 16 Q10 22 8 32 Q6 42 10 50 Q14 58 32 58 Q50 58 52 46 Q54 34 46 24 Q40 18 38 8 Z'
-    const handle = 'M46 20 Q60 22 60 34 Q60 46 48 49 L47 44 Q56 42 56 34 Q56 26 45 24 Z'
-    return wrap(`
-      <path d="${handle}" fill="#256614"/>
-      <path d="${handle}" fill="none" stroke="#1c4d10" stroke-width="1.2"/>
-      <clipPath id="${clipId}"><path d="${body}"/></clipPath>
-      <path d="${body}" fill="#3b9922"/>
-      <g clip-path="url(#${clipId})">
-        <path d="M6 42 Q10 54 32 56 Q50 54 52 44 Q48 54 32 55 Q12 54 8 40 Z" fill="#256614"/>
-        <path d="M14 14 Q9 24 8 34" fill="none" stroke="#5fce3a" stroke-width="3.4" stroke-linecap="round" opacity="0.65"/>
-        <ellipse cx="34" cy="34" rx="24" ry="16" fill="#ffffff" opacity="0.08"/>
-      </g>
-      <path d="${body}" fill="none" stroke="#1c4d10" stroke-width="2.6" stroke-linejoin="round"/>
-      <path d="M18 16 Q24 10 30 12 Q26 16 22 20 Z" fill="#3b9922" stroke="#1c4d10" stroke-width="2" stroke-linejoin="round"/>
-      <ellipse cx="30" cy="9" rx="9" ry="3.4" fill="#eafcff" stroke="#1c4d10" stroke-width="2"/>
-    `)
-  },
+  // 2026-08-26: replaced with a photo crop (a pitcher/jug illustration, its
+  // circular decorative badge cropped away -- see
+  // scripts/crop-icon-photos.py's "jug" entry). History above (the bulbous-
+  // belly, hole-through-the-handle construction) kept for context on the
+  // prior hand-drawn art.
+  jug: () => photoIcon('jug'),
 
   // Sailboat: two triangular sails over a trapezoid hull, on water. Nothing
   // about it can reach `bus`/`car` (no wheels, no windows) or `fish` (the
@@ -1144,41 +1034,11 @@ const ICONS = {
   // rects, plus a rounder, more tapered cob silhouette (the old shape had a
   // near-flat top that read as a canister) and larger, more sharply peeled
   // husk leaves.
-  corn: () => {
-    const clipId = nextId('corn-clip')
-    const cob = 'M32 6 Q46 10 46 26 L46 46 Q46 60 32 60 Q18 60 18 46 L18 26 Q18 10 32 6 Z'
-    let cols = ''
-    let notches = ''
-    const colXs = [21, 26, 31, 36, 41]
-    colXs.forEach((x, ci) => {
-      cols += `<line x1="${x}" y1="9" x2="${x}" y2="58" stroke="#c9781a" stroke-width="1.2" opacity="0.55"/>`
-      for (let r = 0; r < 11; r++) {
-        const y = 10 + r * 4.6 + (ci % 2 === 0 ? 0 : 2.3)
-        if (y > 56) continue
-        notches += `<ellipse cx="${x + 2.5}" cy="${y.toFixed(1)}" rx="2.1" ry="1.6" fill="#fff0b0" opacity="0.55"/>`
-      }
-    })
-    return wrap(`
-      <g stroke="#c98f4e" stroke-width="2.2" stroke-linecap="round" fill="none">
-        <path d="M30 9 Q26 4 26 2"/>
-        <path d="M33 8 Q34 3 34.5 1"/>
-        <path d="M36 9 Q40 5 41 3"/>
-      </g>
-      <path d="${cob}" fill="#ffd43b"/>
-      <clipPath id="${clipId}"><path d="${cob}"/></clipPath>
-      <g clip-path="url(#${clipId})">
-        ${cols}
-        ${notches}
-        <rect x="37" y="6" width="10" height="54" fill="#c9781a" opacity="0.3"/>
-        <rect x="18" y="6" width="6" height="54" fill="#fff6d0" opacity="0.4"/>
-      </g>
-      <path d="${cob}" fill="none" stroke="#c98f4e" stroke-width="2.2"/>
-      <path d="M26 50 Q6 46 2 22 Q8 40 26 55 Q14 46 10 30 Z" fill="#3b9922"/>
-      <path d="M26 50 Q6 46 2 22 Q8 40 26 55 Z" fill="#256614" opacity="0.3"/>
-      <path d="M38 52 Q58 47 60 26 Q56 42 40 57 Q52 47 55 32 Z" fill="#3b9922"/>
-      <path d="M38 52 Q58 47 60 26 Z" fill="#ffffff" opacity="0.15"/>
-    `)
-  },
+  // 2026-08-26: replaced with a photo crop -- see
+  // scripts/crop-icon-photos.py's "corn" entry. History above (vertical
+  // kernel columns vs. a checkerboard grid) kept for context on the prior
+  // hand-drawn art.
+  corn: () => photoIcon('corn'),
 
   // -------------------------------------------------------------------
   // Chapter 9-14 sound icons (Group 5-7), photo-cropped -- see the

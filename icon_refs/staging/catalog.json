@@ -325,5 +325,59 @@
     ],
     "croppedFile": "ball.png",
     "note": "keep_largest_component added 2026-08 second clipping fix: a wider box pulled in a disjoint fragment of the blue \"ll\" in the \"ba(ll)\" caption below as a second blob"
+  },
+  "corn": {
+    "source": "corn.png",
+    "cropBox": null,
+    "croppedFile": "corn.png",
+    "note": "2026-08-26 8-agent parallel photo batch: standalone reference (icon_refs/corn.png, flat background, no flashcard grid), whole-image border flood-fill + keep_largest (drops any stray disconnected fragment). See scripts/crop-icon-photos.py."
+  },
+  "leg": {
+    "source": "leg.png",
+    "cropBox": null,
+    "croppedFile": "leg.png",
+    "note": "2026-08-26 8-agent parallel photo batch: standalone reference, whole-image border flood-fill + keep_largest. See scripts/crop-icon-photos.py."
+  },
+  "gum": {
+    "source": "gum.png",
+    "cropBox": [258, 0, 498, 154],
+    "croppedFile": "gum.png",
+    "note": "2026-08-26 8-agent parallel photo batch: source has a \"gum\" caption word beside the package art (not stacked like a flashcard); cropBox starts right after the word ends so only the package survives, keep_largest drops any residual fragment. See scripts/crop-icon-photos.py."
+  },
+  "ink": {
+    "source": "ink.png",
+    "cropBox": null,
+    "croppedFile": "ink.png",
+    "note": "2026-08-26 8-agent parallel photo batch: standalone reference (bottle + highlighter marker), whole-image border flood-fill WITHOUT keep_largest -- the marker is a real disconnected part, not a stray fragment, so keep_largest would wrongly drop it. See scripts/crop-icon-photos.py."
+  },
+  "jug": {
+    "source": "jug.png",
+    "cropBox": [40, 40, 436, 456],
+    "croppedFile": "jug.png",
+    "note": "2026-08-26 8-agent parallel photo batch: source wraps the jug in a circular decorative badge (navy corners + a thin antialiased ring) that ordinary border flood-fill can't fully clear -- the ring's gradient blend survives as a faint circle. cropBox is inset past the ring (re-derived from a pixel scan of where the ring's antialiasing ends and pure white begins on all four sides), then flood-fill only sees clean white outside the jug. See scripts/crop-icon-photos.py."
+  },
+  "top": {
+    "source": "top.png",
+    "cropBox": null,
+    "croppedFile": "top.png",
+    "note": "2026-08-26 8-agent parallel photo batch: standalone reference (rotation motion-lines kept), whole-image border flood-fill + keep_largest. See scripts/crop-icon-photos.py."
+  },
+  "mat": {
+    "source": "mat.png",
+    "cropBox": null,
+    "croppedFile": "mat.png",
+    "note": "2026-08-26 8-agent parallel photo batch: source has the mat on a solid green grass backdrop touching all four edges; ordinary border flood-fill strips it in one pass, no crop box needed. keep_largest drops any residual fragment. See scripts/crop-icon-photos.py."
+  },
+  "snake": {
+    "source": null,
+    "cropBox": null,
+    "croppedFile": "snake.png",
+    "note": "2026-08-26 8-agent parallel photo batch: no source sheet survives in icon_refs/ for this one (unlike every other icon in this catalog) -- the agent that produced it did not save its reference. public/icons/snake.png is a verbatim final asset (56x71 RGBA, already background-removed and user-verified), not reproducible via scripts/crop-icon-photos.py. If it ever needs reprocessing, a new source image will have to be sourced first."
+  },
+  "ant": {
+    "source": "스크린샷 2026-08-25 오후 6.54.17.png",
+    "cropBox": [18, 21, 151, 168],
+    "croppedFile": "ant.png",
+    "note": "2026-08-26: re-cropped after a failed pixel-level separation attempt mangled one of two overlapping ants into a red blob (source cell resolution too low, ~150x115px). This crops the row0/col0 \"a\" cell's two ants (maroon + brown) as a single intact cluster instead -- both fully visible reads as \"ant\" fine at icon size -- and keep_largest drops the neighboring \"a\" caption letter. See scripts/crop-icon-photos.py."
   }
 }

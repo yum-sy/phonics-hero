@@ -446,3 +446,61 @@ if __name__ == "__main__":
     # #f7f7f7 background, not a flashcard sheet) run through the same
     # background-removal pipeline as every other photo icon.
     process_standalone("feet_asset.png", "feet", keep_largest=True)
+
+    # 2026-08-26 8-agent parallel icon-photo batch -- corn/leg/gum/ink/jug/
+    # top/mat/ant/snake. Each agent worked from a standalone reference image
+    # in icon_refs/ (already a plain illustration on a flat background, not
+    # a flashcard grid cell -- same shape as feet_asset.png above) and hand-
+    # tuned crop boxes/tolerances to drop non-icon cruft (a caption word, a
+    # decorative badge, a photo backdrop) before running the same flood-
+    # fill+trim pipeline. Re-derived here from the surviving icon_refs/*.png
+    # sources so the pipeline is reproducible; sizes were cross-checked
+    # against the agents' original output and match or come within a few px
+    # (antialiasing-level noise, not a different crop).
+    process_standalone("corn.png", "corn", keep_largest=True, tol=16, pad=6)
+    process_standalone("leg.png", "leg", keep_largest=True, tol=20)
+    # mat: source has the mat lying on a solid green grass backdrop that
+    # touches all four edges -- ordinary border flood-fill strips it in one
+    # pass, no crop box needed.
+    process_standalone("mat.png", "mat", keep_largest=True, tol=20)
+    # ink: bottle + highlighter marker are two disconnected illustration
+    # parts -- do NOT use keep_largest here (unlike the others) or it drops
+    # the marker as a "stray second blob" the same way it correctly drops a
+    # caption glyph elsewhere.
+    process_standalone("ink.png", "ink", keep_largest=False, tol=20)
+    process_standalone("top.png", "top", keep_largest=True, tol=20)
+    # jug: source wraps the jug in a circular badge (navy corners + a thin
+    # antialiased ring) that ordinary border flood-fill can't fully clear --
+    # the ring's gradient blend is too wide to read as a single background
+    # color cluster and survives as a faint circle around the jug. Crop
+    # inward past the ring first (box re-derived from a pixel scan of where
+    # the ring's antialiasing ends and pure white begins on all four sides),
+    # then flood-fill only ever sees clean white outside the jug.
+    process_abs("jug.png", (40, 40, 436, 456), "jug", keep_largest=True, tol=20, pad=4)
+    # gum: source is a "gum" caption word beside the package art (like a
+    # flashcard's caption band, but side-by-side instead of stacked) --
+    # crop box starts right after the word ends (scanned the source's
+    # middle row for the last content run before the package's purple
+    # starts) so only the package survives.
+    process_abs("gum.png", (258, 0, 498, 154), "gum", keep_largest=True, tol=20, pad=4)
+    # ant: two overlapping ants (maroon + brown) in one flashcard cell, from
+    # the 6.54.17 insect-themed sheet's row0/col0 "a" cell. An earlier
+    # attempt tried to separate the two ants pixel-by-pixel and produced a
+    # mangled red blob (source resolution too low, ~150x115px per cell) --
+    # this crops the pair as a single cluster instead (both ants fully
+    # intact reads as "ant" fine at icon size) and keep_largest drops the
+    # neighboring "a" caption letter, which sits in the same cell.
+    process_abs(
+        "스크린샷 2026-08-25 오후 6.54.17.png",
+        (18, 21, 151, 168),
+        "ant",
+        keep_largest=True,
+        tol=16,
+        pad=4,
+    )
+    # snake: no source sheet survives in icon_refs/ for this one (unlike
+    # every other icon above) -- the agent that produced it did not save
+    # its reference. public/icons/snake.png is kept as a verbatim final
+    # asset (56x71 RGBA, already background-removed and user-verified) with
+    # no reproducible process_*() call here. If it ever needs reprocessing,
+    # a new source image will have to be sourced first.
