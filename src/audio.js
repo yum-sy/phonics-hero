@@ -1235,17 +1235,14 @@ function speakNow(text, lang, rate, volume = 1) {
     // delay only on the very first tap" symptom this was fitted to fix.
     const silent = volume === 0
     let done = false
-    let started = false // did onstart ever fire for THIS utterance?
     let reported = false // did onend/onerror fire, or only the safety timer?
     let pollTimer = null
-    let startWatchTimer = null
     const startedAt = Date.now()
     const finish = () => {
       if (done) return
       done = true
       clearTimeout(safetyTimer)
       clearTimeout(pollTimer)
-      clearTimeout(startWatchTimer)
       // Neither onend nor onerror ever arrived for this utterance -- either
       // the safety timer above had to fire on its own, or speak() itself
       // threw synchronously (see the catch below). Both are the narrow
@@ -1313,9 +1310,6 @@ function speakNow(text, lang, rate, volume = 1) {
       reported = true
       finish()
     }
-    utter.onstart = () => {
-      started = true
-    }
     utter.onend = reportedFinish
     utter.onerror = reportedFinish
     // Safety net: speechSynthesis is known to occasionally never fire
@@ -1377,42 +1371,34 @@ function speakNow(text, lang, rate, volume = 1) {
       }
       pollTimer = setTimeout(poll, probeAfter)
     }
-    // Onstart watchdog: kicks the daemon EARLY if onstart itself hasn't
-    // fired yet, instead of waiting for the full padded `estimatedMs` floor
-    // to expire before scheduleJamCheck's first kick even gets scheduled.
-    //
-    // CDP measurement against real Chrome (not the sandboxed/headless tool,
-    // an actual Chrome window on this Mac) caught this exact pattern live:
-    // a tapped word's speak() call fired instantly, `speaking` went true
-    // immediately, but real onstart did not arrive for 4+ seconds -- until
-    // the FIRST jam-recovery kick fired (at ~2900ms, only reachable after
-    // this utterance's own 2500ms floor had already been spent doing
-    // nothing). The very next word tapped moments later, on an
-    // already-kicked engine, started essentially instantly. That is a
-    // repeat of the exact "6.7s dog delay" finding this file's jam-recovery
-    // history documents elsewhere -- the KICK is the trigger, not elapsed
-    // time -- except this time it is the FIRST utterance of a fresh
-    // interaction, not a jammed backlog, so the old scheme's "only kick
-    // after giving up" ordering was actively working against the common
-    // case: it made every fresh tap eat close to 3 full seconds of pure
-    // waiting before the one action that actually unblocks it was even
-    // attempted.
-    //
-    // Short, escalating delays (well inside `estimatedMs`, never past it),
-    // stopped the moment `started` flips true. kickSpeechDaemonInsistent()
-    // is the same primitive attemptJamRecovery() already trusts for exactly
-    // this reason: a no-op on genuinely in-progress audio, cheap to try.
-    if (!silent) {
-      const START_WATCH_DELAYS_MS = [500, 700, 900]
-      const armStartWatch = (i) => {
-        startWatchTimer = setTimeout(() => {
-          if (done || started) return
-          kickSpeechDaemonInsistent()
-          if (i + 1 < START_WATCH_DELAYS_MS.length) armStartWatch(i + 1)
-        }, START_WATCH_DELAYS_MS[i])
-      }
-      armStartWatch(0)
-    }
+    // REVERTED (see below): this used to arm an "onstart watchdog" that
+    // forced pause()/resume() kicks at 500/700/900ms if onstart hadn't
+    // fired yet. Desktop Chrome (a completely different speechSynthesis
+    // implementation from iOS's WebKit) made this look like a clear win --
+    // but on a real iPad in Chrome-for-iOS (which, like every iOS browser,
+    // runs on WebKit under the hood, not Chrome's own engine), the very
+    // next real-device test after this shipped came back with EVERY word
+    // utterance (`dog`, `sun`, ...) permanently silent, forever, no matter
+    // how long the child waited -- while calling the exact same speakEN()/
+    // speakTap() functions in isolation, from a bare debug page with no
+    // prior queue history, worked perfectly on that same device/browser.
+    // That isolation is the tell: the engine, the voice, and the gesture
+    // unlock were all fine -- what differed in the broken case was several
+    // PRIOR utterances (the silent unlock ping, teach-beat phoneme audio,
+    // Korean instructions) each having already forced their own early kicks
+    // on a real WebKit queue before the word ever got a turn. The working
+    // theory is that repeated forced pause()/resume() cycles, fired before
+    // an utterance has genuinely started, desync or corrupt WebKit's
+    // internal speech queue in a way that never shows up on an isolated
+    // call or on desktop Chrome's unrelated engine. Removed rather than
+    // tuned, because the safe fallback already covers the case this was
+    // trying to speed up: the safety timer + speaking-poll above still
+    // resolve promptly once onend/onerror arrives or speaking goes false,
+    // and scheduleJamCheck()/attemptJamRecovery() below still kicks a
+    // GENUINELY stuck engine -- just later, which is the conservative
+    // failure mode (slow) instead of the catastrophic one (silent
+    // forever). Do not reintroduce a pre-onstart forced kick without
+    // confirming on a real WebKit device first.
     try {
       window.speechSynthesis.speak(utter)
     } catch (e) {
