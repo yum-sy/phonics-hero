@@ -129,20 +129,29 @@ function renderStage(stageId) {
 // taught to read by sound.
 // `veilUntilPicked` implements the "no reading your way to the answer"
 // requirement: a picture option's spelled-out word label is the same text a
-// literate 5-year-old can string-compare against the prompt without ever
-// listening to the sound, which defeats the whole point of a listen-and-
-// discriminate round. Veiling only ever applies to picture icons (never
-// letterTile -- see the block comment above this function for why those stay
-// sr-only or fully visible on their own track) and only when the CALLER
-// passes true, which callers do for every sound-discrimination round
-// (`choose`'s odd-one-out/hard/warmup shapes, every `choose-sequence` step,
-// `multiselect`) but NOT for `choose` beats carrying `promptLetter` --
-// "reversed" rounds show the target letter on screen and ask the child to
-// find the matching picture, so the comparison is letter-shape-to-picture,
-// not sound-to-picture, and the label was never the shortcut there.
+// literate 5-year-old can string-compare without ever listening to the
+// sound, which defeats the whole point of a listen-and-discriminate round.
+// Veiling only ever applies to picture icons (never letterTile -- see the
+// block comment above this function for why those stay sr-only or fully
+// visible on their own track).
+//
+// `choose` beats carrying `promptLetter` ("reversed" rounds: the target
+// letter is shown on screen, find the matching picture) USED to be exempted
+// here on the reasoning that the comparison is letter-shape-to-picture, not
+// sound-to-picture, so the option label was "never the shortcut." That
+// reasoning missed that the shortcut still exists in a different shape: a
+// child can string-compare the visible `promptLetter` glyph against each
+// option's visible spelling and pick by first-letter match alone, never
+// once recalling "this letter sounds like X and X's word is spelled sun" --
+// the exact sound<->letter<->word link the round exists to build. Veiling
+// now applies uniformly to every `choose` beat regardless of promptLetter.
+//
 // wordspot-style beats (icon: 'letterTile', label.length > 2, e.g. "SAT")
 // are unaffected regardless of the flag because they are gated on icon, not
-// on length -- that round IS a reading task by design.
+// on length -- that round IS a reading task by design. `match-shape` beats
+// (renderMatchShapeBeat) also call this unveiled on purpose -- those are a
+// visual b/d-style shape discrimination, not a sound round, and speak only
+// the letter's own name, so there is no phonics sound to leak either way.
 // CSS (`.option-label-veiled`) hides it with opacity, not visibility/
 // display/aria-hidden, so screen readers still announce it immediately --
 // only sighted children get the "tap first" gate.
@@ -1682,7 +1691,7 @@ function renderChooseBeat(runtime, beat) {
       (opt) => `
       <button class="option-btn" data-id="${opt.id}">
         <span class="option-emoji">${wordIcon(opt.icon, opt.label)}</span>
-        ${optionLabelHtml(opt, !beat.promptLetter)}
+        ${optionLabelHtml(opt, true)}
       </button>`
     )
     .join('')
