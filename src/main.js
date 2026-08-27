@@ -9,3 +9,6 @@ renderWorldSelect()
 if (new URLSearchParams(location.search).get('debugaudio') === '1') {
   import('./debugAudio.js').then((m) => m.mountAudioDebugPanel())
 }
+if (new URLSearchParams(location.search).get('debugart') === '1') {
+  import('./debugArt.js').then((m) => m.mountArtDebugPanel())
+}
