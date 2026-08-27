@@ -83,15 +83,28 @@ function startSpeechWatchdog() {
   if (speechWatchdogStarted) return
   speechWatchdogStarted = true
   if (!('speechSynthesis' in window)) return
-  setInterval(() => {
-    try {
-      if (window.speechSynthesis.speaking) return
-      window.speechSynthesis.pause()
-      window.speechSynthesis.resume()
-    } catch (e) {
-      // ignore -- worst case the daemon bug this exists to dodge comes back
-    }
-  }, 10000)
+  setInterval(kickSpeechDaemon, 10000)
+}
+
+// The pause()/resume() no-op shared by the idle watchdog above AND the
+// post-WebAudio kick below (see playSound's caller in pump()). Factored out
+// because both call sites are defending the same failure -- a WebKit speech
+// daemon that has gone quiet and drops its next speak() -- they just differ
+// in WHEN they suspect it happened: the watchdog covers a long think-time
+// idle gap, the pump() call covers a specific transition that could stale it
+// immediately rather than after 10s.
+//
+// Guarded the same way in both places: never touches a real utterance
+// in flight.
+function kickSpeechDaemon() {
+  if (!('speechSynthesis' in window)) return
+  try {
+    if (window.speechSynthesis.speaking) return
+    window.speechSynthesis.pause()
+    window.speechSynthesis.resume()
+  } catch (e) {
+    // ignore -- worst case the daemon bug this exists to dodge comes back
+  }
 }
 
 // ---- baked phoneme assets ----
@@ -916,6 +929,22 @@ async function pump() {
         // overlap it exists to prevent.
         const buffer = soundBufferFor(item.text, item.lang)
         const played = buffer ? await playSound(buffer) : null
+        // Real-device report: phoneme sounds (this WebAudio path) kept
+        // working while EVERY word (the speechSynthesis path below, since no
+        // word has a baked asset) went silent from the point the WAV assets
+        // shipped. Every word utterance in real curriculum flow sits right
+        // after a phoneme play (teach a sound, then speak the word it came
+        // from) -- so if WebKit's speech daemon can be stalled by a WebAudio
+        // buffer having just played through the same shared iOS audio
+        // session, this exact call site is where it happens, every time,
+        // right before the child would hear the word. Not confirmed against
+        // a cited WebKit bug report (none found describing this precise
+        // interaction) -- this is the documented pause()/resume() daemon-kick
+        // (see kickSpeechDaemon) applied at the one transition the idle
+        // watchdog cannot cover, because nothing here was ever idle. Cheap
+        // and inert if the hypothesis is wrong: pause()/resume() on an engine
+        // that isn't speaking is a no-op.
+        if (played) kickSpeechDaemon()
         // `null` means no audio was produced -- no asset for this string, the
         // context is not running, the buffer has not finished loading, or the
         // source node threw. Every one of those routes to TTS, so the only way
