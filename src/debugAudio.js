@@ -1,232 +1,122 @@
 // On-screen audio diagnostics for real devices with no attached console
 // (e.g. iPad Chrome, where remote Web Inspector isn't available/wanted).
 // Opt-in only, via ?debugaudio=1 -- never loaded otherwise, zero cost in
-// the normal app path. Renders live state as visible text instead of
-// console.log, and lets a real tap on the device drive real speak() calls
-// so the failure (or success) is visible right on the screen it happens on.
-import { unlockAudio, speakEN, speakTap } from './audio.js'
-
+// the normal app path.
+//
+// This is a small, non-blocking corner overlay that logs every real
+// speechSynthesis.speak() call (and its onstart/onend/onerror) AND every
+// WebAudio phoneme buffer play, live, WHILE THE ACTUAL GAME RUNS
+// underneath -- earlier synthetic "reproduce it in isolation" test buttons
+// (WebAudio-then-TTS with various delays/kicks) all worked fine on the
+// real device even when the real game's word audio was totally silent at
+// the same time, meaning the synthetic reproductions weren't faithful to
+// whatever the real queue/pump() history actually does. This mounts
+// alongside real gameplay instead, so the log IS the real sequence of
+// events, not a guess at it.
 export function mountAudioDebugPanel() {
-  const el = document.createElement('div')
-  el.style.cssText =
-    'position:fixed;inset:0;z-index:99999;background:#111;color:#0f0;' +
-    'font:12px/1.4 monospace;padding:12px;overflow:auto;white-space:pre-wrap;'
-  document.body.appendChild(el)
-
   const lines = []
+  const t0 = Date.now()
   const log = (s) => {
-    lines.push(`[${new Date().toISOString().slice(11, 23)}] ${s}`)
+    lines.push(`[+${((Date.now() - t0) / 1000).toFixed(2)}s] ${s}`)
+    if (lines.length > 300) lines.shift()
     render()
   }
 
-  const origSpeak = window.speechSynthesis && window.speechSynthesis.speak.bind(window.speechSynthesis)
-  if (origSpeak) {
+  // Hook speechSynthesis.speak at the lowest level so every call from
+  // anywhere in the app (not just debug-triggered ones) is captured.
+  if ('speechSynthesis' in window) {
+    const origSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis)
     window.speechSynthesis.speak = function (u) {
-      const t0 = Date.now()
-      log(`speak() CALLED text=${JSON.stringify(u.text)} voice=${u.voice ? u.voice.name : '(none)'} lang=${u.lang}`)
-      u.addEventListener('start', () => log(`  -> onstart (+${Date.now() - t0}ms)`))
-      u.addEventListener('end', () => log(`  -> onend (+${Date.now() - t0}ms)`))
-      u.addEventListener('error', (e) => log(`  -> onerror: ${e.error} (+${Date.now() - t0}ms)`))
-      let threw = null
+      const callAt = Date.now()
+      log(`SPEAK text=${JSON.stringify(u.text)} voice=${u.voice ? u.voice.name : '(none)'} vol=${u.volume}`)
+      u.addEventListener('start', () => log(`  onstart (+${Date.now() - callAt}ms) "${u.text}"`))
+      u.addEventListener('end', () => log(`  onend (+${Date.now() - callAt}ms) "${u.text}"`))
+      u.addEventListener('error', (e) => log(`  onerror: ${e.error} (+${Date.now() - callAt}ms) "${u.text}"`))
       try {
         return origSpeak(u)
       } catch (e) {
-        threw = e
-        log(`  -> speak() THREW: ${e}`)
+        log(`  speak() THREW: ${e}`)
         throw e
       }
     }
+    const origPause = window.speechSynthesis.pause.bind(window.speechSynthesis)
+    window.speechSynthesis.pause = function (...a) {
+      log('  [pause() called]')
+      return origPause(...a)
+    }
+    const origResume = window.speechSynthesis.resume.bind(window.speechSynthesis)
+    window.speechSynthesis.resume = function (...a) {
+      log('  [resume() called]')
+      return origResume(...a)
+    }
+    const origCancel = window.speechSynthesis.cancel.bind(window.speechSynthesis)
+    window.speechSynthesis.cancel = function (...a) {
+      log('  [cancel() called !!]')
+      return origCancel(...a)
+    }
   }
 
-  function voiceInfo() {
-    if (!('speechSynthesis' in window)) return 'speechSynthesis: NOT SUPPORTED'
-    const list = window.speechSynthesis.getVoices() || []
-    const chosen = window.__carbotVoices
-    return [
-      `getVoices() count: ${list.length}`,
-      `chosen (window.__carbotVoices): ${chosen ? JSON.stringify(chosen, null, 1) : '(not set yet -- tap "Unlock" first)'}`,
-      `speaking=${window.speechSynthesis.speaking} pending=${window.speechSynthesis.pending} paused=${window.speechSynthesis.paused}`,
-      '',
-      'full voice list:',
-      ...list.map((v) => `  ${v.name} [${v.lang}] local=${v.localService} default=${v.default}`),
-    ].join('\n')
+  // Hook WebAudio phoneme playback the same way, so its timing relative to
+  // speechSynthesis calls is visible in the same timeline.
+  if (window.AudioBufferSourceNode) {
+    const origStart = AudioBufferSourceNode.prototype.start
+    AudioBufferSourceNode.prototype.start = function (...args) {
+      const dur = this.buffer ? this.buffer.duration : '?'
+      log(`WEBAUDIO buffer.start() dur=${dur}`)
+      this.addEventListener('ended', () => log(`  webaudio ended (dur=${dur})`))
+      return origStart.apply(this, args)
+    }
   }
 
-  function render() {
-    el.textContent =
-      '=== AUDIO DEBUG (?debugaudio=1) ===\n\n' +
-      voiceInfo() +
-      '\n\n=== EVENT LOG (newest last) ===\n' +
-      lines.slice(-40).join('\n')
-  }
+  // Small collapsible corner panel -- doesn't block the real game underneath.
+  const wrap = document.createElement('div')
+  wrap.style.cssText =
+    'position:fixed;left:0;right:0;bottom:0;z-index:99999;' +
+    'max-height:40vh;overflow:auto;background:rgba(0,0,0,0.88);color:#0f0;' +
+    'font:10px/1.35 monospace;padding:6px;white-space:pre-wrap;' +
+    'border-top:2px solid #0f0;'
+  document.body.appendChild(wrap)
 
-  const btnBar = document.createElement('div')
-  btnBar.style.cssText = 'position:sticky;top:0;background:#111;padding-bottom:8px;display:flex;gap:8px;flex-wrap:wrap;'
+  const bar = document.createElement('div')
+  bar.style.cssText = 'display:flex;gap:6px;margin-bottom:4px;position:sticky;top:0;background:rgba(0,0,0,0.88);'
   const mkBtn = (label, fn) => {
     const b = document.createElement('button')
     b.textContent = label
-    b.style.cssText = 'font:14px monospace;padding:8px 12px;'
+    b.style.cssText = 'font:11px monospace;padding:4px 8px;'
     b.onclick = fn
-    btnBar.appendChild(b)
+    bar.appendChild(b)
     return b
   }
-  mkBtn('1. Unlock (tap first)', () => {
-    log('tapping unlockAudio()...')
-    unlockAudio()
-    setTimeout(render, 300)
+  let collapsed = false
+  const body = document.createElement('div')
+  mkBtn('collapse/expand', () => {
+    collapsed = !collapsed
+    body.style.display = collapsed ? 'none' : 'block'
   })
-  mkBtn('2. speakEN("dog")', () => {
-    log('calling speakEN("dog")...')
-    speakEN('dog').then((trusted) => log(`speakEN("dog") promise resolved, trusted=${trusted}`))
-  })
-  mkBtn('3. speakTap("sun")', () => {
-    log('calling speakTap("sun")...')
-    speakTap('sun').then((trusted) => log(`speakTap("sun") promise resolved, trusted=${trusted}`))
-  })
-  mkBtn('4. raw speak("hello")', () => {
-    log('calling raw window.speechSynthesis.speak(new SpeechSynthesisUtterance("hello")) with NO voice/lang set...')
-    try {
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance('hello'))
-    } catch (e) {
-      log('raw speak threw: ' + e)
-    }
-  })
-  mkBtn('5. WebAudio "sss" THEN speakEN("dog")', async () => {
-    log('=== test: play sss.wav via WebAudio, then call speakEN("dog") right after ===')
-    try {
-      const Ctx = window.AudioContext || window.webkitAudioContext
-      const ctx = new Ctx()
-      log(`AudioContext created, state=${ctx.state}`)
-      if (ctx.state !== 'running') {
-        await ctx.resume().catch((e) => log('ctx.resume() rejected: ' + e))
-        log(`after resume(), state=${ctx.state}`)
-      }
-      const res = await fetch('/sounds/sss.wav')
-      const buf = await ctx.decodeAudioData(await res.arrayBuffer())
-      log(`decoded sss.wav, duration=${buf.duration}s`)
-      await new Promise((resolve) => {
-        const src = ctx.createBufferSource()
-        src.buffer = buf
-        src.connect(ctx.destination)
-        src.onended = () => {
-          log('WebAudio sss playback onended')
-          resolve()
-        }
-        src.start()
-        log('WebAudio sss playback started')
-      })
-      log('...now calling speakEN("dog") immediately after WebAudio finished...')
-      const trusted = await speakEN('dog')
-      log(`speakEN("dog") AFTER WebAudio promise resolved, trusted=${trusted}`)
-    } catch (e) {
-      log('test 5 threw: ' + e)
-    }
-  })
-  mkBtn('6. Full realistic sequence', async () => {
-    log('=== test: unlock -> WebAudio "sss" -> speakEN("dog") -> speakTap("sun") (mimics real gameplay order) ===')
-    try {
-      unlockAudio()
-      await new Promise((r) => setTimeout(r, 300))
-      const Ctx = window.AudioContext || window.webkitAudioContext
-      const ctx = new Ctx()
-      if (ctx.state !== 'running') await ctx.resume().catch(() => {})
-      const res = await fetch('/sounds/sss.wav')
-      const buf = await ctx.decodeAudioData(await res.arrayBuffer())
-      await new Promise((resolve) => {
-        const src = ctx.createBufferSource()
-        src.buffer = buf
-        src.connect(ctx.destination)
-        src.onended = resolve
-        src.start()
-        log('WebAudio sss playback started')
-      })
-      log('WebAudio finished, calling speakEN("dog")...')
-      const t1 = await speakEN('dog')
-      log(`speakEN("dog") resolved, trusted=${t1}`)
-      log('calling speakTap("sun")...')
-      const t2 = await speakTap('sun')
-      log(`speakTap("sun") resolved, trusted=${t2}`)
-    } catch (e) {
-      log('test 6 threw: ' + e)
-    }
-  })
-  async function playSss() {
-    const Ctx = window.AudioContext || window.webkitAudioContext
-    const ctx = new Ctx()
-    if (ctx.state !== 'running') await ctx.resume().catch(() => {})
-    const res = await fetch('/sounds/sss.wav')
-    const buf = await ctx.decodeAudioData(await res.arrayBuffer())
-    await new Promise((resolve) => {
-      const src = ctx.createBufferSource()
-      src.buffer = buf
-      src.connect(ctx.destination)
-      src.onended = resolve
-      src.start()
-      log('WebAudio sss playback started')
-    })
-    log('WebAudio sss playback onended')
-  }
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
-  mkBtn('7. WebAudio -> wait 200ms -> speakEN("dog")', async () => {
-    log('=== test 7: WebAudio then a 200ms delay before speakEN("dog") ===')
-    try {
-      await playSss()
-      await sleep(200)
-      log('...calling speakEN("dog") after 200ms delay...')
-      await speakEN('dog')
-      log('speakEN("dog") resolved')
-    } catch (e) {
-      log('test 7 threw: ' + e)
-    }
-  })
-  mkBtn('8. WebAudio -> kick(pause/resume) -> speakEN("dog") [no delay]', async () => {
-    log('=== test 8: WebAudio then an immediate pause()/resume() kick, then speakEN("dog") right away ===')
-    try {
-      await playSss()
-      window.speechSynthesis.pause()
-      window.speechSynthesis.resume()
-      log('kicked (pause+resume), calling speakEN("dog") immediately...')
-      await speakEN('dog')
-      log('speakEN("dog") resolved')
-    } catch (e) {
-      log('test 8 threw: ' + e)
-    }
-  })
-  mkBtn('9. WebAudio -> kick -> wait 150ms -> speakEN("dog")', async () => {
-    log('=== test 9: WebAudio, kick, THEN a 150ms delay, then speakEN("dog") ===')
-    try {
-      await playSss()
-      window.speechSynthesis.pause()
-      window.speechSynthesis.resume()
-      log('kicked, waiting 150ms...')
-      await sleep(150)
-      log('...calling speakEN("dog")...')
-      await speakEN('dog')
-      log('speakEN("dog") resolved')
-    } catch (e) {
-      log('test 9 threw: ' + e)
-    }
-  })
-  mkBtn('Refresh', render)
-  mkBtn('Clear log', () => {
+  mkBtn('clear', () => {
     lines.length = 0
     render()
   })
+  mkBtn('copy all', () => {
+    const text = lines.join('\n')
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(
+        () => log('[copied to clipboard]'),
+        () => log('[clipboard copy failed -- select text manually]')
+      )
+    }
+  })
+  wrap.appendChild(bar)
+  wrap.appendChild(body)
 
-  el.innerHTML = ''
-  el.appendChild(btnBar)
-  const body = document.createElement('div')
-  el.appendChild(body)
-  const origRender = render
-  render = () => {
-    body.textContent =
-      voiceInfo() + '\n\n=== EVENT LOG (newest last) ===\n' + lines.slice(-40).join('\n')
+  function render() {
+    body.textContent = lines.slice(-120).join('\n')
+    wrap.scrollTop = wrap.scrollHeight
   }
+
+  log(
+    `panel mounted. speechSynthesis in window: ${'speechSynthesis' in window}. ` +
+      `Play the real game normally -- every speak()/WebAudio call anywhere in the app will log here live.`
+  )
   render()
-
-  // Voices often populate asynchronously after the panel mounts.
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.addEventListener?.('voiceschanged', render)
-  }
-  setInterval(render, 1000)
 }
