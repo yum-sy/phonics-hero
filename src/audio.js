@@ -281,6 +281,49 @@ const SOUND_ASSETS = new Set([
   'kw', 'ou', 'oi', 'u', 'erh', 'arh',
 ])
 
+// Real-device report (2026-08 session): playing the boss-blend sequence
+// (e.g. "sss aaa tuh sat") has one phoneme come out noticeably quieter than
+// its neighbors -- and WHICH one varies chapter to chapter (S quiet on one
+// chapter's boss page, a different letter quiet on another's), which rules
+// out anything about the app's own playback code (that's identical for
+// every key) and points at the source recordings themselves simply not
+// having matched loudness. Measured directly (RMS of every public/sounds/
+// *.wav via Python's stdlib `wave` + numpy): true, and worse than "a little
+// off" -- a 5.3x spread between the quietest (`thhu`, RMS 0.046) and
+// loudest (`uuh`, RMS 0.244) file, with `aaa` (RMS 0.082) sitting at under
+// half of `sss`/`tuh` (0.171/0.178) despite all three sharing one boss
+// blend (chapter 1's SAT).
+//
+// Re-recording all 41 files for consistent loudness is the real fix but not
+// one this file can do -- this compensates at PLAYBACK time instead,
+// applied as a per-key gain multiplier (via a GainNode in playSound, not by
+// altering the buffer) so nothing about the baked assets themselves needs
+// to change. Computed by normalizing every file to the median RMS across
+// the set (0.171, chosen because it's already the median, not an outlier
+// on either end -- most files then need only a mild nudge, not a big one),
+// then capped per-file so the boosted result can never clip (peak * gain
+// stays under 0.98 of full scale) and clamped to [0.5, 3.0] so no single
+// outlier gets pushed to an extreme. Two files (`thhu`, `weh`) hit their
+// clipping ceiling before reaching the target and land quieter than the
+// rest even after boosting as far as safely possible -- a real ceiling, not
+// a bug in the math: `thhu`'s peak-to-RMS ratio is simply too high (0.597
+// peak vs 0.046 RMS, i.e. a very short/spiky waveform) to reach 0.171 RMS
+// without the peak clipping first.
+//
+// Recompute if the underlying WAV files ever change (gen-sounds.py
+// regenerates them): rerun the RMS/peak measurement and regenerate this
+// table -- it is fitted to the CURRENT files, not a formula that adapts on
+// its own.
+const SOUND_GAIN = {
+  a: 2.064, aaa: 2.052, arh: 1.18, awh: 0.896, buh: 2.592, ch: 0.98,
+  duh: 1.238, ee: 0.948, eh: 0.909, erh: 1.087, eye: 1.051, fff: 1.627,
+  guh: 0.923, huh: 1.079, ihh: 0.753, juh: 0.958, ksuh: 0.993, kuh: 1.111,
+  kw: 1.067, lll: 0.997, mmm: 0.976, ngh: 0.986, nnn: 0.735, oh: 0.971,
+  oi: 0.988, or: 0.932, ou: 1.106, puh: 1.021, rrr: 1.223, shhu: 1.268,
+  sss: 1.004, thhu: 1.641, tuh: 0.962, u: 1.0, uh: 0.759, uuh: 0.703,
+  uuu: 0.921, vve: 0.822, weh: 1.032, yyuh: 0.739, zze: 1.029,
+}
+
 // `null` = not tried yet, `false` = no Web Audio on this engine (never retried,
 // because the constructor's absence is not a transient condition).
 let audioCtx = null
@@ -464,13 +507,22 @@ function resumeAudioCtx() {
 // `say -r 88`, the bucket Web Speech's rate 0.5 lands in (see EN_RATE), so
 // item.rate is already baked in -- applying it again as playbackRate would
 // transpose the phoneme down an octave, i.e. teach the wrong vowel.
-function playSound(buffer) {
+function playSound(buffer, key) {
   return new Promise((resolve) => {
     const ctx = ensureAudioCtx()
     try {
       const src = ctx.createBufferSource()
       src.buffer = buffer
-      src.connect(ctx.destination)
+      // See SOUND_GAIN above: the baked recordings are not loudness-matched
+      // to each other, so every play routes through a per-key gain node
+      // instead of connecting straight to destination. `?? 1` covers any
+      // key SOUND_GAIN doesn't list (there shouldn't be one, since it's
+      // derived from the same file set as SOUND_ASSETS, but an unmeasured
+      // key must still play at its natural volume, not silently).
+      const gainNode = ctx.createGain()
+      gainNode.gain.value = SOUND_GAIN[key] ?? 1
+      src.connect(gainNode)
+      gainNode.connect(ctx.destination)
       src.start()
     } catch (e) {
       resolve(null) // hand it back to TTS rather than teaching silence
@@ -1102,7 +1154,8 @@ async function pump() {
         // overlap it exists to prevent.
         const asset = await resolveAssetAudio(item.text, item.lang)
         if (asset && asset.buffer) {
-          const played = await playSound(asset.buffer)
+          const key = item.text == null ? '' : String(item.text).trim()
+          const played = await playSound(asset.buffer, key)
           // Real-device report: phoneme sounds (this WebAudio path) kept
           // working while EVERY word (the speechSynthesis path below, since
           // no word has a baked asset) went silent from the point the WAV
