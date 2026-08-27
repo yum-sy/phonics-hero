@@ -4,6 +4,7 @@
 // SpeechRecognition is unreliable on iPadOS Safari, so it's only ever a bonus.
 
 let audioUnlocked = false
+let speechGestureEstablished = false
 
 // iOS refuses speechSynthesis.speak() until one speak() has happened inside a
 // real user gesture, and refuses it *silently* -- no error, no onend, no
@@ -17,11 +18,67 @@ let audioUnlocked = false
 if (typeof document !== 'undefined') {
   document.addEventListener('pointerdown', () => unlockAudio(), { once: true, capture: true })
   document.addEventListener('touchstart', () => unlockAudio(), { once: true, capture: true })
+  // Real-device finding (2026-08-27 session, live on-screen event log, not
+  // guessed): identical speak() calls succeeded from a plain <button
+  // onclick> and were silently dropped -- no error, no onstart, no onend,
+  // ever -- from a `pointerdown` handler on the same device/browser
+  // (Chrome for iOS, which like every iOS browser runs on WebKit under the
+  // hood). onTap() in screens.js deliberately fires the app's own
+  // interaction handlers from `pointerdown`, not `click`, for touch
+  // responsiveness (see its own block comment -- a child who presses and
+  // rolls their finger produces no `click` at all) -- so the FIRST speak()
+  // this app ever makes, if triggered the same way every other tap is,
+  // never lands inside a gesture iOS recognizes, and per this file's own
+  // long-standing assumption ("iOS refuses speechSynthesis.speak() until
+  // ONE speak() has happened inside a real user gesture") that means NO
+  // speak() call for the rest of the session ever gets recognized either --
+  // exactly the totally-silent-forever, every-word, every-session pattern
+  // the real-device log showed, while WebAudio (a separate API, unaffected)
+  // kept working the whole time.
+  //
+  // `click` is the fix: it is the one event type proven (by direct A/B
+  // test on the real device) to carry activation speechSynthesis accepts,
+  // and it still fires for every genuine tap (onTap() already relies on
+  // this itself for keyboard/assistive-tech activations and the two test
+  // harnesses, which use `el.click()` and produce no pointer event at all).
+  // This does NOT touch onTap()'s pointerdown-based handling anywhere --
+  // the child's tap still reacts immediately; only the ONE gesture-critical
+  // speak() call is deferred to the click a real tap already produces a
+  // few ms after release.
+  document.addEventListener('click', () => establishSpeechGesture(), { once: true, capture: true })
 }
 
 export function unlockAudio() {
   if (audioUnlocked) return
   audioUnlocked = true
+  // iOS populates getVoices() lazily, and on some builds only after the first
+  // speak(). This is the first user gesture in the app, so it's the earliest
+  // moment a real voice list can exist -- grab it here rather than waiting for
+  // a voiceschanged event that may never arrive.
+  refreshVoices()
+  // Same gesture, same reason: an AudioContext created outside one starts
+  // suspended on iOS. Warming the buffers here means the first drill sound of
+  // the session is already decoded when the child reaches it. None of this
+  // needs a click specifically -- only the actual speak() call below does
+  // (see establishSpeechGesture) -- so this still runs from the very first
+  // pointerdown/touchstart, losing none of the head start it had before.
+  warmSoundAssets()
+  startSpeechWatchdog()
+}
+
+// The one call in this file that MUST run inside a click (see the listener
+// registration above for the real-device evidence). Separated out from
+// unlockAudio() because that function is triggered from `pointerdown`
+// throughout the app (screens.js's explicit calls, plus the module-level
+// listener above) for reasons unrelated to this constraint, and bundling
+// this call into it meant the pointerdown-triggered call always won the
+// race and permanently marked the session "unlocked" via a gesture type
+// iOS was silently ignoring -- the correctly-gestured click-triggered
+// attempt then never got a turn, because unlockAudio()'s own idempotency
+// guard had already been spent.
+function establishSpeechGesture() {
+  if (speechGestureEstablished) return
+  speechGestureEstablished = true
   try {
     // This used to call window.speechSynthesis.speak() directly, completely
     // outside the queue/pump() machinery: fire-and-forget, nothing tracking
@@ -40,9 +97,10 @@ export function unlockAudio() {
     // synchronously, and pump() calls speechSynthesis.speak() synchronously
     // too as long as nothing else is ahead of it in the queue, which is
     // always true here since this is the very first thing the app ever
-    // speaks. So the speak() call still lands inside the same user-gesture
-    // call stack that unlockAudio() was invoked from -- the constraint iOS
-    // actually enforces -- even though it is now a managed queue item.
+    // speaks. So the speak() call still lands inside the same click call
+    // stack that establishSpeechGesture() was invoked from -- the
+    // constraint iOS actually enforces -- even though it is now a managed
+    // queue item.
     //
     // Text is '.' rather than ' ': speakNow() treats an all-whitespace
     // string as "nothing to say" and resolves immediately WITHOUT ever
@@ -53,16 +111,6 @@ export function unlockAudio() {
   } catch (e) {
     // ignore
   }
-  // iOS populates getVoices() lazily, and on some builds only after the first
-  // speak(). This is the first user gesture in the app, so it's the earliest
-  // moment a real voice list can exist -- grab it here rather than waiting for
-  // a voiceschanged event that may never arrive.
-  refreshVoices()
-  // Same gesture, same reason: an AudioContext created outside one starts
-  // suspended on iOS. Warming the buffers here means the first drill sound of
-  // the session is already decoded when the child reaches it.
-  warmSoundAssets()
-  startSpeechWatchdog()
 }
 
 // ---- iOS/iPadOS Safari speech daemon watchdog ----
