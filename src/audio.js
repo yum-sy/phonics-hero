@@ -23,9 +23,33 @@ export function unlockAudio() {
   if (audioUnlocked) return
   audioUnlocked = true
   try {
-    const u = new SpeechSynthesisUtterance(' ')
-    u.volume = 0
-    window.speechSynthesis.speak(u)
+    // This used to call window.speechSynthesis.speak() directly, completely
+    // outside the queue/pump() machinery: fire-and-forget, nothing tracking
+    // whether it ever completed. That made it a single point of failure --
+    // the browser's native speech queue is FIFO, so if THIS ONE utterance
+    // ever silently stalled (no onstart/onend/onerror, a real and documented
+    // WebKit failure mode), every word utterance queued after it for the
+    // rest of the session would be stuck behind it forever, and this module's
+    // own "never call cancel()" rule meant nothing could recover it.
+    //
+    // Routing it through push()/makeItem() instead gives it the same
+    // protections every other utterance gets: minSpeechMs's floor, the
+    // safety timer that guarantees SOME resolution even if the engine never
+    // reports, and now the jam watchdog below. It is still fire-and-forget
+    // from the CALLER's point of view (not awaited) -- push() calls pump()
+    // synchronously, and pump() calls speechSynthesis.speak() synchronously
+    // too as long as nothing else is ahead of it in the queue, which is
+    // always true here since this is the very first thing the app ever
+    // speaks. So the speak() call still lands inside the same user-gesture
+    // call stack that unlockAudio() was invoked from -- the constraint iOS
+    // actually enforces -- even though it is now a managed queue item.
+    //
+    // Text is '.' rather than ' ': speakNow() treats an all-whitespace
+    // string as "nothing to say" and resolves immediately WITHOUT ever
+    // calling speak() at all (see the `!raw.trim()` guard below) -- which
+    // would silently skip the actual unlock call this function exists to
+    // make. volume 0 is what keeps it silent, not the text.
+    push(makeItem('.', 'en-US', 1, false, 0))
   } catch (e) {
     // ignore
   }
@@ -870,8 +894,12 @@ let lastEnqueued = null
 // Declared here rather than next to speakTap because pump() releases it.
 let pendingTap = null
 
-function makeItem(text, lang, rate, tap) {
-  const item = { text, lang, rate, tap, resolve: null, done: null }
+// `volume` defaults to 1 (normal, audible speech) for every real call site in
+// this file. The one exception is the unlock utterance in unlockAudio(),
+// which passes 0 -- it exists only to satisfy iOS's "one speak() inside a
+// gesture" requirement and must never be heard.
+function makeItem(text, lang, rate, tap, volume = 1) {
+  const item = { text, lang, rate, tap, volume, resolve: null, done: null }
   item.done = new Promise((r) => {
     item.resolve = r
   })
@@ -950,7 +978,7 @@ async function pump() {
         // source node threw. Every one of those routes to TTS, so the only way
         // this item makes no sound at all is a speechSynthesis that makes none.
         trusted = played === null
-          ? await speakNow(item.text, item.lang, item.rate)
+          ? await speakNow(item.text, item.lang, item.rate, item.volume)
           : played
       } catch (e) {
         // ignore -- treat as spoken, and as untrustworthy
@@ -966,6 +994,93 @@ async function pump() {
   }
 }
 
+// ---- jammed-daemon recovery ----
+//
+// speakNow()'s safety timer already guarantees this module's OWN promise
+// chain never deadlocks -- pump() always advances, one way or another. But
+// that is not the same thing as the engine recovering. If the real WebKit
+// speech daemon has wedged (the "next speak() after idle" bug the watchdog
+// above exists for, or some other stall with the same shape), the browser's
+// `speechSynthesis.speaking` flag can stay stuck `true` forever even after
+// this module has internally given up and moved on -- which means every
+// utterance queued after the jammed one is handed to an engine that is still
+// "busy" with a dead one, and none of them ever produce sound either. From
+// the outside that reads exactly like the real-device report: phoneme
+// sounds (WebAudio, a separate path) keep working while every word (TTS)
+// goes silent from one point on, with the game otherwise proceeding
+// normally because pump()'s safety timers keep resolving promises.
+//
+// The signal used here is deliberately narrow: only checked when an
+// utterance's OWN safety timer had to fire, i.e. neither onend nor onerror
+// ever arrived for it (see the `!reported` call below). That is already the
+// rare/abnormal case. Checked a moment later whether the engine is STILL
+// reporting `speaking === true` at that point -- if so, this is not "an
+// utterance that took a while", it is evidence the daemon dropped an item
+// and never told anyone.
+let jamRecoveryInFlight = false
+
+function scheduleJamCheck(rawText) {
+  if (!('speechSynthesis' in window)) return
+  if (jamRecoveryInFlight) return
+  jamRecoveryInFlight = true
+  setTimeout(() => attemptJamRecovery(rawText, 0), 500)
+}
+
+function attemptJamRecovery(rawText, attempt) {
+  let stillStuck = false
+  try {
+    stillStuck = !!window.speechSynthesis.speaking
+  } catch (e) {
+    jamRecoveryInFlight = false
+    return
+  }
+  if (!stillStuck) {
+    // Cleared on its own -- the safety timer firing was the ordinary
+    // "onend never arrived for this one utterance" case, not a stuck daemon.
+    jamRecoveryInFlight = false
+    return
+  }
+  console.warn(
+    '[audio] speechSynthesis appears jammed: speaking=true well after this ' +
+      'module\'s own safety timer gave up on "' + rawText + '" (attempt ' +
+      attempt + '). Future word audio may be silent until this clears.'
+  )
+  if (attempt === 0) {
+    // A more insistent version of kickSpeechDaemon(): that helper refuses to
+    // touch the engine while `speaking` is true, because normally that means
+    // a REAL utterance is in flight and pausing it would be an audible
+    // hiccup. That guard does not apply here -- we already have strong
+    // evidence (our own safety timer fired for this exact utterance) that
+    // nothing legitimate is playing, so a pause()/resume() kick is safe to
+    // attempt directly.
+    try {
+      window.speechSynthesis.pause()
+      window.speechSynthesis.resume()
+    } catch (e) {
+      // ignore -- fall through to the re-check below regardless
+    }
+    setTimeout(() => attemptJamRecovery(rawText, 1), 500)
+    return
+  }
+  // Last resort. cancel() is banned everywhere else in this file because it
+  // kills a queue that might have real, audible speech in flight -- but
+  // there is nothing left to protect at this point: this module's own
+  // safety timer already declared the utterance over internally (that is
+  // WHY this check ran at all), and a pause()/resume() kick -- which only
+  // ever clears a genuinely wedged daemon, never a speaking one, since it is
+  // a no-op on real audio -- did not clear it either. Two independent
+  // signals (safety-timer-without-report, then kick-without-recovery) is the
+  // bar for using the one call this module otherwise refuses to make.
+  console.warn('[audio] speechSynthesis still jammed after a kick -- calling cancel() to unstick the daemon')
+  try {
+    window.speechSynthesis.cancel()
+  } catch (e) {
+    // ignore
+  } finally {
+    jamRecoveryInFlight = false
+  }
+}
+
 // Resolves with `true` when the engine's own onend arrived at or after the
 // floor below -- i.e. this engine reported completion no earlier than the
 // audio can possibly have finished, so its report is trustworthy for this
@@ -974,7 +1089,7 @@ async function pump() {
 // safety timer fired. pump() spends that one bit: it is the only evidence
 // this module has about whether the sound is really over, and the fast tap
 // gap is only safe when it says yes.
-function speakNow(text, lang, rate) {
+function speakNow(text, lang, rate, volume = 1) {
   return new Promise((resolve) => {
     if (!('speechSynthesis' in window)) {
       resolve(true)
@@ -997,6 +1112,13 @@ function speakNow(text, lang, rate) {
       if (done) return
       done = true
       clearTimeout(safetyTimer)
+      // Neither onend nor onerror ever arrived for this utterance -- either
+      // the safety timer above had to fire on its own, or speak() itself
+      // threw synchronously (see the catch below). Both are the narrow
+      // signal scheduleJamCheck() looks for; it only warns/acts if the
+      // engine is STILL reporting `speaking` a moment later, so a one-off
+      // flaky utterance that clears on its own costs nothing here.
+      if (!reported) scheduleJamCheck(raw)
       // iPadOS Safari fires `onend` before playback has actually finished
       // (measured: an instantly-resolving onend lets a following utterance
       // start 2.3s into a still-playing Korean recap line). The queue's whole
@@ -1048,6 +1170,7 @@ function speakNow(text, lang, rate) {
       }
     }
     utter.rate = rate
+    utter.volume = volume
     const reportedFinish = () => {
       reported = true
       finish()
