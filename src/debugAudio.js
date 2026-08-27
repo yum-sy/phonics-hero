@@ -125,6 +125,31 @@ export function mountAudioDebugPanel() {
       window.speechSynthesis.speak(u)
     }, 2000)
   })
+  // The real game's onTap() (screens.js) fires its handler from
+  // `pointerdown`, not `click` -- deliberately, for touch responsiveness.
+  // A and B above both used a plain <button>, whose only listener here is
+  // `click` (a mouse/tap "activation" event fired on release). If iOS
+  // WebKit only grants speechSynthesis a live user-activation window for
+  // click/touchend-style events and NOT pointerdown/touchstart (touchstart
+  // can be the start of a scroll, not a deliberate tap, so some iOS APIs
+  // are documented to require the touchEND-family event instead), then
+  // every one of the real game's pointerdown-triggered speak() calls would
+  // be silently rejected while an identical click-triggered call succeeds
+  // -- exactly the split observed so far (debug buttons: audible; real
+  // game: silent). This box has its own pointerdown listener, bypassing
+  // the button's click entirely, to test that split directly.
+  const pdBox = document.createElement('div')
+  pdBox.textContent = 'TEST C: tap here (pointerdown, not click)'
+  pdBox.style.cssText =
+    'font:10px monospace;padding:6px;border:1px solid #0f0;margin-top:4px;' +
+    'background:#030;cursor:pointer;'
+  pdBox.addEventListener('pointerdown', () => {
+    log('TEST C: pointerdown fired -- calling raw speak() synchronously inside it...')
+    const u = new SpeechSynthesisUtterance('testing pointerdown')
+    u.lang = 'en-US'
+    window.speechSynthesis.speak(u)
+  })
+  bar.appendChild(pdBox)
   // navigator.clipboard needs a secure context (https/localhost) and
   // silently isn't available over plain http:// LAN addresses, which is
   // exactly how this gets loaded on a real device -- so instead of the
