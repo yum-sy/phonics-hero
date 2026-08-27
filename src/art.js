@@ -794,16 +794,6 @@ const HERO_PALETTES = {
   // `inkColor` is set here rather than left to the art function because this
   // character is red/gold while heroPoweredArmor's own default is indigo.
   'captain-pin': { style: 'superhero-armor', bodyColor: '#c0272d', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#8a1a1c', maskColor: '#7a1418', visorColor: '#8ef0ff', inkColor: '#6e1216', emblem: '★' },
-  // 챕터 8 재배정(로봇 -> 마블). 같은 4개 아키타입 함수를 재사용하되 새 이름
-  // +새 엠블럼(IE/EE/OR/★)으로 -- nitro/speedy/stormer 가 heroRobot 을
-  // 재사용했던 것과 같은 패턴이다. `superhero-armor`(heroPoweredArmor) 는
-  // 이미 "가장 두꺼운 실루엣, 챕터 보스 합체 폼용" 으로 설계돼 있어서
-  // captain-pin 처럼 보스 자리에 그대로 쓴다 -- 로봇처럼 별도 "deluxe"
-  // 함수가 필요 없다.
-  'comet': { style: 'superhero-acrobat', bodyColor: '#1f8a7a', accent: '#0d4a40', capeColor: '#0d4a40', emblem: 'IE' },
-  'halo': { style: 'superhero-shield', bodyColor: '#c9821f', accent: '#f5f2ea', capeColor: '#6b4409', emblem: 'EE' },
-  'torque': { style: 'superhero-thunder', bodyColor: '#8f3a6b', accent: '#e8c9d8', capeColor: '#4a1f38', maskColor: '#e8c9d8', emblem: 'OR' },
-  'captain-nova': { style: 'superhero-armor', bodyColor: '#2f4ea8', accent: '#f4c95d', panelColor: '#f4c95d', capeColor: '#1a2f63', maskColor: '#16224a', visorColor: '#8ef0ff', inkColor: '#12193d', emblem: '★' },
   // 6.00 -> 8.75
   'coco': { style: 'dino-raptor', bodyColor: '#4bb377', accent: '#17512f', emblem: 'C' },
   'eddy': { style: 'dino-armored', bodyColor: '#6d8fd6', accent: '#2f4a86', emblem: 'E' },
