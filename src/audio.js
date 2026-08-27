@@ -1227,11 +1227,13 @@ function speakNow(text, lang, rate, volume = 1) {
     const silent = volume === 0
     let done = false
     let reported = false // did onend/onerror fire, or only the safety timer?
+    let pollTimer = null
     const startedAt = Date.now()
     const finish = () => {
       if (done) return
       done = true
       clearTimeout(safetyTimer)
+      clearTimeout(pollTimer)
       // Neither onend nor onerror ever arrived for this utterance -- either
       // the safety timer above had to fire on its own, or speak() itself
       // threw synchronously (see the catch below). Both are the narrow
@@ -1328,6 +1330,38 @@ function speakNow(text, lang, rate, volume = 1) {
       ? 300
       : Math.min(30000, Math.max(2500, (1500 + raw.length * 120) * slow))
     const safetyTimer = setTimeout(finish, estimatedMs)
+    // Real-device reports (this whole file is full of them) point at onend
+    // going MISSING far more than it goes merely slow -- the audio itself
+    // finishes close to its natural length, but no event ever tells this
+    // code so, and every such utterance used to eat the full padded
+    // `estimatedMs` floor above regardless of what it actually was. With
+    // several instructional lines routinely queued ahead of a beat's first
+    // tap-triggered word, ANY ONE of them hitting this was enough to
+    // reproduce "the first sound of a screen takes 5+ seconds" -- not just
+    // the unlock ping `silent` already covers above.
+    //
+    // Once a REALISTIC lower bound on this utterance's own length has
+    // passed (minSpeechMs -- the same fitted estimate the anti-overlap gap
+    // logic above already trusts, deliberately shorter than the padded
+    // safety net), start asking the engine itself whether it is still
+    // speaking. `speechSynthesis.speaking` going false is the engine
+    // reporting completion through a DIFFERENT channel than the missing
+    // onend -- not a guess. This can only ever resolve SOONER than
+    // `estimatedMs`, never later: that timer above still fires regardless,
+    // still the backstop for an engine that is genuinely jammed (speaking
+    // stuck true forever, the case scheduleJamCheck exists for).
+    if (!silent) {
+      const probeAfter = Math.min(estimatedMs, minSpeechMs(raw, lang, rate))
+      const poll = () => {
+        if (done) return
+        if (!window.speechSynthesis.speaking) {
+          finish()
+          return
+        }
+        pollTimer = setTimeout(poll, 120)
+      }
+      pollTimer = setTimeout(poll, probeAfter)
+    }
     try {
       window.speechSynthesis.speak(utter)
     } catch (e) {
