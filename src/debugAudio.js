@@ -150,6 +150,63 @@ export function mountAudioDebugPanel() {
       log('test 6 threw: ' + e)
     }
   })
+  async function playSss() {
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    const ctx = new Ctx()
+    if (ctx.state !== 'running') await ctx.resume().catch(() => {})
+    const res = await fetch('/sounds/sss.wav')
+    const buf = await ctx.decodeAudioData(await res.arrayBuffer())
+    await new Promise((resolve) => {
+      const src = ctx.createBufferSource()
+      src.buffer = buf
+      src.connect(ctx.destination)
+      src.onended = resolve
+      src.start()
+      log('WebAudio sss playback started')
+    })
+    log('WebAudio sss playback onended')
+  }
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+  mkBtn('7. WebAudio -> wait 200ms -> speakEN("dog")', async () => {
+    log('=== test 7: WebAudio then a 200ms delay before speakEN("dog") ===')
+    try {
+      await playSss()
+      await sleep(200)
+      log('...calling speakEN("dog") after 200ms delay...')
+      await speakEN('dog')
+      log('speakEN("dog") resolved')
+    } catch (e) {
+      log('test 7 threw: ' + e)
+    }
+  })
+  mkBtn('8. WebAudio -> kick(pause/resume) -> speakEN("dog") [no delay]', async () => {
+    log('=== test 8: WebAudio then an immediate pause()/resume() kick, then speakEN("dog") right away ===')
+    try {
+      await playSss()
+      window.speechSynthesis.pause()
+      window.speechSynthesis.resume()
+      log('kicked (pause+resume), calling speakEN("dog") immediately...')
+      await speakEN('dog')
+      log('speakEN("dog") resolved')
+    } catch (e) {
+      log('test 8 threw: ' + e)
+    }
+  })
+  mkBtn('9. WebAudio -> kick -> wait 150ms -> speakEN("dog")', async () => {
+    log('=== test 9: WebAudio, kick, THEN a 150ms delay, then speakEN("dog") ===')
+    try {
+      await playSss()
+      window.speechSynthesis.pause()
+      window.speechSynthesis.resume()
+      log('kicked, waiting 150ms...')
+      await sleep(150)
+      log('...calling speakEN("dog")...')
+      await speakEN('dog')
+      log('speakEN("dog") resolved')
+    } catch (e) {
+      log('test 9 threw: ' + e)
+    }
+  })
   mkBtn('Refresh', render)
   mkBtn('Clear log', () => {
     lines.length = 0
