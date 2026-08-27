@@ -226,6 +226,21 @@ let audioCtx = null
 const soundBuffers = new Map()
 const soundLoading = new Set()
 
+// Fetching + decoding a WAV does NOT require a user gesture (only ctx.resume()
+// and actual playback do) -- so starting these downloads at module load,
+// instead of waiting for the first tap (the old warmSoundAssets() timing),
+// gives them a multi-tap, multi-render head start before the very first
+// teach beat can possibly ask for one. That head start is what closes the
+// race documented in soundBufferFor()'s "not warmed yet" branch: lose it and
+// the FIRST occurrence of a sound falls back to TTS, which reads an asset
+// key like `sss` as its letter names ("ess ess ess") -- on localhost the
+// fetch finishes in tens of ms so this never shows, but over real Wi-Fi
+// (iPad -> dev server) it reliably does, right on the very first sound of
+// the whole app (measured/confirmed via CDP against real Chrome).
+if (typeof window !== 'undefined') {
+  for (const key of SOUND_ASSETS) loadSound(key)
+}
+
 function ensureAudioCtx() {
   if (audioCtx !== null) return audioCtx
   const Ctx = window.AudioContext || window.webkitAudioContext
@@ -273,8 +288,12 @@ function loadSound(key) {
   })()
 }
 
-// Fired from the first user gesture. Nothing awaits it -- a sound that is not
-// decoded yet is simply awaited by pump() when it is needed.
+// Fired from the first user gesture. The downloads themselves already started
+// at module load (see the loadSound() loop above) -- this only needs to
+// resume the AudioContext, which DOES require a real gesture on iOS. Also
+// re-triggers loadSound() for any key a slow module-load-time fetch hasn't
+// reached yet; loadSound() is idempotent (no-ops once loading/loaded), so
+// this is a harmless top-up, not a second race.
 function warmSoundAssets() {
   resumeAudioCtx()
   for (const key of SOUND_ASSETS) loadSound(key)
