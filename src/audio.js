@@ -432,7 +432,36 @@ function playSound(buffer) {
     // non-looping buffer, and a timer cannot be withheld by a context that
     // gets suspended mid-play, which would deadlock the queue. Background-tab
     // throttling can only make it later, never earlier.
-    setTimeout(() => resolve(true), Math.ceil(buffer.duration * 1000))
+    setTimeout(() => {
+      // Real-device report (2026-08-27 session): a live event log (every
+      // speak()/WebAudio call hooked and shown on-screen) caught a whole
+      // page session where speechSynthesis produced literally zero real
+      // onstart/onend for any word, ever, while several WebAudio phoneme
+      // plays happened first and kept working throughout. Neither
+      // pause()/resume() kicks nor a forced cancel() (see UNHEARD_STREAK_LIMIT
+      // above) recovered it either -- both are queue/daemon-state nudges,
+      // and this didn't look like a stuck queue, it looked like
+      // speechSynthesis never getting the audio session at all. iOS is
+      // documented (outside this app too) to arbitrate ONE active audio
+      // session category across an app's WebAudio and speechSynthesis
+      // together -- leaving the AudioContext sitting in 'running' after
+      // each phoneme, as this file always has, may be holding that session
+      // in a state speechSynthesis's own speak() can't take over from,
+      // rather than merely leaving stale UI state a kick can nudge.
+      // Suspending here hands it back after every single phoneme play, not
+      // just at idle moments -- resolveAssetAudio() already resumes it
+      // (with its own bounded wait) the next time an asset is needed, so
+      // this trades a small resume-latency tax on the NEXT phoneme for a
+      // chance at unblocking every word TTS call in between. Unconfirmed
+      // whether this actually fixes the real-device case -- it is the next
+      // untried lever, not a proven fix.
+      try {
+        ctx.suspend()
+      } catch (e) {
+        // ignore
+      }
+      resolve(true)
+    }, Math.ceil(buffer.duration * 1000))
   })
 }
 
