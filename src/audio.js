@@ -1128,6 +1128,36 @@ async function pump() {
 // (giving up is not).
 let jamRecoveryInFlight = false
 
+// Counts consecutive non-silent utterances that finished WITHOUT a real
+// onend/onerror ever arriving (see UNHEARD_STREAK_LIMIT below). Reset to 0
+// the moment any utterance gets a real onend/onerror -- that is proof the
+// engine can still produce audio, so a single miss stays just a miss.
+let unheardStreak = 0
+
+// Real-device report (2026-08-27 session, later than the finding above):
+// attemptJamRecovery's `speaking === true` check is blind to a DIFFERENT
+// failure shape than the one it was built for. It assumes a jam looks like
+// `speaking` staying stuck true -- but a live device log (every speak()
+// call hooked and displayed on-screen, not guessed at) showed a whole page
+// session where EVERY utterance from the very first one onward got zero
+// onstart/onend, ever, while `speaking` evidently did NOT stay stuck true
+// (pause()/resume() kicks were firing throughout and never helped, and nothing
+// in that log ever reached this file's own "still jammed, calling cancel()"
+// warning) -- meaning `speaking` must have been reporting false shortly
+// after each call despite nothing audible ever happening. attemptJamRecovery
+// reads that as "cleared on its own, not a jam" and does nothing, because
+// from a single utterance's point of view a quick `speaking→false` and a
+// genuinely successful play look identical -- there is no per-utterance
+// signal that distinguishes "it actually played" from "the engine silently
+// dropped it and washed its hands of it fast." The distinguishing signal
+// only exists at a HIGHER level: several of these in a row, with not one
+// real onend anywhere among them, is not "a few unlucky rolls" -- it is the
+// whole daemon being dead for this page session. cancel() is safe to try
+// here specifically because the premise (several genuinely-silent
+// utterances in a row) means there is nothing real in flight for it to cut
+// off.
+const UNHEARD_STREAK_LIMIT = 3
+
 // Spacing between re-checks, in ms. The first element is the delay before
 // the FIRST check; each later element is the delay before the check that
 // follows a failed kick.
@@ -1253,6 +1283,34 @@ function speakNow(text, lang, rate, volume = 1) {
       if (silent) {
         resolve(reported)
         return
+      }
+      // See UNHEARD_STREAK_LIMIT above: a run of several non-silent
+      // utterances in a row with no real onend anywhere among them is the
+      // page-session-wide "daemon never actually produced audio" failure,
+      // which per-utterance recovery (attemptJamRecovery, gated on
+      // `speaking` staying stuck true) cannot see. One real onend proves
+      // the engine still works, so it resets the streak rather than only
+      // decrementing it -- this is meant to catch a daemon that is
+      // GENUINELY dead for the rest of the session, not to fire on an
+      // ordinary handful of scattered misses.
+      if (reported) {
+        unheardStreak = 0
+      } else {
+        unheardStreak += 1
+        if (unheardStreak >= UNHEARD_STREAK_LIMIT) {
+          unheardStreak = 0
+          console.warn(
+            '[audio] ' + UNHEARD_STREAK_LIMIT + ' utterances in a row never reported a real onend ' +
+              '(most recently "' + raw + '") -- this looks like the speech daemon is dead for this ' +
+              'whole page session, not a one-off miss. Forcing cancel() to try to reset it; safe here ' +
+              'because a run this long means nothing real was actually in flight to cut off.'
+          )
+          try {
+            window.speechSynthesis.cancel()
+          } catch (e) {
+            // ignore
+          }
+        }
       }
       // iPadOS Safari fires `onend` before playback has actually finished
       // (measured: an instantly-resolving onend lets a following utterance
