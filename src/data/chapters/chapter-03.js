@@ -138,10 +138,10 @@ export const chapter3 = {
           words: ['cat'],
         },
       ],
-      recapKo: '/k/ 소리를 찾았어요! Cat, key, cake, king — 모두 C로 시작해요!',
+      recapKo: '/k/ 소리를 찾았어요! Cat, key, cake, king<br>— 모두 C로 시작해요!',
       recapAudio: {
         ko: '씨 소리를 찾았어요! 잘 들어보세요.',
-        en: ['kuh', 'cat', 'key', 'cake'],
+        en: ['cat', 'key', 'cake'],
       },
     },
 
@@ -285,7 +285,7 @@ export const chapter3 = {
       recapKo: 'C는 C 소리를 내요. 그리고 K도 똑같은 K 소리를 내는 쌍둥이예요!',
       recapAudio: {
         ko: '씨와 케이는 소리가 똑같아요. 쌍둥이예요!',
-        en: ['kuh', 'cat', 'kuh', 'king'],
+        en: ['cat', 'king'],
       },
     },
 
@@ -439,7 +439,7 @@ export const chapter3 = {
       recapKo: 'E는 E 소리를 내요 — egg, elephant, ten! 그리고 C의 C 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '이번엔 새로운 모음 소리예요. 잘 들어보세요.',
-        en: ['eh', 'egg', 'elephant', 'ten'],
+        en: ['egg', 'elephant', 'ten'],
       },
     },
 
@@ -599,7 +599,7 @@ export const chapter3 = {
       recapKo: '이제 C, E, H를 모두 알아요! 케이라, 에디, 허비가 합체할 준비를 해요!',
       recapAudio: {
         ko: '에이치는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
-        en: ['huh', 'hat', 'hen', 'hand'],
+        en: ['hat', 'hen', 'hand'],
       },
     },
 

@@ -155,7 +155,7 @@ export const chapter9 = {
       recapKo: '새로운 소리를 찾았어요! Zip, zoo — 둘 다 이 소리가 들어있어요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['zze', 'zip', 'zoo'],
+        en: ['zip', 'zoo'],
       },
     },
 
@@ -288,7 +288,7 @@ export const chapter9 = {
       recapKo: 'Z는 Fizz의 꼬리처럼 지지직 소리를 내요 — zip, zoo!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 지퍼, 주!',
-        en: ['zze', 'zip', 'zoo'],
+        en: ['zip', 'zoo'],
       },
     },
 
@@ -425,7 +425,7 @@ export const chapter9 = {
       recapKo: 'W는 바람이 부는 것처럼 소리를 내요 — web, wig!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 웹, 위그!',
-        en: ['weh', 'web', 'wig'],
+        en: ['web', 'wig'],
       },
     },
 
@@ -640,7 +640,7 @@ export const chapter9 = {
       recapKo: '이제 Z, W, NG를 모두 알아요! Fizz, Talon, Wingo가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['ngh', 'king', 'ring'],
+        en: ['king', 'ring'],
       },
     },
 

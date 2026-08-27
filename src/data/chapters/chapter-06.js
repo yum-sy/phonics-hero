@@ -172,10 +172,10 @@ export const chapter6 = {
           words: ['lap'],
         },
       ],
-      recapKo: '/l/ 소리를 찾았어요! Lap, lid — 모두 L로 시작해요!',
+      recapKo: '/l/ 소리를 찾았어요! Lap, lid<br>— 모두 L로 시작해요!',
       recapAudio: {
         ko: '을 소리를 찾았어요! 잘 들어보세요.',
-        en: ['lll', 'lap', 'lid'],
+        en: ['lap', 'lid'],
       },
     },
 
@@ -320,7 +320,7 @@ export const chapter6 = {
       recapKo: 'L은 L 소리를 내요 — lap, lid! R의 R 소리와 헷갈리지 마세요!',
       recapAudio: {
         ko: '을은 이런 소리를 내요. 아르 소리와 다르니 잘 들어보세요.',
-        en: ['lll', 'lap', 'lid'],
+        en: ['lap', 'lid'],
       },
     },
 
@@ -458,7 +458,7 @@ export const chapter6 = {
       recapKo: 'F는 F 소리를 내요 — fit, fan! L의 L 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '에프는 이런 소리를 내요. 을 소리도 아직 기억하고 있어요.',
-        en: ['fff', 'fit', 'fan'],
+        en: ['fit', 'fan'],
       },
     },
 
@@ -675,7 +675,7 @@ export const chapter6 = {
       recapKo: '이제 L, F, B를 모두 알아요! Leo, Fifi, Bobo가 합체할 준비를 해요!',
       recapAudio: {
         ko: '비는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['buh', 'bag', 'bed'],
+        en: ['bag', 'bed'],
       },
     },
 

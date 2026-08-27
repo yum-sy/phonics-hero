@@ -148,7 +148,7 @@ export const chapter14 = {
       recapKo: '새로운 소리를 찾았어요! Car, star — 둘 다 이 소리가 들어있어요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['arh', 'car', 'star'],
+        en: ['car', 'star'],
       },
     },
 
@@ -299,7 +299,7 @@ export const chapter14 = {
       recapKo: 'AR은 엔진이 부릉거리는 것처럼 소리를 내요 — car, star!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 카, 스타!',
-        en: ['arh', 'car', 'star'],
+        en: ['car', 'star'],
       },
     },
 
@@ -499,7 +499,7 @@ export const chapter14 = {
       recapKo: '이제 AR, ER을 모두 알아요! Sparkit과 Magnix가 힘을 합쳐요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 두 소리를 모두 배웠어요.',
-        en: ['erh', 'her', 'fern'],
+        en: ['her', 'fern'],
       },
     },
 

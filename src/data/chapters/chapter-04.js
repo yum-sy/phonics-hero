@@ -130,10 +130,10 @@ export const chapter4 = {
           words: ['rat'],
         },
       ],
-      recapKo: '/r/ 소리를 찾았어요! Rat, ring, red, run — 모두 R로 시작해요!',
+      recapKo: '/r/ 소리를 찾았어요! Rat, ring, red, run<br>— 모두 R로 시작해요!',
       recapAudio: {
         ko: '아르 소리를 찾았어요! 잘 들어보세요.',
-        en: ['rrr', 'rat', 'ring', 'red'],
+        en: ['rat', 'ring', 'red'],
       },
     },
 
@@ -259,7 +259,7 @@ export const chapter4 = {
       recapKo: 'R은 R 소리를 내요 — rat, ring, red! 혀를 굴려서 R!',
       recapAudio: {
         ko: '아르는 이런 소리를 내요. 혀를 굴려보세요.',
-        en: ['rrr', 'rat', 'ring', 'red'],
+        en: ['rat', 'ring', 'red'],
       },
     },
 
@@ -393,7 +393,7 @@ export const chapter4 = {
       recapKo: 'M은 M 소리를 내요 — moon, man, mat! R의 R 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '엠은 이런 소리를 내요. 아르 소리도 기억하고 있어요.',
-        en: ['mmm', 'moon', 'man', 'mat'],
+        en: ['moon', 'man', 'mat'],
       },
     },
 
@@ -579,7 +579,7 @@ export const chapter4 = {
       recapKo: '이제 R, M, D를 모두 알아요! 로켓런, 마그넷몬, 드릴돌이가 합체할 준비를 해요!',
       recapAudio: {
         ko: '디는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
-        en: ['duh', 'dog', 'dad', 'red'],
+        en: ['dog', 'dad', 'red'],
       },
     },
 

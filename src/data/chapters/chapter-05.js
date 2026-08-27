@@ -174,10 +174,10 @@ export const chapter5 = {
           words: ['gap'],
         },
       ],
-      recapKo: '/g/ 소리를 찾았어요! Gap, gum — 모두 G로 시작해요!',
+      recapKo: '/g/ 소리를 찾았어요! Gap, gum<br>— 모두 G로 시작해요!',
       recapAudio: {
         ko: '지 소리를 찾았어요! 잘 들어보세요.',
-        en: ['guh', 'gap', 'gum'],
+        en: ['gap', 'gum'],
       },
     },
 
@@ -304,7 +304,7 @@ export const chapter5 = {
       recapKo: 'G는 G 소리를 내요 — gap, gum! K의 K 소리와 헷갈리지 마세요!',
       recapAudio: {
         ko: '지는 이런 소리를 내요. 키 소리와 다르니 잘 들어보세요.',
-        en: ['guh', 'gap', 'gum'],
+        en: ['gap', 'gum'],
       },
     },
 
@@ -430,7 +430,7 @@ export const chapter5 = {
       recapKo: 'O는 O 소리를 내요 — got, on, dog! G의 G 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '오는 이런 소리를 내요. 에이 소리와 다르니 잘 들어보세요.',
-        en: ['awh', 'got', 'dog'],
+        en: ['got', 'dog'],
       },
     },
 
@@ -613,7 +613,7 @@ export const chapter5 = {
       recapKo: '이제 G, O, U를 모두 알아요! Gogo, Ollie, Umo가 합체할 준비를 해요!',
       recapAudio: {
         ko: '유는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['uh', 'sun', 'nut'],
+        en: ['sun', 'nut'],
       },
     },
 

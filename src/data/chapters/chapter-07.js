@@ -224,10 +224,10 @@ export const chapter7 = {
           words: ['rain'],
         },
       ],
-      recapKo: '새로운 소리를 찾았어요! Rain, aim — 모두 이 소리로 시작해요!',
+      recapKo: '새로운 소리를 찾았어요! Rain, aim<br>— 모두 이 소리로 시작해요!',
       recapAudio: {
         ko: '에이아이는 이런 소리를 내요. 잘 들어보세요.',
-        en: ['a', 'rain', 'aim'],
+        en: ['rain', 'aim'],
       },
     },
 
@@ -383,7 +383,7 @@ export const chapter7 = {
       recapKo: 'AI는 A가 이름을 말할 때 소리를 내요 — rain, aim!',
       recapAudio: {
         ko: '에이아이는 이런 소리를 내요. 레인, 에임!',
-        en: ['a', 'rain', 'aim'],
+        en: ['rain', 'aim'],
       },
     },
 
@@ -521,7 +521,7 @@ export const chapter7 = {
       recapKo: 'J는 J 소리를 내요 — jam, jog! AI 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '제이는 이런 소리를 내요. 잼, 조그!',
-        en: ['juh', 'jam', 'jog'],
+        en: ['jam', 'jog'],
       },
     },
 
@@ -715,7 +715,7 @@ export const chapter7 = {
       recapKo: '이제 AI, J, OA를 모두 알아요! Ray, Jett, Cloak이 합체할 준비를 해요!',
       recapAudio: {
         ko: '오에이는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['oh', 'boat', 'coat'],
+        en: ['boat', 'coat'],
       },
     },
 

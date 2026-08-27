@@ -180,10 +180,10 @@ export const chapter1 = {
           words: ['sun'],
         },
       ],
-      recapKo: '/s/ 소리를 찾았어요! Sun, sock, star, snake — 모두 S로 시작해요!',
+      recapKo: '/s/ 소리를 찾았어요! Sun, sock, star, snake<br>— 모두 S로 시작해요!',
       recapAudio: {
         ko: '에스 소리를 찾았어요! 잘 들어보세요.',
-        en: ['sss', 'sun', 'sock', 'star'],
+        en: ['sun', 'sock', 'star'],
       },
     },
 
@@ -306,7 +306,7 @@ export const chapter1 = {
       recapKo: 'S는 S 소리를 내요 — sun, sock, star도 모두 기억해요!',
       recapAudio: {
         ko: '에스는 이런 소리를 내요. 따라 말해볼까요?',
-        en: ['sss', 'sun', 'sock', 'star'],
+        en: ['sun', 'sock', 'star'],
       },
     },
 
@@ -434,7 +434,7 @@ export const chapter1 = {
       recapKo: 'A는 A 소리를 내요 — 그리고 S도 아직 기억하고 있어요!',
       recapAudio: {
         ko: '에이는 이런 소리를 내요. 에스도 기억하고 있어요.',
-        en: ['aaa', 'ant', 'apple', 'sss'],
+        en: ['ant', 'apple'],
       },
     },
 
@@ -593,7 +593,7 @@ export const chapter1 = {
       recapKo: '이제 S, A, T를 모두 알아요! 새미, 에이스, 터보가 합체할 준비를 해요!',
       recapAudio: {
         ko: '티는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
-        en: ['tuh', 'top', 'tap'],
+        en: ['top', 'tap'],
       },
     },
 

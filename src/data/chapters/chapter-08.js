@@ -301,7 +301,7 @@ export const chapter8 = {
       recapAudio: {
         // 스테이지 1 은 글자꼴을 아직 안 보여주므로 글자 이름을 부르지 않는다.
         ko: '새로운 긴 소리를 배웠어요. 잘 들어보세요.',
-        en: ['eye', 'tie', 'pie'],
+        en: ['tie', 'pie'],
       },
     },
 
@@ -445,7 +445,7 @@ export const chapter8 = {
       recapKo: 'IE는 I가 이름을 말할 때 소리를 내요 — tie, pie!',
       recapAudio: {
         ko: '이 두 글자는 이런 소리를 내요. 타이, 파이!',
-        en: ['eye', 'tie', 'pie'],
+        en: ['tie', 'pie'],
       },
     },
 
@@ -606,7 +606,7 @@ export const chapter8 = {
       recapKo: 'EE는 E가 이름을 말할 때 소리를 내요 — bee, tree, feet!',
       recapAudio: {
         ko: '이 두 글자는 이런 소리를 내요. 비, 트리!',
-        en: ['ee', 'bee', 'tree'],
+        en: ['bee', 'tree'],
       },
     },
 
@@ -833,7 +833,7 @@ export const chapter8 = {
       recapKo: '이제 IE, EE, OR를 모두 알아요! Comet, Halo, Torque가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 두 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['or', 'fork', 'corn'],
+        en: ['fork', 'corn'],
       },
     },
 

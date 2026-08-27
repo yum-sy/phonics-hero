@@ -253,8 +253,6 @@ export const chapter17 = {
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
-          "kuh",
-          "lll",
           "cloud"
         ]
       }
@@ -516,7 +514,6 @@ export const chapter17 = {
       "recapAudio": {
         "ko": "이 소리들을 이어서 말해요.",
         "en": [
-          "lll",
           "cloud"
         ]
       }
@@ -766,8 +763,6 @@ export const chapter17 = {
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
-          "guh",
-          "lll",
           "glue"
         ]
       }
@@ -1252,7 +1247,6 @@ export const chapter17 = {
       "recapAudio": {
         "ko": "이 소리들을 이어서 말해요.",
         "en": [
-          "lll",
           "glue"
         ]
       }

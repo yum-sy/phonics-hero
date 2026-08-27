@@ -142,7 +142,7 @@ export const chapter11 = {
       recapKo: '새로운 소리를 찾았어요! Box, six — 둘 다 이 소리로 끝나요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['ksuh', 'box', 'six'],
+        en: ['box', 'six'],
       },
     },
 
@@ -276,7 +276,7 @@ export const chapter11 = {
       recapKo: 'X는 상자를 잠그는 것처럼 소리를 내요 — box, six!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 박스, 식스!',
-        en: ['ksuh', 'box', 'six'],
+        en: ['box', 'six'],
       },
     },
 
@@ -416,7 +416,7 @@ export const chapter11 = {
       recapKo: 'CH는 기차처럼 칙칙 소리를 내요 — chip, chin!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 칩, 친!',
-        en: ['ch', 'chip', 'chin'],
+        en: ['chip', 'chin'],
       },
     },
 
@@ -611,7 +611,7 @@ export const chapter11 = {
       recapKo: '이제 X, CH, SH를 모두 알아요! Sarge, Pluma, Blocko Jr.가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['shhu', 'ship', 'shed'],
+        en: ['ship', 'shed'],
       },
     },
 

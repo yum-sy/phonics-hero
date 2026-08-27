@@ -144,7 +144,7 @@ export const chapter12 = {
       recapKo: '새로운 소리를 찾았어요! Thin, thud — 둘 다 이 소리가 들어있어요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['thhu', 'thin', 'thud'],
+        en: ['thin', 'thud'],
       },
     },
 
@@ -280,7 +280,7 @@ export const chapter12 = {
       recapKo: 'TH는 엔진이 식을 때처럼 소리를 내요 — thin, thud!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 씬, 써드!',
-        en: ['thhu', 'thin', 'thud'],
+        en: ['thin', 'thud'],
       },
     },
 
@@ -420,7 +420,7 @@ export const chapter12 = {
       recapKo: 'QU는 바퀴가 구르는 것처럼 소리를 내요 — quiz, quack!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 퀴즈, 쾍!',
-        en: ['kw', 'quiz', 'quack'],
+        en: ['quiz', 'quack'],
       },
     },
 
@@ -614,7 +614,7 @@ export const chapter12 = {
       recapKo: '이제 TH, QU, OU를 모두 알아요! Nitro, Speedy, Stormer가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['ou', 'out', 'loud'],
+        en: ['out', 'loud'],
       },
     },
 

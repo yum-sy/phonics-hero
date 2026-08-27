@@ -209,8 +209,6 @@ export const chapter32 = {
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
-          "sss",
-          "tuh",
           "string"
         ]
       }
@@ -599,8 +597,6 @@ export const chapter32 = {
       "recapAudio": {
         "ko": "다시 연습했어요. 잘 들어보세요.",
         "en": [
-          "sss",
-          "tuh",
           "string"
         ]
       }
@@ -815,8 +811,6 @@ export const chapter32 = {
       "recapAudio": {
         "ko": "두 소리를 이어봤어요. 잘 들어보세요.",
         "en": [
-          "nnn",
-          "ch",
           "bench"
         ]
       }

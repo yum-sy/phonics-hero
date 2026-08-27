@@ -156,7 +156,7 @@ export const chapter10 = {
       recapKo: '새로운 소리를 찾았어요! Van, vet — 둘 다 이 소리가 들어있어요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['vve', 'van', 'vet'],
+        en: ['van', 'vet'],
       },
     },
 
@@ -288,7 +288,7 @@ export const chapter10 = {
       recapKo: 'V는 엔진처럼 붕붕 소리를 내요 — van, vet!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 밴, 벳!',
-        en: ['vve', 'van', 'vet'],
+        en: ['van', 'vet'],
       },
     },
 
@@ -440,7 +440,7 @@ export const chapter10 = {
       recapKo: 'OO는 moon처럼 길게, book처럼 짧게도 소리 낼 수 있어요!',
       recapAudio: {
         ko: '이 글자는 두 가지 소리를 내요. 문, 북!',
-        en: ['uuu', 'moon', 'uuh', 'book'],
+        en: ['moon', 'book'],
       },
     },
 
@@ -636,7 +636,7 @@ export const chapter10 = {
       recapKo: '이제 V, OO, Y를 모두 알아요! Bounce, Zoomer, Blocky가 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
-        en: ['yyuh', 'yam', 'yes'],
+        en: ['yam', 'yes'],
       },
     },
 

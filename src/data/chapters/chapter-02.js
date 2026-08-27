@@ -149,10 +149,10 @@ export const chapter2 = {
           words: ['ink'],
         },
       ],
-      recapKo: '/i/ 소리를 찾았어요! Ink, igloo, insect — 모두 I로 시작해요!',
+      recapKo: '/i/ 소리를 찾았어요! Ink, igloo, insect<br>— 모두 I로 시작해요!',
       recapAudio: {
         ko: '아이 소리를 찾았어요! 잘 들어보세요.',
-        en: ['ihh', 'ink', 'igloo', 'insect'],
+        en: ['ink', 'igloo', 'insect'],
       },
     },
 
@@ -252,7 +252,7 @@ export const chapter2 = {
       recapKo: 'I는 I 소리를 내요 — ink, igloo, insect도 모두 기억해요!',
       recapAudio: {
         ko: '아이는 이런 소리를 내요. 따라 말해볼까요?',
-        en: ['ihh', 'ink', 'igloo', 'insect'],
+        en: ['ink', 'igloo', 'insect'],
       },
     },
 
@@ -390,7 +390,7 @@ export const chapter2 = {
       recapKo: 'P는 P 소리를 내요 — 그리고 I의 I 소리도 아직 기억하고 있어요!',
       recapAudio: {
         ko: '피는 이런 소리를 내요. 아이 소리도 기억하고 있어요.',
-        en: ['puh', 'pig', 'pen', 'ihh'],
+        en: ['pig', 'pen'],
       },
     },
 
@@ -547,7 +547,7 @@ export const chapter2 = {
       recapKo: '이제 I, P, N을 모두 알아요! 잉키, 파워피, 나이토가 합체할 준비를 해요!',
       recapAudio: {
         ko: '엔은 이런 소리를 내요. 세 소리를 모두 배웠어요.',
-        en: ['nnn', 'net', 'nut', 'nose'],
+        en: ['net', 'nut', 'nose'],
       },
     },
 

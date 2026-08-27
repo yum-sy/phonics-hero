@@ -143,7 +143,7 @@ export const chapter13 = {
       recapKo: '새로운 소리를 찾았어요! Coin, boy — 둘 다 이 소리가 들어있어요!',
       recapAudio: {
         ko: '새로운 소리를 배웠어요. 잘 들어보세요.',
-        en: ['oi', 'coin', 'boy'],
+        en: ['coin', 'boy'],
       },
     },
 
@@ -278,7 +278,7 @@ export const chapter13 = {
       recapKo: 'OI는 신호가 튀어오르는 것처럼 소리를 내요 — coin, boy!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 코인, 보이!',
-        en: ['oi', 'coin', 'boy'],
+        en: ['coin', 'boy'],
       },
     },
 
@@ -479,7 +479,7 @@ export const chapter13 = {
       recapKo: '이제 OI, UE를 모두 알아요! Beacon과 Cascade가 힘을 합쳐요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 두 소리를 모두 배웠어요.',
-        en: ['u', 'cue', 'glue'],
+        en: ['cue', 'glue'],
       },
     },
 
