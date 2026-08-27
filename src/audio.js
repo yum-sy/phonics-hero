@@ -1216,6 +1216,15 @@ function speakNow(text, lang, rate, volume = 1) {
       resolve(true) // nothing is playing, so nothing can be landed on
       return
     }
+    // The gesture-unlock ping (unlockAudio's '.') is volume 0 -- nothing
+    // audible is ever riding on this utterance's timing, so none of the
+    // "protect against a lying/slow engine" waits below exist for its sake.
+    // Every real item queued behind it (e.g. the child's very first tap)
+    // still has to wait for THIS item to resolve first (the queue is strict
+    // FIFO), so a multi-second grace period here is pure latency handed to
+    // the first real sound of the session -- which is exactly the "5+ second
+    // delay only on the very first tap" symptom this was fitted to fix.
+    const silent = volume === 0
     let done = false
     let reported = false // did onend/onerror fire, or only the safety timer?
     const startedAt = Date.now()
@@ -1230,6 +1239,10 @@ function speakNow(text, lang, rate, volume = 1) {
       // engine is STILL reporting `speaking` a moment later, so a one-off
       // flaky utterance that clears on its own costs nothing here.
       if (!reported) scheduleJamCheck(raw)
+      if (silent) {
+        resolve(reported)
+        return
+      }
       // iPadOS Safari fires `onend` before playback has actually finished
       // (measured: an instantly-resolving onend lets a following utterance
       // start 2.3s into a still-playing Korean recap line). The queue's whole
@@ -1305,7 +1318,15 @@ function speakNow(text, lang, rate, volume = 1) {
     // ~4-5s. Clamped below at 1 so a fast rate can only ever widen the net,
     // never tighten it -- this must stay a net that never fires in practice.
     const slow = 1 / Math.min(1, Math.max(0.05, rate || 1))
-    const estimatedMs = Math.min(30000, Math.max(2500, (1500 + raw.length * 120) * slow))
+    // The silent unlock ping gets a short, fixed net instead of the
+    // length/rate-scaled one below: nothing audible depends on how long it
+    // waits, so there is no reason to make it (and everything queued behind
+    // it, including the child's first tap) sit through a multi-second grace
+    // period for an onend that may simply never arrive for a near-empty,
+    // inaudible utterance on real WebKit.
+    const estimatedMs = silent
+      ? 300
+      : Math.min(30000, Math.max(2500, (1500 + raw.length * 120) * slow))
     const safetyTimer = setTimeout(finish, estimatedMs)
     try {
       window.speechSynthesis.speak(utter)
