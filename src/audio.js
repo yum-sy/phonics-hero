@@ -221,22 +221,22 @@ let audioCtx = null
 // drill would put a request in front of every sound.
 //
 // A key that is still LOADING has no entry here, only an entry in
-// `soundLoading`. That split is deliberate: the play path reads this map
-// synchronously and never awaits a load (see soundBufferFor).
+// `soundLoading`, whose value is the in-flight promise -- awaitable by
+// resolveAssetAudio() below for the one case where waiting instead of
+// falling back to TTS matters (a known asset key with no buffer yet).
 const soundBuffers = new Map()
-const soundLoading = new Set()
+const soundLoading = new Map()
 
 // Fetching + decoding a WAV does NOT require a user gesture (only ctx.resume()
 // and actual playback do) -- so starting these downloads at module load,
 // instead of waiting for the first tap (the old warmSoundAssets() timing),
 // gives them a multi-tap, multi-render head start before the very first
-// teach beat can possibly ask for one. That head start is what closes the
-// race documented in soundBufferFor()'s "not warmed yet" branch: lose it and
-// the FIRST occurrence of a sound falls back to TTS, which reads an asset
-// key like `sss` as its letter names ("ess ess ess") -- on localhost the
-// fetch finishes in tens of ms so this never shows, but over real Wi-Fi
-// (iPad -> dev server) it reliably does, right on the very first sound of
-// the whole app (measured/confirmed via CDP against real Chrome).
+// teach beat can possibly ask for one. That head start shrinks how often
+// resolveAssetAudio() (below) has to actually wait for a load instead of
+// finding the buffer already sitting in soundBuffers -- on localhost the
+// fetch finishes in tens of ms so it never mattered there, but over real
+// Wi-Fi (iPad -> dev server) it reliably did (measured/confirmed via CDP
+// against real Chrome).
 if (typeof window !== 'undefined') {
   for (const key of SOUND_ASSETS) loadSound(key)
 }
@@ -256,28 +256,22 @@ function ensureAudioCtx() {
   return audioCtx
 }
 
-// Starts a load if one is not already done or in flight. Returns nothing on
-// purpose: NOTHING IN THE PLAY PATH EVER AWAITS THIS.
-//
-// The first version did await it, with a deadline to stop a stalled fetch from
-// freezing the queue, and both halves of that were wrong. Awaiting a network
-// operation at the front of the queue makes every sound depend on the network
-// being up; and the deadline needed a timeout constant, i.e. exactly the kind
-// of fitted guess this path was supposed to be free of. Not awaiting removes
-// both: an unfinished load simply means this one occurrence is spoken instead,
-// and the buffer is there for the next one.
+// Starts a load if one is not already done or in flight. Callers other than
+// resolveAssetAudio() (the module-load warmup loop, warmSoundAssets()'s
+// top-up) still fire-and-forget this -- they have nothing to wait for.
+// resolveAssetAudio() is the one caller that awaits the returned promise,
+// bounded by ASSET_WAIT_TIMEOUT_MS so a genuinely dead network can't stall it
+// forever.
 function loadSound(key) {
   if (soundBuffers.has(key) || soundLoading.has(key)) return
-  soundLoading.add(key)
-  ;(async () => {
+  const p = (async () => {
     let buffer = null
     const ctx = ensureAudioCtx()
     if (ctx) {
       try {
         const res = await fetch(`${SOUND_BASE}${key}.${SOUND_EXT}`)
         // On a WebKit old enough to only have the callback form of
-        // decodeAudioData this awaits `undefined` and stores null, i.e. TTS.
-        // That is the correct degradation: never silence.
+        // decodeAudioData this awaits `undefined` and stores null.
         if (res.ok) buffer = (await ctx.decodeAudioData(await res.arrayBuffer())) || null
       } catch (e) {
         buffer = null
@@ -286,6 +280,7 @@ function loadSound(key) {
     soundBuffers.set(key, buffer)
     soundLoading.delete(key)
   })()
+  soundLoading.set(key, p)
 }
 
 // Fired from the first user gesture. The downloads themselves already started
@@ -299,40 +294,72 @@ function warmSoundAssets() {
   for (const key of SOUND_ASSETS) loadSound(key)
 }
 
-// The whole asset decision, and it is SYNCHRONOUS -- pump() calls it at the
-// front of the queue and gets an answer without awaiting anything. Every "no"
-// here means the string is spoken by TTS instead, so there is no route from
-// here to silence.
+// Bound for the two waits inside resolveAssetAudio() (context resume,
+// buffer load). Matches the magnitude of this file's other "never truly
+// hang" bounds (see JAM_RECHECK_DELAYS_MS). In real usage neither wait
+// should be hit for more than a beat: resumeAudioCtx() already fired inside
+// the same gesture that got the user here, and loadSound() for every key
+// already started at module load (see the loop above) -- so the buffer is
+// usually already sitting in soundBuffers by the time this runs.
+const ASSET_WAIT_TIMEOUT_MS = 3000
+
+// The asset decision for a queue item, and the one place TTS is FORBIDDEN as
+// a fallback for asset-key text. Three outcomes:
+//  - { buffer } -- decoded and ready, pump() plays it.
+//  - { skip: true } -- this text IS a known asset key (e.g. "sss"), but no
+//    buffer could be produced even after waiting. Reading the raw key via
+//    TTS is not a degraded-but-acceptable substitute here -- it is a
+//    *guaranteed* wrong pronunciation: `sss`/`mmm`/`lll`/etc. are measured
+//    byte-identical to their TTS letter-name spellout ("ess ess ess"), the
+//    exact failure mode the WAV-asset pivot exists to prevent (see
+//    CLAUDE.md). Teaching nothing this one occurrence is strictly better
+//    than teaching the wrong sound, so pump() must go silent here, not fall
+//    through to speakNow().
+//  - null -- not an asset key at all (a real word, Korean text, ...) --
+//    pump() falls through to TTS exactly as before; that path is correct
+//    and unaffected by any of this.
 //
-// An asset only ever plays into a RUNNING context. A suspended one accepts
-// start() and produces nothing, and this project has just been through "소리가
-// 전혀 안나와".
+// This function AWAITS (unlike the old synchronous soundBufferFor it
+// replaces), but only for asset-key text, and only up to
+// ASSET_WAIT_TIMEOUT_MS per wait -- the two things the old version's
+// "NOTHING IN THE PLAY PATH EVER AWAITS THIS" comment was guarding against
+// (an unbounded wait, and one that isn't specific to asset text) don't apply
+// here. A real word still resolves on the very first line, synchronously in
+// spirit.
 //
-// resume() is fired and NOT awaited, and that shape exists to avoid a measured
-// deadlock rather than as a style choice. In headless Chrome with no user
-// gesture, `resume()` returns a promise that never settles at all (probed:
-// still pending after 3000ms, state still 'suspended'). Awaiting it stalls
-// pump(), and pump() is what every beat transition in the app is gated on -- so
-// an autoplay policy the app cannot satisfy would present as a permanently
-// frozen screen. Firing it costs nothing and lets the *next* sound find a
-// running context; the real unlock is unlockAudio(), inside a real gesture.
-function soundBufferFor(text, lang) {
+// The resumeAudioCtx() call below still only FIRES resume(), never awaits
+// the promise it returns -- that promise can sit pending forever with no
+// user gesture (measured: still 'suspended' after 3000ms in headless
+// Chrome). What this function awaits instead is ctx.state via polling,
+// which is bounded by the deadline below regardless of what that promise
+// ever does.
+async function resolveAssetAudio(text, lang) {
   if (!lang.startsWith('en')) return null
   const key = text == null ? '' : String(text).trim()
   if (!SOUND_ASSETS.has(key)) return null
+
   const ctx = ensureAudioCtx()
-  if (!ctx) return null
+  if (!ctx) return { skip: true } // no Web Audio on this engine at all
+
   if (ctx.state !== 'running') {
     resumeAudioCtx()
-    return null
+    const deadline = Date.now() + ASSET_WAIT_TIMEOUT_MS
+    while (ctx.state !== 'running' && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 50))
+    }
+    if (ctx.state !== 'running') return { skip: true }
   }
+
   if (!soundBuffers.has(key)) {
-    // Not warmed (or warming lost the race with the first drill). Start it and
-    // speak this one occurrence -- the next one is the asset.
     loadSound(key)
-    return null
+    const pending = soundLoading.get(key)
+    if (pending) {
+      await Promise.race([pending, new Promise((r) => setTimeout(r, ASSET_WAIT_TIMEOUT_MS))])
+    }
   }
-  return soundBuffers.get(key)
+
+  const buffer = soundBuffers.get(key)
+  return buffer ? { buffer } : { skip: true }
 }
 
 function resumeAudioCtx() {
@@ -974,31 +1001,38 @@ async function pump() {
         // one is not started until this one is finished" invariant covers both
         // paths; routing assets around the queue would bring back the exact
         // overlap it exists to prevent.
-        const buffer = soundBufferFor(item.text, item.lang)
-        const played = buffer ? await playSound(buffer) : null
-        // Real-device report: phoneme sounds (this WebAudio path) kept
-        // working while EVERY word (the speechSynthesis path below, since no
-        // word has a baked asset) went silent from the point the WAV assets
-        // shipped. Every word utterance in real curriculum flow sits right
-        // after a phoneme play (teach a sound, then speak the word it came
-        // from) -- so if WebKit's speech daemon can be stalled by a WebAudio
-        // buffer having just played through the same shared iOS audio
-        // session, this exact call site is where it happens, every time,
-        // right before the child would hear the word. Not confirmed against
-        // a cited WebKit bug report (none found describing this precise
-        // interaction) -- this is the documented pause()/resume() daemon-kick
-        // (see kickSpeechDaemon) applied at the one transition the idle
-        // watchdog cannot cover, because nothing here was ever idle. Cheap
-        // and inert if the hypothesis is wrong: pause()/resume() on an engine
-        // that isn't speaking is a no-op.
-        if (played) kickSpeechDaemon()
-        // `null` means no audio was produced -- no asset for this string, the
-        // context is not running, the buffer has not finished loading, or the
-        // source node threw. Every one of those routes to TTS, so the only way
-        // this item makes no sound at all is a speechSynthesis that makes none.
-        trusted = played === null
-          ? await speakNow(item.text, item.lang, item.rate, item.volume)
-          : played
+        const asset = await resolveAssetAudio(item.text, item.lang)
+        if (asset && asset.buffer) {
+          const played = await playSound(asset.buffer)
+          // Real-device report: phoneme sounds (this WebAudio path) kept
+          // working while EVERY word (the speechSynthesis path below, since
+          // no word has a baked asset) went silent from the point the WAV
+          // assets shipped. Every word utterance in real curriculum flow
+          // sits right after a phoneme play (teach a sound, then speak the
+          // word it came from) -- so if WebKit's speech daemon can be
+          // stalled by a WebAudio buffer having just played through the
+          // same shared iOS audio session, this exact call site is where it
+          // happens, every time, right before the child would hear the
+          // word. Not confirmed against a cited WebKit bug report (none
+          // found describing this precise interaction) -- this is the
+          // documented pause()/resume() daemon-kick (see kickSpeechDaemon)
+          // applied at the one transition the idle watchdog cannot cover,
+          // because nothing here was ever idle. Cheap and inert if the
+          // hypothesis is wrong: pause()/resume() on an engine that isn't
+          // speaking is a no-op.
+          if (played) kickSpeechDaemon()
+          trusted = played
+        } else if (asset && asset.skip) {
+          // A known asset key with no playable buffer even after
+          // resolveAssetAudio()'s bounded wait. TTS is not a valid
+          // fallback for this text (see resolveAssetAudio) -- silent and
+          // trusted, i.e. treated exactly like a short successful play.
+          trusted = true
+        } else {
+          // Not an asset key at all -- real word / Korean text / etc. TTS
+          // is the correct and only path, unchanged from before.
+          trusted = await speakNow(item.text, item.lang, item.rate, item.volume)
+        }
       } catch (e) {
         // ignore -- treat as spoken, and as untrustworthy
       }
