@@ -57,6 +57,33 @@ export function mountArtDebugPanel() {
       } catch (e) {
         occlusion = 'elementFromPoint check threw: ' + e
       }
+      // Real-device report: a two-glyph emblem ("EE") shows one glyph
+      // stranded far outside the badge, well past the other -- on a device
+      // where getBBox()/computed-style/occlusion all read completely
+      // normal (checked above). None of those describe INTER-CHARACTER
+      // spacing within one multi-glyph <text> -- getExtentOfChar() is the
+      // one SVG API that reports each character's own rendered box, so if
+      // WebKit is laying out this string with anomalous per-glyph advance
+      // (a real, if obscure, category of SVG text-shaping bug, more likely
+      // to surface here because these badges render at a SCALED-UP size --
+      // CSS stretches a 120-unit-wide viewBox up to ~186px, so any small
+      // per-engine rounding in glyph advance gets multiplied along with
+      // it), this is what will show it directly instead of guessing from
+      // an already-confirmed-normal bounding box.
+      let perChar = '(single glyph or unavailable)'
+      try {
+        const n = el.textContent.length
+        if (n > 1 && el.getExtentOfChar) {
+          const extents = []
+          for (let ci = 0; ci < n; ci++) {
+            const ext = el.getExtentOfChar(ci)
+            extents.push(`  char[${ci}]=${JSON.stringify(el.textContent[ci])} x=${ext.x.toFixed(1)} y=${ext.y.toFixed(1)} w=${ext.width.toFixed(1)} h=${ext.height.toFixed(1)}`)
+          }
+          perChar = '\n' + extents.join('\n')
+        }
+      } catch (e) {
+        perChar = 'getExtentOfChar threw: ' + e
+      }
       lines.push(
         `--- text #${i} ---`,
         `content: ${JSON.stringify(el.textContent)}`,
@@ -69,6 +96,7 @@ export function mountArtDebugPanel() {
           svgRect ? `${svgRect.width.toFixed(1)}x${svgRect.height.toFixed(1)}` : '(none)'
         }`,
         `occlusion check: ${occlusion}`,
+        `per-character extent: ${perChar}`,
         ''
       )
     })
@@ -79,4 +107,11 @@ export function mountArtDebugPanel() {
   btn.onclick = scan
   // Auto-scan once shortly after mount too, in case the user forgets to tap.
   setTimeout(scan, 1500)
+  // A one-off scan goes stale the moment the user navigates to a different
+  // stage (already happened once: a screenshot showed "EE" in the readout
+  // while the visible screen had already moved on to "OR") -- auto-rescan
+  // on an interval so the panel always reflects whatever screen is
+  // currently up, without relying on remembering to tap the button after
+  // every navigation.
+  setInterval(scan, 2000)
 }
