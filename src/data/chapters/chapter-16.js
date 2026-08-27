@@ -1588,7 +1588,7 @@ export const chapter16 = {
             {
               "id": "c16s5-ws0-290",
               "icon": "letterTile",
-              "label": "PART",
+              "label": "PRTA",
               "correct": false
             },
             {

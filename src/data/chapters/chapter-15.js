@@ -1573,7 +1573,7 @@ export const chapter15 = {
             {
               "id": "c15s5-ws0-143",
               "icon": "letterTile",
-              "label": "ARTS",
+              "label": "ATRS",
               "correct": false
             },
             {

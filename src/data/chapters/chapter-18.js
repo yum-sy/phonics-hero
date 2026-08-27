@@ -311,7 +311,7 @@ export const chapter18 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "\"boat\"와 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "oh",
+          "promptAudio": "buh",
           "options": [
             {
               "id": "c18s2-a0-469",

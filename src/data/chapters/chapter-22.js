@@ -140,7 +140,7 @@ export const chapter22 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "\"tree\"와 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "ee",
+          "promptAudio": "tuh",
           "options": [
             {
               "id": "c22s1-r3-o0",
@@ -301,7 +301,7 @@ export const chapter22 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "\"book\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "uuh",
+          "promptAudio": "buh",
           "options": [
             {
               "id": "c22s2-r2-o0",
@@ -311,8 +311,8 @@ export const chapter22 = {
             },
             {
               "id": "c22s2-r2-o1",
-              "icon": "box",
-              "label": "box",
+              "icon": "sock",
+              "label": "sock",
               "correct": false
             },
             {
@@ -394,8 +394,8 @@ export const chapter22 = {
             },
             {
               "id": "c22s2-r4-multiselect-c1",
-              "icon": "corn",
-              "label": "corn",
+              "icon": "fish",
+              "label": "fish",
               "correct": true
             },
             {
@@ -457,7 +457,7 @@ export const chapter22 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "\"coin\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "oi",
+          "promptAudio": "kuh",
           "options": [
             {
               "id": "c22s2-r6-reversed-o0",

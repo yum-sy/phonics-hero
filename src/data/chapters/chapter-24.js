@@ -195,8 +195,8 @@ export const chapter24 = {
             },
             {
               "id": "c24s1-r4-c1",
-              "icon": "coat",
-              "label": "coat",
+              "icon": "bed",
+              "label": "bed",
               "correct": true
             },
             {
@@ -460,7 +460,7 @@ export const chapter24 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "\"moon\"과 같은 소리로 시작하는 걸 찾아보세요!",
-          "promptAudio": "uuu",
+          "promptAudio": "mmm",
           "options": [
             {
               "id": "c24s2-r6-reversed-o0",

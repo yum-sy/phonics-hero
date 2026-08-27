@@ -755,7 +755,7 @@ export const chapter14 = {
           instructionKo: '진짜 단어를 찾아보세요!',
           options: [
             { id: 'c14s5-CAR', icon: 'letterTile', label: 'CAR', correct: true },
-            { id: 'c14s5-ARC', icon: 'letterTile', label: 'ARC', correct: false },
+            { id: 'c14s5-ACR', icon: 'letterTile', label: 'ACR', correct: false },
             { id: 'c14s5-RCA', icon: 'letterTile', label: 'RCA', correct: false },
           ],
           readAloud: { targetText: 'car' },
