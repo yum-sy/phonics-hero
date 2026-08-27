@@ -476,11 +476,23 @@ function ensureTransitionStyle() {
   document.head.appendChild(style)
 }
 
-// Starts the bar filling toward 100% over `ms` and returns a cleanup
-// function that removes it -- called from waitForTransition() regardless of
-// which of the two racing promises actually won, so the bar never outlives
-// the screen it was drawn over.
-function showTransitionCountdown(ms) {
+// Fills toward 85% over a slow ease-out -- NOT toward 100% over a guessed
+// duration. QA caught the first version doing that: it filled in a fixed
+// 500-600ms while the actual wait (whenAudioIdle(), dominated by however
+// long the TTS utterance takes to speak) regularly ran 2+ seconds longer,
+// so the bar sat full while the screen visibly kept not-transitioning --
+// the exact "그냥 마냥 기다리는" feeling this bar exists to remove, just
+// moved to after the bar instead of during it.
+//
+// There is no reliable way to know the wait's real length in advance (it
+// depends on the text being spoken, the device's TTS rate, whether the
+// queue was already primed) so this doesn't try to. Instead: ease toward
+// 85% over a long, decelerating curve that reads as "still working" for
+// as long as the promise takes, then the `.finally()` below snaps it the
+// rest of the way to 100% and removes it shortly after -- the fill speed
+// can never outrun the real wait because nothing past 85% happens until
+// the wait is actually over.
+function showTransitionCountdown(promise) {
   ensureTransitionStyle()
   const bar = document.createElement('div')
   bar.className = 'transition-countdown'
@@ -488,36 +500,28 @@ function showTransitionCountdown(ms) {
   document.body.appendChild(bar)
   const fill = bar.firstElementChild
   // Two rAFs, not one: the element has to actually paint at width:0 first,
-  // or the browser coalesces the 0->100 change into the same frame and the
-  // bar just appears full instead of animating -- one rAF still lands
+  // or the browser coalesces the 0->85 change into the same frame and the
+  // bar just appears 85% full instead of animating -- one rAF still lands
   // inside the same paint as the initial style in some engines, two does
   // not.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      fill.style.transition = `width ${ms}ms linear`
-      fill.style.width = '100%'
+      fill.style.transition = 'width 4000ms cubic-bezier(0.1,0.6,0.4,1)'
+      fill.style.width = '85%'
     })
   })
   let removed = false
-  return () => {
+  const remove = () => {
     if (removed) return
     removed = true
     bar.remove()
   }
-}
-
-// Same cosmetic bar as waitForTransition(), for a caller that has no fixed
-// minDelayMs of its own -- just an audio-drain wait it wants to paint
-// instead of leaving blank (QA: the correct-answer-into-readAloud handoff
-// skips waitForTransition entirely because it has no minimum hold to add on
-// top of whenAudioIdle(), so it went uncovered when the countdown bar was
-// added everywhere else). `ms` is a display estimate only, exactly like
-// waitForTransition's own bar: if the wait finishes first the bar is
-// removed early, if audio runs long the bar just sits full -- either way it
-// can never desync from or lengthen the real wait it decorates.
-function withTransitionCountdown(promise, ms = 600) {
-  const removeCountdown = showTransitionCountdown(ms)
-  return promise.finally(removeCountdown)
+  promise.finally(() => {
+    fill.style.transition = 'width 150ms ease-out'
+    fill.style.width = '100%'
+    setTimeout(remove, 220)
+  })
+  return promise
 }
 
 // Waits for both a minimum visual-feedback delay AND the audio queue to
@@ -525,10 +529,7 @@ function withTransitionCountdown(promise, ms = 600) {
 // in-flight speech, but also never feels laggier than it needs to when
 // audio finishes quickly (e.g. speechSynthesis unavailable).
 function waitForTransition(minDelayMs) {
-  const removeCountdown = showTransitionCountdown(minDelayMs)
-  return Promise.all([whenAudioIdle(), sleep(minDelayMs)]).finally(
-    removeCountdown
-  )
+  return showTransitionCountdown(Promise.all([whenAudioIdle(), sleep(minDelayMs)]))
 }
 
 // ---------- WORLD SELECT SCREEN ----------
@@ -1731,7 +1732,7 @@ function renderChooseBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       if (beat.scored && beat.readAloud) {
-        await withTransitionCountdown(whenAudioIdle())
+        await showTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
@@ -1814,7 +1815,7 @@ function renderMatchShapeBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       if (beat.scored && beat.readAloud) {
-        await withTransitionCountdown(whenAudioIdle())
+        await showTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
@@ -1959,7 +1960,7 @@ function renderMultiselectBeat(runtime, beat) {
     },
     onCorrect: async () => {
       flashCorrect(area)
-      await withTransitionCountdown(whenAudioIdle())
+      await showTransitionCountdown(whenAudioIdle())
       runReadAloud(runtime, beat, beat.readAloud)
     },
   })
@@ -2117,7 +2118,7 @@ function renderBuildBeat(runtime, beat) {
       // and schedules the hit on that one.
       fireBolt(tile)
       if (beat.scored && beat.readAloud) {
-        await withTransitionCountdown(whenAudioIdle())
+        await showTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
