@@ -1034,19 +1034,43 @@ async function pump() {
 // idle watchdog above; cancel() is audible and immediate, and it takes
 // every OTHER queued utterance down with it).
 //
-// So this is now much more patient, and cancel() is reserved for a signal
-// that cannot be "just a slow start": `speaking` staying true across THREE
-// separate checks, several seconds apart, with a pause()/resume() kick
-// attempted before each re-check. A slow-but-legitimate utterance clears on
-// one of the early checks (kickSpeechDaemon-style pause/resume is a no-op on
-// real audio, so it never interrupts one); only a daemon that is still
-// reporting busy after ~9s of that survives to the cancel() branch.
+// So cancel() is reserved for a signal that cannot be "just a slow start":
+// `speaking` staying true across FOUR separate checks, with a pause()/
+// resume() kick attempted before each re-check, only escalating to cancel()
+// after the daemon survives all four. A slow-but-legitimate utterance clears
+// on one of the checks (kickSpeechDaemon-style pause/resume is a no-op on
+// real audio, so it never interrupts one).
+//
+// UPDATE (same 2026-08-27 session, later): the "several seconds apart"
+// spacing above was itself measured to be adding a real, separate delay --
+// CDP-driven testing against actual Chrome (not the dead-TTS harness this
+// session started with) showed the FIRST kick is usually what gets a stalled
+// utterance moving, within milliseconds of firing, not the passage of time.
+// A uniform 3s-per-step schedule meant a child could wait
+// `safety timer + 3000ms` (measured ~6.7s end to end) for a sound a kick
+// would have produced almost immediately. See JAM_RECHECK_DELAYS_MS below --
+// the first check is now fast (kicks are free), later ones stay generous
+// (giving up is not).
 let jamRecoveryInFlight = false
 
-// Spacing between re-checks, in ms -- generous on purpose (see above). The
-// first element is the delay before the FIRST check; each later element is
-// the delay before the check that follows a failed kick.
-const JAM_RECHECK_DELAYS_MS = [3000, 3000, 3000]
+// Spacing between re-checks, in ms. The first element is the delay before
+// the FIRST check; each later element is the delay before the check that
+// follows a failed kick.
+//
+// Front-loaded on purpose, not uniform: real-Chrome measurement (CDP-driven,
+// not the dead-TTS test tool -- see git log) showed the pause()/resume() kick
+// itself is what gets a stalled utterance moving, not the passage of time on
+// its own -- a tap that never got its onstart started within ~1ms of the
+// first kick firing. With the old uniform 3000/3000/3000 schedule, that
+// meant a child could wait `safety timer + 3000ms` (measured: ~6.7s for a
+// two-word gap) for a sound that a kick would have produced almost
+// immediately. So the first kick fires fast (400ms) since kicks are provably
+// safe (a no-op on real in-progress audio, per kickSpeechDaemon's own
+// reasoning) -- there is no "wait and see" upside to delaying it. The later
+// elements stay generous: cancel() is still reserved for a daemon that
+// survives three independent kicks several seconds apart, exactly as
+// before -- only the FIRST attempt got faster, not the bar for giving up.
+const JAM_RECHECK_DELAYS_MS = [400, 1200, 3000, 3000]
 
 function scheduleJamCheck(rawText) {
   if (!('speechSynthesis' in window)) return
