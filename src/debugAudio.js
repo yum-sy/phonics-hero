@@ -68,28 +68,33 @@ export function mountAudioDebugPanel() {
     }
   }
 
-  // Small collapsible corner panel -- doesn't block the real game underneath.
+  // Narrow left-side column instead of a bottom bar -- a bottom bar grows
+  // over the game's own bottom-anchored buttons (confirm/options), which
+  // made the game unplayable underneath it. A fixed-width side column never
+  // overlaps that area regardless of how much log accumulates.
   const wrap = document.createElement('div')
   wrap.style.cssText =
-    'position:fixed;left:0;right:0;bottom:0;z-index:99999;' +
-    'max-height:40vh;overflow:auto;background:rgba(0,0,0,0.88);color:#0f0;' +
-    'font:10px/1.35 monospace;padding:6px;white-space:pre-wrap;' +
-    'border-top:2px solid #0f0;'
+    'position:fixed;left:0;top:0;bottom:0;width:480px;z-index:99999;' +
+    'overflow:auto;background:rgba(0,0,0,0.88);color:#0f0;' +
+    'font:12px/1.4 monospace;padding:8px;white-space:pre-wrap;word-break:break-word;' +
+    'border-right:2px solid #0f0;'
   document.body.appendChild(wrap)
 
   const bar = document.createElement('div')
-  bar.style.cssText = 'display:flex;gap:6px;margin-bottom:4px;position:sticky;top:0;background:rgba(0,0,0,0.88);'
+  bar.style.cssText =
+    'display:flex;flex-direction:row;gap:6px;margin-bottom:6px;' +
+    'position:sticky;top:0;background:rgba(0,0,0,0.88);'
   const mkBtn = (label, fn) => {
     const b = document.createElement('button')
     b.textContent = label
-    b.style.cssText = 'font:11px monospace;padding:4px 8px;'
+    b.style.cssText = 'font:13px monospace;padding:6px 10px;'
     b.onclick = fn
     bar.appendChild(b)
     return b
   }
   let collapsed = false
   const body = document.createElement('div')
-  mkBtn('collapse/expand', () => {
+  mkBtn('collapse', () => {
     collapsed = !collapsed
     body.style.display = collapsed ? 'none' : 'block'
   })
