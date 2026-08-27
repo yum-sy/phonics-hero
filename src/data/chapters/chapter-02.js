@@ -56,20 +56,20 @@ export const chapter2 = {
       villain: { name: 'Blurry', art: 'blurry', style: 'superhero' },
       hero: { name: 'Inky', art: 'inky', style: 'superhero' },
       chapterBoss: false,
+      // 챕터 1 stage-1 재구성(위 chapter-01.js 참고)과 같은 목적이지만
+      // 뼈대는 독립적으로 짰다: 챕터 1은 choose-sequence 를 break 뒤로
+      // 미루고 multiselect 를 앞으로 당겼는데, 챕터 2는 반대로
+      // choose-sequence 를 break보다 **먼저** 배치하고 multiselect 는
+      // break 뒤에 그대로 둔다 -- "choose, choose-sequence, break,
+      // multiselect" 순서라 챕터 1의 "choose, multiselect, break,
+      // choose-sequence" 와 대칭적으로 다르다. break 를 도입 직후에 두던
+      // 이전 버전의 작은 차이점(주석 참고)은 이번에 buffer choose 뒤로
+      // 옮겨 더 이상 챕터 1과 같은 자리를 쓰지 않는다.
       beats: [
         {
           id: 'c2s1-teach',
           kind: 'teach',
           instructionKo: '잉키가 새로운 소리를 들려줘요. 잘 들어보세요!',
-          art: 'hero',
-          repeatAudio: ['ihh'],
-        },
-        {
-          id: 'c2s1-break',
-          // 챕터 1 은 break 를 연습 뒤에 뒀다. 챕터 2 는 도입에서 바로
-          // 몸으로 외쳐보게 해서 순서 자체를 다르게 연다.
-          kind: 'break',
-          instructionKo: '함께 외쳐볼까요?',
           art: 'hero',
           repeatAudio: ['ihh'],
         },
@@ -87,17 +87,36 @@ export const chapter2 = {
           readAloud: { targetText: 'ink' },
         },
         {
-          id: 'c2s1-r2',
-          kind: 'choose',
+          id: 'c2s1-r2-quickfire',
+          kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
-          options: [
-            { id: 'c2s1-igloo', icon: 'igloo', label: 'igloo', correct: false },
-            { id: 'c2s1-insect2', icon: 'insect', label: 'insect', correct: false },
-            { id: 'c2s1-car', icon: 'car', label: 'car', correct: true },
+          instructionKo: '"ink"과 같은 소리로 시작하는 걸 찾아보세요!',
+          steps: [
+            {
+              promptAudio: 'ink',
+              options: [
+                { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
+                { id: 'c2s1-moon', icon: 'moon', label: 'moon', correct: false },
+                { id: 'c2s1-cup', icon: 'cup', label: 'cup', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'ihh',
+              options: [
+                { id: 'c2s1-car', icon: 'car', label: 'car', correct: false },
+                { id: 'c2s1-igloo', icon: 'igloo', label: 'igloo', correct: true },
+                { id: 'c2s1-insect2', icon: 'insect', label: 'insect', correct: false },
+              ],
+            },
           ],
-          readAloud: { targetText: 'igloo' },
+        },
+        {
+          id: 'c2s1-break',
+          kind: 'break',
+          instructionKo: '함께 외쳐볼까요?',
+          art: 'hero',
+          repeatAudio: ['ihh'],
         },
         {
           id: 'c2s1-r3-multiselect',
@@ -112,20 +131,6 @@ export const chapter2 = {
             { id: 'c2s1-igloo3', icon: 'igloo', label: 'igloo', correct: true },
           ],
           readAloud: { targetText: 'insect' },
-        },
-        {
-          id: 'c2s1-r4',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '"ink"과 같은 소리로 시작하는 걸 찾아보세요!',
-          promptAudio: 'ink',
-          options: [
-            { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
-            { id: 'c2s1-moon', icon: 'moon', label: 'moon', correct: false },
-            { id: 'c2s1-cup', icon: 'cup', label: 'cup', correct: false },
-          ],
-          readAloud: { targetText: 'igloo' },
         },
         {
           id: 'c2s1-r5',

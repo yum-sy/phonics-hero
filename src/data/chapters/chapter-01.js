@@ -70,6 +70,26 @@ export const chapter1 = {
       villain: { name: 'Noisebot', art: 'noisebot' },
       hero: { name: 'Sammy', art: 'sammy' },
       chapterBoss: false,
+      // 2026-08 구조 개편 (파일럿 후속, 챕터 1-2 stage-1 한정): stage-2~4는
+      // 앞선 파일럿(76e1e69)이 이미 뼈대를 다양화했지만 stage-1(순수 음소
+      // 인식, 글자꼴 0개)은 그대로 남아 있었다 -- 실기기 플레이테스트에서
+      // "stage-1이 stage-2를 글자만 뺀 축소판처럼 느껴진다"는 피드백이
+      // 나왔다. stage-1은 태생적으로 letterTile/promptLetter 를 못 쓰므로
+      // (글자를 아직 안 가르쳤다) 도구가 stage-2보다 좁지만, 그 좁은 도구
+      // 안에서도 순서·묶음 방식을 바꿔 리듬을 다르게 만들 수 있다:
+      //   - 앱 전체 첫 옵션 그리드 스캐폴딩(s1-r1)은 위치를 그대로 둔다 --
+      //     이 문장이 확인 버튼(✓) 사용법을 설명하는 유일한 자리라, 뒤에
+      //     오는 choose-sequence 묶음 문항보다 먼저 나와야 아이가 낱개
+      //     선택 기제를 먼저 익힌다.
+      //   - multiselect 를 stage 중반(옛 위치는 끝에서 두 번째)으로
+      //     당기고, break(챈트)를 그 다음(옛 위치는 두 번째)으로 옮겼다 --
+      //     stage-2가 "choose,choose,break"로 여는 것과 달리 여기는
+      //     "choose,multiselect,break"로 연다.
+      //   - 옛 s1-r2/s1-r3 두 개의 단독 choose 를 choose-sequence 2스텝
+      //     하나로 묶었다. 같은 그림·소리 내용이지만(같은 소리를 더
+      //     들어보는 것뿐, 아직 두 번째 소리가 없어 변별 대상은 없다)
+      //     한 beat 안에서 연달아 판정되는 퀵파이어 리듬은 stage-2에 없는
+      //     형태라 stage-1만의 질감이 된다.
       beats: [
         {
           id: 's1-teach',
@@ -98,41 +118,7 @@ export const chapter1 = {
           readAloud: { targetText: 'sun' },
         },
         {
-          id: 's1-break',
-          kind: 'break',
-          instructionKo: '함께 외쳐볼까요?',
-          art: 'hero',
-          repeatAudio: ['sss'],
-        },
-        {
-          id: 's1-r2',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
-          options: [
-            { id: 'sock', icon: 'sock', label: 'sock', correct: false },
-            { id: 'star', icon: 'star', label: 'star', correct: false },
-            { id: 'car', icon: 'car', label: 'car', correct: true },
-          ],
-          readAloud: { targetText: 'sock' },
-        },
-        {
-          id: 's1-r3',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '"sun"과 같은 소리로 시작하는 걸 찾아보세요!',
-          promptAudio: 'sun',
-          options: [
-            { id: 'moon', icon: 'moon', label: 'moon', correct: false },
-            { id: 'sock2', icon: 'sock', label: 'sock', correct: true },
-            { id: 'cup', icon: 'cup', label: 'cup', correct: false },
-          ],
-          readAloud: { targetText: 'sock' },
-        },
-        {
-          id: 's1-r4',
+          id: 's1-r2-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
@@ -144,6 +130,38 @@ export const chapter1 = {
             { id: 'sock3', icon: 'sock', label: 'sock', correct: true },
           ],
           readAloud: { targetText: 'star' },
+        },
+        {
+          id: 's1-break',
+          kind: 'break',
+          instructionKo: '함께 외쳐볼까요?',
+          art: 'hero',
+          repeatAudio: ['sss'],
+        },
+        {
+          id: 's1-r3-quickfire',
+          kind: 'choose-sequence',
+          scored: true,
+          hits: 1,
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          steps: [
+            {
+              promptAudio: 'sss',
+              options: [
+                { id: 'sock', icon: 'sock', label: 'sock', correct: false },
+                { id: 'star', icon: 'star', label: 'star', correct: false },
+                { id: 'car', icon: 'car', label: 'car', correct: true },
+              ],
+            },
+            {
+              promptAudio: 'sun',
+              options: [
+                { id: 'moon', icon: 'moon', label: 'moon', correct: false },
+                { id: 'sock2', icon: 'sock', label: 'sock', correct: true },
+                { id: 'cup', icon: 'cup', label: 'cup', correct: false },
+              ],
+            },
+          ],
         },
         {
           id: 's1-r5',
