@@ -17,6 +17,32 @@
 // 발화에는 항상 소리를 -- 둘이 다르면 words[]는 { text: 'I', say: 'ihh' },
 // readAloud는 { targetText: 'I', say: 'ihh' }. 화면에 안 나오는
 // repeatAudio/promptAudio는 소리 표기('ihh','puh')를 그대로 쓴다.
+//
+// ---------------------------------------------------------------------------
+// 2026-08 구조 개편 (파일럿, 챕터 1-2 한정): 챕터 1 이 S/A/T 세 "Power of X"
+// 루프의 beat 뼈대를 서로 다르게 바꾼 것과 같은 작업을 챕터 2 에도 했다 --
+// 다만 챕터 2 는 챕터 1 이 새로 만든 그 뼈대 셋을 그대로 재사용하지 않고,
+// **다시 독립적으로** 짰다("같은 모양에 글자만 다르다"를 피하는 게 목적이라
+// 챕터 1 의 새 뼈대를 복붙해도 실패다). 이번 라운드가 다르게 쓴 것:
+//   - I/P/N 은 아이콘 재고가 각각 3~4개라(ink/insect/igloo, pig/pen/pot,
+//     net/nut/nose) S(4개)보다는 넉넉하고 A/T(각 2개)보다 훨씬 넉넉하다 --
+//     그래서 "다른 소리 찾기(oddoneout)" 라운드를 4지선다로 늘렸다(정답
+//     3개 + 오답 1개 성립에 소리별 아이콘 3개가 필요한데 I/P/N 모두 정확히
+//     3개씩 있다). CLAUDE.md 의 난이도 곡선 표가 챕터 2 를 표준3/hard4 로
+//     계획해둔 것과도 방향이 맞는다(다만 이 파일럿의 주목적은 여전히
+//     "beat 종류의 다양성" 이지 보기 개수 튜닝이 아니다).
+//   - N 스테이지에 drag-build 를 끌어와 I+P+N 세 글자로 보스 단어 "PIN" 이
+//     아닌 **다른 순서의 진짜 단어 "nip"** 를 미리 조립해본다 -- 챕터 1
+//     T 스테이지가 "at" 을 미리 조립한 것과 같은 장치이되 다른 단어를 써서
+//     "같은 트릭의 복붙"으로 보이지 않게 했고, 조립 순서(N-I-P)가 보스의
+//     "P-I-N" 과 달라 아이가 글자 순서를 외우는 게 아니라 실제로 블렌딩
+//     하고 있다는 증거가 된다.
+//   - P 스테이지에 choose-sequence 2스텝(I/P 변별)을 넣고, N 스테이지에는
+//     3스텝(I/P/N 총복습)을 넣었다 -- 챕터 1 은 A 에서 2스텝, T 에서 3스텝을
+//     썼는데 여기서는 그 위치를 P/N 으로 옮겨 정확히 같은 진행이 되지
+//     않게 했다.
+// 정답 보기 위치는 챕터 전체에서 슬롯이 고르게 나오도록 배치했다
+// (validateChapters() 의 슬롯 편향 검사 대상).
 
 export const chapter2 = {
   id: 'chapter-2',
@@ -39,6 +65,15 @@ export const chapter2 = {
           repeatAudio: ['ihh'],
         },
         {
+          id: 'c2s1-break',
+          // 챕터 1 은 break 를 연습 뒤에 뒀다. 챕터 2 는 도입에서 바로
+          // 몸으로 외쳐보게 해서 순서 자체를 다르게 연다.
+          kind: 'break',
+          instructionKo: '함께 외쳐볼까요?',
+          art: 'hero',
+          repeatAudio: ['ihh'],
+        },
+        {
           id: 'c2s1-r1',
           kind: 'choose',
           scored: true,
@@ -50,13 +85,6 @@ export const chapter2 = {
             { id: 'c2s1-insect', icon: 'insect', label: 'insect', correct: false },
           ],
           readAloud: { targetText: 'ink' },
-        },
-        {
-          id: 'c2s1-break',
-          kind: 'break',
-          instructionKo: '함께 외쳐볼까요?',
-          art: 'hero',
-          repeatAudio: ['ihh'],
         },
         {
           id: 'c2s1-r2',
@@ -72,21 +100,7 @@ export const chapter2 = {
           readAloud: { targetText: 'igloo' },
         },
         {
-          id: 'c2s1-r3',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '"ink"과 같은 소리로 시작하는 걸 찾아보세요!',
-          promptAudio: 'ink',
-          options: [
-            { id: 'c2s1-moon', icon: 'moon', label: 'moon', correct: false },
-            { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
-            { id: 'c2s1-cup', icon: 'cup', label: 'cup', correct: false },
-          ],
-          readAloud: { targetText: 'igloo' },
-        },
-        {
-          id: 'c2s1-r4',
+          id: 'c2s1-r3-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
@@ -98,6 +112,20 @@ export const chapter2 = {
             { id: 'c2s1-igloo3', icon: 'igloo', label: 'igloo', correct: true },
           ],
           readAloud: { targetText: 'insect' },
+        },
+        {
+          id: 'c2s1-r4',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '"ink"과 같은 소리로 시작하는 걸 찾아보세요!',
+          promptAudio: 'ink',
+          options: [
+            { id: 'c2s1-igloo2', icon: 'igloo', label: 'igloo', correct: true },
+            { id: 'c2s1-moon', icon: 'moon', label: 'moon', correct: false },
+            { id: 'c2s1-cup', icon: 'cup', label: 'cup', correct: false },
+          ],
+          readAloud: { targetText: 'igloo' },
         },
         {
           id: 'c2s1-r5',
@@ -140,37 +168,20 @@ export const chapter2 = {
           repeatAudio: ['I', 'ihh'],
         },
         {
-          id: 'c2s2-r1-warmup',
-          kind: 'choose',
-          scored: false,
-          instructionKo: 'I 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'ihh',
-          options: [
-            { id: 'c2s2-I1', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
-            { id: 'c2s2-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-            { id: 'c2s2-T1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
-          ],
-        },
-        {
-          id: 'c2s2-r2-oddoneout',
+          id: 'c2s2-r1-oddoneout',
+          // I 소리 아이콘이 3개(ink/insect/igloo) 다 있어서 다른 소리
+          // 찾기를 4지선다로 늘렸다 -- 정답 3개(같은 소리) + 오답 1개.
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
           options: [
+            { id: 'c2s2-ink', icon: 'ink', label: 'ink', correct: false },
             { id: 'c2s2-insect', icon: 'insect', label: 'insect', correct: false },
-            { id: 'c2s2-igloo', icon: 'igloo', label: 'igloo', correct: false },
             { id: 'c2s2-top', icon: 'top', label: 'top', correct: true },
+            { id: 'c2s2-igloo', icon: 'igloo', label: 'igloo', correct: false },
           ],
-          readAloud: { targetText: 'igloo' },
-        },
-        {
-          id: 'c2s2-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 I를 따라 그리면서 I 소리를 내보세요!',
-          words: [{ text: 'I', say: 'ihh' }],
+          readAloud: { targetText: 'insect' },
         },
         {
           id: 'c2s2-break',
@@ -181,49 +192,43 @@ export const chapter2 = {
           repeatAudio: ['I', 'ihh'],
         },
         {
-          id: 'c2s2-r4-multiselect',
+          id: 'c2s2-r2-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 I를 따라 그리면서 I 소리를 내보세요!',
+          words: [{ text: 'I', say: 'ihh' }],
+        },
+        {
+          id: 'c2s2-r3-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
           instructionKo: '/i/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
-            { id: 'c2s2-ink', icon: 'ink', label: 'ink', correct: true },
-            { id: 'c2s2-sock', icon: 'sock', label: 'sock', correct: false },
+            { id: 'c2s2-ink2', icon: 'ink', label: 'ink', correct: true },
             { id: 'c2s2-insect2', icon: 'insect', label: 'insect', correct: true },
-            { id: 'c2s2-apple', icon: 'apple', label: 'apple', correct: false },
+            { id: 'c2s2-top2', icon: 'top', label: 'top', correct: false },
+            { id: 'c2s2-igloo2', icon: 'igloo', label: 'igloo', correct: true },
           ],
           readAloud: { targetText: 'ink' },
         },
         {
-          id: 'c2s2-r5-hard',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: 'I 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
-          promptAudio: 'ihh',
-          options: [
-            { id: 'c2s2-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
-            { id: 'c2s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-            { id: 'c2s2-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
-          ],
-          readAloud: { targetText: 'I', say: 'ihh' },
-        },
-        {
-          id: 'c2s2-r6-reversed',
+          id: 'c2s2-r4-reversed',
           kind: 'choose',
           scored: true,
           hits: 1,
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'I',
           options: [
+            { id: 'c2s2-igloo3', icon: 'igloo', label: 'igloo', correct: true },
             { id: 'c2s2-dog', icon: 'dog', label: 'dog', correct: false },
             { id: 'c2s2-sun', icon: 'sun', label: 'sun', correct: false },
-            { id: 'c2s2-igloo2', icon: 'igloo', label: 'igloo', correct: true },
           ],
           readAloud: { targetText: 'igloo' },
         },
         {
-          id: 'c2s2-r7-listenrepeat',
+          id: 'c2s2-r5-listenrepeat',
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
@@ -270,31 +275,10 @@ export const chapter2 = {
           instructionKo: 'P 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'puh',
           options: [
-            { id: 'c2s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s3-P1', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+            { id: 'c2s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
             { id: 'c2s3-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
           ],
-        },
-        {
-          id: 'c2s3-r2-oddoneout',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
-          options: [
-            { id: 'c2s3-ink', icon: 'ink', label: 'ink', correct: true },
-            { id: 'c2s3-pig', icon: 'pig', label: 'pig', correct: false },
-            { id: 'c2s3-pen', icon: 'pen', label: 'pen', correct: false },
-          ],
-          readAloud: { targetText: 'pig' },
-        },
-        {
-          id: 'c2s3-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 P를 따라 그리면서 P 소리를 내보세요!',
-          words: [{ text: 'P', say: 'puh' }],
         },
         {
           id: 'c2s3-break',
@@ -305,32 +289,67 @@ export const chapter2 = {
           repeatAudio: ['puh'],
         },
         {
+          id: 'c2s3-r2-quickfire',
+          // 지금까지 배운 두 소리(I/P)를 연속으로 변별하는 미니 퀵파이어.
+          kind: 'choose-sequence',
+          scored: true,
+          hits: 1,
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
+          steps: [
+            {
+              promptAudio: 'ihh',
+              options: [
+                { id: 'c2s3-qP1', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
+                { id: 'c2s3-qI1', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
+                { id: 'c2s3-qO1', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
+              ],
+            },
+            {
+              promptAudio: 'puh',
+              options: [
+                { id: 'c2s3-qP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+                { id: 'c2s3-qI2', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
+                { id: 'c2s3-qS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'c2s3-r3-oddoneout',
+          // P 소리 아이콘도 3개(pig/pen/pot) 다 있어서 4지선다로 늘렸다.
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
+          options: [
+            { id: 'c2s3-pig', icon: 'pig', label: 'pig', correct: false },
+            { id: 'c2s3-pen', icon: 'pen', label: 'pen', correct: false },
+            { id: 'c2s3-pot', icon: 'pot', label: 'pot', correct: false },
+            { id: 'c2s3-ink', icon: 'ink', label: 'ink', correct: true },
+          ],
+          readAloud: { targetText: 'pen' },
+        },
+        {
           id: 'c2s3-r4-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
           instructionKo: '/p/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
-            { id: 'c2s3-pot', icon: 'pot', label: 'pot', correct: true },
-            { id: 'c2s3-igloo', icon: 'igloo', label: 'igloo', correct: false },
+            { id: 'c2s3-pot2', icon: 'pot', label: 'pot', correct: true },
+            { id: 'c2s3-insect', icon: 'insect', label: 'insect', correct: false },
             { id: 'c2s3-pen2', icon: 'pen', label: 'pen', correct: true },
-            { id: 'c2s3-star', icon: 'star', label: 'star', correct: false },
+            { id: 'c2s3-pig2', icon: 'pig', label: 'pig', correct: true },
           ],
           readAloud: { targetText: 'pot' },
         },
         {
-          id: 'c2s3-r5-hard',
-          kind: 'choose',
+          id: 'c2s3-r5-trace',
+          kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: 'P 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
-          promptAudio: 'puh',
-          options: [
-            { id: 'c2s3-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
-            { id: 'c2s3-P3', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
-            { id: 'c2s3-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-          ],
-          readAloud: { targetText: 'P', say: 'puh' },
+          instructionKo: '손가락으로 P를 따라 그리면서 P 소리를 내보세요!',
+          words: [{ text: 'P', say: 'puh' }],
         },
         {
           id: 'c2s3-r6-reversed',
@@ -340,9 +359,9 @@ export const chapter2 = {
           instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
           promptLetter: 'P',
           options: [
-            { id: 'c2s3-insect', icon: 'insect', label: 'insect', correct: false },
+            { id: 'c2s3-insect2', icon: 'insect', label: 'insect', correct: false },
             { id: 'c2s3-sun', icon: 'sun', label: 'sun', correct: false },
-            { id: 'c2s3-pig2', icon: 'pig', label: 'pig', correct: true },
+            { id: 'c2s3-pig3', icon: 'pig', label: 'pig', correct: true },
           ],
           readAloud: { targetText: 'pig' },
         },
@@ -388,45 +407,57 @@ export const chapter2 = {
           repeatAudio: ['N', 'nnn'],
         },
         {
-          id: 'c2s4-r1-warmup',
-          kind: 'choose',
-          scored: false,
-          instructionKo: 'N 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'nnn',
-          options: [
-            { id: 'c2s4-I1', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
-            { id: 'c2s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
-            { id: 'c2s4-S1', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
-          ],
-        },
-        {
-          id: 'c2s4-r2-oddoneout',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
-          options: [
-            { id: 'c2s4-pig', icon: 'pig', label: 'pig', correct: true },
-            { id: 'c2s4-net', icon: 'net', label: 'net', correct: false },
-            { id: 'c2s4-nut', icon: 'nut', label: 'nut', correct: false },
-          ],
-          readAloud: { targetText: 'net' },
-        },
-        {
-          id: 'c2s4-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 N을 따라 그리면서 N 소리를 내보세요!',
-          words: [{ text: 'N', say: 'nnn' }],
-        },
-        {
           id: 'c2s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 n을 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'n',
           repeatAudio: ['N', 'nnn'],
+        },
+        {
+          id: 'c2s4-r1-oddoneout',
+          // N 소리 아이콘도 3개(net/nut/nose) 다 있어서 4지선다로 늘렸다.
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
+          options: [
+            { id: 'c2s4-net', icon: 'net', label: 'net', correct: false },
+            { id: 'c2s4-nut', icon: 'nut', label: 'nut', correct: false },
+            { id: 'c2s4-igloo', icon: 'igloo', label: 'igloo', correct: true },
+            { id: 'c2s4-nose', icon: 'nose', label: 'nose', correct: false },
+          ],
+          readAloud: { targetText: 'nut' },
+        },
+        {
+          id: 'c2s4-r2-build-warmup',
+          // 보스 전용이던 drag-build 를 여기로 끌어왔다. 보스가 조립할
+          // "PIN" 과는 다른 순서로 진짜 단어 "nip" 을 미리 만들어본다 --
+          // 순서가 다르므로 아이가 글자열을 암기하는 게 아니라 실제로
+          // 블렌딩하고 있다는 증거가 된다.
+          kind: 'drag-build',
+          scored: false,
+          instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
+          letters: [
+            { text: 'N', say: 'nnn' },
+            { text: 'I', say: 'ihh' },
+            { text: 'P', say: 'puh' },
+          ],
+          target: 'NIP',
+        },
+        {
+          id: 'c2s4-r3-build',
+          kind: 'drag-build',
+          scored: true,
+          hits: 1,
+          instructionKo: '이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.',
+          letters: [
+            { text: 'P', say: 'puh' },
+            { text: 'N', say: 'nnn' },
+            { text: 'I', say: 'ihh' },
+          ],
+          target: 'NIP',
+          readAloud: { targetText: 'nip' },
         },
         {
           id: 'c2s4-r4-multiselect',
@@ -436,11 +467,11 @@ export const chapter2 = {
           instructionKo: '/n/ 소리로 시작하는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c2s4-net2', icon: 'net', label: 'net', correct: true },
-            { id: 'c2s4-pen', icon: 'pen', label: 'pen', correct: false },
+            { id: 'c2s4-pig', icon: 'pig', label: 'pig', correct: false },
             { id: 'c2s4-nut2', icon: 'nut', label: 'nut', correct: true },
-            { id: 'c2s4-nose', icon: 'nose', label: 'nose', correct: true },
+            { id: 'c2s4-nose2', icon: 'nose', label: 'nose', correct: true },
           ],
-          readAloud: { targetText: 'nut' },
+          readAloud: { targetText: 'net' },
         },
         {
           id: 'c2s4-r5-hard',
@@ -451,35 +482,15 @@ export const chapter2 = {
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
-            { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
             { id: 'c2s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: true },
+            { id: 'c2s4-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
           ],
           readAloud: { targetText: 'N', say: 'nnn' },
         },
         {
-          id: 'c2s4-r6-reversed',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'N',
-          options: [
-            { id: 'c2s4-nose2', icon: 'nose', label: 'nose', correct: true },
-            { id: 'c2s4-ink', icon: 'ink', label: 'ink', correct: false },
-            { id: 'c2s4-pot', icon: 'pot', label: 'pot', correct: false },
-          ],
-          readAloud: { targetText: 'nose' },
-        },
-        {
-          id: 'c2s4-r7-listenrepeat',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '단어를 하나씩 따라 말해보세요!',
-          words: ['net', 'nut', 'nose'],
-        },
-        {
-          id: 'c2s4-finale-cycle',
+          id: 'c2s4-r6-quickfire',
+          // I/P/N 총복습 -- P 스테이지가 2소리만 묻던 것과 달리 이제 세
+          // 소리를 전부 묻는다.
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
@@ -488,17 +499,17 @@ export const chapter2 = {
             {
               promptAudio: 'ihh',
               options: [
-                { id: 'c2s4-cP', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
-                { id: 'c2s4-cN', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
-                { id: 'c2s4-cI', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
+                { id: 'c2s4-cN1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
+                { id: 'c2s4-cP1', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
+                { id: 'c2s4-cI1', icon: 'letterTile', label: 'I', say: 'ihh', correct: true },
               ],
             },
             {
               promptAudio: 'puh',
               options: [
-                { id: 'c2s4-cN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
-                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
                 { id: 'c2s4-cI2', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
+                { id: 'c2s4-cP2', icon: 'letterTile', label: 'P', say: 'puh', correct: true },
+                { id: 'c2s4-cN2', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
               ],
             },
             {
@@ -510,6 +521,14 @@ export const chapter2 = {
               ],
             },
           ],
+        },
+        {
+          id: 'c2s4-r7-listenrepeat',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['net', 'nut', 'nose'],
         },
         {
           id: 'c2s4-finale',

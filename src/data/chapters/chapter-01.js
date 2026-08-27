@@ -7,6 +7,7 @@
 //   'break'         - non-scored kinesthetic/chant beat, tap to continue
 //   'choose'        - tap the one correct option among options[]
 //   'multiselect'   - tap all options where correct === true
+//   'choose-sequence' - a run of choose-style steps (steps[]) back to back
 //   'drag-build'    - drag letter tiles into slots in the right order
 //   'listen-repeat' - no visual question, just listen + read-aloud confirm
 //   'finale'        - like listen-repeat, but deals the closing hit(s)
@@ -26,10 +27,10 @@
 // 넣지 마라.** 예전 표준은 [소리, 단어앵커, 소리] 였는데 사용자가 실기기에서
 // 듣고 반려했다: "1-1 음성이 ss sun ss 라고 하네... 이 때 굳이 sun 을
 // 언급하는 이유를 모르겠어. 빼버리자". 캐릭터 이름도 같이 뺐다 -- speakEN 이
-// 소문자로 낮추므로 'Sammy'/'Ray'/'Cloak' 은 아이 귀에 그냥 영어 단어이고
-// (이름이라는 단서가 소리에 없다), 게다가 몇 개는 소리가 어긋났다(단모음 A
-// 자리의 'Ace' 는 /eɪ/, 단모음 U 자리의 'Umo' 는 /juː/, /t/ 챈트의 'go!' 는
-// /g/). 소리를 단어에 붙여 들려줄 자리는 listen-repeat/finale 의 words[] 다.
+// 소문자로 바꾸므로 아이는 그것을 이름이 아니라 영어 단어로 듣고, 게다가 몇
+// 개는 소리가 어긋났다(단모음 A 자리의 'Ace' 는 /eɪ/, 단모음 U 자리의 'Umo'
+// 는 /juː/, /t/ 구호의 'go!' 는 /g/). 소리를 단어에 붙여 들려줄 자리는
+// listen-repeat/finale 의 words[] 다.
 //
 // 예외는 보스 스테이지의 teach/break 하나뿐이다: 거기서는 낱소리를 순서대로
 // 들려준 뒤 합친 단어를 말하는 **블렌딩 시연**이고(sss-aaa-tuh-sat), 그
@@ -39,6 +40,23 @@
 // 보스 블렌드의 세 슬롯은 **형태가 같아야 한다**. 사용자 원문: "sss aaa tuh tuh
 // tuh 이러더라구... tuh 만 이질적이라서 반응이 '이거 대체 왜이래'였어. 그냥
 // 똑같이 /s/ /a/ /t/ 이렇게 한번 똑바로 발음 해주는게 좋을 것 같아."
+//
+// ---------------------------------------------------------------------------
+// 2026-08 구조 개편 (파일럿, 챕터 1-2 한정): 부모 플레이테스트에서 "S/A/T의
+// 세 글자 루프가 완전히 똑같은 반복으로 느껴진다" 는 피드백이 나왔다 --
+// 실제로 kind 시퀀스를 비교해보니 정말 비트 단위로 동일했다(문항 개수, 순서,
+// 발화 자리까지). 사용자 원문: "루프가 있다고 생각되지 않을 만큼 챕터마다
+// 다양하게 배치했으면 좋겠어." 이번 개편은 stage-2(S)/stage-3(A)/stage-4(T)
+// 세 "Power of X" 루프의 **beat kind 구성과 순서를 서로 다르게** 만든다 --
+// 문항 자체(정답/오답, 소리 표기)는 그대로 두고 뼈대만 바꾼다:
+//   - S(stage-2): 기존 뼈대를 거의 유지한다(챕터의 첫 노출, 표준형).
+//   - A(stage-3): break 를 teach 직후로 당기고, "hard" 단독 choose 를
+//     choose-sequence 2스텝(S/A 청각 변별)으로 바꿨다.
+//   - T(stage-4): drag-build 를 보스 전용에서 끌어와 2글자 실제 단어 "AT"를
+//     미리 조립해보게 하고(A+T 블렌딩 예행연습), "hard"/"reversed" 대신
+//     choose-sequence 3스텝(S/A/T 총복습)으로 마무리한다.
+// 정답 보기 위치는 챕터 전체에서 슬롯 0/1/2 가 고르게 나오도록 재배치했다
+// (validateChapters() 의 슬롯 편향 검사 대상).
 
 export const chapter1 = {
   id: 'chapter-1',
@@ -193,20 +211,20 @@ export const chapter1 = {
           readAloud: { targetText: 'star' },
         },
         {
-          id: 's2-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 S를 따라 그리면서 S 소리를 내보세요!',
-          words: [{ text: 'S', say: 'sss' }],
-        },
-        {
           id: 's2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 s를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 's',
           repeatAudio: ['S', 'sss'],
+        },
+        {
+          id: 's2-r3-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 S를 따라 그리면서 S 소리를 내보세요!',
+          words: [{ text: 'S', say: 'sss' }],
         },
         {
           id: 's2-r4-multiselect',
@@ -292,48 +310,30 @@ export const chapter1 = {
           repeatAudio: ['A', 'aaa'],
         },
         {
-          id: 's3-r1-warmup',
-          kind: 'choose',
-          scored: false,
-          instructionKo: 'A 소리를 내는 글자를 찾아보세요! (연습이에요)',
-          promptAudio: 'aaa',
-          options: [
-            { id: 'A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
-            { id: 'O1', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
-            { id: 'U1', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
-          ],
-        },
-        {
-          id: 's3-r2-oddoneout',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
-          options: [
-            { id: 'ant', icon: 'ant', label: 'ant', correct: false },
-            { id: 'apple', icon: 'apple', label: 'apple', correct: false },
-            { id: 'bus', icon: 'bus', label: 'bus', correct: true },
-          ],
-          readAloud: { targetText: 'apple' },
-        },
-        {
-          id: 's3-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 A를 따라 그리면서 A 소리를 내보세요!',
-          words: [{ text: 'A', say: 'aaa' }],
-        },
-        {
           id: 's3-break',
           kind: 'break',
+          // S 스테이지는 break 가 뒤(연습 이후)에 왔다. A 스테이지는 배운
+          // 직후 바로 몸으로 그려보게 해서 순서 자체를 다르게 느끼게 한다.
           instructionKo: '손가락으로 소문자 a를 그려볼까요? 함께 외쳐요!',
           art: 'hero',
           letter: 'a',
           repeatAudio: ['A', 'aaa'],
         },
         {
-          id: 's3-r4-multiselect',
+          id: 's3-r1-oddoneout',
+          kind: 'choose',
+          scored: true,
+          hits: 1,
+          instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          options: [
+            { id: 'bus', icon: 'bus', label: 'bus', correct: true },
+            { id: 'ant', icon: 'ant', label: 'ant', correct: false },
+            { id: 'apple', icon: 'apple', label: 'apple', correct: false },
+          ],
+          readAloud: { targetText: 'apple' },
+        },
+        {
+          id: 's3-r2-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
@@ -347,21 +347,43 @@ export const chapter1 = {
           readAloud: { targetText: 'ant' },
         },
         {
-          id: 's3-r5-hard',
-          kind: 'choose',
+          id: 's3-r3-quickfire',
+          // S 스테이지의 "hard" 단독 문항 대신, 지금까지 배운 두 소리(S/A)를
+          // 연속으로 변별하는 미니 퀵파이어로 바꿨다 -- 복습과 난이도 상승을
+          // 한 beat 에서 같이 한다.
+          kind: 'choose-sequence',
           scored: true,
           hits: 1,
-          instructionKo: 'A 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
-          promptAudio: 'aaa',
-          options: [
-            { id: 'A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
-            { id: 'E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
-            { id: 'O3', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
+          instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요!',
+          steps: [
+            {
+              promptAudio: 'sss',
+              options: [
+                { id: 'qA1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+                { id: 'qO1', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
+                { id: 'qS1', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
+              ],
+            },
+            {
+              promptAudio: 'aaa',
+              options: [
+                { id: 'qA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
+                { id: 'qS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
+                { id: 'qU2', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
+              ],
+            },
           ],
-          readAloud: { targetText: 'A', say: 'aaa' },
         },
         {
-          id: 's3-r6-reversed',
+          id: 's3-r4-trace',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '손가락으로 A를 따라 그리면서 A 소리를 내보세요!',
+          words: [{ text: 'A', say: 'aaa' }],
+        },
+        {
+          id: 's3-r5-reversed',
           kind: 'choose',
           scored: true,
           hits: 1,
@@ -369,13 +391,13 @@ export const chapter1 = {
           promptLetter: 'A',
           options: [
             { id: 'dog', icon: 'dog', label: 'dog', correct: false },
-            { id: 'sock', icon: 'sock', label: 'sock', correct: false },
             { id: 'apple3', icon: 'apple', label: 'apple', correct: true },
+            { id: 'sock', icon: 'sock', label: 'sock', correct: false },
           ],
           readAloud: { targetText: 'apple' },
         },
         {
-          id: 's3-r7-listenrepeat',
+          id: 's3-r6-listenrepeat',
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
@@ -434,19 +456,11 @@ export const chapter1 = {
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
           options: [
-            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
             { id: 'top', icon: 'top', label: 'top', correct: false },
             { id: 'tap', icon: 'tap', label: 'tap', correct: false },
+            { id: 'sun', icon: 'sun', label: 'sun', correct: true },
           ],
           readAloud: { targetText: 'top' },
-        },
-        {
-          id: 's4-r3-trace',
-          kind: 'listen-repeat',
-          scored: true,
-          hits: 1,
-          instructionKo: '손가락으로 T를 따라 그리면서 T 소리를 내보세요!',
-          words: [{ text: 'T', say: 'tuh' }],
         },
         {
           id: 's4-break',
@@ -457,7 +471,34 @@ export const chapter1 = {
           repeatAudio: ['tuh'],
         },
         {
-          id: 's4-r4-multiselect',
+          id: 's4-r3-build-warmup',
+          // 보스 전용이던 drag-build 를 여기로 끌어왔다: S+A+T 세 글자를
+          // 조립하기 전에, 이미 배운 A+T 두 글자로 진짜 단어 "at" 을 먼저
+          // 조립해본다 -- 블렌딩 자체를 미리 연습하는 예행연습이다.
+          kind: 'drag-build',
+          scored: false,
+          instructionKo: '글자를 순서대로 옮겨서 단어를 완성하세요! (연습이에요)',
+          letters: [
+            { text: 'A', say: 'aaa' },
+            { text: 'T', say: 'tuh' },
+          ],
+          target: 'AT',
+        },
+        {
+          id: 's4-r4-build',
+          kind: 'drag-build',
+          scored: true,
+          hits: 1,
+          instructionKo: '이번엔 글자가 섞여있어요! 순서대로 옮겨보세요.',
+          letters: [
+            { text: 'T', say: 'tuh' },
+            { text: 'A', say: 'aaa' },
+          ],
+          target: 'AT',
+          readAloud: { targetText: 'at' },
+        },
+        {
+          id: 's4-r5-multiselect',
           kind: 'multiselect',
           scored: true,
           hits: 1,
@@ -471,43 +512,18 @@ export const chapter1 = {
           readAloud: { targetText: 'top' },
         },
         {
-          id: 's4-r5-hard',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: 'T 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
-          promptAudio: 'tuh',
-          options: [
-            { id: 'D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },
-            { id: 'T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
-            { id: 'P3', icon: 'letterTile', label: 'P', say: 'puh', correct: false },
-          ],
-          readAloud: { targetText: 'T', say: 'tuh' },
-        },
-        {
-          id: 's4-r6-reversed',
-          kind: 'choose',
-          scored: true,
-          hits: 1,
-          instructionKo: '이 글자로 시작하는 그림을 찾아보세요!',
-          promptLetter: 'T',
-          options: [
-            { id: 'apple', icon: 'apple', label: 'apple', correct: false },
-            { id: 'bus', icon: 'bus', label: 'bus', correct: false },
-            { id: 'top3', icon: 'top', label: 'top', correct: true },
-          ],
-          readAloud: { targetText: 'top' },
-        },
-        {
-          id: 's4-r7-listenrepeat',
+          id: 's4-r6-trace',
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '단어를 하나씩 따라 말해보세요!',
-          words: ['top', 'tap'],
+          instructionKo: '손가락으로 T를 따라 그리면서 T 소리를 내보세요!',
+          words: [{ text: 'T', say: 'tuh' }],
         },
         {
-          id: 's4-finale-cycle',
+          id: 's4-r7-quickfire',
+          // S/A/T 총복습 -- A 스테이지가 2소리만 묻던 것과 달리 이제 세
+          // 소리를 전부 묻는다. 보스 직전의 캡스톤 역할이라 hard/reversed
+          // 단독 문항은 생략했다.
           kind: 'choose-sequence',
           scored: true,
           hits: 1,
@@ -516,28 +532,36 @@ export const chapter1 = {
             {
               promptAudio: 'sss',
               options: [
-                { id: 'cA', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
-                { id: 'cS', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
-                { id: 'cT', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+                { id: 'cA1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+                { id: 'cS1', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
+                { id: 'cT1', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
               ],
             },
             {
               promptAudio: 'aaa',
               options: [
-                { id: 'cA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
                 { id: 'cS2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
                 { id: 'cT2', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
+                { id: 'cA2', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
               ],
             },
             {
               promptAudio: 'tuh',
               options: [
-                { id: 'cS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
-                { id: 'cA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
                 { id: 'cT3', icon: 'letterTile', label: 'T', say: 'tuh', correct: true },
+                { id: 'cA3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
+                { id: 'cS3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
               ],
             },
           ],
+        },
+        {
+          id: 's4-r8-listenrepeat',
+          kind: 'listen-repeat',
+          scored: true,
+          hits: 1,
+          instructionKo: '단어를 하나씩 따라 말해보세요!',
+          words: ['top', 'tap'],
         },
         {
           id: 's4-finale',
