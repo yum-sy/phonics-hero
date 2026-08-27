@@ -156,9 +156,9 @@ export const chapter1 = {
             {
               promptAudio: 'sun',
               options: [
-                { id: 'moon', icon: 'moon', label: 'moon', correct: false },
-                { id: 'sock2', icon: 'sock', label: 'sock', correct: true },
-                { id: 'cup', icon: 'cup', label: 'cup', correct: false },
+                { id: 'moon', icon: 'moon', label: 'moon', correct: true },
+                { id: 'sock2', icon: 'sock', label: 'sock', correct: false },
+                { id: 'snake3', icon: 'snake', label: 'snake', correct: false },
               ],
             },
           ],

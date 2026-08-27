@@ -106,7 +106,7 @@ export const chapter2 = {
               options: [
                 { id: 'c2s1-car', icon: 'car', label: 'car', correct: false },
                 { id: 'c2s1-igloo', icon: 'igloo', label: 'igloo', correct: true },
-                { id: 'c2s1-insect2', icon: 'insect', label: 'insect', correct: false },
+                { id: 'c2s1-dog2', icon: 'dog', label: 'dog', correct: false },
               ],
             },
           ],
