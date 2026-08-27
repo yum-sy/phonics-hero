@@ -506,6 +506,20 @@ function showTransitionCountdown(ms) {
   }
 }
 
+// Same cosmetic bar as waitForTransition(), for a caller that has no fixed
+// minDelayMs of its own -- just an audio-drain wait it wants to paint
+// instead of leaving blank (QA: the correct-answer-into-readAloud handoff
+// skips waitForTransition entirely because it has no minimum hold to add on
+// top of whenAudioIdle(), so it went uncovered when the countdown bar was
+// added everywhere else). `ms` is a display estimate only, exactly like
+// waitForTransition's own bar: if the wait finishes first the bar is
+// removed early, if audio runs long the bar just sits full -- either way it
+// can never desync from or lengthen the real wait it decorates.
+function withTransitionCountdown(promise, ms = 600) {
+  const removeCountdown = showTransitionCountdown(ms)
+  return promise.finally(removeCountdown)
+}
+
 // Waits for both a minimum visual-feedback delay AND the audio queue to
 // fully drain, whichever takes longer -- so a transition never cuts off
 // in-flight speech, but also never feels laggier than it needs to when
@@ -1717,7 +1731,7 @@ function renderChooseBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       if (beat.scored && beat.readAloud) {
-        await whenAudioIdle()
+        await withTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
@@ -1800,7 +1814,7 @@ function renderMatchShapeBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       if (beat.scored && beat.readAloud) {
-        await whenAudioIdle()
+        await withTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
@@ -1945,7 +1959,7 @@ function renderMultiselectBeat(runtime, beat) {
     },
     onCorrect: async () => {
       flashCorrect(area)
-      await whenAudioIdle()
+      await withTransitionCountdown(whenAudioIdle())
       runReadAloud(runtime, beat, beat.readAloud)
     },
   })
@@ -2103,7 +2117,7 @@ function renderBuildBeat(runtime, beat) {
       // and schedules the hit on that one.
       fireBolt(tile)
       if (beat.scored && beat.readAloud) {
-        await whenAudioIdle()
+        await withTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
