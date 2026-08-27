@@ -1017,13 +1017,42 @@ async function pump() {
 // reporting `speaking === true` at that point -- if so, this is not "an
 // utterance that took a while", it is evidence the daemon dropped an item
 // and never told anyone.
+//
+// THIS WAS TOO TRIGGER-HAPPY (real-device report, 2026-08-27 session): a
+// real-device play-through found this firing on nearly EVERY utterance, and
+// escalating to cancel() -- which drops the ENTIRE queue, not just the
+// suspect item -- inside one second of the safety timer giving up. The
+// safety timer's own estimate already has slack built in (see
+// `estimatedMs` in speakNow), but it is an estimate of AUDIO duration, not
+// of how long the engine can take to even start: real onstart latency on
+// iPadOS Safari has been observed to run close to 4s. A speak() call that
+// simply hasn't started yet is spec-legal `speaking === true` with nothing
+// wrong at all -- and the old 500ms+500ms escalation was well inside that
+// window, so it was routinely killing utterances that were about to play
+// fine, which is a strictly worse failure than the rare true jam this exists
+// to catch (that one is at least silent-and-eventually-recoverable via the
+// idle watchdog above; cancel() is audible and immediate, and it takes
+// every OTHER queued utterance down with it).
+//
+// So this is now much more patient, and cancel() is reserved for a signal
+// that cannot be "just a slow start": `speaking` staying true across THREE
+// separate checks, several seconds apart, with a pause()/resume() kick
+// attempted before each re-check. A slow-but-legitimate utterance clears on
+// one of the early checks (kickSpeechDaemon-style pause/resume is a no-op on
+// real audio, so it never interrupts one); only a daemon that is still
+// reporting busy after ~9s of that survives to the cancel() branch.
 let jamRecoveryInFlight = false
+
+// Spacing between re-checks, in ms -- generous on purpose (see above). The
+// first element is the delay before the FIRST check; each later element is
+// the delay before the check that follows a failed kick.
+const JAM_RECHECK_DELAYS_MS = [3000, 3000, 3000]
 
 function scheduleJamCheck(rawText) {
   if (!('speechSynthesis' in window)) return
   if (jamRecoveryInFlight) return
   jamRecoveryInFlight = true
-  setTimeout(() => attemptJamRecovery(rawText, 0), 500)
+  setTimeout(() => attemptJamRecovery(rawText, 0), JAM_RECHECK_DELAYS_MS[0])
 }
 
 function attemptJamRecovery(rawText, attempt) {
@@ -1036,42 +1065,47 @@ function attemptJamRecovery(rawText, attempt) {
   }
   if (!stillStuck) {
     // Cleared on its own -- the safety timer firing was the ordinary
-    // "onend never arrived for this one utterance" case, not a stuck daemon.
+    // "onend never arrived for this one utterance" case (or a slow start
+    // that has since resolved), not a stuck daemon.
     jamRecoveryInFlight = false
     return
   }
   console.warn(
-    '[audio] speechSynthesis appears jammed: speaking=true well after this ' +
-      'module\'s own safety timer gave up on "' + rawText + '" (attempt ' +
-      attempt + '). Future word audio may be silent until this clears.'
+    '[audio] speechSynthesis still reports speaking=true well after this ' +
+      'module\'s own safety timer gave up on "' + rawText + '" (check ' +
+      attempt + '). Kicking and re-checking before assuming a real jam.'
   )
-  if (attempt === 0) {
-    // A more insistent version of kickSpeechDaemon(): that helper refuses to
-    // touch the engine while `speaking` is true, because normally that means
-    // a REAL utterance is in flight and pausing it would be an audible
-    // hiccup. That guard does not apply here -- we already have strong
-    // evidence (our own safety timer fired for this exact utterance) that
-    // nothing legitimate is playing, so a pause()/resume() kick is safe to
-    // attempt directly.
-    try {
-      window.speechSynthesis.pause()
-      window.speechSynthesis.resume()
-    } catch (e) {
-      // ignore -- fall through to the re-check below regardless
-    }
-    setTimeout(() => attemptJamRecovery(rawText, 1), 500)
+  // A more insistent version of kickSpeechDaemon(): that helper refuses to
+  // touch the engine while `speaking` is true, because normally that means
+  // a REAL utterance is in flight and pausing it would be an audible
+  // hiccup. That guard does not apply here -- we already have some evidence
+  // (this utterance's own safety timer fired) that something is off, and a
+  // pause()/resume() kick is a no-op on genuinely in-progress audio, so it
+  // costs nothing to try even if this turns out to be a slow start rather
+  // than a jam.
+  try {
+    window.speechSynthesis.pause()
+    window.speechSynthesis.resume()
+  } catch (e) {
+    // ignore -- fall through to the re-check below regardless
+  }
+  const nextAttempt = attempt + 1
+  if (nextAttempt < JAM_RECHECK_DELAYS_MS.length) {
+    setTimeout(() => attemptJamRecovery(rawText, nextAttempt), JAM_RECHECK_DELAYS_MS[nextAttempt])
     return
   }
-  // Last resort. cancel() is banned everywhere else in this file because it
-  // kills a queue that might have real, audible speech in flight -- but
-  // there is nothing left to protect at this point: this module's own
-  // safety timer already declared the utterance over internally (that is
-  // WHY this check ran at all), and a pause()/resume() kick -- which only
-  // ever clears a genuinely wedged daemon, never a speaking one, since it is
-  // a no-op on real audio -- did not clear it either. Two independent
-  // signals (safety-timer-without-report, then kick-without-recovery) is the
-  // bar for using the one call this module otherwise refuses to make.
-  console.warn('[audio] speechSynthesis still jammed after a kick -- calling cancel() to unstick the daemon')
+  // Last resort, only reached after JAM_RECHECK_DELAYS_MS.length independent
+  // "still speaking" observations several seconds apart, each preceded by a
+  // kick that had every chance to clear a slow-but-real utterance. cancel()
+  // is banned everywhere else in this file because it kills a queue that
+  // might have real, audible speech in flight -- but by this point that
+  // risk has been spent down about as far as it can be without proof, and
+  // the alternative (never recovering the true permanent-wedge case) is the
+  // one failure mode nothing else in this file can route around.
+  console.warn(
+    '[audio] speechSynthesis still jammed after ' + JAM_RECHECK_DELAYS_MS.length +
+      ' kicks over several seconds -- calling cancel() to unstick the daemon'
+  )
   try {
     window.speechSynthesis.cancel()
   } catch (e) {
@@ -1287,23 +1321,29 @@ export function speakEN(text, rate = EN_RATE) {
 // (`pendingTap` itself is declared with the queue -- pump() releases it.)
 //
 // Coalescing used to mean "the first tap wins and later ones are thrown
-// away", and that was the wrong end to keep. QA hit it directly: tapping
-// `sock` and then `dog` played "sock" -- the word the child had already moved
-// off -- and silently dropped `dog`, the one they were asking about. The slot
-// is now LATEST-WINS: the waiting item's text is replaced, so what the child
-// hears next is always the last thing they touched. Same bound of two
-// utterances, opposite (and correct) choice of which one to keep.
+// away", and that was the wrong end to keep -- but LATEST-WINS-UNCONDITIONALLY
+// (overwrite the pending slot no matter what it was waiting to say) turned out
+// to be the wrong fix. It was keyed on "is a tap already pending", not on
+// "is it pending for the SAME target" -- so two quick taps on two DIFFERENT
+// options (`sock` then `dog`, or three different drag-build tiles) collapsed
+// into one utterance and silently dropped the other, even though neither tap
+// was a repeat. That is a distinct bug from the one this coalescing exists to
+// fix (spamming the SAME target over and over), and it produced exactly the
+// real-device symptom -- some words never heard -- because the pending slot
+// sits in the queue for up to TAP_GAP_MS/MIN_GAP_MS before it starts
+// speaking, and any tap landing in that window used to overwrite it
+// regardless of identity.
 //
-// This also fixes drag-build, where each placed tile speaks its own letter:
-// three quick placements used to be heard as tile 1 then tile 2, with the
-// tile the child had just landed dropped. Now it is tile 1 then tile 3 -- the
-// letter that is actually under their finger.
-//
-// Tap items also take TAP_GAP_MS instead of MIN_GAP_MS in front of them (see
-// pump()), which is where the ~380ms of the reported lag went.
+// So coalescing is now keyed on identity: only a tap that matches the
+// CURRENTLY WAITING tap's own text reuses the slot (this is what "repeated
+// rapid taps on the same thing" actually means). A tap on anything else opens
+// its own new queue item -- it is not a repeat, so it must not be dropped --
+// and that new item becomes the pending slot going forward, so a burst of
+// repeats *of it* still coalesces the same way. This still bounds a spam
+// burst on one target to "one playing + one waiting", exactly as before; it
+// just no longer conflates "repeat" with "any second tap".
 export function speakTap(text, rate = EN_RATE) {
-  if (pendingTap) {
-    pendingTap.text = text
+  if (pendingTap && pendingTap.text === text) {
     pendingTap.rate = rate
     return pendingTap.done
   }
