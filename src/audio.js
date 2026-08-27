@@ -131,6 +131,28 @@ function kickSpeechDaemon() {
   }
 }
 
+// A more insistent version of the above: this one skips the `speaking`
+// guard, so it will touch the engine even while `speaking` claims true.
+// That guard exists to protect a REAL utterance genuinely in flight from an
+// audible pause hiccup -- but a pause()/resume() kick is a measured no-op on
+// genuinely in-progress audio (this file's callers of this function each
+// have their own reason to suspect the engine is not actually progressing
+// despite `speaking`), so it costs nothing to try even when that turns out
+// to be wrong. Used by attemptJamRecovery() (late-stage: this utterance's
+// own wait already expired) and speakNow()'s onstart watchdog (early:
+// onstart itself hasn't fired yet) -- CDP measurement against real Chrome
+// caught this kick, not elapsed time, as the actual trigger for a stalled
+// engine to finally produce audio; see speakNow() for the measured numbers.
+function kickSpeechDaemonInsistent() {
+  if (!('speechSynthesis' in window)) return
+  try {
+    window.speechSynthesis.pause()
+    window.speechSynthesis.resume()
+  } catch (e) {
+    // ignore -- fall through, the caller re-checks regardless
+  }
+}
+
 // ---- baked phoneme assets ----
 //
 // Web Speech cannot say a bare phoneme, and the reason turned out to be worse
@@ -1152,20 +1174,7 @@ function attemptJamRecovery(rawText, attempt) {
       'module\'s own safety timer gave up on "' + rawText + '" (check ' +
       attempt + '). Kicking and re-checking before assuming a real jam.'
   )
-  // A more insistent version of kickSpeechDaemon(): that helper refuses to
-  // touch the engine while `speaking` is true, because normally that means
-  // a REAL utterance is in flight and pausing it would be an audible
-  // hiccup. That guard does not apply here -- we already have some evidence
-  // (this utterance's own safety timer fired) that something is off, and a
-  // pause()/resume() kick is a no-op on genuinely in-progress audio, so it
-  // costs nothing to try even if this turns out to be a slow start rather
-  // than a jam.
-  try {
-    window.speechSynthesis.pause()
-    window.speechSynthesis.resume()
-  } catch (e) {
-    // ignore -- fall through to the re-check below regardless
-  }
+  kickSpeechDaemonInsistent()
   const nextAttempt = attempt + 1
   if (nextAttempt < JAM_RECHECK_DELAYS_MS.length) {
     setTimeout(() => attemptJamRecovery(rawText, nextAttempt), JAM_RECHECK_DELAYS_MS[nextAttempt])
@@ -1226,14 +1235,17 @@ function speakNow(text, lang, rate, volume = 1) {
     // delay only on the very first tap" symptom this was fitted to fix.
     const silent = volume === 0
     let done = false
+    let started = false // did onstart ever fire for THIS utterance?
     let reported = false // did onend/onerror fire, or only the safety timer?
     let pollTimer = null
+    let startWatchTimer = null
     const startedAt = Date.now()
     const finish = () => {
       if (done) return
       done = true
       clearTimeout(safetyTimer)
       clearTimeout(pollTimer)
+      clearTimeout(startWatchTimer)
       // Neither onend nor onerror ever arrived for this utterance -- either
       // the safety timer above had to fire on its own, or speak() itself
       // threw synchronously (see the catch below). Both are the narrow
@@ -1301,6 +1313,9 @@ function speakNow(text, lang, rate, volume = 1) {
       reported = true
       finish()
     }
+    utter.onstart = () => {
+      started = true
+    }
     utter.onend = reportedFinish
     utter.onerror = reportedFinish
     // Safety net: speechSynthesis is known to occasionally never fire
@@ -1361,6 +1376,42 @@ function speakNow(text, lang, rate, volume = 1) {
         pollTimer = setTimeout(poll, 120)
       }
       pollTimer = setTimeout(poll, probeAfter)
+    }
+    // Onstart watchdog: kicks the daemon EARLY if onstart itself hasn't
+    // fired yet, instead of waiting for the full padded `estimatedMs` floor
+    // to expire before scheduleJamCheck's first kick even gets scheduled.
+    //
+    // CDP measurement against real Chrome (not the sandboxed/headless tool,
+    // an actual Chrome window on this Mac) caught this exact pattern live:
+    // a tapped word's speak() call fired instantly, `speaking` went true
+    // immediately, but real onstart did not arrive for 4+ seconds -- until
+    // the FIRST jam-recovery kick fired (at ~2900ms, only reachable after
+    // this utterance's own 2500ms floor had already been spent doing
+    // nothing). The very next word tapped moments later, on an
+    // already-kicked engine, started essentially instantly. That is a
+    // repeat of the exact "6.7s dog delay" finding this file's jam-recovery
+    // history documents elsewhere -- the KICK is the trigger, not elapsed
+    // time -- except this time it is the FIRST utterance of a fresh
+    // interaction, not a jammed backlog, so the old scheme's "only kick
+    // after giving up" ordering was actively working against the common
+    // case: it made every fresh tap eat close to 3 full seconds of pure
+    // waiting before the one action that actually unblocks it was even
+    // attempted.
+    //
+    // Short, escalating delays (well inside `estimatedMs`, never past it),
+    // stopped the moment `started` flips true. kickSpeechDaemonInsistent()
+    // is the same primitive attemptJamRecovery() already trusts for exactly
+    // this reason: a no-op on genuinely in-progress audio, cheap to try.
+    if (!silent) {
+      const START_WATCH_DELAYS_MS = [500, 700, 900]
+      const armStartWatch = (i) => {
+        startWatchTimer = setTimeout(() => {
+          if (done || started) return
+          kickSpeechDaemonInsistent()
+          if (i + 1 < START_WATCH_DELAYS_MS.length) armStartWatch(i + 1)
+        }, START_WATCH_DELAYS_MS[i])
+      }
+      armStartWatch(0)
     }
     try {
       window.speechSynthesis.speak(utter)
