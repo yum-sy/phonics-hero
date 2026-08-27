@@ -102,16 +102,26 @@ export function mountAudioDebugPanel() {
     lines.length = 0
     render()
   })
-  mkBtn('copy all', () => {
-    const text = lines.join('\n')
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(
-        () => log('[copied to clipboard]'),
-        () => log('[clipboard copy failed -- select text manually]')
-      )
-    }
+  // navigator.clipboard needs a secure context (https/localhost) and
+  // silently isn't available over plain http:// LAN addresses, which is
+  // exactly how this gets loaded on a real device -- so instead of the
+  // Clipboard API, populate a real <textarea> and select() it: iOS's
+  // native text-selection handles + "Copy" popup work regardless of
+  // clipboard permissions, since that's OS-level selection, not a JS API.
+  const copyBox = document.createElement('textarea')
+  copyBox.readOnly = true
+  copyBox.style.cssText =
+    'display:none;width:100%;height:200px;margin-top:6px;background:#000;color:#0f0;' +
+    'font:10px monospace;border:1px solid #0f0;'
+  mkBtn('select text to copy', () => {
+    copyBox.value = lines.join('\n')
+    copyBox.style.display = 'block'
+    copyBox.focus()
+    copyBox.select()
+    log('[textarea below is selected -- use the native "Copy" popup, or just screenshot the log]')
   })
   wrap.appendChild(bar)
+  wrap.appendChild(copyBox)
   wrap.appendChild(body)
 
   function render() {
