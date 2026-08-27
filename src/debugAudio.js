@@ -74,20 +74,20 @@ export function mountAudioDebugPanel() {
   // overlaps that area regardless of how much log accumulates.
   const wrap = document.createElement('div')
   wrap.style.cssText =
-    'position:fixed;left:0;top:0;bottom:0;width:480px;z-index:99999;' +
+    'position:fixed;left:0;top:0;bottom:0;width:240px;z-index:99999;' +
     'overflow:auto;background:rgba(0,0,0,0.88);color:#0f0;' +
-    'font:12px/1.4 monospace;padding:8px;white-space:pre-wrap;word-break:break-word;' +
+    'font:10px/1.35 monospace;padding:6px;white-space:pre-wrap;word-break:break-word;' +
     'border-right:2px solid #0f0;'
   document.body.appendChild(wrap)
 
   const bar = document.createElement('div')
   bar.style.cssText =
-    'display:flex;flex-direction:row;gap:6px;margin-bottom:6px;' +
+    'display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;margin-bottom:5px;' +
     'position:sticky;top:0;background:rgba(0,0,0,0.88);'
   const mkBtn = (label, fn) => {
     const b = document.createElement('button')
     b.textContent = label
-    b.style.cssText = 'font:13px monospace;padding:6px 10px;'
+    b.style.cssText = 'font:10px monospace;padding:4px 6px;'
     b.onclick = fn
     bar.appendChild(b)
     return b
