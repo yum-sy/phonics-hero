@@ -35,6 +35,28 @@ export function mountArtDebugPanel() {
       const cs = window.getComputedStyle(el)
       const svg = el.closest('svg')
       const svgRect = svg ? svg.getBoundingClientRect() : null
+      // None of the checks above can catch OCCLUSION: a later-drawn shape
+      // sitting visually on top of this text would still leave the text
+      // element itself reporting perfectly normal attrs/computed style/bbox
+      // -- those describe the element, not what a human eye actually sees
+      // at its position. elementFromPoint() asks the browser what is
+      // topmost at the text's own screen center, which is the one check
+      // that can actually catch this.
+      let occlusion = '(no screen position available)'
+      try {
+        const screenRect = el.getBoundingClientRect()
+        const cx = screenRect.x + screenRect.width / 2
+        const cy = screenRect.y + screenRect.height / 2
+        const topEl = document.elementFromPoint(cx, cy)
+        const isSelfOrAncestor = topEl === el || (topEl && el.contains(topEl)) || (topEl && topEl.contains(el))
+        occlusion = `screenRect=${screenRect.width.toFixed(1)}x${screenRect.height.toFixed(
+          1
+        )} @(${cx.toFixed(0)},${cy.toFixed(0)}) topmost-at-that-point=${
+          topEl ? topEl.tagName + (topEl.className ? '.' + topEl.className : '') : '(none)'
+        } ${isSelfOrAncestor ? '[OK -- text itself is on top]' : '[!! SOMETHING ELSE IS ON TOP, LIKELY HIDING THIS TEXT]'}`
+      } catch (e) {
+        occlusion = 'elementFromPoint check threw: ' + e
+      }
       lines.push(
         `--- text #${i} ---`,
         `content: ${JSON.stringify(el.textContent)}`,
@@ -46,6 +68,7 @@ export function mountArtDebugPanel() {
         `parent svg: viewBox=${svg ? svg.getAttribute('viewBox') : '(none)'} clientRect=${
           svgRect ? `${svgRect.width.toFixed(1)}x${svgRect.height.toFixed(1)}` : '(none)'
         }`,
+        `occlusion check: ${occlusion}`,
         ''
       )
     })
