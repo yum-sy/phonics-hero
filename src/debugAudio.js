@@ -102,6 +102,29 @@ export function mountAudioDebugPanel() {
     lines.length = 0
     render()
   })
+  // Isolates ONE variable: does a raw speak() call still produce audible
+  // sound if it happens a couple seconds AFTER the tap that triggered it,
+  // instead of synchronously inside the tap handler? The real game's word
+  // audio always goes through several async awaits (queue gaps, asset
+  // wait timeouts) before the actual speak() call, so if iOS's "must be
+  // inside a live user-activation window" gesture policy is stricter here
+  // than assumed, a delayed call would silently fail exactly like the real
+  // game does, while an immediate one (like the earlier working manual
+  // button tests) succeeds.
+  mkBtn('TEST A: raw speak NOW (sync in tap)', () => {
+    log('TEST A: calling raw speak() synchronously inside this tap...')
+    const u = new SpeechSynthesisUtterance('testing sync')
+    u.lang = 'en-US'
+    window.speechSynthesis.speak(u)
+  })
+  mkBtn('TEST B: raw speak after 2s delay', () => {
+    log('TEST B: waiting 2s after this tap, THEN calling raw speak()...')
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance('testing after delay')
+      u.lang = 'en-US'
+      window.speechSynthesis.speak(u)
+    }, 2000)
+  })
   // navigator.clipboard needs a secure context (https/localhost) and
   // silently isn't available over plain http:// LAN addresses, which is
   // exactly how this gets loaded on a real device -- so instead of the
