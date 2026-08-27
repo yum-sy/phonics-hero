@@ -138,7 +138,7 @@ export const chapter3 = {
           words: ['cat'],
         },
       ],
-      recapKo: '/k/ 소리를 찾았어요! Cat, key, cake, king — 모두 kuh로 시작해요!',
+      recapKo: '/k/ 소리를 찾았어요! Cat, key, cake, king — 모두 C로 시작해요!',
       recapAudio: {
         ko: '씨 소리를 찾았어요! 잘 들어보세요.',
         en: ['kuh', 'cat', 'key', 'cake'],
@@ -156,7 +156,7 @@ export const chapter3 = {
         {
           id: 'c3s2-teach',
           kind: 'teach',
-          instructionKo: 'C는 케이라의 발톱처럼 kuh 소리를 내요!',
+          instructionKo: 'C는 케이라의 발톱처럼 C 소리를 내요!',
           art: 'hero',
           letter: 'C',
           repeatAudio: ['C', 'kuh'],
@@ -165,7 +165,7 @@ export const chapter3 = {
           id: 'c3s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'kuh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'C 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'kuh',
           // K 는 여기 절대 넣지 않는다 -- C 와 K 는 같은 소리라 정답이 둘이 된다.
           options: [
@@ -192,7 +192,7 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 C를 따라 그리면서 kuh 소리를 내보세요!',
+          instructionKo: '손가락으로 C를 따라 그리면서 C 소리를 내보세요!',
           words: [{ text: 'C', say: 'kuh' }],
         },
         {
@@ -226,7 +226,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이를 "모두 찾기" 로 물어 다대일 대응을 수업으로 만든다.
-          instructionKo: 'kuh 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
+          instructionKo: 'C 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
           options: [
             { id: 'c3s2-C2', icon: 'letterTile', label: 'C', say: 'kuh', correct: true },
             { id: 'c3s2-S2', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
@@ -240,7 +240,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'kuh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'C 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'kuh',
           // 혼동 보기는 S 하나 -- c 가 /s/ 로도 읽히는 실제 함정이다.
           options: [
@@ -282,7 +282,7 @@ export const chapter3 = {
           words: [{ text: 'C', say: 'kuh' }, 'cat'],
         },
       ],
-      recapKo: 'C는 kuh 소리를 내요. 그리고 K도 똑같은 kuh 소리를 내는 쌍둥이예요!',
+      recapKo: 'C는 C 소리를 내요. 그리고 K도 똑같은 K 소리를 내는 쌍둥이예요!',
       recapAudio: {
         ko: '씨와 케이는 소리가 똑같아요. 쌍둥이예요!',
         en: ['kuh', 'cat', 'kuh', 'king'],
@@ -301,7 +301,7 @@ export const chapter3 = {
         {
           id: 'c3s3-teach',
           kind: 'teach',
-          instructionKo: 'E는 에디가 알에서 나올 때처럼 eh 소리를 내요!',
+          instructionKo: 'E는 에디가 알에서 나올 때처럼 E 소리를 내요!',
           art: 'hero',
           letter: 'E',
           repeatAudio: ['E', 'eh'],
@@ -310,7 +310,7 @@ export const chapter3 = {
           id: 'c3s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'eh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'E 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'eh',
           options: [
             { id: 'c3s3-A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
@@ -336,7 +336,7 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 E를 따라 그리면서 eh 소리를 내보세요!',
+          instructionKo: '손가락으로 E를 따라 그리면서 E 소리를 내보세요!',
           words: [{ text: 'E', say: 'eh' }],
         },
         {
@@ -353,7 +353,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           // 쌍둥이 개념 2회차 간격 복습 -- 이 챕터에서 가장 어려운 개념이다.
-          instructionKo: 'kuh 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
+          instructionKo: 'C 소리를 내는 글자를 모두 고르고 ✓를 누르세요! (두 개예요)',
           options: [
             { id: 'c3s3-K2', icon: 'letterTile', label: 'K', say: 'kuh', correct: true },
             { id: 'c3s3-E2', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
@@ -395,7 +395,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'eh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'E 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'eh',
           // 혼동 보기는 I 하나 -- 챕터 2 의 /i/ 와 최대 혼동쌍이다.
           options: [
@@ -436,7 +436,7 @@ export const chapter3 = {
           words: [{ text: 'E', say: 'eh' }, 'egg'],
         },
       ],
-      recapKo: 'E는 eh 소리를 내요 — egg, elephant, ten! 그리고 C의 kuh도 기억하고 있어요!',
+      recapKo: 'E는 E 소리를 내요 — egg, elephant, ten! 그리고 C의 C 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '이번엔 새로운 모음 소리예요. 잘 들어보세요.',
         en: ['eh', 'egg', 'elephant', 'ten'],
@@ -455,7 +455,7 @@ export const chapter3 = {
         {
           id: 'c3s4-teach',
           kind: 'teach',
-          instructionKo: 'H는 허비가 숨을 헉헉 내쉬듯 huh 소리를 내요!',
+          instructionKo: 'H는 허비가 숨을 헉헉 내쉬듯 H 소리를 내요!',
           art: 'hero',
           letter: 'H',
           repeatAudio: ['H', 'huh'],
@@ -464,7 +464,7 @@ export const chapter3 = {
           id: 'c3s4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'huh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'H 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'huh',
           options: [
             { id: 'c3s4-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
@@ -490,7 +490,7 @@ export const chapter3 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 H를 따라 그리면서 huh 소리를 내보세요!',
+          instructionKo: '손가락으로 H를 따라 그리면서 H 소리를 내보세요!',
           words: [{ text: 'H', say: 'huh' }],
         },
         {
@@ -520,7 +520,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'huh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'H 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'huh',
           // 혼동 보기는 S 하나 -- /h/ 와 /s/ 는 둘 다 무성 마찰음이라 진짜 근접쌍이고,
           // S 는 챕터 1 에서 이미 배운 글자다 (N 은 warmup 에서 이미 썼다).

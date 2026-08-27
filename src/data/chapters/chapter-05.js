@@ -106,7 +106,7 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           // /g/ 그림이 0개라 아이콘이 필요 없는 beat 로 /g/ 를 나른다.
-          instructionKo: 'guh 소리로 시작하는 단어예요! 따라 말해보세요.',
+          instructionKo: 'G 소리로 시작하는 단어예요! 따라 말해보세요.',
           words: ['gap', 'gum'],
         },
         {
@@ -174,7 +174,7 @@ export const chapter5 = {
           words: ['gap'],
         },
       ],
-      recapKo: '/g/ 소리를 찾았어요! Gap, gum — 모두 guh로 시작해요!',
+      recapKo: '/g/ 소리를 찾았어요! Gap, gum — 모두 G로 시작해요!',
       recapAudio: {
         ko: '지 소리를 찾았어요! 잘 들어보세요.',
         en: ['guh', 'gap', 'gum'],
@@ -192,7 +192,7 @@ export const chapter5 = {
         {
           id: 'c5s2-teach',
           kind: 'teach',
-          instructionKo: 'G는 Gogo가 뛰어오를 때처럼 guh 소리를 내요!',
+          instructionKo: 'G는 Gogo가 뛰어오를 때처럼 G 소리를 내요!',
           art: 'hero',
           letter: 'G',
           repeatAudio: ['G', 'guh'],
@@ -201,7 +201,7 @@ export const chapter5 = {
           id: 'c5s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'guh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'G 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'guh',
           // 혼동 보기는 K 하나 -- G/C·K 는 유무성 대비로 유용하다.
           options: [
@@ -228,7 +228,7 @@ export const chapter5 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 G를 따라 그리면서 guh 소리를 내보세요!',
+          instructionKo: '손가락으로 G를 따라 그리면서 G 소리를 내보세요!',
           words: [{ text: 'G', say: 'guh' }],
         },
         {
@@ -260,7 +260,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'guh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'G 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'guh',
           options: [
             { id: 'c5s2-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
@@ -301,7 +301,7 @@ export const chapter5 = {
           words: [{ text: 'G', say: 'guh' }, 'gap'],
         },
       ],
-      recapKo: 'G는 guh 소리를 내요 — gap, gum! K의 kuh 소리와 헷갈리지 마세요!',
+      recapKo: 'G는 G 소리를 내요 — gap, gum! K의 K 소리와 헷갈리지 마세요!',
       recapAudio: {
         ko: '지는 이런 소리를 내요. 키 소리와 다르니 잘 들어보세요.',
         en: ['guh', 'gap', 'gum'],
@@ -320,7 +320,7 @@ export const chapter5 = {
         {
           id: 'c5s3-teach',
           kind: 'teach',
-          instructionKo: 'O는 Ollie가 튕겨 오를 때처럼 awh 소리를 내요!',
+          instructionKo: 'O는 Ollie가 튕겨 오를 때처럼 O 소리를 내요!',
           art: 'hero',
           letter: 'O',
           repeatAudio: ['O', 'awh'],
@@ -329,7 +329,7 @@ export const chapter5 = {
           id: 'c5s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'awh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'O 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'awh',
           // 혼동 보기는 A 하나 -- O/A 는 의도된 대비쌍이다.
           options: [
@@ -356,7 +356,7 @@ export const chapter5 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 O를 따라 그리면서 awh 소리를 내보세요!',
+          instructionKo: '손가락으로 O를 따라 그리면서 O 소리를 내보세요!',
           words: [{ text: 'O', say: 'awh' }],
         },
         {
@@ -386,7 +386,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'awh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'O 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'awh',
           options: [
             { id: 'c5s3-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: true },
@@ -427,7 +427,7 @@ export const chapter5 = {
           words: [{ text: 'O', say: 'awh' }, 'dog'],
         },
       ],
-      recapKo: 'O는 awh 소리를 내요 — got, on, dog! G의 guh도 기억하고 있어요!',
+      recapKo: 'O는 O 소리를 내요 — got, on, dog! G의 G 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '오는 이런 소리를 내요. 에이 소리와 다르니 잘 들어보세요.',
         en: ['awh', 'got', 'dog'],
@@ -449,7 +449,7 @@ export const chapter5 = {
         {
           id: 'c5s4-teach',
           kind: 'teach',
-          instructionKo: 'U는 Umo가 힘을 낼 때처럼 uh 소리를 내요!',
+          instructionKo: 'U는 Umo가 힘을 낼 때처럼 U 소리를 내요!',
           art: 'hero',
           letter: 'U',
           repeatAudio: ['U', 'uh'],
@@ -458,7 +458,7 @@ export const chapter5 = {
           id: 'c5s4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'uh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'U 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'uh',
           // 혼동 보기는 A 하나 -- U/A 는 의도된 대비쌍이다.
           options: [
@@ -488,7 +488,7 @@ export const chapter5 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 U를 따라 그리면서 uh 소리를 내보세요!',
+          instructionKo: '손가락으로 U를 따라 그리면서 U 소리를 내보세요!',
           words: [{ text: 'U', say: 'uh' }],
         },
         {
@@ -507,7 +507,7 @@ export const chapter5 = {
           // 어중 /u/ -- 근거는 파일 헤더에 있다. 보기 넷이 모두 자음으로
           // 시작하므로 초성 매칭으로는 풀 수 없고, 오답 dog 은 어중이 /o/ 라
           // 이 문항이 그대로 어중 /o/ 대 /u/ 변별이 된다.
-          instructionKo: 'uh 소리가 가운데 들어있는 걸 모두 고르고 ✓를 누르세요!',
+          instructionKo: 'U 소리가 가운데 들어있는 걸 모두 고르고 ✓를 누르세요!',
           options: [
             { id: 'c5s4-cup', icon: 'cup', label: 'cup', correct: true },
             { id: 'c5s4-dog', icon: 'dog', label: 'dog', correct: false },
@@ -521,7 +521,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'uh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'U 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'uh',
           // 혼동 보기는 O 하나 -- 방금 배운 글자와 대비시킨다(U/O 도 의도된
           // 대비쌍). warmup 에서 이미 U/A 를 다뤄서 여기선 겹치지 않는다.

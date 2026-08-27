@@ -144,7 +144,7 @@ export const chapter1 = {
           words: ['sun'],
         },
       ],
-      recapKo: '/s/ 소리를 찾았어요! Sun, sock, star, snake — 모두 sss로 시작해요!',
+      recapKo: '/s/ 소리를 찾았어요! Sun, sock, star, snake — 모두 S로 시작해요!',
       recapAudio: {
         ko: '에스 소리를 찾았어요! 잘 들어보세요.',
         en: ['sss', 'sun', 'sock', 'star'],
@@ -162,7 +162,7 @@ export const chapter1 = {
         {
           id: 's2-teach',
           kind: 'teach',
-          instructionKo: 'S는 새미처럼 sss 소리를 내요!',
+          instructionKo: 'S는 새미처럼 S 소리를 내요!',
           art: 'hero',
           letter: 'S',
           repeatAudio: ['S', 'sss'],
@@ -171,7 +171,7 @@ export const chapter1 = {
           id: 's2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'sss 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'S 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'sss',
           options: [
             { id: 'S1', icon: 'letterTile', label: 'S', say: 'sss', correct: true },
@@ -197,7 +197,7 @@ export const chapter1 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 S를 따라 그리면서 sss 소리를 내보세요!',
+          instructionKo: '손가락으로 S를 따라 그리면서 S 소리를 내보세요!',
           words: [{ text: 'S', say: 'sss' }],
         },
         {
@@ -227,7 +227,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'sss 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'S 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'sss',
           options: [
             { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zze', correct: false },
@@ -267,7 +267,7 @@ export const chapter1 = {
           words: [{ text: 'S', say: 'sss' }, 'sun'],
         },
       ],
-      recapKo: 'S는 sss 소리를 내요 — sun, sock, star도 모두 기억해요!',
+      recapKo: 'S는 S 소리를 내요 — sun, sock, star도 모두 기억해요!',
       recapAudio: {
         ko: '에스는 이런 소리를 내요. 따라 말해볼까요?',
         en: ['sss', 'sun', 'sock', 'star'],
@@ -286,7 +286,7 @@ export const chapter1 = {
         {
           id: 's3-teach',
           kind: 'teach',
-          instructionKo: 'A는 에이스처럼 aaa 소리를 내요!',
+          instructionKo: 'A는 에이스처럼 A 소리를 내요!',
           art: 'hero',
           letter: 'A',
           repeatAudio: ['A', 'aaa'],
@@ -295,7 +295,7 @@ export const chapter1 = {
           id: 's3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'aaa 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'A 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'aaa',
           options: [
             { id: 'A1', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
@@ -321,7 +321,7 @@ export const chapter1 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 A를 따라 그리면서 aaa 소리를 내보세요!',
+          instructionKo: '손가락으로 A를 따라 그리면서 A 소리를 내보세요!',
           words: [{ text: 'A', say: 'aaa' }],
         },
         {
@@ -351,7 +351,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'aaa 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'A 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'aaa',
           options: [
             { id: 'A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: true },
@@ -391,7 +391,7 @@ export const chapter1 = {
           words: [{ text: 'A', say: 'aaa' }, 'apple'],
         },
       ],
-      recapKo: 'A는 aaa 소리를 내요 — 그리고 S도 아직 기억하고 있어요!',
+      recapKo: 'A는 A 소리를 내요 — 그리고 S도 아직 기억하고 있어요!',
       recapAudio: {
         ko: '에이는 이런 소리를 내요. 에스도 기억하고 있어요.',
         en: ['aaa', 'ant', 'apple', 'sss'],
@@ -410,7 +410,7 @@ export const chapter1 = {
         {
           id: 's4-teach',
           kind: 'teach',
-          instructionKo: 'T는 터보의 엔진처럼 tuh 소리를 내요!',
+          instructionKo: 'T는 터보의 엔진처럼 T 소리를 내요!',
           art: 'hero',
           letter: 'T',
           repeatAudio: ['T', 'tuh'],
@@ -419,7 +419,7 @@ export const chapter1 = {
           id: 's4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'tuh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'T 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'tuh',
           options: [
             { id: 'L1', icon: 'letterTile', label: 'L', say: 'lll', correct: false },
@@ -445,7 +445,7 @@ export const chapter1 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 T를 따라 그리면서 tuh 소리를 내보세요!',
+          instructionKo: '손가락으로 T를 따라 그리면서 T 소리를 내보세요!',
           words: [{ text: 'T', say: 'tuh' }],
         },
         {
@@ -475,7 +475,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'tuh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'T 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'tuh',
           options: [
             { id: 'D3', icon: 'letterTile', label: 'D', say: 'duh', correct: false },

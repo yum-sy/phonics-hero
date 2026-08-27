@@ -402,7 +402,7 @@ export const chapter7 = {
         {
           id: 'c7s3-teach',
           kind: 'teach',
-          instructionKo: 'J는 Jett가 하늘을 가를 때처럼 juh 소리를 내요!',
+          instructionKo: 'J는 Jett가 하늘을 가를 때처럼 J 소리를 내요!',
           art: 'hero',
           letter: 'J',
           repeatAudio: ['J', 'juh'],
@@ -411,7 +411,7 @@ export const chapter7 = {
           id: 'c7s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'juh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'J 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'juh',
           // 혼동 보기는 G 하나 -- /d3/ 와 /g/ 는 둘 다 연구개 근처 파열/
           // 파찰음이라 살짝 대비된다(측정으로 안전 확인).
@@ -441,7 +441,7 @@ export const chapter7 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 J를 따라 그리면서 juh 소리를 내보세요!',
+          instructionKo: '손가락으로 J를 따라 그리면서 J 소리를 내보세요!',
           words: [{ text: 'J', say: 'juh' }],
         },
         {
@@ -471,7 +471,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'juh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'J 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'juh',
           // 보기 3 -> 5 (난이도 곡선). D(duh)는 넣지 않는다 -- B(buh)가 이미
           // 있어서 확정 충돌쌍이 성립한다.
@@ -518,7 +518,7 @@ export const chapter7 = {
           words: [{ text: 'J', say: 'juh' }, 'jam'],
         },
       ],
-      recapKo: 'J는 juh 소리를 내요 — jam, jog! AI 소리도 기억하고 있어요!',
+      recapKo: 'J는 J 소리를 내요 — jam, jog! AI 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '제이는 이런 소리를 내요. 잼, 조그!',
         en: ['juh', 'jam', 'jog'],

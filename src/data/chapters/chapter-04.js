@@ -62,7 +62,7 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           // /r/ 그림이 0개라 아이콘이 필요 없는 beat 로 /r/ 를 나른다.
-          instructionKo: 'rrr 소리로 시작하는 단어예요! 따라 말해보세요.',
+          instructionKo: 'R 소리로 시작하는 단어예요! 따라 말해보세요.',
           words: ['rat', 'ring'],
         },
         {
@@ -130,7 +130,7 @@ export const chapter4 = {
           words: ['rat'],
         },
       ],
-      recapKo: '/r/ 소리를 찾았어요! Rat, ring, red, run — 모두 rrr로 시작해요!',
+      recapKo: '/r/ 소리를 찾았어요! Rat, ring, red, run — 모두 R로 시작해요!',
       recapAudio: {
         ko: '아르 소리를 찾았어요! 잘 들어보세요.',
         en: ['rrr', 'rat', 'ring', 'red'],
@@ -148,7 +148,7 @@ export const chapter4 = {
         {
           id: 'c4s2-teach',
           kind: 'teach',
-          instructionKo: 'R은 로켓런의 엔진처럼 rrr 소리를 내요!',
+          instructionKo: 'R은 로켓런의 엔진처럼 R 소리를 내요!',
           art: 'hero',
           letter: 'R',
           repeatAudio: ['R', 'rrr'],
@@ -157,7 +157,7 @@ export const chapter4 = {
           id: 'c4s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'rrr 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'R 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'rrr',
           options: [
             { id: 'c4s2-N1', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },
@@ -183,7 +183,7 @@ export const chapter4 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 R을 따라 그리면서 rrr 소리를 내보세요!',
+          instructionKo: '손가락으로 R을 따라 그리면서 R 소리를 내보세요!',
           words: [{ text: 'R', say: 'rrr' }],
         },
         {
@@ -215,7 +215,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'rrr 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'R 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'rrr',
           // 혼동 보기는 L 하나 -- /r/ 와 /l/ 은 한국어 화자에게 최대 난점이다.
           options: [
@@ -256,7 +256,7 @@ export const chapter4 = {
           words: [{ text: 'R', say: 'rrr' }, 'rat'],
         },
       ],
-      recapKo: 'R은 rrr 소리를 내요 — rat, ring, red! 혀를 굴려서 rrr!',
+      recapKo: 'R은 R 소리를 내요 — rat, ring, red! 혀를 굴려서 R!',
       recapAudio: {
         ko: '아르는 이런 소리를 내요. 혀를 굴려보세요.',
         en: ['rrr', 'rat', 'ring', 'red'],
@@ -275,7 +275,7 @@ export const chapter4 = {
         {
           id: 'c4s3-teach',
           kind: 'teach',
-          instructionKo: 'M은 마그넷몬의 자석이 붙을 때처럼 mmm 소리를 내요!',
+          instructionKo: 'M은 마그넷몬의 자석이 붙을 때처럼 M 소리를 내요!',
           art: 'hero',
           letter: 'M',
           repeatAudio: ['M', 'mmm'],
@@ -284,7 +284,7 @@ export const chapter4 = {
           id: 'c4s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'mmm 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'M 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'mmm',
           // 혼동 보기는 N 하나 -- M/N 은 획 수 차이로 최대 혼동쌍이다.
           options: [
@@ -312,7 +312,7 @@ export const chapter4 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 M을 따라 그리면서 mmm 소리를 내보세요!',
+          instructionKo: '손가락으로 M을 따라 그리면서 M 소리를 내보세요!',
           words: [{ text: 'M', say: 'mmm' }],
         },
         {
@@ -345,7 +345,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'mmm 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'M 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'mmm',
           // 혼동 보기는 R 하나 -- 방금 배운 글자이고 /m/ 처럼 지속음이다.
           options: [
@@ -390,7 +390,7 @@ export const chapter4 = {
           words: [{ text: 'M', say: 'mmm' }, 'mat'],
         },
       ],
-      recapKo: 'M은 mmm 소리를 내요 — moon, man, mat! R의 rrr도 기억하고 있어요!',
+      recapKo: 'M은 M 소리를 내요 — moon, man, mat! R의 R 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '엠은 이런 소리를 내요. 아르 소리도 기억하고 있어요.',
         en: ['mmm', 'moon', 'man', 'mat'],
@@ -409,7 +409,7 @@ export const chapter4 = {
         {
           id: 'c4s4-teach',
           kind: 'teach',
-          instructionKo: 'D는 드릴돌이가 땅을 파듯 duh 소리를 내요!',
+          instructionKo: 'D는 드릴돌이가 땅을 파듯 D 소리를 내요!',
           art: 'hero',
           letter: 'D',
           repeatAudio: ['D', 'duh'],
@@ -418,7 +418,7 @@ export const chapter4 = {
           id: 'c4s4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'duh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'D 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'duh',
           // 혼동 보기는 T 하나 -- /t/ 와 /d/ 는 무성/유성 대비로 유용하다.
           // B 는 절대 넣지 않는다 (SPEECH_COLLISION_PAIRS 참조).
@@ -447,7 +447,7 @@ export const chapter4 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 D를 따라 그리면서 duh 소리를 내보세요!',
+          instructionKo: '손가락으로 D를 따라 그리면서 D 소리를 내보세요!',
           words: [{ text: 'D', say: 'duh' }],
         },
         {
@@ -481,7 +481,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'duh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'D 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'duh',
           // 혼동 보기는 P 하나 (회전 혼동). B 는 여기에도 넣지 않는다.
           options: [

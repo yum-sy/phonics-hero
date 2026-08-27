@@ -99,7 +99,7 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           // /l/ 그림이 0개라 아이콘이 필요 없는 beat 로 /l/ 를 나른다.
-          instructionKo: 'lll 소리로 시작하는 단어예요! 따라 말해보세요.',
+          instructionKo: 'L 소리로 시작하는 단어예요! 따라 말해보세요.',
           words: ['lap', 'lid'],
         },
         {
@@ -172,7 +172,7 @@ export const chapter6 = {
           words: ['lap'],
         },
       ],
-      recapKo: '/l/ 소리를 찾았어요! Lap, lid — 모두 lll로 시작해요!',
+      recapKo: '/l/ 소리를 찾았어요! Lap, lid — 모두 L로 시작해요!',
       recapAudio: {
         ko: '을 소리를 찾았어요! 잘 들어보세요.',
         en: ['lll', 'lap', 'lid'],
@@ -190,7 +190,7 @@ export const chapter6 = {
         {
           id: 'c6s2-teach',
           kind: 'teach',
-          instructionKo: 'L은 Leo가 씩씩하게 행진할 때처럼 lll 소리를 내요!',
+          instructionKo: 'L은 Leo가 씩씩하게 행진할 때처럼 L 소리를 내요!',
           art: 'hero',
           letter: 'L',
           repeatAudio: ['L', 'lll'],
@@ -199,7 +199,7 @@ export const chapter6 = {
           id: 'c6s2-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'lll 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'L 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'lll',
           // 혼동 보기는 R 하나 -- L/R 은 한국어 화자에게 최대 난점이라
           // 의도적으로 반복 노출한다(합성기 결함이 아니라 학습 목표).
@@ -229,7 +229,7 @@ export const chapter6 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 L을 따라 그리면서 lll 소리를 내보세요!',
+          instructionKo: '손가락으로 L을 따라 그리면서 L 소리를 내보세요!',
           words: [{ text: 'L', say: 'lll' }],
         },
         {
@@ -269,7 +269,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'lll 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'L 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'lll',
           // 보기 3 -> 5 (난이도 곡선, CLAUDE.md 참조). D 를 넣어도 안전하다 --
           // buh/duh 충돌쌍은 B 가 걸린 문항에만 해당하고, 여기는 B 가 없다.
@@ -317,7 +317,7 @@ export const chapter6 = {
           words: [{ text: 'L', say: 'lll' }, 'lap'],
         },
       ],
-      recapKo: 'L은 lll 소리를 내요 — lap, lid! R의 rrr 소리와 헷갈리지 마세요!',
+      recapKo: 'L은 L 소리를 내요 — lap, lid! R의 R 소리와 헷갈리지 마세요!',
       recapAudio: {
         ko: '을은 이런 소리를 내요. 아르 소리와 다르니 잘 들어보세요.',
         en: ['lll', 'lap', 'lid'],
@@ -339,7 +339,7 @@ export const chapter6 = {
         {
           id: 'c6s3-teach',
           kind: 'teach',
-          instructionKo: 'F는 Fifi가 바람을 내뿜을 때처럼 fff 소리를 내요!',
+          instructionKo: 'F는 Fifi가 바람을 내뿜을 때처럼 F 소리를 내요!',
           art: 'hero',
           letter: 'F',
           repeatAudio: ['F', 'fff'],
@@ -348,7 +348,7 @@ export const chapter6 = {
           id: 'c6s3-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'fff 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'F 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'fff',
           // 혼동 보기는 S 하나 -- 둘 다 무성마찰음이라 살짝 대비된다.
           options: [
@@ -377,7 +377,7 @@ export const chapter6 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 F를 따라 그리면서 fff 소리를 내보세요!',
+          instructionKo: '손가락으로 F를 따라 그리면서 F 소리를 내보세요!',
           words: [{ text: 'F', say: 'fff' }],
         },
         {
@@ -407,7 +407,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'fff 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'F 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'fff',
           // 보기 3 -> 5 (난이도 곡선). P 는 /f/->/p/ 대치(한국어에 /f/ 가 없어
           // 생기는 대표 오류)와 정확히 같은 근접쌍이라 오답으로 넣을 값이 있다
@@ -455,7 +455,7 @@ export const chapter6 = {
           words: [{ text: 'F', say: 'fff' }, 'fit'],
         },
       ],
-      recapKo: 'F는 fff 소리를 내요 — fit, fan! L의 lll도 기억하고 있어요!',
+      recapKo: 'F는 F 소리를 내요 — fit, fan! L의 L 소리도 기억하고 있어요!',
       recapAudio: {
         ko: '에프는 이런 소리를 내요. 을 소리도 아직 기억하고 있어요.',
         en: ['fff', 'fit', 'fan'],
@@ -477,7 +477,7 @@ export const chapter6 = {
         {
           id: 'c6s4-teach',
           kind: 'teach',
-          instructionKo: 'B는 Bobo가 블록을 쌓을 때처럼 buh 소리를 내요!',
+          instructionKo: 'B는 Bobo가 블록을 쌓을 때처럼 B 소리를 내요!',
           art: 'hero',
           letter: 'B',
           repeatAudio: ['B', 'buh'],
@@ -486,7 +486,7 @@ export const chapter6 = {
           id: 'c6s4-r1-warmup',
           kind: 'choose',
           scored: false,
-          instructionKo: 'buh 소리를 내는 글자를 찾아보세요! (연습이에요)',
+          instructionKo: 'B 소리를 내는 글자를 찾아보세요! (연습이에요)',
           promptAudio: 'buh',
           // 혼동 보기는 P 하나 -- buh/puh 는 합성기에서 명백히 다른 음소로
           // 측정됐다(회전 혼동이지만 소리는 다르다, 챕터4가 D 의 소리 변별
@@ -524,7 +524,7 @@ export const chapter6 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '손가락으로 B를 따라 그리면서 buh 소리를 내보세요!',
+          instructionKo: '손가락으로 B를 따라 그리면서 B 소리를 내보세요!',
           words: [{ text: 'B', say: 'buh' }],
         },
         {
@@ -556,7 +556,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'buh 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'B 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
           promptAudio: 'buh',
           // 보기 3 -> 5 (난이도 곡선). D 는 절대 넣지 않는다 -- buh/duh 는
           // 확정 충돌쌍이다(SPEECH_COLLISION_PAIRS, 파일 헤더 참조).
