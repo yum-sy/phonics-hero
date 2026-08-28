@@ -377,6 +377,11 @@ const TEXT = (x, y, size, fill, label, extra) =>
     'font-weight': 800,
     fill,
     label,
+    // See style.css .hero-sprite .carbot-art text: the mirror counter-flip
+    // reads this instead of a WebKit fill-box bbox measurement (buggy for
+    // <text>, worse for digraphs). text-anchor is always "middle", so x IS
+    // the visual center already.
+    style: `transform-origin:${x}px 0`,
     ...extra,
   })
 

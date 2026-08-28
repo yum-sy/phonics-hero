@@ -299,7 +299,7 @@ function emblemBadge(cx, cy, r, plateColor, label, size, ring = SW_BADGE, digrap
     return `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="${plateColor}" ${ol(ring)}/>
     <text x="${cx}" y="${cy + size * 0.36}" text-anchor="middle" font-family="${FONT}"
-      font-size="${size}" font-weight="800" fill="${INK}">${label}</text>`
+      font-size="${size}" font-weight="800" fill="${INK}" style="transform-origin:${cx}px 0">${label}</text>`
   }
   // `digraph` is a per-character { cx, cy, rx, ry } override: each figure's
   // other painted parts (a cheek disc, a drill, a pair of feet) sit at fixed
@@ -316,7 +316,7 @@ function emblemBadge(cx, cy, r, plateColor, label, size, ring = SW_BADGE, digrap
   return `
     <ellipse cx="${dcx}" cy="${dcy}" rx="${a}" ry="${b}" fill="${plateColor}" ${ol(ringW)}/>
     <text x="${dcx}" y="${(dcy + base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-      font-size="${s.toFixed(1)}" font-weight="800" fill="${INK}">${text}</text>`
+      font-size="${s.toFixed(1)}" font-weight="800" fill="${INK}" style="transform-origin:${dcx}px 0">${text}</text>`
 }
 
 // The shared mass: one outlined body ellipse plus an outlined belly patch.

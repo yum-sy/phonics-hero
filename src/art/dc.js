@@ -323,7 +323,7 @@ function emblemPlate(
       rx="${(rx + border).toFixed(1)}" fill="${borderColor}"/>
     <rect x="${(cx - w / 2).toFixed(1)}" y="${(cy - h / 2).toFixed(1)}" width="${w}" height="${h.toFixed(1)}" rx="${rx.toFixed(1)}" fill="${plateColor}"/>
     <text x="${cx}" y="${(cy + size * 0.355).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-      font-size="${size.toFixed(1)}" font-weight="800" fill="${textColor}">${text}</text>`
+      font-size="${size.toFixed(1)}" font-weight="800" fill="${textColor}" style="transform-origin:${cx}px 0">${text}</text>`
 }
 
 // Where each hero carries the letter. Chapter 7's labels are AI / J / OA, so

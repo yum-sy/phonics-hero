@@ -530,13 +530,23 @@ button {
    every style family's emblem letter is a real <text> node (the phonics
    letter itself -- S/R/M/etc.), so that flip also mirrored the letter into
    a backwards glyph ("R" -> "Я"). That teaches the wrong letter shape to a
-   5-year-old, so counter-flip just the text back to normal. transform-box
-   scopes the flip to the glyph's own bounding box instead of the SVG's
-   viewBox origin, so it un-mirrors in place instead of jumping sideways. */
+   5-year-old, so counter-flip just the text back to normal.
+   This used to be `transform-box: fill-box; transform-origin: center` --
+   flipping about the glyph's own measured bounding box. iPad Safari showed
+   the emblem badge empty with a single stray letter floating elsewhere on
+   the battle screen (chapter 8 stage 3, digraph "EE") while desktop Chrome
+   rendered it fine -- WebKit has a known bug computing fill-box for <text>
+   before shaping/layout is settled, worse for multi-character labels, which
+   sends the counter-flip's origin to the wrong place and the glyph with it.
+   Every emblem <text> call already knows its own `x` (text-anchor is always
+   "middle", so x IS the visual center) and sets it as an inline
+   `transform-origin: ${x}px 0` -- default transform-box (view-box) reads
+   that in the same 0..120 user-space units as the SVG's own viewBox, no
+   bbox measurement involved. Only the origin's x matters for a pure
+   scaleX(-1): y'= y regardless of origin.y (see art.js/art/*.js `TEXT`
+   call sites). */
 .hero-sprite .carbot-art text {
   transform: scaleX(-1);
-  transform-box: fill-box;
-  transform-origin: center;
 }
 
 .vs-mark {

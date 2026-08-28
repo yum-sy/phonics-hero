@@ -102,7 +102,7 @@ function carPlate(cx, cy, w, h, bezel, bezelColor, plateColor, inkColor, label) 
   return `${box(w, h, bezelColor)}
       ${box(iw, ih, plateColor)}
       <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-        font-size="${t.size.toFixed(1)}" font-weight="800" fill="${inkColor}">${t.text}</text>`
+        font-size="${t.size.toFixed(1)}" font-weight="800" fill="${inkColor}" style="transform-origin:${cx}px 0">${t.text}</text>`
 }
 
 // Structural silhouette variants for heroRobot -- the user reported that

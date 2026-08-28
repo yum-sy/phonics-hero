@@ -132,7 +132,7 @@ function superheroPlate(
       ${keylineColor ? box(border * 0.62, keylineColor, rx + border * 0.62) : ''}
       ${box(0, SH_PLATE, rx)}
       <text x="${cx}" y="${(cy + size * 0.355).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-        font-size="${size.toFixed(1)}" font-weight="800" fill="${inkColor}">${text}</text>`
+        font-size="${size.toFixed(1)}" font-weight="800" fill="${inkColor}" style="transform-origin:${cx}px 0">${text}</text>`
 }
 
 // A rounder, chibi-caped "superhero" hero: big round head and torso instead

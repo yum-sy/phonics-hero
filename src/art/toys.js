@@ -271,7 +271,7 @@ function letterPlate(cx, cy, w, h, plateColor, textColor, label) {
     <rect x="${(cx - w / 2).toFixed(1)}" y="${(cy - h / 2).toFixed(1)}" width="${w.toFixed(1)}"
       height="${h.toFixed(1)}" rx="3" fill="${plateColor}" ${ol(2.8)}/>
     <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}" stroke="none">${t.text}</text>`
+      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}" stroke="none" style="transform-origin:${cx}px 0">${t.text}</text>`
 }
 
 // ---------------------------------------------------------------------------

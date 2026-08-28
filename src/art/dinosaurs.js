@@ -131,7 +131,7 @@ function emblemPlate(cx, cy, w, h, plateColor, textColor, label, keyline) {
     ${box(w, h, r + 1.6, keyline)}
     ${box(w - 3.2, h - 3.2, r, plateColor)}
     <text x="${cx}" y="${(cy + t.base).toFixed(1)}" text-anchor="middle" font-family="${FONT}"
-      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}">${t.text}</text>`
+      font-size="${t.size.toFixed(1)}" font-weight="800" fill="${textColor}" style="transform-origin:${cx}px 0">${t.text}</text>`
 }
 
 // 케이라. The sleek one: leans forward over its hips, balanced by a long
