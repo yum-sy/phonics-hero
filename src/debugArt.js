@@ -104,6 +104,45 @@ export function mountArtDebugPanel() {
     body.textContent = lines.join('\n')
   }
 
+  // Real-device report: a lone "E" floats outside the emblem badge on the
+  // battle scene, confirmed present with NO debug panel loaded at all (so
+  // it isn't this panel's own layout interfering). The svg-text scan above
+  // only ever finds the 2 legitimate "EE" <text> elements with normal
+  // getBBox()/per-character spacing -- neither can be the stray glyph. If
+  // it's real and not from those 2 elements, it must be a DIFFERENT kind of
+  // node the svg-text scan can't see at all: a plain HTML element (div/span),
+  // not <svg text>. Walk every text node in the whole document, not just
+  // inside <svg>, and report anything short enough to be a bare letter.
+  function scanStray() {
+    const finds = []
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    let node
+    while ((node = walker.nextNode())) {
+      const t = node.textContent.trim()
+      if (t.length >= 1 && t.length <= 3 && /^[A-Za-z]+$/.test(t)) {
+        const parent = node.parentElement
+        if (!parent) continue
+        const rect = parent.getBoundingClientRect()
+        const isSvg = parent.namespaceURI === 'http://www.w3.org/2000/svg'
+        const heroSlot = parent.closest('.hero-slot')
+        const villainSlot = parent.closest('.villain-slot')
+        finds.push(
+          `text=${JSON.stringify(t)} tag=${isSvg ? 'SVG:' : ''}${parent.tagName} class=${JSON.stringify(
+            parent.className
+          )} rect=(${rect.x.toFixed(0)},${rect.y.toFixed(0)} ${rect.width.toFixed(1)}x${rect.height.toFixed(
+            1
+          )}) in-hero-slot=${!!heroSlot} in-villain-slot=${!!villainSlot}`
+        )
+      }
+    }
+    body.textContent = 'STRAY-TEXT SCAN (whole document, any short bare-letter node):\n\n' + (finds.length ? finds.join('\n') : '(none found)')
+  }
+  const strayBtn = document.createElement('button')
+  strayBtn.textContent = 'scan WHOLE PAGE for stray letters'
+  strayBtn.style.cssText = 'font:11px monospace;padding:6px 10px;margin-bottom:6px;display:block;'
+  wrap.insertBefore(strayBtn, body)
+  strayBtn.onclick = scanStray
+
   btn.onclick = scan
   // Auto-scan once shortly after mount too, in case the user forgets to tap.
   setTimeout(scan, 1500)
