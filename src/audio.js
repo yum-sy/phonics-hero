@@ -5,6 +5,31 @@
 
 let audioUnlocked = false
 let speechGestureEstablished = false
+let gestureWaiters = []
+
+// The child's very first tap of the session still races against the fix
+// above: onTap() fires its own handler on `pointerdown` (see screens.js),
+// which runs to completion before that SAME tap's `click` even exists --
+// so if that very first tap is one whose handler speaks real content via
+// TTS, that call reaches pump() (and speakNow()) before
+// establishSpeechGesture()'s synchronous ping has run at all. Real-device
+// report (2026-08-29, after the fix above): "first tap's own sound doesn't
+// play, everything from the second tap on does" -- not a crash, not a
+// regression, just this residual race, exactly where the architecture
+// predicts it. Bounded wait rather than a fix at the source: there is no
+// way to make a real gesture arrive before pointerdown fires for the same
+// tap, so the best available fix is giving the click (already in flight,
+// typically tens of ms behind) a short window to land first.
+function waitForSpeechGesture(timeoutMs) {
+  if (speechGestureEstablished) return Promise.resolve()
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, timeoutMs)
+    gestureWaiters.push(() => {
+      clearTimeout(timer)
+      resolve()
+    })
+  })
+}
 
 // iOS refuses speechSynthesis.speak() until one speak() has happened inside a
 // real user gesture, and refuses it *silently* -- no error, no onend, no
@@ -79,6 +104,9 @@ export function unlockAudio() {
 function establishSpeechGesture() {
   if (speechGestureEstablished) return
   speechGestureEstablished = true
+  const waiters = gestureWaiters
+  gestureWaiters = []
+  waiters.forEach((w) => w())
   if (!('speechSynthesis' in window)) return
   try {
     // Routed through push()/makeItem() (the shared queue) until 2026-08-29.
@@ -1195,7 +1223,13 @@ async function pump() {
           trusted = true
         } else {
           // Not an asset key at all -- real word / Korean text / etc. TTS
-          // is the correct and only path, unchanged from before.
+          // is the correct and only path, unchanged from before. Gated on
+          // the gesture ping (see waitForSpeechGesture): only matters for
+          // the session's very first real TTS call, and only when it lost
+          // the race against establishSpeechGesture's click -- resolves
+          // immediately once that click lands, so this is a no-op after
+          // the first tap or two of a session.
+          await waitForSpeechGesture(400)
           trusted = await speakNow(item.text, item.lang, item.rate, item.volume)
         }
       } catch (e) {
