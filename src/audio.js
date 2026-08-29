@@ -155,7 +155,20 @@ function startSpeechWatchdog() {
   if (speechWatchdogStarted) return
   speechWatchdogStarted = true
   if (!('speechSynthesis' in window)) return
-  setInterval(kickSpeechDaemon, 10000)
+  // Disabled (2026-08-29): real-device log (?debugaudio=1) during actual
+  // play showed pause()/resume() kicks firing throughout the whole session
+  // (this interval AND the post-WebAudio kick below) while not one word
+  // utterance ever got a real onend -- and the SAME speak() calls, run in
+  // isolation from the debug panel's test buttons with no prior queue/kick
+  // history, worked immediately on the identical device/browser. This file
+  // already carried that exact hypothesis from an earlier session (see the
+  // "onstart watchdog" note further down): repeated forced pause()/resume()
+  // cycles can desync WebKit's internal speech queue rather than revive it.
+  // That prior note only covered a *different*, already-removed kick
+  // (pre-onstart, 500/700/900ms); this is the same reasoning applied to the
+  // two kicks that were still active. Re-enable only with real-device
+  // evidence it helps, not just that it's a documented "safe no-op".
+  // setInterval(kickSpeechDaemon, 10000)
 }
 
 // The pause()/resume() no-op shared by the idle watchdog above AND the
@@ -1172,7 +1185,9 @@ async function pump() {
           // because nothing here was ever idle. Cheap and inert if the
           // hypothesis is wrong: pause()/resume() on an engine that isn't
           // speaking is a no-op.
-          if (played) kickSpeechDaemon()
+          // Disabled alongside the idle watchdog above (2026-08-29) -- same
+          // pause()/resume() mechanism, same real-device regression signal.
+          // if (played) kickSpeechDaemon()
           trusted = played
         } else if (asset && asset.skip) {
           // A known asset key with no playable buffer even after
