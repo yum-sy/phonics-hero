@@ -71,6 +71,14 @@ export function resetProgress() {
   save()
 }
 
+// Opt-in dev convenience (?forceclear=<stageId>, see main.js) for unlocking
+// one specific stage during a real-device playtest without flipping
+// DEV_UNLOCK_ALL (which would re-open every stage, not just the one being
+// tested right now).
+export function forceClearStage(stageId) {
+  markStageCleared(stageId)
+}
+
 export function isStageCleared(stageId) {
   return progress.clearedStages.includes(stageId)
 }
