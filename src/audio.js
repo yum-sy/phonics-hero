@@ -79,35 +79,33 @@ export function unlockAudio() {
 function establishSpeechGesture() {
   if (speechGestureEstablished) return
   speechGestureEstablished = true
+  if (!('speechSynthesis' in window)) return
   try {
-    // This used to call window.speechSynthesis.speak() directly, completely
-    // outside the queue/pump() machinery: fire-and-forget, nothing tracking
-    // whether it ever completed. That made it a single point of failure --
-    // the browser's native speech queue is FIFO, so if THIS ONE utterance
-    // ever silently stalled (no onstart/onend/onerror, a real and documented
-    // WebKit failure mode), every word utterance queued after it for the
-    // rest of the session would be stuck behind it forever, and this module's
-    // own "never call cancel()" rule meant nothing could recover it.
+    // Routed through push()/makeItem() (the shared queue) until 2026-08-29.
+    // Real-device log (?debugaudio=1, live during actual play) proved the
+    // reasoning below wrong: "nothing else is ahead of it in the queue,
+    // which is always true here since this is the very first thing the app
+    // ever speaks" -- the log showed a real content utterance (a tap-to-hear
+    // letter, triggered from the SAME tap's `pointerdown`, which always
+    // fires and runs to completion before that tap's `click` even exists)
+    // getting pushed and dequeued BEFORE this ping. pump() is `async`; once
+    // ANYTHING is ahead of this ping or pump() is already mid-await, this
+    // ping's actual `speechSynthesis.speak()` call happens on a later
+    // microtask, outside the click's call stack -- silently defeating the
+    // one property this function exists for. The result: the ping itself
+    // never got a real onstart/onend either, same as everything after it.
     //
-    // Routing it through push()/makeItem() instead gives it the same
-    // protections every other utterance gets: minSpeechMs's floor, the
-    // safety timer that guarantees SOME resolution even if the engine never
-    // reports, and now the jam watchdog below. It is still fire-and-forget
-    // from the CALLER's point of view (not awaited) -- push() calls pump()
-    // synchronously, and pump() calls speechSynthesis.speak() synchronously
-    // too as long as nothing else is ahead of it in the queue, which is
-    // always true here since this is the very first thing the app ever
-    // speaks. So the speak() call still lands inside the same click call
-    // stack that establishSpeechGesture() was invoked from -- the
-    // constraint iOS actually enforces -- even though it is now a managed
-    // queue item.
-    //
-    // Text is '.' rather than ' ': speakNow() treats an all-whitespace
-    // string as "nothing to say" and resolves immediately WITHOUT ever
-    // calling speak() at all (see the `!raw.trim()` guard below) -- which
-    // would silently skip the actual unlock call this function exists to
-    // make. volume 0 is what keeps it silent, not the text.
-    push(makeItem('.', 'en-US', 1, false, 0))
+    // Calling speak() directly here, bypassing the queue entirely,
+    // guarantees the call is synchronous within whatever gesture invoked
+    // this function -- the one property that actually matters for iOS. The
+    // queue protections this traded away (safety timer, jam recovery) exist
+    // to protect something the child needs to hear; this ping is volume 0
+    // and nothing else's timing depends on it, so a queue-free fire-and-
+    // forget call costs nothing here and buys back the guarantee.
+    const utter = new SpeechSynthesisUtterance('.')
+    utter.volume = 0
+    utter.lang = 'en-US'
+    window.speechSynthesis.speak(utter)
   } catch (e) {
     // ignore
   }
