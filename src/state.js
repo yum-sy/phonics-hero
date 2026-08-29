@@ -61,6 +61,16 @@ export function save() {
   }
 }
 
+// Opt-in dev convenience (?resetprogress=1, see main.js) for wiping a
+// device's saved progress before a fresh real-device playtest -- there is
+// no other way to reach a device's own localStorage remotely.
+export function resetProgress() {
+  progress.clearedStages = []
+  progress.stars = {}
+  progress.checkpoint = null
+  save()
+}
+
 export function isStageCleared(stageId) {
   return progress.clearedStages.includes(stageId)
 }
