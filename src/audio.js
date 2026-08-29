@@ -1340,25 +1340,21 @@ function attemptJamRecovery(rawText, attempt) {
     setTimeout(() => attemptJamRecovery(rawText, nextAttempt), JAM_RECHECK_DELAYS_MS[nextAttempt])
     return
   }
-  // Last resort, only reached after JAM_RECHECK_DELAYS_MS.length independent
-  // "still speaking" observations several seconds apart, each preceded by a
-  // kick that had every chance to clear a slow-but-real utterance. cancel()
-  // is banned everywhere else in this file because it kills a queue that
-  // might have real, audible speech in flight -- but by this point that
-  // risk has been spent down about as far as it can be without proof, and
-  // the alternative (never recovering the true permanent-wedge case) is the
-  // one failure mode nothing else in this file can route around.
+  // Disabled (2026-08-29): this used to call speechSynthesis.cancel() here
+  // as a "safe last resort". Real-device log (?debugaudio=1, live during
+  // play) caught this file's OTHER forced-cancel() path (see
+  // UNHEARD_STREAK_LIMIT below) firing and correlating exactly with every
+  // subsequent word going permanently silent for the rest of the page
+  // session -- i.e. cancel() did what this file's own top-of-file rule says
+  // it always does on iOS ("kills the whole queue"), not the recovery this
+  // comment assumed. Both forced-cancel() sites violated that same rule for
+  // the same "surely this one case is safe" reasoning; both are now
+  // disabled. Warn only.
   console.warn(
     '[audio] speechSynthesis still jammed after ' + JAM_RECHECK_DELAYS_MS.length +
-      ' kicks over several seconds -- calling cancel() to unstick the daemon'
+      ' kicks over several seconds -- NOT calling cancel() (see 2026-08-29 note above)'
   )
-  try {
-    window.speechSynthesis.cancel()
-  } catch (e) {
-    // ignore
-  } finally {
-    jamRecoveryInFlight = false
-  }
+  jamRecoveryInFlight = false
 }
 
 // Resolves with `true` when the engine's own onend arrived at or after the
@@ -1429,17 +1425,19 @@ function speakNow(text, lang, rate, volume = 1) {
         unheardStreak += 1
         if (unheardStreak >= UNHEARD_STREAK_LIMIT) {
           unheardStreak = 0
+          // Disabled (2026-08-29): the cancel() this used to fire here is
+          // the exact call a real-device log caught immediately preceding
+          // every later word going permanently silent for the rest of the
+          // page session -- this file's own top-of-file rule ("never call
+          // cancel() -- iOS kills the whole queue") applies here too, and
+          // this "it's safe because nothing real is in flight" reasoning
+          // was wrong in the field. Warn only now; see the matching note in
+          // attemptJamRecovery.
           console.warn(
             '[audio] ' + UNHEARD_STREAK_LIMIT + ' utterances in a row never reported a real onend ' +
               '(most recently "' + raw + '") -- this looks like the speech daemon is dead for this ' +
-              'whole page session, not a one-off miss. Forcing cancel() to try to reset it; safe here ' +
-              'because a run this long means nothing real was actually in flight to cut off.'
+              'whole page session. NOT calling cancel() (see 2026-08-29 note above).'
           )
-          try {
-            window.speechSynthesis.cancel()
-          } catch (e) {
-            // ignore
-          }
         }
       }
       // iPadOS Safari fires `onend` before playback has actually finished
