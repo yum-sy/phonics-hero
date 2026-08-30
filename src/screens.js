@@ -1471,10 +1471,157 @@ function buildEquationsHtml(stage) {
 // settles: the form holds still long enough to be looked at, then wobbles.
 const COMBINE_INVITE_MS = 1650
 
+// ---- finger-trace canvas (teach/break beats that ask the child to trace a
+// letter with their finger) ----
+//
+// Matched purely by `instructionKo` text, the same way isOddOneOutBeat()
+// matches its own beats above -- there is no dedicated data field for this,
+// per the task that added it, and CLAUDE.md's chapter contract owns
+// `chapters/**` so a new field can't be added here anyway. Every beat that
+// currently phrases the finger-trace prompt also carries `letter` (confirmed
+// via `grep -n "그려볼까요" src/data/chapters/*.js` cross-referenced with the
+// same beats' `letter` field), but the `letter` check is kept as a real
+// guard, not a formality: without a letter there is nothing to trace and
+// nothing to show as the faint guide glyph.
+function isFingerTraceBeat(beat) {
+  return (
+    typeof beat.instructionKo === 'string' &&
+    beat.instructionKo.includes('그려볼까요') &&
+    !!beat.letter
+  )
+}
+
+// No accuracy/stroke-order grading -- this project's "no fail state" rule
+// (CLAUDE.md) means the canvas is a scribble pad, not a quiz. It exists only
+// so the faint guide letter has something to trace over.
+function traceBoxHtml(letter) {
+  const isDigraph = letter.length > 1
+  // A digraph ('sh', 'ee', ...) needs a wider box than a single glyph, or the
+  // guide letter has to shrink so much it stops being useful to trace over.
+  // Sizes are svh-based (this file's existing convention -- see
+  // .beat-emoji/.big-letter in style.css) so the box scales with the screen
+  // instead of a fixed pixel box that could overflow a smaller viewport.
+  //
+  // The caps here are deliberately much smaller than .big-letter's own
+  // (clamp(96px,21.4svh,256px)): this beat's instruction line
+  // ("손가락으로 소문자 s를 그려볼까요? 함께 외쳐요!") wraps to 3 lines where a
+  // plain teach beat's is 2, so there is measurably less vertical budget
+  // left over before .beat (space-evenly, flex:1) overflows its screen.
+  // Measured on the real teach2 beat (a same-shape ordinary teach beat) at
+  // the iPad's 834x1194 portrait viewport: instruction 196px + focus 268px +
+  // 2 buttons (117px, 111px) fits with room to spare, but this beat's own
+  // (longer) instruction alone runs 294px -- ~98px more -- so the box has to
+  // give that back or the beat overflows. A first pass at clamp(...,52svh,
+  // 440px) plus a separate "지우기" button row measured 198px of overflow at
+  // that exact viewport; this smaller cap plus moving the button off the
+  // flex flow (see below) is what clears it (re-verified empty afterward).
+  const boxStyle = isDigraph
+    ? 'width:clamp(260px, 56svh, 460px);height:clamp(140px, 30svh, 230px);'
+    : 'width:clamp(170px, 32svh, 300px);height:clamp(170px, 32svh, 300px);'
+  const guideFontStyle = isDigraph
+    ? 'font-size:clamp(64px, 18svh, 130px);'
+    : 'font-size:clamp(96px, 22svh, 190px);'
+  // The clear button sits *inside* the box, absolutely positioned, instead
+  // of below it: a below-it button is a 5th flex child that .beat has to
+  // find room for on top of the box itself, and that extra row is what
+  // pushed the beat over budget (see measurement above). Absolute
+  // positioning takes it out of the flex flow entirely -- it costs the
+  // layout nothing -- at the cost of overlapping the box's top-right
+  // corner, which is acceptable: a traced letter is drawn centered, and a
+  // 5-year-old's stray strokes in that corner aren't the point of the beat.
+  return `
+    <div class="trace-focus">
+      <div class="trace-box" style="position:relative;margin:0 auto;${boxStyle}">
+        <div class="trace-letter-guide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;${guideFontStyle}font-weight:800;line-height:1;color:var(--accent-dark);opacity:0.16;pointer-events:none;user-select:none;">${letter}</div>
+        <canvas class="trace-canvas" id="trace-canvas" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;border-radius:16px;"></canvas>
+        <button class="secondary-btn trace-clear-btn" id="trace-clear-btn" style="position:absolute;top:6px;right:6px;padding:6px 16px;font-size:20px;line-height:1.2;">지우기</button>
+      </div>
+    </div>
+  `
+}
+
+// Wires the canvas drawn by traceBoxHtml(). Pixel-scribble only: pointer
+// events (not onTap(), which is built for discrete taps -- see its comment
+// above) draw a continuous stroke while the pointer is down, and the clear
+// button wipes the bitmap. touch-action:none plus preventDefault() on the
+// canvas keep a drag from scrolling/zooming the page, which this app's
+// no-scroll rule forbids.
+function wireTraceCanvas() {
+  const canvas = document.getElementById('trace-canvas')
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  // The canvas has no intrinsic pixel size -- CSS gives it a box, but the
+  // backing bitmap defaults to 300x150 and would draw blurry/stretched
+  // without this. devicePixelRatio keeps strokes crisp on the iPad's
+  // high-density screen.
+  const dpr = window.devicePixelRatio || 1
+  const rect = canvas.getBoundingClientRect()
+  canvas.width = Math.max(1, Math.round(rect.width * dpr))
+  canvas.height = Math.max(1, Math.round(rect.height * dpr))
+  ctx.scale(dpr, dpr)
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  ctx.lineWidth = 14
+  // Canvas 2D can't take a CSS var() directly, so it's resolved once here
+  // instead of hard-coding a duplicate of the theme color.
+  ctx.strokeStyle =
+    getComputedStyle(document.documentElement).getPropertyValue('--accent-dark').trim() ||
+    '#2b3a67'
+
+  let drawing = false
+  let lastX = 0
+  let lastY = 0
+  const pointFromEvent = (e) => {
+    const r = canvas.getBoundingClientRect()
+    return { x: e.clientX - r.left, y: e.clientY - r.top }
+  }
+  const start = (e) => {
+    e.preventDefault()
+    drawing = true
+    const p = pointFromEvent(e)
+    lastX = p.x
+    lastY = p.y
+    // A bare pointerdown with no move yet should still leave a dot, not
+    // nothing -- a tiny tap-and-lift is a valid (if small) trace stroke.
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, ctx.lineWidth / 2, 0, Math.PI * 2)
+    ctx.fillStyle = ctx.strokeStyle
+    ctx.fill()
+    canvas.setPointerCapture(e.pointerId)
+  }
+  const move = (e) => {
+    if (!drawing) return
+    e.preventDefault()
+    const p = pointFromEvent(e)
+    ctx.beginPath()
+    ctx.moveTo(lastX, lastY)
+    ctx.lineTo(p.x, p.y)
+    ctx.stroke()
+    lastX = p.x
+    lastY = p.y
+  }
+  const end = (e) => {
+    drawing = false
+    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId)
+  }
+  canvas.addEventListener('pointerdown', start)
+  canvas.addEventListener('pointermove', move)
+  canvas.addEventListener('pointerup', end)
+  canvas.addEventListener('pointercancel', end)
+
+  const clearBtn = document.getElementById('trace-clear-btn')
+  onTap(clearBtn, () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  })
+}
+
 function renderNonScoredBeat(runtime, beat) {
   const area = beatArea()
   const isBossIntro =
     runtime.stage.chapterBoss && beat.kind === 'teach' && runtime.beatIndex === 0
+  const isFingerTrace = !isBossIntro && isFingerTraceBeat(beat)
   // The boss teach beat's `beat.emoji` was a rebus ("🐍🐜🚙➡️🤖") that reads as
   // nothing in particular and carries no phonics -- so on that one beat the
   // letter equation wins instead. Everywhere else `emoji` is untouched.
@@ -1497,6 +1644,8 @@ function renderNonScoredBeat(runtime, beat) {
     : ''
   const focus = isBossIntro
     ? visual + letterHtml
+    : isFingerTrace
+    ? traceBoxHtml(beat.letter)
     : `<div class="teach-focus">${visual}${letterHtml}</div>`
 
   const teachInner = `
@@ -1612,6 +1761,7 @@ function renderNonScoredBeat(runtime, beat) {
       ${teachInner}
     </div>
   `
+  if (isFingerTrace) wireTraceCanvas()
   wireTeachButtons(beat, runtime)
 }
 
