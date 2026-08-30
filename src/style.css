@@ -597,21 +597,25 @@ button {
     transform: translateX(0);
   }
   20% {
-    transform: translateX(-6px) rotate(-3deg);
+    transform: translateX(-14px) rotate(-6deg);
   }
   40% {
-    transform: translateX(6px) rotate(3deg);
+    transform: translateX(14px) rotate(6deg);
   }
   60% {
-    transform: translateX(-4px);
+    transform: translateX(-9px);
   }
   80% {
-    transform: translateX(4px);
+    transform: translateX(9px);
   }
 }
 
+/* 0.4s/6px felt like a twitch to a 5-year-old watching from across the
+   room -- bumped to 0.7s/14px (both roughly doubled) so the hit reads as an
+   actual event instead of a blur (user feedback: "공격 모션이 너무 빠르고
+   작아서 아이가 인식을 잘 못해"). */
 .villain-sprite.hit-shake {
-  animation: hit-shake 0.4s ease;
+  animation: hit-shake 0.7s ease;
 }
 
 @keyframes hero-lunge {
@@ -620,12 +624,20 @@ button {
     transform: scaleX(-1) translateX(0);
   }
   40% {
-    transform: scaleX(-1) translateX(14px);
+    transform: scaleX(-1) translateX(28px);
   }
 }
 
+/* Same doubling as hit-shake above, for the same reason. This runs
+   alongside the bolt's --fx-bolt-flight-ms (392ms) flight per the comment
+   above `heroLunge()` in screens.js -- now longer than that flight, so the
+   lunge settles slightly after the bolt has already landed rather than
+   exactly with it. That reads as "wind up, throw, still following through"
+   rather than a mistimed cut, so it was left as-is rather than also
+   inflating the bolt's own flight time (out of this pass's scope: pure CSS
+   amplitude/duration tuning, not the JS timing choreography). */
 .hero-sprite.hero-lunge {
-  animation: hero-lunge 0.35s ease;
+  animation: hero-lunge 0.6s ease;
 }
 
 .hit-spark {

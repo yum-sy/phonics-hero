@@ -765,9 +765,27 @@
     // is the opposite of the ?shot= trap where an unknown name renders nothing
     // and still reports NOSCROLL gap=100%.
     const iso = params.get('iso')
+    // ?reward=<stageId> is the generic form of reward33/reward4d above: jump
+    // straight to any stage's reward screen without hand-writing a SHOTS
+    // entry for it. Same recipe -- mark every other stage cleared so
+    // clickStage() can reach a stage past DEV_UNLOCK_ALL's off progression,
+    // empty the target's beats (and reviewTargets, which withGeneratedReview
+    // would otherwise splice a review beat back in even after emptying), dismiss
+    // the boss-combine intro if the target is a chapterBoss stage.
+    const rewardStage = params.get('reward')
     if (iso) {
       const [sid, kind, nth] = iso.split(':')
       await isolate(sid, kind, Number(nth || 0))
+    } else if (rewardStage) {
+      __allStages.forEach((s) => { if (s.id !== rewardStage) markStageCleared(s.id, 3) })
+      const stage = getStageById(rewardStage)
+      stage.beats = []
+      stage.reviewTargets = null
+      const idx = Number(rewardStage.replace(/\D/g, '').slice(-1)) - 1
+      await clickStage(chapterIdFor(rewardStage), idx)
+      await wait(1700)
+      if (document.getElementById('boss-intro')) await dismissIntro()
+      await wait(300)
     } else {
       const fn = SHOTS[shot]
       if (fn) await fn()
