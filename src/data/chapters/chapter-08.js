@@ -394,7 +394,7 @@ export const chapter8 = {
           // 오답 4개는 전부 이 소리와 경쟁하는 모음이다: 짧은 I(덮어쓰기 대상),
           // AI(철자가 뒤집힌 다이그래프), 짧은 O·U(이미 배운 모음).
           // E 를 넣을 수 없다 -- `eh` 가 AI 의 `a` 와 확정 충돌쌍이다.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'eye',
           options: [
             { id: 'c8s2-I3', icon: 'letterTile', label: 'I', say: 'ihh', correct: false },
@@ -558,7 +558,7 @@ export const chapter8 = {
           // 보기 5개. 오답 4개가 전부 /i:/ 와 헷갈릴 수 있는 것들이다:
           // 짧은 E(덮어쓰기 대상), IE(직전 다이그래프), 짧은 I, 짧은 A.
           // AI 는 넣을 수 없다 -- `a` 가 여기 있는 E 의 `eh` 와 확정 충돌쌍이다.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'ee',
           options: [
             { id: 'c8s3-E3', icon: 'letterTile', label: 'E', say: 'eh', correct: false },
@@ -721,7 +721,7 @@ export const chapter8 = {
           scored: true,
           hits: 1,
           // 보기 5개. OA(첫 글자 공유) · 짧은 O(덮어쓰기 대상) · U · EE.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'or',
           options: [
             { id: 'c8s4-OA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },

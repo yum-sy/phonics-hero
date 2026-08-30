@@ -269,7 +269,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'L 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'L 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'lll',
           // 보기 3 -> 5 (난이도 곡선, CLAUDE.md 참조). D 를 넣어도 안전하다 --
           // buh/duh 충돌쌍은 B 가 걸린 문항에만 해당하고, 여기는 B 가 없다.
@@ -407,7 +407,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'F 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'F 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'fff',
           // 보기 3 -> 5 (난이도 곡선). P 는 /f/->/p/ 대치(한국어에 /f/ 가 없어
           // 생기는 대표 오류)와 정확히 같은 근접쌍이라 오답으로 넣을 값이 있다
@@ -556,7 +556,7 @@ export const chapter6 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'B 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'B 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'buh',
           // 보기 3 -> 5 (난이도 곡선). D 는 절대 넣지 않는다 -- buh/duh 는
           // 확정 충돌쌍이다(SPEECH_COLLISION_PAIRS, 파일 헤더 참조).

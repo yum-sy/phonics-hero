@@ -260,7 +260,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'G 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'G 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'guh',
           options: [
             { id: 'c5s2-G3', icon: 'letterTile', label: 'G', say: 'guh', correct: true },
@@ -386,7 +386,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'O 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'O 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'awh',
           options: [
             { id: 'c5s3-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: true },
@@ -521,7 +521,7 @@ export const chapter5 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'U 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'U 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'uh',
           // 혼동 보기는 O 하나 -- 방금 배운 글자와 대비시킨다(U/O 도 의도된
           // 대비쌍). warmup 에서 이미 U/A 를 다뤄서 여기선 겹치지 않는다.

@@ -228,7 +228,7 @@ export const chapter11 = {
           scored: true,
           hits: 1,
           // 오답 4개는 X를 구성하는 K/S, 그리고 조음이 가까운 Z/T.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'ksuh',
           options: [
             { id: 'c11s2-K3', icon: 'letterTile', label: 'K', say: 'kuh', correct: false },
@@ -368,7 +368,7 @@ export const chapter11 = {
           hits: 1,
           // 오답 4개: SH(가장 가까운 경쟁자), J(파찰음), T(CH의 첫 요소),
           // X(직전 스테이지, 조음 위치는 다르지만 시각적으로 새 글자다).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'ch',
           options: [
             { id: 'c11s3-SH3', icon: 'letterTile', label: 'SH', say: 'shhu', correct: false },
@@ -506,7 +506,7 @@ export const chapter11 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'shhu',
           options: [
             { id: 'c11s4-SH3', icon: 'letterTile', label: 'SH', say: 'shhu', correct: true },

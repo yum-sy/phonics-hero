@@ -263,7 +263,7 @@ export const chapter1 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'S 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'S 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'sss',
           options: [
             { id: 'Z3', icon: 'letterTile', label: 'Z', say: 'zze', correct: false },

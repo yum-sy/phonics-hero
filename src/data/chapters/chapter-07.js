@@ -317,7 +317,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'a',
           // 여기 세 번째 보기는 E(`eh`)였다. **`eh` 는 두 음성 모두에서 `a` 와
           // 바이트 단위로 동일하게 렌더된다** -- 즉 프롬프트 소리와 오답 타일이
@@ -471,7 +471,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'J 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'J 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'juh',
           // 보기 3 -> 5 (난이도 곡선). D(duh)는 넣지 않는다 -- B(buh)가 이미
           // 있어서 확정 충돌쌍이 성립한다.
@@ -609,7 +609,7 @@ export const chapter7 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'oh',
           // 보기 3 -> 5 (난이도 곡선). 추가 오답은 경쟁하는 모음 U·I 다.
           // AI(`a`)는 넣지 않는다 -- E(`eh`)가 이미 있어서 확정 충돌쌍

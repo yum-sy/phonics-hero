@@ -359,7 +359,7 @@ export const chapter32 = {
           "id": "c32s2-r5-hard",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "sss",
           "options": [
             {
@@ -1004,7 +1004,7 @@ export const chapter32 = {
           "id": "c32s4-r4-hard",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "ch",
           "options": [
             {

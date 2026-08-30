@@ -252,7 +252,7 @@ export const chapter14 = {
           hits: 1,
           // 오답 4개: A(AR의 글자 이름 요소), OR(비슷한 R 다이그래프), ER
           // (다음 스테이지, 가장 가까운 경쟁자), OA(다른 둥근 다이그래프).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'arh',
           options: [
             { id: 'c14s2-A3', icon: 'letterTile', label: 'A', say: 'aaa', correct: false },
@@ -392,7 +392,7 @@ export const chapter14 = {
           hits: 1,
           // 오답 4개: E(ER의 첫 요소), AR(가장 가까운 경쟁자), OR(다른 R
           // 다이그래프), IE(다른 이중모음).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'erh',
           options: [
             { id: 'c14s3-ER3', icon: 'letterTile', label: 'ER', say: 'erh', correct: true },
@@ -569,7 +569,7 @@ export const chapter14 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'erh',
           options: [
             { id: 'c14s4-AR4', icon: 'letterTile', label: 'AR', say: 'arh', correct: false },

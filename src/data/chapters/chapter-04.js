@@ -215,7 +215,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'R 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'R 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'rrr',
           // 혼동 보기는 L 하나 -- /r/ 와 /l/ 은 한국어 화자에게 최대 난점이다.
           options: [
@@ -345,7 +345,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'M 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'M 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'mmm',
           // 혼동 보기는 R 하나 -- 방금 배운 글자이고 /m/ 처럼 지속음이다.
           options: [
@@ -481,7 +481,7 @@ export const chapter4 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'D 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'D 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'duh',
           // 혼동 보기는 P 하나 (회전 혼동). B 는 여기에도 넣지 않는다.
           options: [

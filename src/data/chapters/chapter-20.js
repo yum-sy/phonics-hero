@@ -372,7 +372,7 @@ export const chapter20 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "puh",
           "options": [
             {
@@ -851,7 +851,7 @@ export const chapter20 = {
           "kind": "choose",
           "scored": true,
           "hits": 1,
-          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)",
+          "instructionKo": "이 소리를 내는 글자를 고르고 ✓를 누르세요!",
           "promptAudio": "kuh",
           "options": [
             {

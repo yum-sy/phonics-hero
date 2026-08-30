@@ -411,7 +411,7 @@ export const chapter23 = {
           "id": "c23s2-r5-hard",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "진짜 단어를 찾아보세요! (조금 어려워요)",
+          "instructionKo": "진짜 단어를 찾아보세요!",
           "options": [
             {
               "id": "c23s2-r5-hard-o0",
@@ -893,7 +893,7 @@ export const chapter23 = {
           "id": "c23s4-r5-hard",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "진짜 단어를 찾아보세요! (조금 어려워요)",
+          "instructionKo": "진짜 단어를 찾아보세요!",
           "options": [
             {
               "id": "c23s4-r5-hard-o0",
@@ -1568,7 +1568,7 @@ export const chapter23 = {
           "id": "c23s5-r5-wordspot",
           "kind": "choose",
           "scored": true,
-          "instructionKo": "진짜 단어를 찾아보세요! (조금 어려워요)",
+          "instructionKo": "진짜 단어를 찾아보세요!",
           "options": [
             {
               "id": "c23s5-r5-wordspot-o0",

@@ -240,7 +240,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'C 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'C 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'kuh',
           // 혼동 보기는 S 하나 -- c 가 /s/ 로도 읽히는 실제 함정이다.
           options: [
@@ -395,7 +395,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'E 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'E 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'eh',
           // 혼동 보기는 I 하나 -- 챕터 2 의 /i/ 와 최대 혼동쌍이다.
           options: [
@@ -520,7 +520,7 @@ export const chapter3 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'H 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'H 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'huh',
           // 혼동 보기는 S 하나 -- /h/ 와 /s/ 는 둘 다 무성 마찰음이라 진짜 근접쌍이고,
           // S 는 챕터 1 에서 이미 배운 글자다 (N 은 warmup 에서 이미 썼다).

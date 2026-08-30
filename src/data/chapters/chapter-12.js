@@ -230,7 +230,7 @@ export const chapter12 = {
           hits: 1,
           // 오답 4개: T(TH의 첫 요소), F(마찰음 계열), D(유성 TH에서 들리는
           // 소리, 착각하기 쉽다), H(TH의 둘째 요소처럼 보이는 글자).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'thhu',
           options: [
             { id: 'c12s2-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
@@ -371,7 +371,7 @@ export const chapter12 = {
           scored: true,
           hits: 1,
           // 오답 4개: QU를 구성하는 K/W, 그리고 조음이 가까운 V/G.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'kw',
           options: [
             { id: 'c12s3-QU3', icon: 'letterTile', label: 'QU', say: 'kw', correct: true },
@@ -509,7 +509,7 @@ export const chapter12 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'ou',
           options: [
             { id: 'c12s4-OA3', icon: 'letterTile', label: 'OA', say: 'oh', correct: false },

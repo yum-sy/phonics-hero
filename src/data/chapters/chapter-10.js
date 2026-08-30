@@ -240,7 +240,7 @@ export const chapter10 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'vve',
           options: [
             { id: 'c10s2-B3', icon: 'letterTile', label: 'B', say: 'buh', correct: false },
@@ -392,7 +392,7 @@ export const chapter10 = {
           scored: true,
           hits: 1,
           // 오답 4개는 O/U(짧은 모음 계열)와 AI/OA(다른 장모음 다이그래프).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'uuu',
           options: [
             { id: 'c10s3-O3', icon: 'letterTile', label: 'O', say: 'awh', correct: false },
@@ -530,7 +530,7 @@ export const chapter10 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'yyuh',
           options: [
             { id: 'c10s4-IE3', icon: 'letterTile', label: 'IE', say: 'eye', correct: false },

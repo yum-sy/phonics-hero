@@ -230,7 +230,7 @@ export const chapter13 = {
           hits: 1,
           // 오답 4개: O(OI의 첫 요소), OA(비슷한 둥근 다이그래프), OU(직전
           // 챕터의 다이그래프), OR(첫 글자가 같다).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'oi',
           options: [
             { id: 'c13s2-OI3', icon: 'letterTile', label: 'OI', say: 'oi', correct: true },
@@ -372,7 +372,7 @@ export const chapter13 = {
           hits: 1,
           // 오답 4개: U(짧은 U, 덮어쓰기 대상), OO(비슷한 둥근 모음), IE/OI
           // (다른 이중모음 다이그래프).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'u',
           options: [
             { id: 'c13s3-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
@@ -548,7 +548,7 @@ export const chapter13 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'oi',
           options: [
             { id: 'c13s4-OU4', icon: 'letterTile', label: 'OU', say: 'ou', correct: false },

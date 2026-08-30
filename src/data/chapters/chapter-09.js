@@ -240,7 +240,7 @@ export const chapter9 = {
           hits: 1,
           // 오답 4개는 지금까지 배운 자음 중 조음 위치가 가까운 것들
           // (마찰음/파찰음 계열): S, J, F, D.
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'zze',
           options: [
             { id: 'c9s2-S3', icon: 'letterTile', label: 'S', say: 'sss', correct: false },
@@ -376,7 +376,7 @@ export const chapter9 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'weh',
           options: [
             { id: 'c9s3-U3', icon: 'letterTile', label: 'U', say: 'uh', correct: false },
@@ -535,7 +535,7 @@ export const chapter9 = {
           hits: 1,
           // 오답 4개는 NG를 구성하는 두 소리(N, G)와, 첫 글자가 같은 W,
           // 그리고 이미 배운 M(비음이라 N과 함께 헷갈리는 계열).
-          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: '이 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'ngh',
           options: [
             { id: 'c9s4-N3', icon: 'letterTile', label: 'N', say: 'nnn', correct: false },

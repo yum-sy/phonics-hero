@@ -483,7 +483,7 @@ export const chapter2 = {
           kind: 'choose',
           scored: true,
           hits: 1,
-          instructionKo: 'N 소리를 내는 글자를 고르고 ✓를 누르세요! (조금 어려워요)',
+          instructionKo: 'N 소리를 내는 글자를 고르고 ✓를 누르세요!',
           promptAudio: 'nnn',
           options: [
             { id: 'c2s4-T3', icon: 'letterTile', label: 'T', say: 'tuh', correct: false },
