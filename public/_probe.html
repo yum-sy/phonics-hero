@@ -773,9 +773,26 @@
     // would otherwise splice a review beat back in even after emptying), dismiss
     // the boss-combine intro if the target is a chapterBoss stage.
     const rewardStage = params.get('reward')
+    // ?bosseq=<stageId> reaches the boss-intro's POST-tap equation screen
+    // (buildEquationsHtml() in screens.js) with the stage's beats array left
+    // intact -- unlike ?iso=, which overwrites stage.beats down to one beat
+    // and so silently empties buildEquationsHtml's own input (it reads
+    // stage.beats to find every drag-build target). A stage with two boss
+    // words renders TWO stacked equation rows on this one screen with no
+    // per-row-count vertical compensation in the CSS (the --eq-len rule only
+    // sizes for single-line WIDTH, see style.css's .beat-equation comment),
+    // so this is the one screen ?iso= structurally cannot reproduce.
+    const bossEqStage = params.get('bosseq')
     if (iso) {
       const [sid, kind, nth] = iso.split(':')
       await isolate(sid, kind, Number(nth || 0))
+    } else if (bossEqStage) {
+      __allStages.forEach((s) => { if (s.id !== bossEqStage) markStageCleared(s.id, 3) })
+      const idx = Number(bossEqStage.replace(/\D/g, '').slice(-1)) - 1
+      await clickStage(chapterIdFor(bossEqStage), idx)
+      await wait(400)
+      if (document.getElementById('boss-intro')) await dismissIntro()
+      await wait(200)
     } else if (rewardStage) {
       __allStages.forEach((s) => { if (s.id !== rewardStage) markStageCleared(s.id, 3) })
       const stage = getStageById(rewardStage)

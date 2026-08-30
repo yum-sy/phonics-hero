@@ -737,6 +737,31 @@ button {
   letter-spacing: 1px;
 }
 
+/* 31 of the 33 chapters' bosses combine TWO words (only chapters 1-2 combine
+   one), so buildEquationsHtml() (screens.js) stacks two of these divs on the
+   post-"UNITE!" screen -- doubling the fixed-height cost of the rule above
+   with no compensation, unlike every other element on that screen
+   (.beat-instruction, the buttons) which already shrinks via an svh term.
+   Landscape (1194x834) headroom measured across all 31 two-word bosses via
+   a real navigate-and-tap (not ?iso=, which truncates stage.beats and so
+   silently empties buildEquationsHtml's own input) ranged 25-62px, tightest
+   at chapter 33 ("TH+R+EE=THREE" / "SH+R+I+M+P=SHRIMP") -- positive in this
+   headless Chrome build, but thin enough that CLAUDE.md's caution ("실기기
+   전용 회귀는 헤드리스만으로 완결됐다고 믿지 마라") applies: a small
+   real-device font-metric difference could tip a 25px margin into scroll
+   where headless does not see it. Detected via :has()/the general sibling
+   combinator rather than a new class, because the class is emitted
+   generically for any boss with N>=1 words by screens.js (not owned here);
+   this reacts to the count instead of requiring a data/JS change. A single-
+   equation boss (chapters 1-2) matches neither selector and keeps the base
+   rule above -- unaffected, and still has ample margin. :has() lacking
+   support is a no-op fallback to the base (bigger, tighter) rule, not a
+   regression. */
+.beat-equation:has(+ .beat-equation),
+.beat-equation ~ .beat-equation {
+  font-size: min(80px, calc(1000px / var(--eq-len, 15)), 10vw);
+}
+
 .beat-equation b {
   color: var(--danger-dark);
 }
