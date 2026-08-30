@@ -1302,6 +1302,65 @@ function pulseHint(el) {
 // Runs on a 1.2 s timer, by which time the child may have left the stage --
 // the pulse would no-op on a detached node, but the *speech* would talk over
 // whatever screen they went to, so bail unless the round is still on screen.
+// ---- "odd one out" choose confirmation ----
+//
+// A handful of `choose` rounds ask for the option that does NOT share a
+// sound with the others (majority share one sound, the minority pick is
+// correct). This shape has no dedicated data field -- per the beat
+// contract in CLAUDE.md, chapters 1-7 just phrase `instructionKo` a
+// particular way -- so it's identified by matching that Korean prompt text
+// (the only variants actually in use, confirmed via
+// `grep -rn "다른 소리" src/data/chapters/*.js`).
+//
+// A correct tap here used to fall straight into flashCorrect() and then
+// whatever the beat does next (readAloud, or the very next beat) exactly
+// like any other choose round. But nothing on screen ever names *why* the
+// pick was right, so the sudden cut to unrelated content reads to a
+// 5-year-old as "was that even right?" (reported from real play). The fix
+// reuses redemonstrateOption's own mechanism (pulseHint + a spoken line)
+// rather than inventing a new one.
+//
+// The spoken/displayed line is built only from the beat's own option data,
+// never a hardcoded per-word phoneme -- these options are whole-word icons
+// (dog/bus/cat/...), not letterTiles with a `say` sound notation, so there
+// is no per-word phoneme in the data to name correctly. Guessing one from
+// a word's first letter would risk teaching a wrong sound for a silent
+// letter or an unusual spelling (see chapter-03's cat/key -- different
+// first letters, same taught sound). So the line states the relationship
+// the quiz is actually testing (this one is the odd one out; the rest
+// share a sound) instead of naming the sound itself.
+const ODD_ONE_OUT_INSTRUCTION_RE =
+  /^다른 소리(로 시작하는|가 들어있는) 걸 (찾아보세요|고르고)/
+function isOddOneOutBeat(beat) {
+  return (
+    beat.kind === 'choose' &&
+    typeof beat.instructionKo === 'string' &&
+    ODD_ONE_OUT_INSTRUCTION_RE.test(beat.instructionKo)
+  )
+}
+
+// Fires the confirmation and returns immediately (mirrors
+// redemonstrateOption's fire-and-forget style) -- the speech it queues
+// still blocks the caller's next whenAudioIdle()-based transition, because
+// it's on the same shared audio queue as everything else. No extra delay
+// needs wiring in separately.
+function confirmOddOneOut(area, beat, correctOpt) {
+  if (!correctOpt || !area.isConnected) return
+  pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
+  const feedbackEl = document.getElementById('beat-feedback')
+  if (feedbackEl) {
+    feedbackEl.textContent = `정답이에요! ${correctOpt.label}만 달라요. 나머지는 서로 소리가 같아서 헷갈렸을 수 있어요.`
+  }
+  // Korean and English text never share one speakKO/speakEN call (see
+  // CLAUDE.md's TTS rules -- an English word read by the Korean voice comes
+  // out as a mispronounced loanword), so the affirmation and the word
+  // itself are two separate queued utterances, same as every other beat in
+  // this file (e.g. recapAudio's ko/en split).
+  speakKO('정답이에요!')
+  speakEN(optionSpeech(correctOpt))
+  speakKO('나머지는 서로 소리가 같아서 헷갈렸을 수 있어요.')
+}
+
 function redemonstrateOption(area, beatOrStep, correctOpt) {
   if (!correctOpt || !area.isConnected) return
   speakEN(beatOrStep.promptAudio || optionSpeech(correctOpt))
@@ -1740,6 +1799,9 @@ function renderChooseBeat(runtime, beat) {
     },
     onCorrect: async () => {
       flashCorrect(area)
+      if (isOddOneOutBeat(beat)) {
+        confirmOddOneOut(area, beat, beat.options.find((o) => o.correct))
+      }
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
         runReadAloud(runtime, beat, beat.readAloud)
