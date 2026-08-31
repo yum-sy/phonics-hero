@@ -1307,13 +1307,18 @@ function pulseHint(el) {
 // whatever screen they went to, so bail unless the round is still on screen.
 // ---- "odd one out" choose confirmation ----
 //
-// A handful of `choose` rounds ask for the option that does NOT share a
-// sound with the others (majority share one sound, the minority pick is
-// correct). This shape has no dedicated data field -- per the beat
-// contract in CLAUDE.md, chapters 1-7 just phrase `instructionKo` a
-// particular way -- so it's identified by matching that Korean prompt text
-// (the only variants actually in use, confirmed via
-// `grep -rn "다른 소리" src/data/chapters/*.js`).
+// A handful of `choose` (and one `choose-sequence`) rounds ask for the
+// option that does NOT share a sound with the others (majority share one
+// sound, the minority pick is correct). This shape has no dedicated data
+// field -- per the beat contract in CLAUDE.md, chapters 1-7 just phrase
+// `instructionKo` a particular way -- so it's identified by matching that
+// Korean prompt text (the only variants actually in use, confirmed via
+// `grep -rn "다른 소리" src/data/chapters/*.js`). Real-play QA found the
+// original `choose`-only gate missed the one `choose-sequence` beat sharing
+// this exact phrasing (chapter 1's "moon" step) -- `instructionKo` lives on
+// the beat regardless of kind (choose-sequence just appends "(n/m)" to the
+// rendered copy, not to the stored string), so widening the kind check was
+// the whole fix.
 //
 // A correct tap here used to fall straight into flashCorrect() and then
 // whatever the beat does next (readAloud, or the very next beat) exactly
@@ -1336,7 +1341,7 @@ const ODD_ONE_OUT_INSTRUCTION_RE =
   /^다른 소리(로 시작하는|가 들어있는) 걸 (찾아보세요|고르고)/
 function isOddOneOutBeat(beat) {
   return (
-    beat.kind === 'choose' &&
+    (beat.kind === 'choose' || beat.kind === 'choose-sequence') &&
     typeof beat.instructionKo === 'string' &&
     ODD_ONE_OUT_INSTRUCTION_RE.test(beat.instructionKo)
   )
@@ -2117,6 +2122,9 @@ function renderChooseSequenceBeat(runtime, beat) {
       // and damage rides the bolt from the press that caused it.
       onCorrect: async (chosen, boltFlightMs) => {
         flashCorrect(area)
+        if (isOddOneOutBeat(beat)) {
+          confirmOddOneOut(area, beat, step.options.find((o) => o.correct))
+        }
         stepIndex += 1
         if (stepIndex < beat.steps.length) {
           await waitForTransition(500)
