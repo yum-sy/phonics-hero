@@ -1049,7 +1049,10 @@ function renderHealthShell(runtime) {
   const { stage } = runtime
   app.innerHTML = `
     <div class="screen stage-screen">
-      <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
+      <div class="stage-topbar" style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
+        <button class="back-btn review-back-btn" id="review-back" aria-label="Back to previous step" style="display:none">↺ Back</button>
+      </div>
       <div class="battle-scene">
         <div class="villain-slot">
           <div class="nameplate" id="villain-nameplate" role="button" tabindex="0" aria-label="Hear ${stage.villain.name}'s name">
@@ -1087,6 +1090,38 @@ function renderHealthShell(runtime) {
   onTap(document.getElementById('villain-nameplate'), () =>
     speakTap(stage.villain.name)
   )
+
+  onTap(document.getElementById('review-back'), () => reverseBeat(runtime))
+}
+
+// Shows/hides the review-back button for the beat currently on screen. Kept
+// separate from renderHealthShell because that only runs once per stage
+// entry, while beatIndex changes on every advance/reverse -- this has to run
+// every time runBeat() does, or the button would stay stuck on whatever
+// visibility it had when the shell was first painted.
+function updateReviewBackButton(runtime) {
+  const btn = document.getElementById('review-back')
+  if (!btn) return
+  // beatIndex 0 has nothing before it in this stage, so there is nothing to
+  // review -- hidden rather than disabled, per this project's rule against
+  // controls a child can tap that do nothing.
+  btn.style.display = runtime.beatIndex > 0 ? '' : 'none'
+}
+
+// The reverse of advanceBeat(): re-shows the previous beat for review. This
+// is deliberately NOT "undo my last answer" -- hitsDealt and the health bar
+// are untouched, so a child cannot farm review taps into free damage or lose
+// progress by going back. It only moves which beat is drawn on screen.
+function reverseBeat(runtime) {
+  if (runtime.beatIndex <= 0) return
+  // Whatever the current beat was saying should not keep talking over the
+  // beat the child just asked to revisit (same pattern as every other
+  // intentional navigation in this file -- see clearAudioQueue() calls
+  // above). The in-flight utterance still finishes naturally; only the
+  // queued-up rest is dropped.
+  clearAudioQueue()
+  runtime.beatIndex -= 1
+  runBeat(runtime)
 }
 
 function updateHealthBar(runtime) {
@@ -1143,6 +1178,7 @@ function runBeat(runtime) {
     saveCheckpoint(stage.id, beatIndex, runtime.hitsDealt)
     const beat = stage.beats[beatIndex]
     updateHealthBar(runtime)
+    updateReviewBackButton(runtime)
 
     if (beat.kind === 'teach' || beat.kind === 'break') {
       renderNonScoredBeat(runtime, beat)
