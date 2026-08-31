@@ -1645,12 +1645,15 @@ function traceBoxHtml(letter) {
   // descender-less letter's empty lower corner. Small (40x40, icon-only) so
   // it reads as a corner control rather than competing with the letter, but
   // still at this app's minimum comfortable touch target for a 5-year-old.
+  // Static/structural rules for .trace-box/.trace-letter-guide/.trace-canvas/
+  // .trace-clear-btn live in style.css -- only the per-call clamp() sizing
+  // (single letter vs digraph) stays inline here.
   return `
     <div class="trace-focus">
-      <div class="trace-box" style="position:relative;margin:0 auto;${boxStyle}">
-        <div class="trace-letter-guide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;${guideFontStyle}font-weight:800;line-height:1;color:var(--accent-dark);opacity:0.16;pointer-events:none;user-select:none;">${letter}</div>
-        <canvas class="trace-canvas" id="trace-canvas" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;border-radius:16px;"></canvas>
-        <button class="trace-clear-btn" id="trace-clear-btn" aria-label="지우기" title="지우기" style="position:absolute;bottom:6px;right:6px;width:40px;height:40px;min-width:0;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--border);background:var(--surface);color:var(--text);box-shadow:0 2px 0 var(--border);line-height:1;">${ERASER_ICON_SVG}</button>
+      <div class="trace-box" style="${boxStyle}">
+        <div class="trace-letter-guide" style="${guideFontStyle}">${letter}</div>
+        <canvas class="trace-canvas" id="trace-canvas"></canvas>
+        <button class="trace-clear-btn" id="trace-clear-btn" aria-label="지우기" title="지우기">${ERASER_ICON_SVG}</button>
       </div>
     </div>
   `
