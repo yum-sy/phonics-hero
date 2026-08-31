@@ -2027,6 +2027,22 @@ function releaseMicStream() {
     }
   }
   micStream = null
+  // Bug fixed 2026-08: this used to leave `micAnalyser` (and the
+  // MediaStreamAudioSourceNode inside it) wired to the now-stopped stream.
+  // ensureMicAnalyser()'s `if (!micAnalyser)` guard then skipped rebuilding
+  // it against the NEXT stage's freshly granted stream, so every ATTACK
+  // after the first stage silently analyzed a dead, disconnected source --
+  // permanently reading ~0 RMS, i.e. the child's shout could never cross
+  // SHOUT_RMS_THRESHOLD again for the rest of the session (real QA report:
+  // "stage 1 worked, stage 2 doesn't"). Clearing it here forces
+  // ensureMicAnalyser() to build a new source node from whatever stream
+  // ensureMicStream() hands it next.
+  try {
+    if (micAnalyser) micAnalyser.disconnect()
+  } catch (e) {
+    // ignore
+  }
+  micAnalyser = null
 }
 
 // NOT CURRENTLY CALLED -- kept for when a design actually consumes the
