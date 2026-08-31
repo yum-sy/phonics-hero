@@ -2002,8 +2002,9 @@ function renderChooseBeat(runtime, beat) {
       }
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
-        // choose only, this round -- see runAttackReadAloud()'s own header
-        // comment for why multiselect/drag-build still call runReadAloud().
+        // choose/multiselect/drag-build all attack here; only match-shape
+        // still calls runReadAloud() -- see runAttackReadAloud()'s own header
+        // comment for why.
         runAttackReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
@@ -2235,7 +2236,7 @@ function renderMultiselectBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       await showTransitionCountdown(whenAudioIdle())
-      runReadAloud(runtime, beat, beat.readAloud)
+      runAttackReadAloud(runtime, beat, beat.readAloud)
     },
   })
 }
@@ -2393,7 +2394,7 @@ function renderBuildBeat(runtime, beat) {
       fireBolt(tile)
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
-        runReadAloud(runtime, beat, beat.readAloud)
+        runAttackReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
         advanceBeat(runtime)
@@ -2468,16 +2469,16 @@ function renderListenRepeatBeat(runtime, beat) {
   showWord()
 }
 
-// ---- shout-attack confirmation (choose beats only, this round) ----
+// ---- shout-attack confirmation (choose / multiselect / drag-build) ----
 //
 // Same slot in the flow as runReadAloud() below (the "you got it right, now
 // land the hit" screen) but the hit is gated on the child actually shouting,
 // not on tapping a button labeled "I read it!". Deliberately a separate
 // function rather than a mode flag threaded through runReadAloud(): that one
-// is shared by multiselect/drag-build too (see its own header comment), and
-// this round is choose-only -- forking the display code is cheaper and safer
-// than teaching the shared function a branch its other two callers never
-// exercise or test.
+// is now match-shape's alone (see its own header comment) -- forking the
+// display code was cheaper and safer than teaching the shared function a
+// branch its other callers never exercised or tested, and that stayed true
+// once the attack flow expanded to all three scored beat types.
 //
 // `readAloud` is the beat's whole `{ targetText, say? }` object, same
 // display/speech split as elsewhere in this file.
@@ -2611,7 +2612,7 @@ function runAttackReadAloud(runtime, beat, readAloud) {
   onTap(attackBtn, withRecovery(runtime, async () => startListen()))
 }
 
-// ---- read-aloud confirmation (shared by choose / multiselect / drag-build) ----
+// ---- read-aloud confirmation (match-shape only) ----
 
 // Takes the beat's whole `readAloud` object: { targetText, say? } -- same
 // display/speech split as words[] above, keyed by targetText.
