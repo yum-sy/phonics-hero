@@ -1356,8 +1356,12 @@ function confirmOddOneOut(area, beat, correctOpt) {
   if (!correctOpt || !area.isConnected) return
   pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
   const feedbackEl = document.getElementById('beat-feedback')
+  // Trimmed (2026-08) to just the relationship the quiz tests, no reassuring
+  // filler -- QA: "'헷갈릴 수도 있어요' 미사여구는 빼고 심플하게 'OO만
+  // 다른 소리를 낸다'로." The extra sentence about the others sharing a
+  // sound was true but unnecessary to say out loud every time.
   if (feedbackEl) {
-    feedbackEl.textContent = `정답이에요! ${correctOpt.label}만 달라요. 나머지는 서로 소리가 같아서 헷갈렸을 수 있어요.`
+    feedbackEl.textContent = `정답이에요! ${correctOpt.label}만 다른 소리를 내요.`
   }
   // Korean and English text never share one speakKO/speakEN call (see
   // CLAUDE.md's TTS rules -- an English word read by the Korean voice comes
@@ -1366,7 +1370,7 @@ function confirmOddOneOut(area, beat, correctOpt) {
   // this file (e.g. recapAudio's ko/en split).
   speakKO('정답이에요!')
   speakEN(optionSpeech(correctOpt))
-  speakKO('나머지는 서로 소리가 같아서 헷갈렸을 수 있어요.')
+  speakKO('만 다른 소리를 내요.')
 }
 
 function redemonstrateOption(area, beatOrStep, correctOpt) {
