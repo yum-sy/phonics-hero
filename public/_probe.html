@@ -121,6 +121,15 @@
     const picks = stage.beats.filter((b) => b.kind === kind)
     if (!picks.length) throw new Error(`no ${kind} beat in ${stageId}`)
     stage.beats = [picks[Math.min(nth, picks.length - 1)]]
+    // withGeneratedReview() (screens.js) splices an auto-generated review beat
+    // back in whenever stage.reviewTargets exists and chapter.order > 8 --
+    // even after beats was just overwritten to the one beat we want above --
+    // so for chapter 9+ this measured the injected review choose beat instead
+    // of the requested kind (86 WRONG-BEAT results across a chapter 15-33
+    // sweep before this was found). ?reward= already carried this same null-out;
+    // isolate() didn't. Only mutates this in-memory probe run, never the real
+    // app's chapters/index.js stage object.
+    stage.reviewTargets = null
     const idx = Number(stageId.replace(/\D/g, '').slice(-1)) - 1
     await clickStage(chapterIdFor(stageId), idx)
   }
@@ -155,6 +164,11 @@
   async function emptyStage(stageId) {
     const stage = getStageById(stageId)
     stage.beats = []
+    // Same withGeneratedReview() reinjection isolate() guards against above --
+    // emptyStage() only had callers in chapters <= 8 so far (reviewTargets is
+    // gated to chapter.order > 8), but guard it here too so a future chapter
+    // 9+ caller doesn't silently reintroduce the same bug.
+    stage.reviewTargets = null
     const idx = Number(stageId.replace(/\D/g, '').slice(-1)) - 1
     await clickStage(chapterIdFor(stageId), idx)
   }
