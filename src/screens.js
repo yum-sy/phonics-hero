@@ -1499,6 +1499,38 @@ function isFingerTraceBeat(beat) {
   )
 }
 
+// The *second* finger-trace moment: a `listen-repeat` beat immediately
+// following the teach/break beat above reuses the same "따라 그리면서" prompt
+// phrasing to ask the child to trace again while saying the sound (confirmed
+// via `grep -rhoE "instructionKo: '[^']*따라 그리[^']*'" src/data/chapters/*.js`
+// -- 39 variants, all `kind: 'listen-repeat'`, none `finale`). Unlike the
+// teach/break beat, this one carries no `letter` field at all -- only
+// `words[]` -- so this helper only confirms the instruction text; the caller
+// (renderListenRepeatBeat's showWord()) resolves the actual glyph to trace
+// from `beat.words[wordIndex].text` per word shown. `finale` beats share the
+// same renderer and phrase their instructions completely differently (the
+// "shout the word" moment), so no explicit exclusion is needed here beyond
+// the `kind` check itself.
+function isFingerTraceListenRepeatBeat(beat) {
+  return (
+    beat.kind === 'listen-repeat' &&
+    typeof beat.instructionKo === 'string' &&
+    beat.instructionKo.includes('따라 그리')
+  )
+}
+
+// Small eraser glyph for the clear button -- no single emoji reads
+// unambiguously as "eraser" (🧹 is a broom, 🧽 a sponge), so this draws one:
+// a two-tone rotated rectangle is the standard pictogram-eraser shape. Pure
+// stroke/fill, no gradients/filters (matches this project's SVG art rule),
+// and sized to sit inside a small round button.
+const ERASER_ICON_SVG = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+  <g transform="rotate(45 10 10)">
+    <rect x="3" y="6.5" width="14" height="7" rx="2" fill="#fff" stroke="currentColor" stroke-width="1.6"/>
+    <rect x="3" y="6.5" width="6.5" height="7" rx="2" fill="currentColor" opacity="0.4"/>
+  </g>
+</svg>`
+
 // No accuracy/stroke-order grading -- this project's "no fail state" rule
 // (CLAUDE.md) means the canvas is a scribble pad, not a quiz. It exists only
 // so the faint guide letter has something to trace over.
@@ -1523,6 +1555,10 @@ function traceBoxHtml(letter) {
   // 440px) plus a separate "지우기" button row measured 198px of overflow at
   // that exact viewport; this smaller cap plus moving the button off the
   // flex flow (see below) is what clears it (re-verified empty afterward).
+  // The same box is reused (unchanged) by the listen-repeat trace beat
+  // (isFingerTraceListenRepeatBeat) even though that screen has one more
+  // button (🎤 I read it!) than this one -- see wireTraceCanvas's caller for
+  // the measured verdict on that screen specifically.
   const boxStyle = isDigraph
     ? 'width:clamp(260px, 56svh, 460px);height:clamp(140px, 30svh, 230px);'
     : 'width:clamp(170px, 32svh, 300px);height:clamp(170px, 32svh, 300px);'
@@ -1534,15 +1570,19 @@ function traceBoxHtml(letter) {
   // find room for on top of the box itself, and that extra row is what
   // pushed the beat over budget (see measurement above). Absolute
   // positioning takes it out of the flex flow entirely -- it costs the
-  // layout nothing -- at the cost of overlapping the box's top-right
-  // corner, which is acceptable: a traced letter is drawn centered, and a
-  // 5-year-old's stray strokes in that corner aren't the point of the beat.
+  // layout nothing. It sits in the bottom-right corner, not top-right: QA
+  // found the old top-right "지우기" text button covered the top of the
+  // traced/guide letter (most letters and both digraph glyphs sit centered
+  // or high in the box), where bottom-right only risks overlapping a
+  // descender-less letter's empty lower corner. Small (40x40, icon-only) so
+  // it reads as a corner control rather than competing with the letter, but
+  // still at this app's minimum comfortable touch target for a 5-year-old.
   return `
     <div class="trace-focus">
       <div class="trace-box" style="position:relative;margin:0 auto;${boxStyle}">
         <div class="trace-letter-guide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;${guideFontStyle}font-weight:800;line-height:1;color:var(--accent-dark);opacity:0.16;pointer-events:none;user-select:none;">${letter}</div>
         <canvas class="trace-canvas" id="trace-canvas" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;border-radius:16px;"></canvas>
-        <button class="secondary-btn trace-clear-btn" id="trace-clear-btn" style="position:absolute;top:6px;right:6px;padding:6px 16px;font-size:20px;line-height:1.2;">지우기</button>
+        <button class="trace-clear-btn" id="trace-clear-btn" aria-label="지우기" title="지우기" style="position:absolute;bottom:6px;right:6px;width:40px;height:40px;min-width:0;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--border);background:var(--surface);color:var(--text);box-shadow:0 2px 0 var(--border);line-height:1;">${ERASER_ICON_SVG}</button>
       </div>
     </div>
   `
@@ -2378,9 +2418,18 @@ function renderListenRepeatBeat(runtime, beat) {
     const isFinale = beat.kind === 'finale'
     // Finale = the stage's "big attack" moment: sell it with the shout-fx
     // burst behind the word (see .shout-fx in style.css); regular
-    // listen-repeat words stay plain.
+    // listen-repeat words stay plain -- except the second finger-trace
+    // moment (isFingerTraceListenRepeatBeat, see its own comment): this beat
+    // has no `letter` field, only `words[]`, so the glyph to trace is
+    // whatever word is currently showing (`text`, resolved above from
+    // `beat.words[wordIndex]`) -- this reuses the exact same traceBoxHtml()
+    // the teach/break beat uses, in the same screen slot the plain word
+    // display used to occupy.
+    const isTrace = !isFinale && isFingerTraceListenRepeatBeat(beat)
     const wordHtml = isFinale
       ? `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
+      : isTrace
+      ? traceBoxHtml(text)
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
@@ -2391,6 +2440,7 @@ function renderListenRepeatBeat(runtime, beat) {
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
+    if (isTrace) wireTraceCanvas()
     speakEN(say)
     onTap(document.getElementById('replay-btn'), () => speakTap(say))
     const micBtn = document.getElementById('mic-btn')
