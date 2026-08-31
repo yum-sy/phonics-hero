@@ -1026,6 +1026,13 @@ function stageScreen(stageId) {
     beatIndex: 0,
     healthMax: stageHealthMax(stage),
     hitsDealt: 0,
+    // Which beat indices have already landed their hit -- see dealHit()'s
+    // own comment. Not restored from a checkpoint (only the aggregate
+    // hitsDealt is): a checkpoint only exists after an accident (sleep/
+    // reload/crash), a rare precondition for the rarer case of then also
+    // using ↺ Back to revisit a beat from before the crash, so that residual
+    // gap is accepted rather than plumbing per-beat state through storage.
+    dealtBeatIndices: new Set(),
   }
   // Silent resume, no dialog: a checkpoint only exists if the last visit
   // ended in an accident (sleep, reload, crash), never if the child left on
@@ -1272,7 +1279,18 @@ function advanceBeat(runtime) {
 // Nothing awaits this: it schedules and returns, so waitForTransition() and
 // every beat transition are byte-identical to before.
 function dealHit(runtime, beat, boltFlightMs = 0, onLand) {
-  runtime.hitsDealt = Math.min(runtime.healthMax, runtime.hitsDealt + (beat.hits || 1))
+  // ↺ Back rewinds `beatIndex` only, never `hitsDealt` (see reverseBeat()'s
+  // own comment: reviewing a beat again must not "farm review taps into
+  // free damage"). Without this guard that promise was false: real-play
+  // audit reproduced Back -> redo an already-scored beat -> a second hit
+  // landing on the same beatIndex, double-counting toward the health bar.
+  // Gate the score-affecting half only -- the hero lunge/impact/onLand
+  // feedback below still plays every time, so a reviewed beat still feels
+  // alive, it just cannot move the health bar twice.
+  if (!runtime.dealtBeatIndices.has(runtime.beatIndex)) {
+    runtime.dealtBeatIndices.add(runtime.beatIndex)
+    runtime.hitsDealt = Math.min(runtime.healthMax, runtime.hitsDealt + (beat.hits || 1))
+  }
   heroLunge()
   const land = () => {
     // The child can leave the stage during the flight -- painting then would
@@ -2285,8 +2303,18 @@ function renderMultiselectBeat(runtime, beat) {
     },
     onCorrect: async () => {
       flashCorrect(area)
-      await showTransitionCountdown(whenAudioIdle())
-      runAttackReadAloud(runtime, beat, beat.readAloud)
+      // Guarded the same way choose/drag-build are (audit found this call
+      // was unconditional -- harmless today only because every multiselect
+      // in the data happens to be scored with a readAloud, per CLAUDE.md's
+      // data contract; an unscored one would hit runAttackReadAloud with an
+      // undefined readAloud and crash instead of just advancing).
+      if (beat.scored && beat.readAloud) {
+        await showTransitionCountdown(whenAudioIdle())
+        runAttackReadAloud(runtime, beat, beat.readAloud)
+      } else {
+        await waitForTransition(600)
+        advanceBeat(runtime)
+      }
     },
   })
 }
@@ -2503,8 +2531,15 @@ function renderListenRepeatBeat(runtime, beat) {
     // the shout-fx burst: it was dropped here when the last word moved to
     // runAttackReadAloud() above, which regressed the "big attack moment"
     // presentation for every finale beat with more than one word.
+    //
+    // A trace beat's non-last words need the same tracing box the last word
+    // gets -- audit found a 2-word blend trace (e.g. chapter 29's "손가락으로
+    // S와 T를 따라 그리면서...") only ever rendered a canvas for the SECOND
+    // letter; the instruction promises both, so the first has to trace too.
     const wordHtml = isFinale
       ? `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
+      : isTrace
+      ? traceBoxHtml(text)
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
@@ -2515,6 +2550,7 @@ function renderListenRepeatBeat(runtime, beat) {
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
+    if (isTrace) wireTraceCanvas()
     speakEN(say)
     onTap(document.getElementById('replay-btn'), () => speakTap(say))
     const micBtn = document.getElementById('mic-btn')
