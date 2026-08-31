@@ -173,12 +173,39 @@ TTS 사고 해결 후 사용자가 실제로 처음부터 플레이하면서 낸
    실기기에서 진짜 아이 목소리로 튜닝 필요.** 새 CSS 클래스
    (`.attack-beat`/`.attack-btn`/`.attack-next-btn`)도 인라인 위주.
 
+### 실제 크롬으로 이어서 QA — 3건 추가 발견/수정, 1건 확장
+
+아이패드가 없는 상황이라 실제 크롬(Claude in Chrome)으로 이어서 QA함.
+
+6. **오답 확인 피드백이 `choose-sequence`에는 안 걸렸었다**(`661f3ec`) —
+   "moon 골랐는데 피드백 없음"(챕터1 `s1-r3-quickfire`). `isOddOneOutBeat()`
+   가 `beat.kind === 'choose'`만 허용해서 같은 문구를 쓰는 유일한
+   `choose-sequence`(2스텝, 이 문구 쓰는 choose-sequence는 이거 하나뿐—
+   grep으로 확인됨)가 빠졌었다. `instructionKo`는 kind와 무관하게 beat에
+   그대로 있으므로(choose-sequence는 렌더링에서 "(n/m)"만 덧붙임) kind
+   체크를 넓히고 `renderChooseSequenceBeat`의 스텝별 onCorrect에 배선.
+   실제 클릭으로 재확인.
+7. **그리기 박스가 두 번째 트레이싱 순간(`listen-repeat`)엔 없었다**
+   (`82a35c7`) — "그리기 박스가 다 안 들어가 있네". 같은 글자를 두 번
+   그리게 하는 구조인데(teach/break + listen-repeat, 정확히 39개씩 1:1
+   대응) 지난 라운드는 앞쪽만 넣었었다. `isFingerTraceListenRepeatBeat()`
+   추가해서 같은 `traceBoxHtml()`/`wireTraceCanvas()` 재사용, `beat.letter`
+   가 없는 beat라 표시 중인 `words[wordIndex].text`에서 글자를 얻음.
+8. **"지우기" 버튼이 글자를 가림**(`82a35c7`, 같은 커밋) — 텍스트 버튼을
+   지우개 모양 인라인 SVG 아이콘(40x40 원형)으로 교체, 위치를 우측
+   상단→우측 하단으로. `secondary-btn` 클래스를 걷어내야 했다
+   (`min-width:200px` 때문에 원이 타원으로 깨졌음).
+9. **마이크 공격을 `multiselect`/`drag-build`로 확장**(`9a80cb3`, 사용자
+   확정) — `runReadAloud()` 호출을 `runAttackReadAloud()`로 교체(시그니처
+   동일). `match-shape`는 범위 밖(모양 변별용이라 기존 "🎤 I read it!"이
+   맞음)이라 `runReadAloud()`는 그대로 남김. 셋 다 실제 클릭으로 확인.
+
 **다음 세션이 이어받을 것**:
 - **실기기 검증 필요**: 마이크 임계값(0.08) 튜닝, 그리기 박스 실제 손가락
   터치感, ATTACK 버튼의 오디오-배타성이 실제 iOS에서도 매끄러운지.
-- **마이크 공격을 `multiselect`/`drag-build`에도 확장할지** 실기기 확인
-  후 판단.
-- **그리기/공격 새 CSS 클래스들을 `style.css`로 옮기고 다듬기**(위 4/5번
+  (아이패드 없이 실제 크롬으로 확인한 것까지가 이번 세션 한계 — 마이크는
+  이 환경에서 항상 차단되므로 폴백 경로만 검증됨, 실제 감지는 미검증.)
+- **그리기/공격 새 CSS 클래스들을 `style.css`로 옮기고 다듬기**(위 4/5/7/8번
   참고, 지금은 전부 인라인).
 - **가로모드 스크롤 전수 스캔 미완료** — 챕터1~14 는 0건 확인됐지만
   15~33(~560 콤보)은 아직 안 돌았다. 재개할 거면 아래 하네스 버그를
