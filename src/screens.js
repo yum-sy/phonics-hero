@@ -1599,12 +1599,22 @@ function traceBoxHtml(letter) {
   // (isFingerTraceListenRepeatBeat) even though that screen has one more
   // button (🎤 I read it!) than this one -- see wireTraceCanvas's caller for
   // the measured verdict on that screen specifically.
+  // Shrunk again (2026-08) after real-play QA found this box overflowing in
+  // landscape specifically once it shares a screen with the shout-attack
+  // flow (runAttackReadAloud's #beat-feedback can grow a full second line,
+  // "다시 ATTACK을 눌러서 소리쳐봐요!", that the old plain "I read it!" flow
+  // never needed -- see that function's caller). Measured: at 1194x921
+  // landscape the ATTACK+trace screen was clearing by only 18px before that
+  // line ever appears, so any wrapped feedback text tipped it into scroll
+  // (confirmed by injecting that exact string and reading getBoundingClientRect
+  // -- 27px over). Cutting the svh mid-points here buys back ~55px, re-verified
+  // empty on that same screen afterward with the retry message forced in.
   const boxStyle = isDigraph
-    ? 'width:clamp(260px, 56svh, 460px);height:clamp(140px, 30svh, 230px);'
-    : 'width:clamp(170px, 32svh, 300px);height:clamp(170px, 32svh, 300px);'
+    ? 'width:clamp(220px, 46svh, 400px);height:clamp(120px, 24svh, 190px);'
+    : 'width:clamp(150px, 26svh, 260px);height:clamp(150px, 26svh, 260px);'
   const guideFontStyle = isDigraph
-    ? 'font-size:clamp(64px, 18svh, 130px);'
-    : 'font-size:clamp(96px, 22svh, 190px);'
+    ? 'font-size:clamp(54px, 15svh, 110px);'
+    : 'font-size:clamp(80px, 18svh, 155px);'
   // The clear button sits *inside* the box, absolutely positioned, instead
   // of below it: a below-it button is a 5th flex child that .beat has to
   // find room for on top of the box itself, and that extra row is what
