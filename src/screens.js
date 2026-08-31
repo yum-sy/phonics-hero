@@ -2421,6 +2421,7 @@ function renderListenRepeatBeat(runtime, beat) {
   function showWord() {
     const { text, say } = spokenPair(beat.words[wordIndex])
     const isFinale = beat.kind === 'finale'
+    const isLastWord = wordIndex + 1 >= beat.words.length
     // Finale = the stage's "big attack" moment: sell it with the shout-fx
     // burst behind the word (see .shout-fx in style.css); regular
     // listen-repeat words stay plain -- except the second finger-trace
@@ -2431,10 +2432,33 @@ function renderListenRepeatBeat(runtime, beat) {
     // the teach/break beat uses, in the same screen slot the plain word
     // display used to occupy.
     const isTrace = !isFinale && isFingerTraceListenRepeatBeat(beat)
+
+    // The last word is where damage actually lands (dealHit), same as the
+    // choose/multiselect/drag-build "you got it right" screen -- so it gets
+    // the same shout-to-ATTACK confirmation instead of a plain "I read it!"
+    // tap. Reuses runAttackReadAloud() wholesale rather than re-deriving the
+    // mic-listen/fallback/Next-button plumbing here. The one thing it can't
+    // supply on its own is the finger-trace box (its default word display is
+    // the plain shout-burst target word) -- trace beats pass that markup in
+    // as an override so tracing still works right up to the attack tap.
+    if (isLastWord) {
+      runAttackReadAloud(
+        runtime,
+        beat,
+        { targetText: text, say },
+        isTrace ? traceBoxHtml(text) : undefined
+      )
+      if (isTrace) wireTraceCanvas()
+      return
+    }
+
+    // Non-last words of a `finale` beat (some repeat the same word twice --
+    // see chapter data's `words: ['sat', 'sat']` style entries) still get
+    // the shout-fx burst: it was dropped here when the last word moved to
+    // runAttackReadAloud() above, which regressed the "big attack moment"
+    // presentation for every finale beat with more than one word.
     const wordHtml = isFinale
       ? `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
-      : isTrace
-      ? traceBoxHtml(text)
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
@@ -2445,7 +2469,6 @@ function renderListenRepeatBeat(runtime, beat) {
         <div class="beat-feedback" id="beat-feedback"></div>
       </div>
     `
-    if (isTrace) wireTraceCanvas()
     speakEN(say)
     onTap(document.getElementById('replay-btn'), () => speakTap(say))
     const micBtn = document.getElementById('mic-btn')
@@ -2459,14 +2482,7 @@ function renderListenRepeatBeat(runtime, beat) {
       // lands on top of it.
       await waitForTransition(400)
       wordIndex += 1
-      if (wordIndex < beat.words.length) {
-        showWord()
-      } else {
-        flashCorrect(area)
-        dealHit(runtime, beat, fireBolt(micBtn))
-        await waitForTransition(500)
-        advanceBeat(runtime)
-      }
+      showWord()
     }))
   }
 
@@ -2486,17 +2502,25 @@ function renderListenRepeatBeat(runtime, beat) {
 //
 // `readAloud` is the beat's whole `{ targetText, say? }` object, same
 // display/speech split as elsewhere in this file.
-function runAttackReadAloud(runtime, beat, readAloud) {
+//
+// `wordHtml` optionally overrides the target-word markup (default: the plain
+// shout-burst word display below). renderListenRepeatBeat's finger-trace
+// words are the one caller that needs this -- they still need the tracing
+// box, not a plain word, right up until the ATTACK tap.
+function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
   if (!ownsScreen(runtime)) return
   const area = beatArea()
   const { text, say } = spokenPair({
     text: readAloud.targetText,
     say: readAloud.say,
   })
+  const displayHtml =
+    wordHtml ||
+    `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
   area.innerHTML = `
     <div class="beat readaloud-beat attack-beat">
       <div class="beat-instruction">정답이에요! ATTACK을 눌러서 소리쳐봐요!</div>
-      <div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>
+      ${displayHtml}
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <button class="mic-btn attack-btn" id="attack-btn">⚔️ ATTACK</button>
       <button class="primary-btn attack-next-btn" id="attack-next-btn" style="display:none">Next ▶</button>
