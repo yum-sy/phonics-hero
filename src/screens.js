@@ -26,7 +26,10 @@ import {
   saveCheckpoint,
 } from './state.js'
 import {
+  attemptShoutAttack,
   clearAudioQueue,
+  isAudioIdle,
+  onAudioActivity,
   speakEN,
   speakKO,
   speakSequence,
@@ -1954,7 +1957,9 @@ function renderChooseBeat(runtime, beat) {
       }
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
-        runReadAloud(runtime, beat, beat.readAloud)
+        // choose only, this round -- see runAttackReadAloud()'s own header
+        // comment for why multiselect/drag-build still call runReadAloud().
+        runAttackReadAloud(runtime, beat, beat.readAloud)
       } else {
         await waitForTransition(600)
         advanceBeat(runtime)
@@ -2403,6 +2408,149 @@ function renderListenRepeatBeat(runtime, beat) {
   }
 
   showWord()
+}
+
+// ---- shout-attack confirmation (choose beats only, this round) ----
+//
+// Same slot in the flow as runReadAloud() below (the "you got it right, now
+// land the hit" screen) but the hit is gated on the child actually shouting,
+// not on tapping a button labeled "I read it!". Deliberately a separate
+// function rather than a mode flag threaded through runReadAloud(): that one
+// is shared by multiselect/drag-build too (see its own header comment), and
+// this round is choose-only -- forking the display code is cheaper and safer
+// than teaching the shared function a branch its other two callers never
+// exercise or test.
+//
+// `readAloud` is the beat's whole `{ targetText, say? }` object, same
+// display/speech split as elsewhere in this file.
+function runAttackReadAloud(runtime, beat, readAloud) {
+  if (!ownsScreen(runtime)) return
+  const area = beatArea()
+  const { text, say } = spokenPair({
+    text: readAloud.targetText,
+    say: readAloud.say,
+  })
+  area.innerHTML = `
+    <div class="beat readaloud-beat attack-beat">
+      <div class="beat-instruction">정답이에요! ATTACK을 눌러서 소리쳐봐요!</div>
+      <div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>
+      <button class="replay-btn" id="replay-btn">🔊 Listen</button>
+      <button class="mic-btn attack-btn" id="attack-btn">⚔️ ATTACK</button>
+      <button class="primary-btn attack-next-btn" id="attack-next-btn" style="display:none">Next ▶</button>
+      <div class="beat-feedback" id="beat-feedback"></div>
+    </div>
+  `
+  speakEN(say)
+  onTap(document.getElementById('replay-btn'), () => speakTap(say))
+
+  const attackBtn = document.getElementById('attack-btn')
+  const nextBtn = document.getElementById('attack-next-btn')
+  const feedback = () => area.querySelector('#beat-feedback')
+
+  let settled = false // true once the hit has landed and Next is showing
+  let listening = false // true while a shout window is open
+  let activeController = null
+
+  // ---- audio-playing <-> ATTACK-enabled interlock ----
+  //
+  // The mic must never be treated as "listening for a shout" while the
+  // game's own speaker output could be running, or a loud phoneme/word
+  // plays right into the analyser and gets mistaken for the child shouting
+  // (CLAUDE.md's audio-queue notes -- this reuses whenAudioIdle()'s own
+  // signal rather than inventing a second one). onAudioActivity() fires the
+  // instant anything is QUEUED, which is earlier and more useful here than
+  // waiting for it to actually start speaking.
+  const syncAttackEnabled = () => {
+    if (settled) return
+    attackBtn.disabled = listening || !isAudioIdle()
+  }
+  const unsubscribeActivity = onAudioActivity(() => {
+    // The child has already left this beat (map/back navigation, or a later
+    // beat rendered over this one) -- this subscription outlived its screen,
+    // so drop it instead of touching a detached button forever.
+    if (!ownsScreen(runtime)) {
+      unsubscribeActivity()
+      return
+    }
+    syncAttackEnabled()
+    // New audio starting *mid-listen* (e.g. the child tapped 🔊 Listen or a
+    // villain name tag while the shout window was open) must end that
+    // window right now -- being disabled during playback is not enough on
+    // its own, because the window was already open before this fired.
+    if (listening && activeController) activeController.cancel()
+    // This newly queued item will make isAudioIdle() go true again once it
+    // finishes -- re-sync then too, not just at the moment it started.
+    whenAudioIdle().then(syncAttackEnabled)
+  })
+  syncAttackEnabled()
+  // The screen's own opening speakEN(say) above was queued before the
+  // listener existed to see it; give it the same "re-enable once done" pass.
+  whenAudioIdle().then(syncAttackEnabled)
+
+  const landHit = () => {
+    settled = true
+    unsubscribeActivity()
+    // Fire the bolt from the button BEFORE hiding it -- fireBolt() reads its
+    // on-screen position, and a display:none element measures as a zero box
+    // (see fireBolt's own "not laid out" guard), which would silently skip
+    // the bolt.
+    const boltFlightMs = fireBolt(attackBtn)
+    attackBtn.disabled = true
+    attackBtn.style.display = 'none'
+    const feedbackEl = feedback()
+    dealHit(runtime, beat, boltFlightMs, () => {
+      if (feedbackEl && feedbackEl.isConnected) feedbackEl.textContent = 'Hit! 💥'
+    })
+    nextBtn.style.display = ''
+    // Manual "Next" rather than the usual auto-advance -- the whole point of
+    // this round is the child reading "I attacked" off their own action, and
+    // an automatic transition right after would blur that back into "stuff
+    // just happens on this screen" (explicit product decision this round).
+    onTap(
+      nextBtn,
+      withRecovery(runtime, async () => {
+        await waitForTransition(300)
+        advanceBeat(runtime)
+      })
+    )
+  }
+
+  const startListen = () => {
+    if (settled || listening || attackBtn.disabled) return
+    listening = true
+    syncAttackEnabled()
+    const fb = feedback()
+    if (fb) fb.textContent = '소리쳐봐요! 🎤'
+    const controller = attemptShoutAttack({ durationMs: 1800 })
+    activeController = controller
+    controller.promise.then((result) => {
+      if (activeController !== controller) return // superseded already
+      activeController = null
+      if (!ownsScreen(runtime) || !area.isConnected) return
+      listening = false
+      if (result === 'cancelled') {
+        // Audio started mid-listen -- quiet reset, no blame on the child.
+        const fb2 = feedback()
+        if (fb2) fb2.textContent = ''
+        syncAttackEnabled()
+        return
+      }
+      if (result === 'timeout') {
+        const fb2 = feedback()
+        if (fb2) fb2.textContent = '다시 ATTACK을 눌러서 소리쳐봐요!'
+        syncAttackEnabled()
+        return
+      }
+      // 'detected' (real shout) and 'unsupported' (no mic/permission denied/
+      // API missing) both land the hit here -- 'unsupported' is the required
+      // silent fallback: ATTACK becomes a plain tap-to-continue button, same
+      // as this screen behaved before this feature existed. The child never
+      // sees a permission error or a broken control.
+      landHit()
+    })
+  }
+
+  onTap(attackBtn, withRecovery(runtime, async () => startListen()))
 }
 
 // ---- read-aloud confirmation (shared by choose / multiselect / drag-build) ----

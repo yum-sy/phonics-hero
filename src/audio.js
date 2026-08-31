@@ -1145,6 +1145,7 @@ function makeItem(text, lang, rate, tap, volume = 1) {
 function push(item) {
   queue.push(item)
   lastEnqueued = item
+  notifyAudioActivity()
   pump()
   return item.done
 }
@@ -1684,6 +1685,9 @@ export function clearAudioQueue() {
   for (const item of queue) item.resolve()
   queue.length = 0
   pendingTap = null
+  // The child is leaving this screen/stage -- see releaseMicStream()'s own
+  // comment for why this is where the mic actually gets let go.
+  releaseMicStream()
   // Waive the gap in front of whatever speaks next. The reserved silence
   // belonged to a screen the child has left, and making the new screen's
   // first sound sit behind it is the "nothing happens when I press it"
@@ -1703,6 +1707,54 @@ export function clearAudioQueue() {
 
 export function speakEN(text, rate = EN_RATE) {
   return enqueueSpeak(text, 'en-US', rate)
+}
+
+// ---- "is the queue idle right now" (synchronous) ----
+//
+// whenAudioIdle() is a promise gate for a transition that is *about* to
+// happen. The shout-attack button (screens.js) needs the opposite shape: a
+// synchronous read of "is anything playing or about to play RIGHT NOW",
+// polled while the button is on screen, so it can grey itself out for
+// exactly the duration something is audible and re-enable itself the moment
+// the queue actually empties -- without keeping its own audio bookkeeping.
+// `queue.length` catches anything waiting its turn; `pumping` also catches
+// the brief final gap `pump()` sleeps through the tail item's own
+// `MIN_GAP_MS`/`TAP_GAP_MS` sits inside, right after `pumping` would already
+// read as idle if it looked at the queue array alone. Its own trailing
+// `MIN_GAP_MS` (past `audibleUntil`) is included too, for the same reason
+// the queue-emptying case doesn't fully mean "silent" for whenAudioIdle().
+export function isAudioIdle() {
+  return (
+    queue.length === 0 &&
+    !pumping &&
+    Date.now() - audibleUntil >= MIN_GAP_MS
+  )
+}
+
+// ---- "audio is about to start" notification ----
+//
+// The shout-attack listen window (see attemptShoutAttack below) must give up
+// the instant ANY new audio is queued -- the mic could otherwise pick up the
+// game's own speaker output and mistake it for the child shouting. Polling
+// isAudioIdle() from the listener's own timer would add up to a whole poll
+// interval of lag between "something got queued" and "the mic listener
+// notices"; push() already knows the exact instant, so it is cheaper and
+// exact to just tell whoever is listening.
+const audioActivityListeners = new Set()
+
+export function onAudioActivity(cb) {
+  audioActivityListeners.add(cb)
+  return () => audioActivityListeners.delete(cb)
+}
+
+function notifyAudioActivity() {
+  for (const cb of audioActivityListeners) {
+    try {
+      cb()
+    } catch (e) {
+      // A listener's own bug must not take the audio queue down with it.
+    }
+  }
 }
 
 // ---- tap feedback ----
@@ -1783,6 +1835,198 @@ const SpeechRecognitionImpl =
 
 export function speechRecognitionAvailable() {
   return !!SpeechRecognitionImpl
+}
+
+// ---- shout-attack: "did the child make noise", never "what did they say" ----
+//
+// Deliberately NOT built on SpeechRecognitionImpl / tryRecognize() above --
+// that dead code is the previous attempt at using the mic for a read-aloud
+// check, and it was unwired for reasons that apply just as hard here: the
+// permission prompt landing on a reward-adjacent moment, and iOS suppressing
+// speechSynthesis for up to ~4s while a recognition session is open. This
+// path never calls SpeechRecognition at all -- getUserMedia + an AnalyserNode
+// reading raw input volume, nothing that inspects *content*, so there is
+// nothing to transcribe and nothing that claims a recognition "session" in
+// the way iOS's suppression is keyed on.
+//
+// The mic stream, once granted, is kept open and reused across attempts
+// instead of re-requesting getUserMedia every tap -- re-requesting would
+// flash the OS mic-in-use indicator off and on for every ATTACK press.
+// releaseMicStream() (called from clearAudioQueue(), i.e. on every
+// "leaving this context" navigation the app already has) is what actually
+// lets it go, so the mic is not left hot past the stage the child is on.
+let micStream = null
+let micStreamPromise = null
+// Sticky once true: a denied prompt or a missing API is not a transient
+// condition, and re-asking every ATTACK tap would mean re-showing a
+// just-denied permission prompt on every subsequent press.
+let micUnavailable = false
+let micCtx = null
+let micAnalyser = null
+
+function micApiPresent() {
+  return (
+    !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) &&
+    !!(window.AudioContext || window.webkitAudioContext)
+  )
+}
+
+// Best-effort, synchronous, pre-permission check: lets a caller decide
+// whether it's even worth trying before spending an await. Does NOT reflect
+// a denied prompt from an earlier attempt in THIS session -- attemptShoutAttack()
+// is what actually resolves to 'unsupported' once micUnavailable is known.
+export function shoutAttackApiPresent() {
+  return micApiPresent()
+}
+
+function ensureMicStream() {
+  if (micStream) return Promise.resolve(micStream)
+  if (micUnavailable) return Promise.resolve(null)
+  if (micStreamPromise) return micStreamPromise
+  micStreamPromise = (async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      micStream = stream
+      return stream
+    } catch (e) {
+      // Permission denied, no device, or any other getUserMedia failure --
+      // all fold into the same "this feature is off for the rest of the
+      // session" outcome. The caller falls back to an instant, mic-free
+      // attack; nothing about this is shown to the child as an error.
+      micUnavailable = true
+      return null
+    } finally {
+      micStreamPromise = null
+    }
+  })()
+  return micStreamPromise
+}
+
+// A dedicated AudioContext, separate from the one phoneme playback uses
+// (see ensureAudioCtx above): analysis-only, never connected to
+// ctx.destination (that would loop the child's own mic input back out of
+// the speakers), and its lifecycle is independent of the phoneme buffer
+// path's suspend/resume dance.
+function ensureMicAnalyser(stream) {
+  const Ctx = window.AudioContext || window.webkitAudioContext
+  if (!micCtx) {
+    micCtx = new Ctx()
+  }
+  if (!micAnalyser) {
+    const source = micCtx.createMediaStreamSource(stream)
+    micAnalyser = micCtx.createAnalyser()
+    micAnalyser.fftSize = 512
+    source.connect(micAnalyser)
+  }
+  return micAnalyser
+}
+
+// RMS floor a sample window must cross to count as "the child shouted".
+// UNVERIFIED against a real device/mic -- there is no way to reproduce a
+// child's actual shout volume from this dev machine (see the caller in
+// screens.js and the session's own report for the "must verify on real
+// hardware" flag). 0.08 is a placeholder picked to sit clearly above typical
+// laptop-mic room noise and clearly below a raised voice, on the same
+// (-1..1 float PCM) scale getFloatTimeDomainData returns -- tune this
+// constant first if real-device testing finds it too sensitive/insensitive,
+// nothing else in this function needs to change.
+const SHOUT_RMS_THRESHOLD = 0.08
+
+// Starts (or re-permission-checks) the mic and opens a listen window.
+// Resolves to one string, never rejects:
+//   'unsupported' -- no getUserMedia/AudioContext, or the permission prompt
+//                    was denied (this session or an earlier attempt in it).
+//                    Caller's contract: treat exactly like 'detected' --
+//                    the attack fires with no mic gate at all.
+//   'detected'     -- input crossed SHOUT_RMS_THRESHOLD before durationMs.
+//   'timeout'      -- durationMs elapsed with nothing loud enough.
+//   'cancelled'    -- the caller's own controller.cancel() ended it early
+//                    (screens.js uses this when new audio starts speaking
+//                    mid-listen -- see onAudioActivity above).
+// The controller's `promise` is what a caller awaits; `cancel()` is the only
+// other thing it exposes, and calling it after the promise already settled
+// is a harmless no-op.
+export function attemptShoutAttack({ durationMs = 1800 } = {}) {
+  if (!micApiPresent()) {
+    return { cancel() {}, promise: Promise.resolve('unsupported') }
+  }
+  let cancelled = false
+  let settled = false
+  let rafId = null
+  let timeoutId = null
+  let resolveFn
+  const promise = new Promise((resolve) => {
+    resolveFn = resolve
+  })
+  const finish = (result) => {
+    if (settled) return
+    settled = true
+    if (rafId != null) cancelAnimationFrame(rafId)
+    if (timeoutId != null) clearTimeout(timeoutId)
+    resolveFn(result)
+  }
+  const controller = {
+    cancel() {
+      if (settled) return
+      cancelled = true
+      finish('cancelled')
+    },
+    promise,
+  }
+
+  ;(async () => {
+    const stream = await ensureMicStream()
+    if (settled || cancelled) return
+    if (!stream) {
+      finish('unsupported')
+      return
+    }
+    let analyser
+    try {
+      analyser = ensureMicAnalyser(stream)
+      if (micCtx.state !== 'running') await micCtx.resume()
+    } catch (e) {
+      // Analyser/context setup failed on this engine after all -- same
+      // no-mic-gate fallback as an outright missing API.
+      finish('unsupported')
+      return
+    }
+    if (settled || cancelled) return
+    const data = new Float32Array(analyser.fftSize)
+    const tick = () => {
+      if (settled) return
+      analyser.getFloatTimeDomainData(data)
+      let sumSquares = 0
+      for (let i = 0; i < data.length; i++) sumSquares += data[i] * data[i]
+      const rms = Math.sqrt(sumSquares / data.length)
+      if (rms >= SHOUT_RMS_THRESHOLD) {
+        finish('detected')
+        return
+      }
+      rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+    timeoutId = setTimeout(() => finish('timeout'), durationMs)
+  })()
+
+  return controller
+}
+
+// Called from clearAudioQueue() -- every "leaving this context" navigation
+// the app already has (see that function's own comment). Stopping the
+// tracks is what actually turns off the OS mic-in-use indicator; the
+// AnalyserNode/context are left alone to be lazily recreated by the next
+// ensureMicAnalyser() call rather than torn down and rebuilt every stage.
+function releaseMicStream() {
+  if (!micStream) return
+  for (const track of micStream.getTracks()) {
+    try {
+      track.stop()
+    } catch (e) {
+      // ignore
+    }
+  }
+  micStream = null
 }
 
 // NOT CURRENTLY CALLED -- kept for when a design actually consumes the
