@@ -13,10 +13,17 @@ if (devParams.get('resetprogress') === '1') {
   resetProgress()
   devParamConsumed = true
 }
-// ?forceclear=<stageId> unlocks the one next stage being tested, without
-// flipping DEV_UNLOCK_ALL and re-opening every stage in the app.
+// ?forceclear=<stageId>[,<stageId>...] unlocks specific stages being tested
+// (comma-separated, e.g. marking a whole run of prior chapters cleared at
+// once so real-device playtesting can resume partway through the
+// curriculum), without flipping DEV_UNLOCK_ALL and re-opening every stage.
 if (devParams.get('forceclear')) {
-  forceClearStage(devParams.get('forceclear'))
+  devParams
+    .get('forceclear')
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .forEach((id) => forceClearStage(id))
   devParamConsumed = true
 }
 if (devParamConsumed) {
