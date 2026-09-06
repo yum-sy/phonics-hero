@@ -1,6 +1,7 @@
 import './style.css'
 import { renderWorldSelect } from './screens.js'
 import { resetProgress, forceClearStage } from './state.js'
+import { stages } from './data/chapters/index.js'
 
 // Opt-in dev convenience: a device's saved progress can only be cleared
 // from that device itself, so a query param stands in for a "clear site
@@ -26,10 +27,24 @@ if (devParams.get('forceclear')) {
     .forEach((id) => forceClearStage(id))
   devParamConsumed = true
 }
+// ?forceclearthrough=<stageId> is the one-shot form of the above: it marks
+// every stage up to and including the given one cleared, in curriculum
+// order (stages is chapters.flatMap(...), already in play order) -- so
+// resuming a real-device playtest partway through doesn't need a URL
+// listing every prior stage id by hand.
+if (devParams.get('forceclearthrough')) {
+  const targetId = devParams.get('forceclearthrough')
+  const idx = stages.findIndex((s) => s.id === targetId)
+  if (idx >= 0) {
+    for (let i = 0; i <= idx; i++) forceClearStage(stages[i].id)
+  }
+  devParamConsumed = true
+}
 if (devParamConsumed) {
   const url = new URL(location.href)
   url.searchParams.delete('resetprogress')
   url.searchParams.delete('forceclear')
+  url.searchParams.delete('forceclearthrough')
   history.replaceState(null, '', url)
 }
 
