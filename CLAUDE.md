@@ -767,8 +767,23 @@ npm run dev -- --host
 
 또는 `.claude/launch.json`의 `carbot-phonics-dev` 설정으로 Browser pane에서 실행.
 
-- 로컬: http://localhost:5173
-- iPad 테스트: `ifconfig | grep "inet 192"` 로 LAN IP 확인 후 `http://<IP>:5173`
+- 로컬: https://localhost:5173
+- iPad 테스트: `ifconfig | grep "inet 192"` 로 LAN IP 확인 후 `https://<IP>:5173`
+- **`vite.config.js`가 `.certs/`의 자체서명 인증서로 HTTPS를 켠다** —
+  `getUserMedia`(마이크 ATTACK 기능이 쓰는 API)는 secure context(https
+  또는 `http://localhost`)에서만 존재하고, LAN IP로 붙는 `http://`는
+  secure context가 아니라서 실기기에서 마이크 기능이 원리적으로 동작할
+  수 없었다(2026-09, 실기기 로그로 확정). 자체서명이라 아이패드에서
+  처음 접속하면 인증서 경고가 뜬다 — "계속 진행"으로 넘어가면 된다.
+  **LAN IP가 바뀌면 인증서를 재생성해야 한다**(SAN에 IP가 박혀 있음):
+  ```bash
+  openssl req -x509 -newkey rsa:2048 -nodes -keyout .certs/dev.key -out .certs/dev.crt -days 3650 \
+    -subj "/CN=carbot-phonics-dev" \
+    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:<새 LAN IP>"
+  ```
+  **`http://`와 `https://`는 별개 origin이라 localStorage 진행상태가
+  안 이어진다** — 전환하면 `?forceclearthrough=<stageId>`로 다시
+  열어야 한다.
 
 ## 챕터 1 스테이지 구조 (참고)
 ```
