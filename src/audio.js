@@ -1932,15 +1932,21 @@ function ensureMicAnalyser(stream) {
 }
 
 // RMS floor a sample window must cross to count as "the child shouted".
-// UNVERIFIED against a real device/mic -- there is no way to reproduce a
-// child's actual shout volume from this dev machine (see the caller in
-// screens.js and the session's own report for the "must verify on real
-// hardware" flag). 0.08 is a placeholder picked to sit clearly above typical
-// laptop-mic room noise and clearly below a raised voice, on the same
-// (-1..1 float PCM) scale getFloatTimeDomainData returns -- tune this
-// constant first if real-device testing finds it too sensitive/insensitive,
-// nothing else in this function needs to change.
-const SHOUT_RMS_THRESHOLD = 0.08
+// The original 0.08 was an unverified placeholder guessed before real-device
+// testing was possible, and it was wrong by an order of magnitude: real-
+// device measurement (?debugaudio=1's [shout] log, autoGainControl/
+// noiseSuppression/echoCancellation all off -- see ensureMicStream -- so
+// this is the raw, unamplified signal) put a loud adult shout's max RMS at
+// only ~0.0082. Without AGC normalizing quiet input up to a "conversational"
+// level, the iPad's raw mic signal for a voice at typical distance from the
+// device is just much quieter on this (-1..1 float PCM) scale than 0.08
+// ever was. Set to a fraction of that single measured shout (not the full
+// 0.0082) so the game doesn't require every child to reproduce an adult's
+// maximum volume -- but this is still only ONE data point (no measured
+// noise-floor/silence or normal-speaking-volume baseline yet), so re-tune
+// again if real play finds it too sensitive (silence/background noise
+// triggers it) or still too insensitive (a real shout still times out).
+const SHOUT_RMS_THRESHOLD = 0.005
 
 // Starts (or re-permission-checks) the mic and opens a listen window.
 // Resolves to one string, never rejects:
