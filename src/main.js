@@ -54,13 +54,45 @@ renderWorldSelect()
 // (?debugaudio=1) -- see src/debugAudio.js. Lazy-imported so it costs
 // nothing in the normal app path.
 if (new URLSearchParams(location.search).get('debugaudio') === '1') {
+  // A real-device report says the full panel never appears, even after
+  // wrapping the one hook inside it (debugAudio.js's own getUserMedia
+  // hook) that was known to be able to throw on WebKit. Rather than guess
+  // again, this dot is a dependency-free, synchronous, can't-silently-fail
+  // marker: plain DOM, no import, no async -- if THIS doesn't show up
+  // either, the problem is upstream of debugAudio.js entirely (the
+  // ?debugaudio=1 param not being read as expected, or something earlier
+  // in this file throwing and halting the whole script before this line
+  // ever runs). If the dot shows but the real panel still doesn't, the
+  // failure is inside debugAudio.js's module body or its dynamic import
+  // specifically, and the dot's own log line (below) still narrows that
+  // down further once opened.
+  const marker = document.createElement('div')
+  marker.textContent = 'debugaudio: loading...'
+  marker.style.cssText =
+    'position:fixed;top:0;right:0;z-index:999999;background:#f0f;color:#000;' +
+    'font:11px monospace;padding:4px 6px;'
+  document.body.appendChild(marker)
   // .catch() logs instead of leaving an unhandled rejection: with no
   // console open on the real device this opt-in was mounted for, a
   // rejection here used to fail completely silently -- the panel just
   // never appears, with no clue why (real-device report, 2026-09).
-  import('./debugAudio.js')
-    .then((m) => m.mountAudioDebugPanel())
-    .catch((e) => console.error('[debugaudio] failed to mount', e))
+  try {
+    import('./debugAudio.js')
+      .then((m) => {
+        marker.textContent = 'debugaudio: module loaded, mounting...'
+        m.mountAudioDebugPanel()
+        marker.textContent = 'debugaudio: mounted OK'
+      })
+      .catch((e) => {
+        marker.textContent = `debugaudio: FAILED -- ${e}`
+        console.error('[debugaudio] failed to mount', e)
+      })
+  } catch (e) {
+    // A synchronous throw from the dynamic import() call itself would be
+    // unusual, but this branch exists specifically because "unusual"
+    // already happened once on this exact code path.
+    marker.textContent = `debugaudio: import() THREW synchronously -- ${e}`
+  }
 }
 if (new URLSearchParams(location.search).get('debugart') === '1') {
   import('./debugArt.js')
