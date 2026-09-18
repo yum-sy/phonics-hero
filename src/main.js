@@ -54,8 +54,16 @@ renderWorldSelect()
 // (?debugaudio=1) -- see src/debugAudio.js. Lazy-imported so it costs
 // nothing in the normal app path.
 if (new URLSearchParams(location.search).get('debugaudio') === '1') {
-  import('./debugAudio.js').then((m) => m.mountAudioDebugPanel())
+  // .catch() logs instead of leaving an unhandled rejection: with no
+  // console open on the real device this opt-in was mounted for, a
+  // rejection here used to fail completely silently -- the panel just
+  // never appears, with no clue why (real-device report, 2026-09).
+  import('./debugAudio.js')
+    .then((m) => m.mountAudioDebugPanel())
+    .catch((e) => console.error('[debugaudio] failed to mount', e))
 }
 if (new URLSearchParams(location.search).get('debugart') === '1') {
-  import('./debugArt.js').then((m) => m.mountArtDebugPanel())
+  import('./debugArt.js')
+    .then((m) => m.mountArtDebugPanel())
+    .catch((e) => console.error('[debugart] failed to mount', e))
 }

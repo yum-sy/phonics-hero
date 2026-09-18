@@ -85,28 +85,40 @@ export function mountAudioDebugPanel() {
   // (module-load order between this file and audio.js is otherwise
   // irrelevant since it's read at call time, not import time).
   window.__debugAudioLog = log
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    const origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
-    navigator.mediaDevices.getUserMedia = function (constraints) {
-      log(`getUserMedia(${JSON.stringify(constraints)}) called`)
-      return origGUM(constraints).then(
-        (stream) => {
-          const track = stream.getAudioTracks()[0]
-          log(
-            `  getUserMedia RESOLVED, audio track settings: ${
-              track ? JSON.stringify(track.getSettings()) : '(no audio track!)'
-            }`
-          )
-          return stream
-        },
-        (err) => {
-          log(`  getUserMedia REJECTED: ${err && err.name} -- ${err && err.message}`)
-          throw err
-        }
-      )
+  // Wrapped separately and defensively: `navigator.mediaDevices` is a
+  // browser-owned object, and WebKit/iOS has a real history of getter-only
+  // or non-configurable properties on host objects that throw on plain
+  // assignment in strict mode (every ES module is strict mode). This hook
+  // is a diagnostic nice-to-have -- if it can't attach on some engine, that
+  // must not take the rest of the panel down with it (the panel's own
+  // mount failing to even appear, with nothing logged, is a worse outcome
+  // than just missing the getUserMedia lines).
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+      navigator.mediaDevices.getUserMedia = function (constraints) {
+        log(`getUserMedia(${JSON.stringify(constraints)}) called`)
+        return origGUM(constraints).then(
+          (stream) => {
+            const track = stream.getAudioTracks()[0]
+            log(
+              `  getUserMedia RESOLVED, audio track settings: ${
+                track ? JSON.stringify(track.getSettings()) : '(no audio track!)'
+              }`
+            )
+            return stream
+          },
+          (err) => {
+            log(`  getUserMedia REJECTED: ${err && err.name} -- ${err && err.message}`)
+            throw err
+          }
+        )
+      }
+    } else {
+      log('navigator.mediaDevices.getUserMedia not present on this browser/context')
     }
-  } else {
-    log('navigator.mediaDevices.getUserMedia not present on this browser/context')
+  } catch (e) {
+    log(`  could not hook navigator.mediaDevices.getUserMedia (${e}) -- attemptShoutAttack()'s own [shout] logs (audio.js) still work regardless`)
   }
 
   // Narrow left-side column instead of a bottom bar -- a bottom bar grows
