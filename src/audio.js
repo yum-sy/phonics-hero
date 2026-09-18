@@ -1885,7 +1885,17 @@ function ensureMicStream() {
   if (micStreamPromise) return micStreamPromise
   micStreamPromise = (async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // Raw signal only -- { audio: true } leaves the browser's call-quality
+      // processing on by default, and autoGainControl actively normalizes
+      // quiet input toward a "normal speaking volume" target. That defeats
+      // SHOUT_RMS_THRESHOLD before it ever sees the child's real volume: a
+      // whisper gets boosted enough to cross the threshold regardless of
+      // where the threshold is set (real report: attack fires on almost any
+      // sound, not just a shout). None of these three are wanted for a
+      // one-shot volume read, so all three are off.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { autoGainControl: false, noiseSuppression: false, echoCancellation: false },
+      })
       micStream = stream
       return stream
     } catch (e) {
