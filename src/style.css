@@ -929,6 +929,21 @@ button {
   max-height: 40svh;
 }
 
+/* .beat's own `gap: 12px` is the only separation the grid and the button
+   below it get once a beat is full enough that space-evenly has no slack
+   left to hand out -- measured directly on a real quickfire screen
+   (long instruction, 4 options): grid-bottom to button-top was 12-18px,
+   NOSCROLL in this exact headless viewport but with no headroom to spare.
+   Real-device report: the button visibly overlapping the bottom option row
+   on an actual iPad -- plausibly tipped over by the home-indicator safe
+   area or larger system text, neither of which headless Chrome emulates.
+   A few extra px targeted at just this pair, not .beat's gap globally,
+   keeps every other (already-fine) beat layout's budget untouched. */
+.options-grid + .mic-btn,
+.options-grid + .confirm-btn {
+  margin-top: 14px;
+}
+
 /* No side padding: the icons carry their own margin inside a 64x64 viewBox,
    so horizontal padding only shrinks the picture (211px -> 231px without it)
    and pushes the long option words further outside the card.
@@ -1059,10 +1074,25 @@ button {
   flex: 0 0 auto;
 }
 
+/* A picture option's label is a shortcut past listening, not the primary
+   content -- the picture is. But `opacity: 0` (below) does NOT remove an
+   element from layout, so the full 67px-cap label footprint (`flex: 0 0
+   auto`, sized to its own content) was reserved either way, real-device
+   report or not -- measured directly: a "veiled" 3-letter label at the full
+   cap still occupied 80.5px of a 204.7px card, leaving the picture only
+   86px. letterTile options are untouched (`.sr-only`, genuinely zero
+   footprint, and there the letter itself is the content). */
+.option-btn:has(> .option-label:not(.sr-only)) .option-label {
+  --label-cap: clamp(18px, 2.8svh, 32px);
+}
+
 /* A picture option's spelling is a shortcut past listening -- veiled by
-   opacity (not visibility/display), so it takes zero layout space either
-   way (no scroll regression) and a screen reader still announces it before
-   any tap, same as sighted children get it after one. `.selected` already
+   opacity (not visibility/display) so a screen reader still announces it
+   before any tap, same as sighted children get it after one. Opacity does
+   NOT free up its layout footprint though (that claim here was wrong --
+   see the --label-cap override above this block, added once a real-device
+   report and a direct measurement showed the full-size reserved label
+   starving the picture next to it). `.selected` already
    exists for tap state (see wireConfirmGrid), so no new class or JS state is
    needed to gate the reveal -- one tap shows it, deselecting (single-select
    re-pick, or a wrong multiselect pick getting dropped) hides it again. */
