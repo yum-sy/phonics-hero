@@ -8,6 +8,7 @@
 // `configureServer` only exists while `vite dev` runs, so the production build
 // is unaffected -- verified by diffing dist against a build with no config.
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 
 // Whitelisted, not a raw filename from the request -- `?store=` selects one
@@ -76,4 +77,23 @@ function verdicts() {
   }
 }
 
-export default { plugins: [verdicts()] }
+// getUserMedia (the mic-gated ATTACK feature's volume check) does not
+// exist at all -- navigator.mediaDevices itself is undefined -- on a
+// non-secure origin, and http://<LAN-IP>:5173 (how this dev server is
+// normally reached from the iPad, see CLAUDE.md) does not qualify as one;
+// only https:// and http://localhost do. Confirmed on the real device via
+// ?debugaudio=1's [shout] log: `micApiPresent=false`, so every ATTACK
+// silently took the mic-unavailable fallback (instant success, no actual
+// volume check) -- not a bug in attemptShoutAttack() itself, the API it
+// needs was simply never there to call. A self-signed cert (regenerate
+// with the openssl command in this repo's session notes if the LAN IP
+// changes -- .certs/ is gitignored, machine/network-specific) lets the
+// iPad reach this over https:// instead; the browser will warn about the
+// untrusted cert once, which is expected for a self-signed one.
+const certDir = fileURLToPath(new URL('.certs/', import.meta.url))
+const httpsConfig =
+  existsSync(certDir + 'dev.key') && existsSync(certDir + 'dev.crt')
+    ? { key: readFileSync(certDir + 'dev.key'), cert: readFileSync(certDir + 'dev.crt') }
+    : undefined
+
+export default { plugins: [verdicts()], server: { https: httpsConfig } }
