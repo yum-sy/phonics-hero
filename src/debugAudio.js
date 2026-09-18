@@ -16,6 +16,19 @@
 export function mountAudioDebugPanel() {
   const lines = []
   const t0 = Date.now()
+  // Declared up here, ahead of `log`/`render` below (both of which touch
+  // it), instead of down where it's appended to the DOM -- real-device
+  // report: "ReferenceError: Cannot access 'body' before initialization"
+  // on WebKit. `log()` (right below) closures over `render()`, which reads
+  // `body.textContent`, and `log()` gets called from inside the
+  // speechSynthesis/getUserMedia hooks this function installs further
+  // down -- if any of those fire before this function's execution reaches
+  // its old `const body = ...` line (a re-entrant call while hooking, or
+  // just a stricter TDZ timing than V8's on whatever JS engine this is),
+  // `body` is still in its temporal dead zone. Moving the declaration to
+  // the top removes the ordering dependency entirely rather than trying
+  // to prove no hook can ever re-enter before the old line ran.
+  const body = document.createElement('div')
   const log = (s) => {
     lines.push(`[+${((Date.now() - t0) / 1000).toFixed(2)}s] ${s}`)
     if (lines.length > 300) lines.shift()
@@ -146,7 +159,6 @@ export function mountAudioDebugPanel() {
     return b
   }
   let collapsed = false
-  const body = document.createElement('div')
   mkBtn('collapse', () => {
     collapsed = !collapsed
     body.style.display = collapsed ? 'none' : 'block'
