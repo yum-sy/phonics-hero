@@ -1770,14 +1770,29 @@ button {
      just to hold two ~40px-tall buttons at its top (real-device report:
      "Exit/Back가 공간을 너무 많이 차지"). Pulling it out of flow entirely
      removes that column and hands its ~206px + gap back to the battle
-     scene/beat columns; positioned absolute over .stage-screen's own
-     padding box (position: relative, above) so it lands in the same top-
-     left corner it already occupied in flow, just without reserving a
-     column for it. */
+     scene/beat columns.
+     First fix overlaid it on the battle scene's own top-left corner
+     (position: absolute, top/left: 0) -- functionally fine (no wasted
+     column) but it read as floating with no clear owner (follow-up
+     real-device report: "위치가 애매해"), since it sat outside the battle
+     scene's own bordered/rounded card, not visually tied to anything.
+     Width-matched to .battle-scene's 244px flex-basis and stacked directly
+     above it (margin-top on .battle-scene reserves the room, see below)
+     instead -- reads as "this bar belongs to that card" rather than a
+     stray overlay. */
   .stage-topbar {
     position: absolute;
-    top: 0;
-    left: 0;
+    /* `top/left: 0` positions against .stage-screen's PADDING edge, not its
+       content edge -- .battle-scene (a normal-flow child) starts *after*
+       .screen's own left/top padding is applied, so a flat 0/0 landed the
+       bar 24px left of and a few px above where the card itself actually
+       begins (measured via CDP getBoundingClientRect: topbar.left=57 vs
+       battleScene.left=81). Mirroring .screen's own landscape padding
+       formula exactly lines the bar's left edge up with the card's. */
+    top: calc(12px + env(safe-area-inset-top));
+    left: calc(24px + env(safe-area-inset-left));
+    width: 244px;
+    justify-content: space-between;
     z-index: 2;
   }
 
@@ -1791,13 +1806,11 @@ button {
     align-items: center;
     justify-content: space-evenly;
     margin-bottom: 0;
-    /* Extra top clearance for .stage-topbar, now absolutely positioned
-       over this same corner (see that rule) instead of reserving its own
-       column -- without it the Exit/Back buttons sit on top of the
-       villain nameplate/health bar. ~44px covers the buttons' own height
-       (measured ~40-42px) plus a few px of breathing room. */
+    /* Room for .stage-topbar sitting directly above this card now (see
+       that rule) -- ~46px covers the buttons' own height (measured
+       ~40-42px) plus a few px of gap before the card's own border. */
+    margin-top: 46px;
     padding: 14px 10px;
-    padding-top: 44px;
     gap: 14px;
   }
 
