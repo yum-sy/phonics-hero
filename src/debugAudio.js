@@ -13,126 +13,26 @@
 // whatever the real queue/pump() history actually does. This mounts
 // alongside real gameplay instead, so the log IS the real sequence of
 // events, not a guess at it.
+//
+// Structural rule for this whole function, learned the hard way on a real
+// device (two rounds of "ReferenceError: Cannot access 'X' before
+// initialization", first for `body` then for `wrap`): EVERY DOM element
+// `render()` touches must be created, and `render` itself defined, BEFORE
+// `log()` is defined and before any hook that can call `log()` is
+// installed. `log()` calls `render()`, and every hook below (speechSynthesis,
+// AudioBufferSourceNode, getUserMedia) calls `log()` from inside a
+// REPLACEMENT function it installs -- V8 (desktop Chrome, where this was
+// first written and tested) tolerated referencing those `const`s from a
+// closure defined earlier in the function, as long as they were assigned
+// before anything actually CALLED that closure. Whatever is different
+// about the real device's engine does not, so don't rely on "nothing calls
+// it that early" again -- keep the dependency order itself impossible to
+// violate instead of re-auditing it by hand.
 export function mountAudioDebugPanel() {
   const lines = []
   const t0 = Date.now()
-  // Declared up here, ahead of `log`/`render` below (both of which touch
-  // it), instead of down where it's appended to the DOM -- real-device
-  // report: "ReferenceError: Cannot access 'body' before initialization"
-  // on WebKit. `log()` (right below) closures over `render()`, which reads
-  // `body.textContent`, and `log()` gets called from inside the
-  // speechSynthesis/getUserMedia hooks this function installs further
-  // down -- if any of those fire before this function's execution reaches
-  // its old `const body = ...` line (a re-entrant call while hooking, or
-  // just a stricter TDZ timing than V8's on whatever JS engine this is),
-  // `body` is still in its temporal dead zone. Moving the declaration to
-  // the top removes the ordering dependency entirely rather than trying
-  // to prove no hook can ever re-enter before the old line ran.
-  const body = document.createElement('div')
-  const log = (s) => {
-    lines.push(`[+${((Date.now() - t0) / 1000).toFixed(2)}s] ${s}`)
-    if (lines.length > 300) lines.shift()
-    render()
-  }
 
-  // Hook speechSynthesis.speak at the lowest level so every call from
-  // anywhere in the app (not just debug-triggered ones) is captured.
-  if ('speechSynthesis' in window) {
-    const origSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis)
-    window.speechSynthesis.speak = function (u) {
-      const callAt = Date.now()
-      log(`SPEAK text=${JSON.stringify(u.text)} voice=${u.voice ? u.voice.name : '(none)'} vol=${u.volume}`)
-      u.addEventListener('start', () => log(`  onstart (+${Date.now() - callAt}ms) "${u.text}"`))
-      u.addEventListener('end', () => log(`  onend (+${Date.now() - callAt}ms) "${u.text}"`))
-      u.addEventListener('error', (e) => log(`  onerror: ${e.error} (+${Date.now() - callAt}ms) "${u.text}"`))
-      try {
-        return origSpeak(u)
-      } catch (e) {
-        log(`  speak() THREW: ${e}`)
-        throw e
-      }
-    }
-    const origPause = window.speechSynthesis.pause.bind(window.speechSynthesis)
-    window.speechSynthesis.pause = function (...a) {
-      log('  [pause() called]')
-      return origPause(...a)
-    }
-    const origResume = window.speechSynthesis.resume.bind(window.speechSynthesis)
-    window.speechSynthesis.resume = function (...a) {
-      log('  [resume() called]')
-      return origResume(...a)
-    }
-    const origCancel = window.speechSynthesis.cancel.bind(window.speechSynthesis)
-    window.speechSynthesis.cancel = function (...a) {
-      log('  [cancel() called !!]')
-      return origCancel(...a)
-    }
-  }
-
-  // Hook WebAudio phoneme playback the same way, so its timing relative to
-  // speechSynthesis calls is visible in the same timeline.
-  if (window.AudioBufferSourceNode) {
-    const origStart = AudioBufferSourceNode.prototype.start
-    AudioBufferSourceNode.prototype.start = function (...args) {
-      const dur = this.buffer ? this.buffer.duration : '?'
-      log(`WEBAUDIO buffer.start() dur=${dur}`)
-      this.addEventListener('ended', () => log(`  webaudio ended (dur=${dur})`))
-      return origStart.apply(this, args)
-    }
-  }
-
-  // Real-device report: the mic-gated ATTACK ("소리쳐서 공격") lands a hit
-  // with no sound at all, immediately -- which is the exact symptom of
-  // attemptShoutAttack() (audio.js) resolving 'unsupported' (no mic API,
-  // permission denied, or getUserMedia rejecting) rather than actually
-  // sampling volume, since the caller (screens.js) treats 'unsupported'
-  // exactly like a real detected shout by design (no mic access must never
-  // block the game). Whether that's what's happening here, or the RMS
-  // threshold itself is being crossed by something else, can't be told
-  // apart without seeing which one actually fires on THIS device -- hence
-  // this hook instead of guessing. getUserMedia is a global browser API
-  // (unlike attemptShoutAttack, which is a module-internal function), so
-  // it's hookable the same way speechSynthesis/AudioBufferSourceNode are
-  // above; attemptShoutAttack's own RMS samples/result log via
-  // window.__debugAudioLog, set below, which audio.js calls if present
-  // (module-load order between this file and audio.js is otherwise
-  // irrelevant since it's read at call time, not import time).
-  window.__debugAudioLog = log
-  // Wrapped separately and defensively: `navigator.mediaDevices` is a
-  // browser-owned object, and WebKit/iOS has a real history of getter-only
-  // or non-configurable properties on host objects that throw on plain
-  // assignment in strict mode (every ES module is strict mode). This hook
-  // is a diagnostic nice-to-have -- if it can't attach on some engine, that
-  // must not take the rest of the panel down with it (the panel's own
-  // mount failing to even appear, with nothing logged, is a worse outcome
-  // than just missing the getUserMedia lines).
-  try {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      const origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
-      navigator.mediaDevices.getUserMedia = function (constraints) {
-        log(`getUserMedia(${JSON.stringify(constraints)}) called`)
-        return origGUM(constraints).then(
-          (stream) => {
-            const track = stream.getAudioTracks()[0]
-            log(
-              `  getUserMedia RESOLVED, audio track settings: ${
-                track ? JSON.stringify(track.getSettings()) : '(no audio track!)'
-              }`
-            )
-            return stream
-          },
-          (err) => {
-            log(`  getUserMedia REJECTED: ${err && err.name} -- ${err && err.message}`)
-            throw err
-          }
-        )
-      }
-    } else {
-      log('navigator.mediaDevices.getUserMedia not present on this browser/context')
-    }
-  } catch (e) {
-    log(`  could not hook navigator.mediaDevices.getUserMedia (${e}) -- attemptShoutAttack()'s own [shout] logs (audio.js) still work regardless`)
-  }
+  // ---- 1. every DOM element + render() -- before anything can call it ----
 
   // Narrow left-side column instead of a bottom bar -- a bottom bar grows
   // over the game's own bottom-anchored buttons (confirm/options), which
@@ -158,6 +58,7 @@ export function mountAudioDebugPanel() {
     bar.appendChild(b)
     return b
   }
+  const body = document.createElement('div')
   let collapsed = false
   mkBtn('collapse', () => {
     collapsed = !collapsed
@@ -240,6 +141,113 @@ export function mountAudioDebugPanel() {
   function render() {
     body.textContent = lines.slice(-120).join('\n')
     wrap.scrollTop = wrap.scrollHeight
+  }
+
+  // ---- 2. log(), which only needs render() (already defined above) ----
+
+  const log = (s) => {
+    lines.push(`[+${((Date.now() - t0) / 1000).toFixed(2)}s] ${s}`)
+    if (lines.length > 300) lines.shift()
+    render()
+  }
+
+  // ---- 3. hooks -- only now, since every one of these can call log() ----
+
+  // Hook speechSynthesis.speak at the lowest level so every call from
+  // anywhere in the app (not just debug-triggered ones) is captured.
+  if ('speechSynthesis' in window) {
+    const origSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis)
+    window.speechSynthesis.speak = function (u) {
+      const callAt = Date.now()
+      log(`SPEAK text=${JSON.stringify(u.text)} voice=${u.voice ? u.voice.name : '(none)'} vol=${u.volume}`)
+      u.addEventListener('start', () => log(`  onstart (+${Date.now() - callAt}ms) "${u.text}"`))
+      u.addEventListener('end', () => log(`  onend (+${Date.now() - callAt}ms) "${u.text}"`))
+      u.addEventListener('error', (e) => log(`  onerror: ${e.error} (+${Date.now() - callAt}ms) "${u.text}"`))
+      try {
+        return origSpeak(u)
+      } catch (e) {
+        log(`  speak() THREW: ${e}`)
+        throw e
+      }
+    }
+    const origPause = window.speechSynthesis.pause.bind(window.speechSynthesis)
+    window.speechSynthesis.pause = function (...a) {
+      log('  [pause() called]')
+      return origPause(...a)
+    }
+    const origResume = window.speechSynthesis.resume.bind(window.speechSynthesis)
+    window.speechSynthesis.resume = function (...a) {
+      log('  [resume() called]')
+      return origResume(...a)
+    }
+    const origCancel = window.speechSynthesis.cancel.bind(window.speechSynthesis)
+    window.speechSynthesis.cancel = function (...a) {
+      log('  [cancel() called !!]')
+      return origCancel(...a)
+    }
+  }
+
+  // Hook WebAudio phoneme playback the same way, so its timing relative to
+  // speechSynthesis calls is visible in the same timeline.
+  if (window.AudioBufferSourceNode) {
+    const origStart = AudioBufferSourceNode.prototype.start
+    AudioBufferSourceNode.prototype.start = function (...args) {
+      const dur = this.buffer ? this.buffer.duration : '?'
+      log(`WEBAUDIO buffer.start() dur=${dur}`)
+      this.addEventListener('ended', () => log(`  webaudio ended (dur=${dur})`))
+      return origStart.apply(this, args)
+    }
+  }
+
+  // Real-device report: the mic-gated ATTACK ("소리쳐서 공격") lands a hit
+  // with no sound at all, immediately -- which is the exact symptom of
+  // attemptShoutAttack() (audio.js) resolving 'unsupported' (no mic API,
+  // permission denied, or getUserMedia rejecting) rather than actually
+  // sampling volume, since the caller (screens.js) treats 'unsupported'
+  // exactly like a real detected shout by design (no mic access must never
+  // block the game). Whether that's what's happening here, or the RMS
+  // threshold itself is being crossed by something else, can't be told
+  // apart without seeing which one actually fires on THIS device -- hence
+  // this hook instead of guessing. getUserMedia is a global browser API
+  // (unlike attemptShoutAttack, which is a module-internal function), so
+  // it's hookable the same way speechSynthesis/AudioBufferSourceNode are
+  // above; attemptShoutAttack's own RMS samples/result log via
+  // window.__debugAudioLog, set below, which audio.js calls if present
+  // (module-load order between this file and audio.js is otherwise
+  // irrelevant since it's read at call time, not import time).
+  window.__debugAudioLog = log
+  // Wrapped separately and defensively: `navigator.mediaDevices` is a
+  // browser-owned object, and WebKit/iOS has a real history of getter-only
+  // or non-configurable properties on host objects that throw on plain
+  // assignment in strict mode (every ES module is strict mode). This hook
+  // is a diagnostic nice-to-have -- if it can't attach on some engine, that
+  // must not take the rest of the panel down with it.
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+      navigator.mediaDevices.getUserMedia = function (constraints) {
+        log(`getUserMedia(${JSON.stringify(constraints)}) called`)
+        return origGUM(constraints).then(
+          (stream) => {
+            const track = stream.getAudioTracks()[0]
+            log(
+              `  getUserMedia RESOLVED, audio track settings: ${
+                track ? JSON.stringify(track.getSettings()) : '(no audio track!)'
+              }`
+            )
+            return stream
+          },
+          (err) => {
+            log(`  getUserMedia REJECTED: ${err && err.name} -- ${err && err.message}`)
+            throw err
+          }
+        )
+      }
+    } else {
+      log('navigator.mediaDevices.getUserMedia not present on this browser/context')
+    }
+  } catch (e) {
+    log(`  could not hook navigator.mediaDevices.getUserMedia (${e}) -- attemptShoutAttack()'s own [shout] logs (audio.js) still work regardless`)
   }
 
   log(
