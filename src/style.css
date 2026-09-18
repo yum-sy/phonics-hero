@@ -1074,35 +1074,31 @@ button {
   flex: 0 0 auto;
 }
 
-/* Fallback for every picture-option card this file does NOT have a
-   confirmed-wide shape for (see the 4-option override below, which is the
-   one case actually measured and switched to a row split). Still better
-   than the unscoped 67px default: a veiled/shown label at the full cap
-   still reserves its full-content height in a column layout (opacity does
-   not free layout space -- see below), which measured out to 80.5px of a
-   204.7px card, leaving the icon only 86px. */
-.option-btn:has(> .option-label:not(.sr-only)) .option-label {
-  --label-cap: clamp(18px, 2.8svh, 32px);
-}
-
-/* 4-option cards are wide, not square (271x156-250 measured on the 2x2
-   grid `.options-grid:has(>:nth-child(4))` produces), so the column stack
-   above wastes most of the card's actual width while starving both the
-   icon and the label of height. Confirmed by direct measurement: shrinking
-   the label's font in a column layout just shrank the whole card instead
-   of handing the freed space to the icon -- `.options-grid`'s `1fr` rows
-   hug their content rather than stretching to fill the flex budget .beat
-   leaves for them, so the icon never grew. A row split lets the icon claim
-   a card-width-relative square on the left and the label take the
-   remaining width on the right, actually using the card's wide shape.
-   Scoped to 4 options specifically: 5-option cards measured 241x315
-   (TALLER than wide -- a row split would waste width and cramp height
-   instead of helping), and 3-option cards already render large icons
-   without any of this (agent-measured 269-359px). letterTile options are
-   untouched everywhere (`.sr-only`, genuinely zero footprint, and there
-   the tile's own big letter is the content, not a picture + a caption). */
-.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
-  .option-btn:has(> .option-label:not(.sr-only)) {
+/* Picture-option cards used to stack icon-over-label in a column, which
+   splits the card's HEIGHT between them. That was fine for 3-option cards
+   (agent-measured 269-359px icons -- plenty of height to share) but a real
+   loss everywhere else: 4-option cards measured 271x156-250 (wide, not
+   square) and 5-option cards 241x315 (tall) -- neither shape was well
+   served by a fixed column split, and shrinking the label's cap alone
+   (an earlier attempt) just shrank the whole card instead of handing the
+   freed space to the icon, since `.options-grid`'s `1fr` rows hug their
+   content rather than stretching to fill the flex budget .beat leaves for
+   them (measured directly: row height dropped in lockstep with the label,
+   icon didn't grow).
+   A row split sidesteps the height/width tradeoff entirely: the icon
+   claims a card-width-relative square on the left, the label takes the
+   remaining width on the right, and neither has to fight the other for
+   the card's height -- so the label's cap can go back to (and past) its
+   original size instead of being squeezed down to stay legible next to a
+   starved icon (real-device report: the shrunk cap read as "글자가 너무
+   작아졌다" on a phonics app where the letters/words ARE the lesson).
+   Applies to every picture option, not just the 4-option case this was
+   first measured on -- a smaller icon on a narrower or taller card is a
+   fair tradeoff next to a label this app can't afford to render small.
+   letterTile options are untouched (`.sr-only`, genuinely zero footprint
+   either way, and there the tile's own big letter is the content, not a
+   picture + a caption). */
+.option-btn:has(> .option-label:not(.sr-only)) {
   flex-direction: row;
   gap: 16px;
   padding: 8px 20px;
@@ -1117,24 +1113,21 @@ button {
    card's own inline size (`container-type: inline-size` above), so 42% of
    the card's width is a size the label can always budget around, whatever
    the card's actual height turns out to be. */
-.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
-  .option-btn:has(> .option-label:not(.sr-only))
-  > .option-emoji {
+.option-btn:has(> .option-label:not(.sr-only)) > .option-emoji {
   flex: 0 0 auto;
   width: 42cqw;
   height: auto;
   aspect-ratio: 1;
 }
 
-/* No longer competing with the icon for the card's height in this 2x2
-   layout, so the label can go back to (and past) the fallback rule's
-   32px cap -- it only has the card's width to share with the icon now,
-   and `--label-len`'s cqw-based shrink (below) already handles a long
-   word outgrowing that. */
-.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
-  .option-btn:has(> .option-label:not(.sr-only))
-  > .option-label {
-  --label-cap: clamp(32px, 6.4svh, 72px);
+/* No longer competing with the icon for the card's HEIGHT in any option
+   count, so the label only has to share the card's width with the icon --
+   `--label-len`'s cqw-based shrink (below) already handles a long word
+   outgrowing that budget on a narrower card. Bigger than the pre-row-split
+   67px default, not smaller: this app is a phonics lesson, and a picture
+   option's spelling is content the label cap should never starve. */
+.option-btn:has(> .option-label:not(.sr-only)) > .option-label {
+  --label-cap: clamp(36px, 6.4svh, 72px);
   flex: 1 1 auto;
   text-align: center;
 }
@@ -1764,9 +1757,28 @@ button {
      the remaining width on the right -- instead of stacking them, which
      is what forces scrolling in a short viewport. */
   .stage-screen {
+    position: relative;
     flex-direction: row;
     align-items: stretch;
     gap: 20px;
+  }
+
+  /* .stage-topbar (Exit + the ↺ Back review button) is a THIRD flex child
+     of .stage-screen alongside .battle-scene and .beat-area -- switching
+     the screen to a row above turned it into a whole extra column,
+     `align-items: stretch` stretching it to the row's full 806px height
+     just to hold two ~40px-tall buttons at its top (real-device report:
+     "Exit/Back가 공간을 너무 많이 차지"). Pulling it out of flow entirely
+     removes that column and hands its ~206px + gap back to the battle
+     scene/beat columns; positioned absolute over .stage-screen's own
+     padding box (position: relative, above) so it lands in the same top-
+     left corner it already occupied in flow, just without reserving a
+     column for it. */
+  .stage-topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
   }
 
   /* space-evenly, not center: the rail is a full-height 220px column but its
@@ -1779,7 +1791,13 @@ button {
     align-items: center;
     justify-content: space-evenly;
     margin-bottom: 0;
+    /* Extra top clearance for .stage-topbar, now absolutely positioned
+       over this same corner (see that rule) instead of reserving its own
+       column -- without it the Exit/Back buttons sit on top of the
+       villain nameplate/health bar. ~44px covers the buttons' own height
+       (measured ~40-42px) plus a few px of breathing room. */
     padding: 14px 10px;
+    padding-top: 44px;
     gap: 14px;
   }
 

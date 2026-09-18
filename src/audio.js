@@ -1956,8 +1956,24 @@ const SHOUT_RMS_THRESHOLD = 0.08
 // The controller's `promise` is what a caller awaits; `cancel()` is the only
 // other thing it exposes, and calling it after the promise already settled
 // is a harmless no-op.
+// Real-device report: the mic gate lands a hit with no sound at all,
+// immediately -- which reads exactly like `finish('unsupported')` firing
+// (screens.js treats 'unsupported' identically to a real detected shout,
+// by design, so no mic access never blocks the game) rather than an actual
+// RMS-crossing bug. Can't tell which without seeing it happen on the real
+// device, so every branch below logs through `?debugaudio=1`'s panel
+// (window.__debugAudioLog, set by debugAudio.js if it's mounted -- a no-op
+// otherwise, so this costs nothing in the normal app path).
+const dlog = (s) => {
+  if (typeof window !== 'undefined' && window.__debugAudioLog) {
+    window.__debugAudioLog(`[shout] ${s}`)
+  }
+}
+
 export function attemptShoutAttack({ durationMs = 1800 } = {}) {
+  dlog(`attemptShoutAttack() called, micApiPresent=${micApiPresent()}`)
   if (!micApiPresent()) {
+    dlog('  -> unsupported (no getUserMedia/AudioContext on this engine)')
     return { cancel() {}, promise: Promise.resolve('unsupported') }
   }
   let cancelled = false
@@ -1971,6 +1987,7 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
   const finish = (result) => {
     if (settled) return
     settled = true
+    dlog(`  -> ${result}`)
     if (rafId != null) cancelAnimationFrame(rafId)
     if (timeoutId != null) clearTimeout(timeoutId)
     resolveFn(result)
@@ -1988,6 +2005,7 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
     const stream = await ensureMicStream()
     if (settled || cancelled) return
     if (!stream) {
+      dlog('  ensureMicStream() returned null (permission denied, or a prior attempt failed and micUnavailable is now stuck true for the rest of this session)')
       finish('unsupported')
       return
     }
@@ -1998,25 +2016,37 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
     } catch (e) {
       // Analyser/context setup failed on this engine after all -- same
       // no-mic-gate fallback as an outright missing API.
+      dlog(`  analyser/context setup threw: ${e}`)
       finish('unsupported')
       return
     }
     if (settled || cancelled) return
     const data = new Float32Array(analyser.fftSize)
+    let maxRmsSeen = 0
+    let sampleCount = 0
     const tick = () => {
       if (settled) return
       analyser.getFloatTimeDomainData(data)
       let sumSquares = 0
       for (let i = 0; i < data.length; i++) sumSquares += data[i] * data[i]
       const rms = Math.sqrt(sumSquares / data.length)
+      maxRmsSeen = Math.max(maxRmsSeen, rms)
+      sampleCount++
+      // Every ~15th frame (~250ms at 60fps) instead of every frame, so the
+      // log stays readable instead of one line per animation frame.
+      if (sampleCount % 15 === 0) dlog(`  rms=${rms.toFixed(4)} (max so far ${maxRmsSeen.toFixed(4)}, threshold ${SHOUT_RMS_THRESHOLD})`)
       if (rms >= SHOUT_RMS_THRESHOLD) {
+        dlog(`  RMS crossed threshold: rms=${rms.toFixed(4)} >= ${SHOUT_RMS_THRESHOLD} after ${sampleCount} samples`)
         finish('detected')
         return
       }
       rafId = requestAnimationFrame(tick)
     }
     rafId = requestAnimationFrame(tick)
-    timeoutId = setTimeout(() => finish('timeout'), durationMs)
+    timeoutId = setTimeout(() => {
+      dlog(`  timing out after ${durationMs}ms, max rms seen was ${maxRmsSeen.toFixed(4)} (threshold ${SHOUT_RMS_THRESHOLD})`)
+      finish('timeout')
+    }, durationMs)
   })()
 
   return controller

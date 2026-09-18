@@ -68,6 +68,47 @@ export function mountAudioDebugPanel() {
     }
   }
 
+  // Real-device report: the mic-gated ATTACK ("소리쳐서 공격") lands a hit
+  // with no sound at all, immediately -- which is the exact symptom of
+  // attemptShoutAttack() (audio.js) resolving 'unsupported' (no mic API,
+  // permission denied, or getUserMedia rejecting) rather than actually
+  // sampling volume, since the caller (screens.js) treats 'unsupported'
+  // exactly like a real detected shout by design (no mic access must never
+  // block the game). Whether that's what's happening here, or the RMS
+  // threshold itself is being crossed by something else, can't be told
+  // apart without seeing which one actually fires on THIS device -- hence
+  // this hook instead of guessing. getUserMedia is a global browser API
+  // (unlike attemptShoutAttack, which is a module-internal function), so
+  // it's hookable the same way speechSynthesis/AudioBufferSourceNode are
+  // above; attemptShoutAttack's own RMS samples/result log via
+  // window.__debugAudioLog, set below, which audio.js calls if present
+  // (module-load order between this file and audio.js is otherwise
+  // irrelevant since it's read at call time, not import time).
+  window.__debugAudioLog = log
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    const origGUM = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+    navigator.mediaDevices.getUserMedia = function (constraints) {
+      log(`getUserMedia(${JSON.stringify(constraints)}) called`)
+      return origGUM(constraints).then(
+        (stream) => {
+          const track = stream.getAudioTracks()[0]
+          log(
+            `  getUserMedia RESOLVED, audio track settings: ${
+              track ? JSON.stringify(track.getSettings()) : '(no audio track!)'
+            }`
+          )
+          return stream
+        },
+        (err) => {
+          log(`  getUserMedia REJECTED: ${err && err.name} -- ${err && err.message}`)
+          throw err
+        }
+      )
+    }
+  } else {
+    log('navigator.mediaDevices.getUserMedia not present on this browser/context')
+  }
+
   // Narrow left-side column instead of a bottom bar -- a bottom bar grows
   // over the game's own bottom-anchored buttons (confirm/options), which
   // made the game unplayable underneath it. A fixed-width side column never
