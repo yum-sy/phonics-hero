@@ -1074,25 +1074,78 @@ button {
   flex: 0 0 auto;
 }
 
-/* A picture option's label is a shortcut past listening, not the primary
-   content -- the picture is. But `opacity: 0` (below) does NOT remove an
-   element from layout, so the full 67px-cap label footprint (`flex: 0 0
-   auto`, sized to its own content) was reserved either way, real-device
-   report or not -- measured directly: a "veiled" 3-letter label at the full
-   cap still occupied 80.5px of a 204.7px card, leaving the picture only
-   86px. letterTile options are untouched (`.sr-only`, genuinely zero
-   footprint, and there the letter itself is the content). */
+/* Fallback for every picture-option card this file does NOT have a
+   confirmed-wide shape for (see the 4-option override below, which is the
+   one case actually measured and switched to a row split). Still better
+   than the unscoped 67px default: a veiled/shown label at the full cap
+   still reserves its full-content height in a column layout (opacity does
+   not free layout space -- see below), which measured out to 80.5px of a
+   204.7px card, leaving the icon only 86px. */
 .option-btn:has(> .option-label:not(.sr-only)) .option-label {
   --label-cap: clamp(18px, 2.8svh, 32px);
+}
+
+/* 4-option cards are wide, not square (271x156-250 measured on the 2x2
+   grid `.options-grid:has(>:nth-child(4))` produces), so the column stack
+   above wastes most of the card's actual width while starving both the
+   icon and the label of height. Confirmed by direct measurement: shrinking
+   the label's font in a column layout just shrank the whole card instead
+   of handing the freed space to the icon -- `.options-grid`'s `1fr` rows
+   hug their content rather than stretching to fill the flex budget .beat
+   leaves for them, so the icon never grew. A row split lets the icon claim
+   a card-width-relative square on the left and the label take the
+   remaining width on the right, actually using the card's wide shape.
+   Scoped to 4 options specifically: 5-option cards measured 241x315
+   (TALLER than wide -- a row split would waste width and cramp height
+   instead of helping), and 3-option cards already render large icons
+   without any of this (agent-measured 269-359px). letterTile options are
+   untouched everywhere (`.sr-only`, genuinely zero footprint, and there
+   the tile's own big letter is the content, not a picture + a caption). */
+.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
+  .option-btn:has(> .option-label:not(.sr-only)) {
+  flex-direction: row;
+  gap: 16px;
+  padding: 8px 20px;
+}
+
+/* width first, height from aspect-ratio -- NOT the reverse. `height: 100%`
+   (tried first) resolves against the row's full cross-axis size, and on a
+   271x224 card that made the icon 224x224: nearly the card's whole WIDTH
+   too (aspect-ratio: 1 forces width to follow), leaving the label a
+   negative budget (measured: SPILL on option-emoji, hat/egg artwork
+   printing past the card edge, no room for a label at all). cqw is this
+   card's own inline size (`container-type: inline-size` above), so 42% of
+   the card's width is a size the label can always budget around, whatever
+   the card's actual height turns out to be. */
+.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
+  .option-btn:has(> .option-label:not(.sr-only))
+  > .option-emoji {
+  flex: 0 0 auto;
+  width: 42cqw;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* No longer competing with the icon for the card's height in this 2x2
+   layout, so the label can go back to (and past) the fallback rule's
+   32px cap -- it only has the card's width to share with the icon now,
+   and `--label-len`'s cqw-based shrink (below) already handles a long
+   word outgrowing that. */
+.options-grid:has(> :nth-child(4)):not(:has(> :nth-child(5)))
+  .option-btn:has(> .option-label:not(.sr-only))
+  > .option-label {
+  --label-cap: clamp(32px, 6.4svh, 72px);
+  flex: 1 1 auto;
+  text-align: center;
 }
 
 /* A picture option's spelling is a shortcut past listening -- veiled by
    opacity (not visibility/display) so a screen reader still announces it
    before any tap, same as sighted children get it after one. Opacity does
-   NOT free up its layout footprint though (that claim here was wrong --
-   see the --label-cap override above this block, added once a real-device
-   report and a direct measurement showed the full-size reserved label
-   starving the picture next to it). `.selected` already
+   NOT free up its layout footprint though -- harmless now that the row
+   layout above gives the label its own column instead of sharing the
+   icon's, but worth remembering if this ever goes back to a column split.
+   `.selected` already
    exists for tap state (see wireConfirmGrid), so no new class or JS state is
    needed to gate the reveal -- one tap shows it, deselecting (single-select
    re-pick, or a wrong multiselect pick getting dropped) hides it again. */

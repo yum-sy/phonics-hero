@@ -988,7 +988,15 @@ export function buildGeneratedReviewBeat(stage, chapter) {
     kind: 'choose-sequence',
     scored: true,
     hits: 1,
-    instructionKo: '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지 배운 글자도 나와요.',
+    // Shortened from '소리를 듣고 맞는 글자를 고르고 ✓를 누르세요! 지금까지
+    // 배운 글자도 나와요.' -- the dropped second sentence (old letters mixed
+    // in) is only a heads-up, not needed to solve the beat, and the original
+    // ran 3 lines at this app's instruction font clamp on real devices
+    // (measured, and this template is reused by every chapter 9+ stage that
+    // has reviewTargets, so it was the single highest-leverage instruction
+    // to shorten). fitBeatInstruction() (runBeat) is a font-shrink safety
+    // net for anything still long, hand-authored or generated.
+    instructionKo: '소리에 맞는 글자를 고르고 ✓를 누르세요!',
     steps,
   }
 }
@@ -1206,8 +1214,45 @@ function runBeat(runtime) {
       // controls on screen, which reads to a child as "the app froze".
       throw new Error(`unknown beat kind: ${beat.kind}`)
     }
+    fitBeatInstruction()
   } catch (e) {
     renderBeatFailure(runtime, e)
+  }
+}
+
+// A long instructionKo (chapter 9+'s auto-generated review beat especially,
+// but any hand-authored one that runs long too) balloons past 2 lines at
+// the .beat-instruction clamp and squeezes the beat's actual content
+// (options grid, confirm button) down toward the bottom of the screen --
+// real-device report, confirmed by direct measurement (a 105-character
+// instruction ran 3 lines and left visibly less room than a 23-character
+// one at the same option count). Single call site (runBeat, every beat
+// kind routes through it) instead of one per render*Beat function, so a
+// future beat kind can't forget to wire this in.
+//
+// Same recipe as fitRecapLine(): shrink only as far as THIS string's own
+// overflow demands -- a short instruction that already fits in 2 lines is
+// untouched, never capped down to a blanket smaller size. `line-height:
+// 1.14` in style.css is a unitless multiplier (proportional to font-size),
+// so "2 lines at the current font-size" stays a self-consistent target as
+// the loop shrinks it -- it isn't chasing a fixed pixel goal that would
+// over-shrink once the font is already smaller.
+function fitBeatInstruction() {
+  const el = document.querySelector('.beat-instruction')
+  if (!el) return
+  // Slightly lower than fitRecapLine's 28px: this text is read aloud by an
+  // adult or sounded out by the child, not glanced at like the reward
+  // recap, so it has to stay legible at the size an actual overlong string
+  // gets shrunk to -- 26px is still comfortably above this app's smallest
+  // deliberately-sized text.
+  const FLOOR_PX = 26
+  const LINE_HEIGHT_RATIO = 1.14
+  let fontSize = parseFloat(getComputedStyle(el).fontSize)
+  for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
+    const twoLineTarget = fontSize * LINE_HEIGHT_RATIO * 2
+    if (el.scrollHeight <= twoLineTarget + 1) break
+    fontSize -= 2
+    el.style.fontSize = `${fontSize}px`
   }
 }
 
