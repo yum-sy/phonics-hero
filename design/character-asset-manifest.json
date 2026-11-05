@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "generator": "built-in image_gen",
+  "roleDesigns": 65,
+  "mappedIdentities": 295,
+  "assets": [
+    {
+      "family": "brick",
+      "file": "public/art/v2/brick.png",
+      "width": 1199,
+      "height": 1312,
+      "bytes": 1751537,
+      "sha256": "2ba6cba66be4328c6741d391f23fbebf96c3b6ddb11b3d4a4638acd859336f58",
+      "transparentPixelFraction": 0.4629,
+      "slots": 9,
+      "usedSlots": 9
+    },
+    {
+      "family": "career",
+      "file": "public/art/v2/career.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 1781706,
+      "sha256": "c42e41b96560385129d0c1143d0839cf97c32af883355dd64a568594fcea2544",
+      "transparentPixelFraction": 0.5868,
+      "slots": 12,
+      "usedSlots": 11
+    },
+    {
+      "family": "comic",
+      "file": "public/art/v2/comic.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1522082,
+      "sha256": "58b02b800978f2b3d0e093bbf3d3fd7d3ebb32a946476a101234b8f6661dcbd0",
+      "transparentPixelFraction": 0.6731,
+      "slots": 9,
+      "usedSlots": 9
+    },
+    {
+      "family": "deco",
+      "file": "public/art/v2/deco.png",
+      "width": 1216,
+      "height": 1293,
+      "bytes": 1363383,
+      "sha256": "57532bbdd2637715192b259b1a549396a398d81b48159bd9da9cfd3b67185690",
+      "transparentPixelFraction": 0.5587,
+      "slots": 9,
+      "usedSlots": 9
+    },
+    {
+      "family": "dino",
+      "file": "public/art/v2/dino.png",
+      "width": 1292,
+      "height": 1217,
+      "bytes": 1926946,
+      "sha256": "251e23d2c8e51553c57a83d2542b4e111929ad81e1e2eb38fa6e6fd9d68c5cda",
+      "transparentPixelFraction": 0.5142,
+      "slots": 9,
+      "usedSlots": 9
+    },
+    {
+      "family": "pixel",
+      "file": "public/art/v2/pixel.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1222523,
+      "sha256": "b493d896409dff5413f128aaa93d418f23be408bbcefd61973b7236353d9cfe9",
+      "transparentPixelFraction": 0.6714,
+      "slots": 9,
+      "usedSlots": 9
+    },
+    {
+      "family": "robot",
+      "file": "public/art/v2/robot.png",
+      "width": 1312,
+      "height": 1199,
+      "bytes": 2137115,
+      "sha256": "4c0e3df6c86ca8c03f2ae0723e46520611371e47e61e2fabf6719715fa242018",
+      "transparentPixelFraction": 0.4931,
+      "slots": 9,
+      "usedSlots": 9
+    }
+  ]
+}
