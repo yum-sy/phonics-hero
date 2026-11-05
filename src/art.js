@@ -1378,7 +1378,7 @@ export function heroArt(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
   const asset = WORLD_CHARACTER_ASSETS[spec.art] || WORLD_CHARACTER_ASSETS[spec.name]
     || CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
-  if (asset) return renderCharacterAsset({ ...asset, emblem: heroEmblem(heroOrName) })
+  if (asset) return renderCharacterAsset(asset)
   return resolveArt(heroOrName, HERO_PALETTES, HERO_STYLES)
 }
 

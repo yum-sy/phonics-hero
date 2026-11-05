@@ -127,8 +127,8 @@
   let html = ''
 
   for (const ch of chapters) {
-    // Repeated families can now assign additional career roles, and their
-    // phonics badges differ. Keep every identity available for device review.
+    // Keep every stable identity available for device review, including
+    // per-world replacements and the new badge-free hero presentation.
     const showHeroes = true
     const cast = []
     const seen = new Set()
@@ -150,7 +150,8 @@
       html += `<div class="note">${label}</div><div class="row">`
       for (const c of group) {
         // Old SVG approvals must not mark newly generated art as reviewed.
-        const version = /data-art-sheet="[^"]+-worlds"/.test(c.svg) ? 'v3' : 'v2'
+        const version = c.role === 'hero' ? 'v4'
+          : /data-art-sheet="[^"]+-worlds"/.test(c.svg) ? 'v3' : 'v2'
         const key = `char:${version}:` + c.slug
         html += `<div class="cell" data-vkey="${key}"><div class="box art">${c.svg}</div>
           <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div>

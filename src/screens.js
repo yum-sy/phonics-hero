@@ -37,7 +37,7 @@ import {
   unlockAudio,
   whenAudioIdle,
 } from './audio.js'
-import { heroArt, villainArt } from './art.js'
+import { heroArt, villainArt, heroEmblem } from './art.js'
 import { fusionLineup } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
 
@@ -364,29 +364,12 @@ function onTapAll(nodes, makeHandler) {
   nodes.forEach((el) => onTap(el, makeHandler(el)))
 }
 
-// ---- correct-answer bolt (layout owns the animation) ----
-//
-// Contract with the layout agent: a `.fx-bolt` element on <body> carrying the
-// two endpoints as custom properties, and layout exposes its own duration as
-// `--fx-bolt-ms` so this can clean the element up without hard-coding the
-// animation length in two files.
-//
-// It is appended to <body>, not to the beat area, on purpose: the bolt is
-// fired at the moment the answer is accepted and the beat area is replaced a
-// few hundred ms later (read-aloud screen, next beat), which would cut the
-// animation off mid-flight.
-//
-// Fire-and-forget: nothing awaits it. Beat transitions stay gated on
-// waitForTransition() (audio + minimum delay) exactly as before -- making
-// them wait for a decoration would put the animation on the critical path
-// and could only ever make the app feel slower.
-//
-// What is NOT fire-and-forget is the bolt's ARRIVAL. fireBolt() returns the
-// flight time so a damage site can schedule the villain's reaction on it --
-// see dealHit(). Without that the flinch and the health bar fired in the
-// same tick as the bolt and finished 392ms BEFORE it landed, i.e. the exact
-// cause/effect inversion the bolt was added to fix ("버튼을 누르는거랑 위에서
-// 공격이 이뤄지는 것에 연관성이 보이지 않아").
+// ---- answer energy and hero attack (layout owns the animation) ----
+// Both effects carry viewport endpoints and CSS timing on a body-level node,
+// so replacing the question does not cut off its energy transfer. Answers
+// feed the hero (.energy-transfer); attacks leave the hero (.fx-bolt).
+// Returned flight time synchronizes impact with dealHit. Sequence rounds
+// also finish their charge before launching their automatic final attack.
 const FX_BOLT_FALLBACK_MS = 700
 // A malformed/huge --fx-bolt-ms must not leave the element on the page
 // forever; a sane ceiling is cheaper than trusting the value.
@@ -408,8 +391,23 @@ const FX_FLIGHT_MAX_MS = 450
 
 // Returns the bolt's flight time in ms (0 when no bolt was actually drawn),
 // so callers can hand it to dealHit().
-function fireBolt(fromEl) {
-  const villain = document.getElementById('villain-sprite')
+function setCombatState(state) {
+  const scene = document.querySelector('.battle-scene')
+  if (scene) scene.dataset.combatState = state
+}
+
+// Correct answers feed the hero; only an attack travels toward the villain.
+function chargeHero(fromEl) {
+  setCombatState('charging')
+  return fireBolt(fromEl, document.getElementById('hero-sprite'), 'energy-transfer')
+}
+
+function fireHeroAttack() {
+  setCombatState('attacking')
+  return fireBolt(document.getElementById('hero-sprite'))
+}
+
+function fireBolt(fromEl, villain = document.getElementById('villain-sprite'), effectClass = 'fx-bolt') {
   if (!fromEl || !fromEl.isConnected || !villain) return 0
   const a = fromEl.getBoundingClientRect()
   const b = villain.getBoundingClientRect()
@@ -417,7 +415,7 @@ function fireBolt(fromEl) {
   // subtree) -- firing from 0,0 would draw a bolt from the screen corner.
   if (!a.width || !a.height || !b.width || !b.height) return 0
   const bolt = document.createElement('div')
-  bolt.className = 'fx-bolt'
+  bolt.className = effectClass
   // pointer-events is part of the contract, not styling: until layout's rule
   // lands this is an unstyled div, and once it does land it is an overlay
   // that must never sit between the child's finger and a button.
@@ -1069,7 +1067,7 @@ function renderHealthShell(runtime) {
         <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
         <button class="back-btn review-back-btn" id="review-back" aria-label="Back to previous step" style="display:none">↺ Back</button>
       </div>
-      <div class="battle-scene">
+      <div class="battle-scene" data-combat-state="studying">
         <div class="villain-slot">
           <div class="nameplate" id="villain-nameplate" role="button" tabindex="0" aria-label="Hear ${stage.villain.name}'s name">
             <div class="nameplate-name">${stage.villain.name}</div>
@@ -1081,7 +1079,7 @@ function renderHealthShell(runtime) {
             stage.villain
           )}</div>
         </div>
-        <div class="vs-mark">⚡</div>
+        <div class="vs-mark">⚡<span class="battle-energy" aria-hidden="true"><span class="battle-energy-fill"></span></span></div>
         <div class="hero-slot">
           <div class="hero-sprite" id="hero-sprite">${heroArt(
             stage.hero
@@ -1193,6 +1191,7 @@ function runBeat(runtime) {
     }
     saveCheckpoint(stage.id, beatIndex, runtime.hitsDealt)
     const beat = stage.beats[beatIndex]
+    setCombatState('studying')
     updateHealthBar(runtime)
     updateReviewBackButton(runtime)
 
@@ -1338,12 +1337,19 @@ function dealHit(runtime, beat, boltFlightMs = 0, onLand) {
     runtime.hitsDealt = Math.min(runtime.healthMax, runtime.hitsDealt + (beat.hits || 1))
   }
   heroLunge()
+  const scene = document.querySelector('.battle-scene')
+  const attackBeatIndex = runtime.beatIndex
   const land = () => {
     // The child can leave the stage during the flight -- painting then would
     // write a stale health bar into whatever screen replaced this one.
     if (!ownsScreen(runtime)) return
     updateHealthBar(runtime)
     villainImpact()
+    setTimeout(() => {
+      if (ownsScreen(runtime) && runtime.beatIndex === attackBeatIndex && scene?.isConnected && scene.dataset.combatState === 'attacking') {
+        scene.dataset.combatState = 'studying'
+      }
+    }, 400)
     if (onLand) onLand()
   }
   if (boltFlightMs > 0) setTimeout(land, boltFlightMs)
@@ -1355,7 +1361,7 @@ function flashCorrect(container) {
   el.className = 'flash-correct'
   el.textContent = 'Correct! ✨'
   container.appendChild(el)
-  setTimeout(() => el.remove(), 900)
+  setTimeout(() => el.remove(), 550)
 }
 
 function shakeEl(el) {
@@ -1828,6 +1834,13 @@ function renderNonScoredBeat(runtime, beat) {
   if (runtime.stage.chapterBoss && beat.kind === 'teach' && runtime.beatIndex === 0) {
     const chapter = getChapterForStage(runtime.stage.id)
     const lineup = fusionLineup(chapter.stages)
+    // Labels remain learning content, independent of each character image.
+    // They are the same deduplicated sound keys used to choose the lineup;
+    // word-building equations below still come from targetSlots, never names.
+    const soundsHtml = lineup.map((s) => heroEmblem(s.hero))
+      .filter((sound) => sound && sound !== '★')
+      .map((sound) => `<span class="fusion-sound">${sound}</span>`)
+      .join('<span class="fusion-sound-plus" aria-hidden="true">+</span>')
     const dirs = ['from-left', 'from-right', 'from-left']
     const robotsHtml = lineup
       .map(
@@ -1845,6 +1858,7 @@ function renderNonScoredBeat(runtime, beat) {
         <div class="boss-intro" id="boss-intro" role="button" tabindex="0" aria-label="Continue" style="cursor:pointer">
           <div class="boss-intro-label">UNITE!</div>
           <div class="boss-intro-robots">${robotsHtml}</div>
+          <div class="fusion-sound-strip" aria-label="Sounds joining together">${soundsHtml}</div>
           <div class="boss-intro-flash"></div>
           <div class="boss-intro-hero" id="boss-intro-hero">${heroArt(
             runtime.stage.hero
@@ -2024,11 +2038,8 @@ function wireConfirmGrid(runtime, area, cfg) {
       }
       settled = true
       confirmBtn.disabled = true
-      // The flight time is handed to onCorrect because for one grid kind --
-      // choose-sequence's final step -- the damage lands in this same tick,
-      // on this same bolt. That callback must schedule its hit reaction on
-      // THIS arrival rather than fire a second, identical bolt on top of it.
-      const boltFlightMs = fireBolt(confirmBtn)
+      // Correctness charges the hero without damaging or alarming the villain.
+      const boltFlightMs = chargeHero(confirmBtn)
       await onCorrect(chosen, boltFlightMs)
     })
   )
@@ -2243,20 +2254,8 @@ function renderChooseSequenceBeat(runtime, beat) {
           setTimeout(() => redemonstrateOption(area, step, correct), 1200)
         }
       },
-      // This is the one damage moment that does NOT get its own fireBolt()
-      // call -- and it does not need one. wireConfirmGrid already launched a
-      // bolt from ✓ Check one line before this runs, on every step including
-      // the last, so at the instant the health bar owes a hit there is
-      // already a bolt in the air from the button the child pressed. Firing a
-      // second one here would put two identical bolts on the same path in the
-      // same tick, which reads as a rendering glitch, not as two events.
-      //
-      // That is not inconsistent with scored `choose` firing twice: there the
-      // two bolts are on two different screens, from two different buttons
-      // (✓ Check, then 🎤 on the read-aloud screen), hundreds of ms apart.
-      // The invariant is per-bolt, not per-beat: one bolt per button press,
-      // and damage rides the bolt from the press that caused it.
-      onCorrect: async (chosen, boltFlightMs) => {
+      // Sequence rounds keep their automatic final attack, after charging.
+      onCorrect: async (chosen, chargeFlightMs) => {
         flashCorrect(area)
         if (isOddOneOutBeat(beat)) {
           confirmOddOneOut(area, beat, step.options.find((o) => o.correct))
@@ -2264,9 +2263,13 @@ function renderChooseSequenceBeat(runtime, beat) {
         stepIndex += 1
         if (stepIndex < beat.steps.length) {
           await waitForTransition(500)
+          if (!ownsScreen(runtime)) return
+          setCombatState('studying')
           showStep()
         } else {
-          dealHit(runtime, beat, boltFlightMs)
+          await waitForTransition(chargeFlightMs)
+          if (!ownsScreen(runtime)) return
+          dealHit(runtime, beat, fireHeroAttack())
           await waitForTransition(500)
           advanceBeat(runtime)
         }
@@ -2402,6 +2405,7 @@ function renderBuildBeat(runtime, beat) {
 
   let placed = []
   const slots = area.querySelectorAll('.build-slot')
+  const slotSoundTokens = new WeakMap()
   const tiles = area.querySelectorAll('.letter-tile')
   const slotRow = area.querySelector('.build-slots')
   const undoBtn = document.getElementById('clear-btn')
@@ -2429,6 +2433,9 @@ function renderBuildBeat(runtime, beat) {
   function undoOne() {
     const last = placed.pop()
     if (!last) return false
+    const undoneSlot = slots[placed.length]
+    slotSoundTokens.delete(undoneSlot)
+    undoneSlot.classList.remove('sound-active')
     const tile = area.querySelector(`.letter-tile[data-tile="${last.tileIndex}"]`)
     if (tile) {
       tile.disabled = false
@@ -2476,11 +2483,21 @@ function renderBuildBeat(runtime, beat) {
       // Every placement speaks its own sound, so a wrong word is also heard
       // as one ("tuh-aaa-sss"): the child gets the mismatch through the ear
       // as well as the eye, without the app inventing an utterance for it.
-      speakTap(say)
+      const soundDone = speakTap(say)
       placed.push({ letter, tileIndex: tile.dataset.tile })
       tile.disabled = true
       tile.classList.add('used')
       redraw()
+      const soundSlot = slots[placed.length - 1]
+      const soundToken = {}
+      slotSoundTokens.set(soundSlot, soundToken)
+      soundSlot.classList.add('sound-active')
+      const clearSoundHighlight = () => {
+        if (slotSoundTokens.get(soundSlot) !== soundToken) return
+        slotSoundTokens.delete(soundSlot)
+        soundSlot.classList.remove('sound-active')
+      }
+      soundDone.then(clearSoundHighlight, clearSoundHighlight)
       feedback().textContent = ''
       if (placed.length < target.length) return
       // Slot-wise comparison, so a digraph slot ('AI') is matched whole --
@@ -2490,13 +2507,11 @@ function renderBuildBeat(runtime, beat) {
         return
       }
       settled = true
+      slotRow.classList.add('word-complete')
       flashCorrect(area)
-      // The tile the child just pressed is the origin: the last letter
-      // landing is the moment the word becomes an answer. The return value is
-      // dropped on purpose -- no damage lands here. A scored build beat deals
-      // its hit on the read-aloud screen, which fires its own bolt from 🎤
-      // and schedules the hit on that one.
-      fireBolt(tile)
+      // Completing the word transfers energy from its last tile to the hero.
+      // Damage happens only on the subsequent hero attack.
+      chargeHero(tile)
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
         runAttackReadAloud(runtime, beat, beat.readAloud)
@@ -2618,6 +2633,7 @@ function renderListenRepeatBeat(runtime, beat) {
 // box, not a plain word, right up until the ATTACK tap.
 function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
   if (!ownsScreen(runtime)) return
+  setCombatState('charging')
   const area = beatArea()
   const { text, say } = spokenPair({
     text: readAloud.targetText,
@@ -2628,9 +2644,10 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
   area.innerHTML = `
     <div class="beat readaloud-beat attack-beat">
-      <div class="beat-instruction">정답이에요! ATTACK을 눌러서 소리쳐봐요!</div>
+      <div class="beat-instruction">따라 읽고, 목소리로 응원해요!</div>
       ${displayHtml}
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
+      <div class="attack-energy-cue">⚡ Energy ready</div>
       <button class="mic-btn attack-btn" id="attack-btn">⚔️ ATTACK</button>
       <button class="primary-btn attack-next-btn" id="attack-next-btn" style="display:none">Next ▶</button>
       <div class="beat-feedback" id="beat-feedback"></div>
@@ -2686,11 +2703,9 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
   const landHit = () => {
     settled = true
     unsubscribeActivity()
-    // Fire the bolt from the button BEFORE hiding it -- fireBolt() reads its
-    // on-screen position, and a display:none element measures as a zero box
-    // (see fireBolt's own "not laid out" guard), which would silently skip
-    // the bolt.
-    const boltFlightMs = fireBolt(attackBtn)
+    const boltFlightMs = fireHeroAttack()
+    const energyCue = area.querySelector('.attack-energy-cue')
+    if (energyCue) energyCue.textContent = '⚡ Energy sent'
     attackBtn.disabled = true
     attackBtn.style.display = 'none'
     const feedbackEl = feedback()
@@ -2755,6 +2770,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
 // display/speech split as words[] above, keyed by targetText.
 function runReadAloud(runtime, beat, readAloud) {
   if (!ownsScreen(runtime)) return
+  setCombatState('charging')
   const area = beatArea()
   const { text, say } = spokenPair({
     text: readAloud.targetText,
@@ -2774,8 +2790,7 @@ function runReadAloud(runtime, beat, readAloud) {
   const micBtn = document.getElementById('mic-btn')
   onTap(micBtn, withRecovery(runtime, async () => {
     micBtn.disabled = true
-    // This is where the damage actually lands, so this is where the bolt
-    // fires -- the option grid's own bolt was the "correct!" beat before it.
+    // The correct option charged the hero; this tap launches its attack.
     // The hit reaction rides this bolt's arrival, so the villain flinches
     // when it is struck rather than before.
     //
@@ -2787,7 +2802,7 @@ function runReadAloud(runtime, beat, readAloud) {
     // a re-query could write this beat's text into the next beat's screen --
     // isConnected is exact, the detached node means the screen moved on.
     const feedbackEl = document.getElementById('beat-feedback')
-    dealHit(runtime, beat, fireBolt(micBtn), () => {
+    dealHit(runtime, beat, fireHeroAttack(), () => {
       if (feedbackEl.isConnected) feedbackEl.textContent = 'Hit! 💥'
     })
     await waitForTransition(500)

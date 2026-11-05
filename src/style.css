@@ -1326,7 +1326,7 @@ button {
      <div class="fx-bolt" style="--fx-x1:412px;--fx-y1:880px;
                                  --fx-x2:640px;--fx-y2:230px"></div>
 
-   x1/y1 = centre of the tapped button, x2/y2 = centre of the villain sprite.
+   x1/y1 = centre of the hero, x2/y2 = centre of the villain sprite.
    --fx-bolt-ms is readable off :root before the element exists.
 
    All of the travel lives in the `translate` property and none in
@@ -2137,7 +2137,7 @@ button {
 .boss-intro {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   justify-items: center;
   align-content: space-evenly;
   gap: 14px;
@@ -2241,22 +2241,17 @@ button {
   }
 }
 
-/* Summon ring the final form materialises inside. The wrapper -- not the
-   robot -- holds the ring, and the spring entrance moved onto the inner SVG,
-   because the wrapper used to be the animated element: `scale(0)` for the
-   intro's first 1.02 s left its 256 px slot rendering as nothing, and that
-   slot plus the slack around it was the intro's 349 px (29 % of a portrait
-   iPad) dead void. A ring that is present from frame 0 reads as anticipation
-   and keeps the row occupied the whole time. The robot itself is unchanged
-   at 256 px (80 % of the 320 px ring). */
+/* The summon ring occupies its grid row from frame zero. The final form
+   animates inside it; the 264px ring leaves room for the independent sound
+   strip without reducing teaching text or borrowing safe-area padding. */
 .boss-intro-hero {
-  grid-area: 3 / 1;
+  grid-area: 4 / 1;
   align-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 320px;
-  height: 320px;
+  width: 264px;
+  height: 264px;
   border-radius: 50%;
   border: 10px dashed var(--border);
   background: var(--surface);
@@ -2352,7 +2347,7 @@ button {
    text at the size of the app's other instructions. Still not a button: the
    whole intro is the tap target. */
 .boss-intro-skip {
-  grid-area: 4 / 1;
+  grid-area: 5 / 1;
   font-size: 46px;
   font-weight: 700;
   color: var(--accent-dark);
@@ -2465,13 +2460,8 @@ button {
     font-size: 30px;
   }
 
-  /* The 합체 intro is a four-row grid of flat-px boxes (label 112, mini-bot
-     132, hero ring 320) that portrait can afford and landscape cannot: at a
-     full-height 834 they come to 675px in an 806px column, and all seven boss
-     shots overflowed by 14px once a 160px browser toolbar took the column to
-     660. Overridden here rather than in the base rules because the base
-     values are what portrait wants; each svh term below is exactly the old px
-     at a full-height 834 landscape, so nothing moves until the toolbar does. */
+  /* Five rows include the independent learning strip. Art dimensions scale
+     with the available landscape height; phonics text remains readable. */
   .boss-intro {
     gap: clamp(8px, 1.68svh, 14px);
   }
@@ -2486,8 +2476,8 @@ button {
   }
 
   .boss-intro-hero {
-    width: clamp(200px, 38.37svh, 320px);
-    height: clamp(200px, 38.37svh, 320px);
+    width: clamp(180px, 31.65svh, 264px);
+    height: clamp(180px, 31.65svh, 264px);
   }
 }
 
@@ -2540,4 +2530,151 @@ button {
   color: var(--text);
   box-shadow: 0 2px 0 var(--border);
   line-height: 1;
+}
+
+
+/* Learning symbols belong to their own row, never to character clothing.
+   The smaller final-form ring funds this row without shrinking phonics text. */
+.fusion-sound-strip {
+  grid-area: 3 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 6px 16px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 3px solid var(--border);
+}
+
+.fusion-sound {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--accent-dark);
+}
+
+.fusion-sound-plus {
+  font-size: 32px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+/* The question owns attention until a correct answer sends energy here.
+   Static states have no animation loops, including nested art fallbacks. */
+.battle-scene[data-combat-state="studying"] .hero-sprite,
+.battle-scene[data-combat-state="studying"] .villain-sprite,
+.battle-scene[data-combat-state="studying"] .carbot-art,
+.battle-scene[data-combat-state="studying"] .carbot-art * {
+  animation: none;
+}
+
+.battle-energy {
+  display: block;
+  width: 42px;
+  height: 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  overflow: hidden;
+  margin: 4px auto 0;
+}
+
+.battle-energy-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--warning);
+  transition: width 0.35s ease;
+}
+
+.battle-scene[data-combat-state="charging"] .battle-energy-fill {
+  width: 100%;
+}
+
+.battle-scene[data-combat-state="charging"] .hero-sprite .carbot-art {
+  animation: energy-received 0.5s ease-out both;
+}
+
+@keyframes energy-received {
+  0% { filter: drop-shadow(0 0 0 transparent); }
+  55% { filter: drop-shadow(0 0 12px #e7c96b); }
+  100% { filter: drop-shadow(0 0 5px #e7c96b); }
+}
+
+.attack-energy-cue {
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene .hero-sprite,
+  .battle-scene .villain-sprite,
+  .battle-scene .carbot-art {
+    animation: none !important;
+  }
+  .battle-energy-fill { transition: none; }
+  .battle-scene[data-combat-state="charging"] .hero-sprite .carbot-art {
+    filter: drop-shadow(0 0 5px #e7c96b);
+  }
+}
+
+/* Correct answer → hero energy, separate from the hero → villain attack.
+   Screen-space endpoints stay in translate so scaling cannot bend the target. */
+.energy-transfer {
+  --fx-bolt-ms: 450ms;
+  --fx-bolt-flight-ms: 400ms;
+  --fx-dx: calc(var(--fx-x2) - var(--fx-x1));
+  --fx-dy: calc(var(--fx-y2) - var(--fx-y1));
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 900;
+}
+
+.energy-transfer::before {
+  content: '';
+  position: fixed;
+  left: var(--fx-x1);
+  top: var(--fx-y1);
+  width: 24px;
+  height: 24px;
+  margin: -12px;
+  border: 3px solid var(--accent-dark);
+  border-radius: 50%;
+  background: var(--warning);
+  box-shadow: 0 0 0 5px #fff8d9;
+  animation: energy-transfer-flight var(--fx-bolt-flight-ms) ease-out forwards;
+}
+
+@keyframes energy-transfer-flight {
+  from { translate: 0 0; opacity: 0.8; }
+  to { translate: var(--fx-dx) var(--fx-dy); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .energy-transfer::before {
+    animation: none;
+    left: var(--fx-x2);
+    top: var(--fx-y2);
+  }
+  .fx-bolt::after { animation: none; }
+}
+
+
+.build-slot.sound-active {
+  background: #fff1b8;
+  box-shadow: 0 0 0 5px var(--accent-dark);
+}
+
+.build-slots.word-complete .build-slot {
+  background: #d6e7c5;
+  border-color: var(--success-dark);
 }
