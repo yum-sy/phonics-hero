@@ -3,7 +3,36 @@
 `CLAUDE.md` 는 *항구적 규칙*이고 **이 문서는 지금 이 순간의 진행 상태**다.
 작업을 이어받은 뒤에는 이 문서를 갱신해라.
 
-인계 시점 커밋: `427ac95` (작업트리 클린 — 이번 세션 변경 전부 커밋됨)
+인계 시점 커밋: `e2cc260` + 이 문서 갱신 (작업트리 클린)
+
+> **최신 세션(2026-11-05) 요약 — 마이크 ATTACK 재발 버그 해결 + GitHub 공개 배포.**
+> 전체 상세는 `README.md`(새로 추가된 진입 문서)와 커밋 `abae776`/`e2cc260` 메시지.
+>
+> - **마이크 ATTACK "첫 번째만 되고 다음부터 무음" 재발 → 해결, 실기기 확인
+>   ("압도적으로 좋아졌어").** `?debugaudio=1` 로그로 확정: 첫 시도는 정상(max rms
+>   0.0138), 그 사이 TTS(`speakEN`)가 한 번이라도 재생되면 이후 전부 `rms=0.0000`
+>   완전 무음. 트랙 `readyState`는 `live`, `ended` 없음, `ctx.state`는 `running` —
+>   **JS에서 관측 가능한 상태 변화가 전혀 없다.** 그래서 생존 검사(readyState/
+>   `ended` 리스너)로는 못 잡는다(실제로 한 라운드 헛수고). 해법은 캐시 포기:
+>   **`attemptShoutAttack()`마다 `getUserMedia` + `AudioContext`를 새로 만든다**
+>   (이전 컨텍스트는 `close()`). OS 마이크 표시등이 시도마다 깜빡이는 건 의도된
+>   트레이드오프. 같이: `releaseMicStream()`은 `clearAudioQueue()`에서 빼고
+>   `pagehide`에만, `micCtx.resume()`은 `await` 대신 300ms 바운드(메인 컨텍스트와
+>   같은 규칙 — 이 파일 규칙을 마이크 쪽만 안 지키고 있었다).
+> - **배포**: `github.com/yum-sy/phonics-hero` (public — 무료 플랜은 private에
+>   Pages 불가), `main` 푸시마다 Actions로 `https://yum-sy.github.io/phonics-hero/`
+>   자동 배포. `vite.config.js` `base`는 워크플로의 `GH_PAGES_BASE`로만 지정.
+>   `manifest.webmanifest` + 아이콘으로 홈 화면 설치 가능. **사용자가 iPad Chrome
+>   "홈 화면에 추가"로 설치해 테스트한 결과 마이크가 가장 안정적** — 로컬 https
+>   dev 서버보다 낫다. 다만 localStorage는 origin별이라 공개 주소에서는
+>   `?forceclearthrough=`를 다시 해야 한다.
+> - **dev 포트는 5174** (`.claude/launch.json`): 5173은 다른 프로젝트
+>   (`word-adventure`)의 vite가 점유하는 경우가 있고, 그러면 TLS 핸드셰이크부터
+>   거부된다. `lsof -i :5173`으로 **어느 프로젝트의** 프로세스인지 먼저 확인.
+> - `debugAudio.js` 패널은 기본 접힘(🐞 탭) + ✕ 닫기 — 240px 컬럼이 게임을 가려
+>   스테이지 진행이 불가했다.
+> - 열린 제안: 음소 에셋 약한 부분(특히 모음 5종)을 OpenAI TTS로 **단어 생성 →
+>   같은 크롭 파이프라인** A/B. 사용자 판단 대기. 부모 목소리 직접 녹음도 대안.
 
 > **이 문서는 다섯 세션 분량이 쌓여 있다.** §-2 가 가장 최근 세션(옵션
 > 카드 레이아웃 재설계 + 가로모드 Exit/Back 낭비 수정 + **마이크 ATTACK
