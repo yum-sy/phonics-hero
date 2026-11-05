@@ -1,5 +1,39 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-06 — 자유 이동 가능한 스테이지 검수 페이지
+
+- **추가 이유/사용법**: 사용자가 전체 스테이지를 직접 검수하도록 `review.html` 추가.
+  배포 주소는 `https://yum-sy.github.io/phonics-hero/review.html`. 33챕터 선택/이전·다음,
+  현재 챕터의5개 스테이지 제목·히어로/빌런 이미지·보스 표시. 카드를 누르면 실제 게임을
+  처음부터 시작하고 **Exit**는 현재 챕터 목록으로 돌아온다. 일반 게임 복귀 링크 제공.
+- 해시 `#stage=c33s5`는 마지막 보스 선택을 복원하되 자동 실행하지 않는다.
+  탭 안에서 기존 unlockAudio를 동기 호출하며 오디오 파일/큐 구현은 변경하지 않았다.
+- **진도 격리**: `state.enableReviewMode()`를 별도 진입점에서만 켠다. export된 progress의
+  객체 정체성은 유지하되 필드를 새 빈 값으로 교체하고 save를 메모리 전용으로 만든다.
+  검수 중 모든 잠금을 해제하지만 일반 앱의 잠금/아이 진도 localStorage는 바꾸지 않는다.
+  새로고침하면 검수 진도는 초기화된다. 실제 진도에 forceclear하지 않는다.
+- `screens.configureReviewNavigation()`/`startReviewStage()`로 기존 게임을 재사용한다.
+  목록 복귀도 beginScreen/clearAudioQueue를 거쳐 이전 비동기 작업을 무효화한다.
+  검수 CSS는 `.review-catalog` 내부에만 적용하고 플레이 화면을 덮는 별도 툴바는 없다.
+- **배포**: Vite `build.rolldownOptions.input`에 일반 index와 review HTML을 함께 넣었다.
+  public의 개발 전용 하네스와 달리 실제 배포 번들로 동작한다. production preview도
+  `GH_PAGES_BASE=/phonics-hero/ npm run preview`로 실행해야 같은 경로를 재현한다.
+- **확인**: Node에서 검수 clear/checkpoint/reset 후 저장0회·원래 진도 문자열 유지.
+  `check-world-characters.mjs`/validateChapters 오류0, Pages base 빌드 통과.
+  기존 게임 `_probe.html` battle1 양방향/가상safe 4/4 NOSCROLL·CLIP/SPILL0.
+  검수 페이지 개발판16/16·배포 빌드15/15, 별도 브라우저 재검사15/15 통과.
+  각 실행에서 165개 카드 선택 가능, 양방향 66개 챕터 화면과 가상 안전영역4개 화면,
+  대표3스테이지 양방향 진입/Exit 6회, 이미지14개 로딩을 확인했다.
+  새로고침 후에도 기존 저장 문자열이 같고 일반 게임 잠금이 유지된다.
+  165스테이지 전체 완주를 검증했다는 뜻은 아니다. 콘솔/[chapters] 오류0.
+  증거는 `design/qa/2026-11-06-review-page/`에 저장했다.
+- **실기기 미확인/추측 구분**: 실제 iPad 터치·마이크·청취는 확인하지 않았다.
+  오디오를 추측으로 수정한 항목은 없으며 정상 앱 음성 규칙을 그대로 재사용한다.
+
+### 다음
+- 위 검수 페이지를 iPad에서 열고 챕터/스테이지를 자유롭게 골라 검수한다.
+  이상 발견 시 챕터 번호·스테이지 번호와 화면/소리 증상을 기록하면 재현할 수 있다.
+
 ## 2026-11-06 — 상시 글자 배지 폐기 / 학습 에너지와 히어로 공격 분리
 
 ### 무엇을 왜 바꿨나

@@ -53,7 +53,22 @@ function load() {
 
 export const progress = load()
 
+// Explicitly enabled only by the separate review entry point. Keep the exported
+// object identity, but detach every mutable field from the child's saved data.
+let reviewMode = false
+
+export function enableReviewMode() {
+  if (reviewMode) return
+  reviewMode = true
+  Object.assign(progress, emptyProgress())
+}
+
+export function isReviewMode() {
+  return reviewMode
+}
+
 export function save() {
+  if (reviewMode) return
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
   } catch (e) {
@@ -123,7 +138,7 @@ export function clearCheckpoint() {
 }
 
 export function isStageUnlocked(stages, stageId) {
-  if (DEV_UNLOCK_ALL) return true
+  if (reviewMode || DEV_UNLOCK_ALL) return true
   const idx = stages.findIndex((s) => s.id === stageId)
   if (idx <= 0) return true
   return isStageCleared(stages[idx - 1].id)
@@ -132,7 +147,7 @@ export function isStageUnlocked(stages, stageId) {
 // Chapters unlock the same way stages do: chapter N+1 opens once chapter
 // N's boss stage is cleared. The first chapter is always unlocked.
 export function isChapterUnlocked(chapters, chapterId) {
-  if (DEV_UNLOCK_ALL) return true
+  if (reviewMode || DEV_UNLOCK_ALL) return true
   const idx = chapters.findIndex((c) => c.id === chapterId)
   if (idx <= 0) return true
   const prevChapter = chapters[idx - 1]
@@ -155,7 +170,7 @@ export function isChapterCleared(chapter) {
 // also only checks the immediately-preceding chapter's boss, not every
 // earlier chapter). The first world is always unlocked.
 export function isWorldUnlocked(worlds, worldId) {
-  if (DEV_UNLOCK_ALL) return true
+  if (reviewMode || DEV_UNLOCK_ALL) return true
   const idx = worlds.findIndex((w) => w.id === worldId)
   if (idx <= 0) return true
   const prevWorld = worlds[idx - 1]

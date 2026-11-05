@@ -18,6 +18,7 @@ import {
   getCheckpoint,
   isChapterCleared,
   isChapterUnlocked,
+  isReviewMode,
   isStageCleared,
   isStageUnlocked,
   isWorldCleared,
@@ -81,11 +82,41 @@ function runScreen(render, retry) {
   }
 }
 
+// The dedicated review page supplies its own catalog. Normal navigation is
+// unchanged unless that page explicitly enables isolated review state.
+let reviewNavigation = null
+
+export function configureReviewNavigation(callback) {
+  if (callback !== null && typeof callback !== 'function') {
+    throw new TypeError('Review navigation must be a function or null')
+  }
+  reviewNavigation = callback
+}
+
+function returnToReviewCatalog(chapterId) {
+  if (!isReviewMode() || !reviewNavigation) return false
+  beginScreen()
+  clearAudioQueue()
+  reviewNavigation(chapterId)
+  return true
+}
+
+export function startReviewStage(stageId) {
+  if (!isReviewMode()) throw new Error('Review mode must be enabled first')
+  if (!getStageById(stageId)) throw new Error(`Unknown review stage: ${stageId}`)
+  clearCheckpoint()
+  // Keep this synchronous in the caller's tap; do not await AudioContext resume.
+  unlockAudio()
+  renderStage(stageId)
+}
+
 export function renderWorldSelect() {
+  if (returnToReviewCatalog()) return
   runScreen(worldSelectScreen, renderWorldSelect)
 }
 
 export function renderChapterSelect(worldId) {
+  if (returnToReviewCatalog()) return
   runScreen(
     () => chapterSelectScreen(worldId),
     () => renderChapterSelect(worldId)
@@ -93,6 +124,7 @@ export function renderChapterSelect(worldId) {
 }
 
 export function renderMap(chapterId) {
+  if (returnToReviewCatalog(chapterId)) return
   runScreen(
     () => mapScreen(chapterId),
     () => renderMap(chapterId)

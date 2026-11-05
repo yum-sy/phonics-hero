@@ -102,6 +102,14 @@ const httpsConfig =
 // SOUND_BASE from import.meta.env.BASE_URL, so no other code depends on it.
 export default {
   base: process.env.GH_PAGES_BASE || '/',
+  build: {
+    rolldownOptions: {
+      input: {
+        game: fileURLToPath(new URL('index.html', import.meta.url)),
+        review: fileURLToPath(new URL('review.html', import.meta.url)),
+      },
+    },
+  },
   plugins: [verdicts()],
   server: { https: httpsConfig },
 }
