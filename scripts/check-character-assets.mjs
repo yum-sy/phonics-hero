@@ -100,7 +100,7 @@ try {
       currentErrors.push(message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text)
     } else if (message.method === 'Network.responseReceived') {
       const { url, status } = message.params.response
-      if (url.includes('/art/v2/') && status >= 400) currentNetworkFailures.push({ url, status })
+      if (/\/art\/v[23]\//.test(url) && status >= 400) currentNetworkFailures.push({ url, status })
     }
   })
   await Promise.all([command('Page.enable'), command('Runtime.enable'), command('Network.enable')])
@@ -135,7 +135,7 @@ try {
   assert.deepEqual(report.gallery.badgeErrors, [], 'Hero emblem mismatch')
   assert.equal(Object.keys(report.gallery.families).length, 7, 'All seven families must be mapped')
   assert.equal(report.gallery.galleryCharacters, report.gallery.galleryMapped, 'Gallery has legacy art')
-  assert(report.gallery.images.length >= 7, 'Expected images for all seven families')
+  assert.equal(report.gallery.images.length, 14, 'Expected base and world sheets for all seven families')
   assert(report.gallery.images.every(i => !i.error && i.width > 0), 'Atlas image failed to decode')
   assert.deepEqual(report.gallery.consoleErrors, [], 'Gallery console errors')
   assert.deepEqual(report.gallery.networkFailures, [], 'Gallery atlas network errors')
@@ -144,25 +144,34 @@ try {
 
   const families = ['robot','comic','dino','pixel','brick','career','deco']
   report.atlasSheets = []
-  for (const family of families) {
+  for (const sheetName of [...families, ...families.map(family => `${family}-worlds`)]) {
+    const isWorld = sheetName.endsWith('-worlds')
+    const family = sheetName.replace(/-worlds$/, '')
+    await command('Emulation.setDeviceMetricsOverride', { width: isWorld ? 1194 : 834, height: isWorld ? 834 : 1194, deviceScaleFactor: 1, mobile: false })
     const sheet = await evaluate(`(async () => {
       const {CHARACTER_ASSETS} = await import('/src/art/character-assets.js');
-      const {renderCharacterAsset} = await import('/src/art/atlas.js');
+      const {renderCharacterAsset,CHARACTER_ATLASES} = await import('/src/art/atlas.js');
       const family=${JSON.stringify(family)};
-      const slots=[...new Set(Object.values(CHARACTER_ASSETS).filter(a=>a.family===family).map(a=>a.slot))].sort((a,b)=>a-b);
+      const sheetName=${JSON.stringify(sheetName)}, isWorld=${isWorld};
+      const metadata=CHARACTER_ATLASES[sheetName];
+      if(!metadata)throw new Error('Missing atlas metadata: '+sheetName);
+      const slots=isWorld?metadata.frames.map((_,slot)=>slot):[...new Set(Object.values(CHARACTER_ASSETS).filter(a=>a.family===family).map(a=>a.slot))].sort((a,b)=>a-b);
       const fusion=family==='career'?5:3;
-      document.body.innerHTML='<h1>'+family+' — production crops</h1><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">'+slots.map(slot=>'<div><div style="width:190px;height:220px;margin:auto">'+renderCharacterAsset({family,slot,emblem:slot<fusion?'EE':slot===fusion?'★':undefined})+'</div><div>slot '+slot+'</div></div>').join('')+'</div>';
+      document.body.innerHTML='<h1>'+sheetName+' — production crops</h1><div style="display:grid;grid-template-columns:repeat('+(isWorld?5:3)+',1fr);gap:10px;text-align:center">'+slots.map(slot=>'<div><div style="width:190px;height:220px;margin:auto">'+renderCharacterAsset({family,sheet:isWorld?sheetName:undefined,slot,emblem:isWorld?(slot<5?'EE':undefined):(slot<fusion?'EE':slot===fusion?'★':undefined)})+'</div><div>slot '+slot+'</div></div>').join('')+'</div>';
       document.body.style.padding='16px';
       document.querySelectorAll('.character-asset').forEach(svg=>{svg.style.width='190px';svg.style.height='220px'});
-      return {family,slots};
+      return {family,sheet:sheetName,isWorld,slots,expectedDimensions:[metadata.width,metadata.height]};
     })()`)
     sheet.images = await evaluate(decodedImages)
     assert(sheet.images.length > 0 && sheet.images.every(i => !i.error), 'Audit sheet atlas decode failed')
-    await screenshot(`atlas-${family}`)
+    assert(sheet.images.every(i => i.width===sheet.expectedDimensions[0] && i.height===sheet.expectedDimensions[1]),'Audit sheet native dimensions differ from metadata')
+    assert(sheet.images.every(i=>i.url.includes('/art/'+(isWorld?'v3':'v2')+'/')),'Audit sheet loaded wrong asset version')
+    await screenshot(`atlas-${sheetName}`)
     report.atlasSheets.push(sheet)
   }
-  assert.equal(report.atlasSheets.reduce((n,s)=>n+s.slots.length,0),65,'Expected all 65 production slots')
-  console.log('Captured 65 production crops across seven family sheets')
+  assert.equal(report.atlasSheets.filter(s=>!s.isWorld).reduce((n,s)=>n+s.slots.length,0),65,'Expected all 65 base production slots')
+  assert.equal(report.atlasSheets.filter(s=>s.isWorld).reduce((n,s)=>n+s.slots.length,0),70,'Expected all 70 world characters, including four reserved')
+  console.log('Captured 65 base + 70 world crops across fourteen sheets')
   const cases = families.flatMap((family,index) => {
     const chapter=index+1;
     const stage=chapter===1?'stage-1':`c${chapter}-stage-1`;

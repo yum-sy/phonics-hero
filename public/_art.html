@@ -150,7 +150,8 @@
       html += `<div class="note">${label}</div><div class="row">`
       for (const c of group) {
         // Old SVG approvals must not mark newly generated art as reviewed.
-        const key = 'char:v2:' + c.slug
+        const version = /data-art-sheet="[^"]+-worlds"/.test(c.svg) ? 'v3' : 'v2'
+        const key = `char:${version}:` + c.slug
         html += `<div class="cell" data-vkey="${key}"><div class="box art">${c.svg}</div>
           <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div>
           <div class="verdict"><button data-v="ok">OK</button><button data-v="no">NO</button></div></div>`

@@ -10,6 +10,20 @@
 
 ---
 
+## 월드별 캐릭터 V3 (2026-11-05)
+
+V2 기본 디자인에 **70종(일반 히어로35 + 최종 보스35)**을 추가했다.
+현재 33챕터에 66종을 사용하며 월드5의 픽셀·직업군 4종은 예비다.
+신규 히어로는 일반 스테이지와 합체 연출에 등장한다. 각 월드 보스는 주색과
+체형·장비를 다르게 구성했다. 잠긴 그림은 검정 실루엣으로 표시한다.
+
+`src/art/world-character-assets.js`가 V2 배선보다 우선하며 PNG는 `public/art/v3/`,
+제작 계획은 `design/world-art-plan.json`에 있다. 상하 기본16px + 기기 안전 영역을
+확보하고 UI 색상을 부드럽게 조정했다. 설치형 iPad 실기기 확인은 별도로 필요하다.
+
+검증: `node scripts/check-world-characters.mjs`,
+`node scripts/check-character-assets.mjs`, `node scripts/check-safe-layout.mjs`.
+
 ## 캐릭터 디자인 V2 (2026-11-05)
 
 295개 캐릭터 연결을 7개 투명 PNG 아틀라스의 65개 역할 디자인으로 교체했다.

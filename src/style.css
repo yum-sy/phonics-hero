@@ -1,30 +1,33 @@
 :root {
-  /* Kids-animation palette: high-saturation candy colours, dark ink outlines
-     and flat offset shadows, so the UI reads like the same cartoon world as
-     the flat-colour character art instead of a tasteful education app.
-     --border is deliberately a dark ink, not a light hairline: it is what
-     every card, button and tile outlines and offset-shadows with. */
-  --bg: #6ecdf5;
+  /* Softer colour fields leave the character art prominent. Dark outlines
+     and button text retain contrast without relying on saturated fills. */
+  --bg: #c4dce6;
   --surface: #fffdf4;
   --text: #2a2438;
   --text-muted: #5d5570;
   --ink: #2a2438;
-  --accent: #2f9dff;
+  --accent: #83b8d7;
   --accent-dark: #1a55c0;
-  --success: #45cf4f;
+  --success: #9ac78a;
   --success-dark: #1d8a2b;
-  --danger: #ff5b60;
+  --danger: #e68287;
   --danger-dark: #c62b3f;
-  --warning: #ffd23f;
+  --warning: #e7c96b;
   --warning-dark: #e09b00;
   --border: #2a2438;
   --hairline: #d9d2c4;
-  --sky: #b9ecff;
-  --grass: #8fe06a;
-  --screen-select: #ffd86b;
-  --screen-map: #a8e0ff;
-  --screen-stage: #fff3d0;
-  --screen-reward: #ffe36e;
+  --sky: #cbe5ed;
+  --grass: #b2ce91;
+  --screen-select: #f4dfa0;
+  --screen-map: #c4dfed;
+  --screen-stage: #faf3df;
+  --screen-reward: #f3e2a8;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --screen-gutter-y: 16px;
+  --screen-gutter-x: 20px;
   /* Total lifetime of one .fx-bolt, flight plus impact burst. screens.js
      reads this off :root to schedule the element's removal, so it lives here
      rather than on .fx-bolt -- the timer is set before the element exists.
@@ -116,22 +119,16 @@ button {
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
-  /* Trimmed from 16/20 to 10/14: on a portrait iPad the stage screen spends
-     432px of its 1194px on chrome before any learning content, so every
-     non-text pixel here is one the letters and words do not get.
-     The env() terms are the device safe-area inset (see the #app comment
-     above) -- added on top of the existing UI padding with `+`, not
-     replacing it, so content still keeps its old clearance from the edge
-     even where the inset is 0 (every device without a home-indicator
-     gesture bar). `max-width: 800px` caps `.screen` well inside a portrait
-     iPad's width, so the left/right insets only ever matter on a narrower
-     device. */
-  padding: calc(10px + env(safe-area-inset-top))
-    calc(20px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom))
-    calc(20px + env(safe-area-inset-left));
+  /* Only this box owns safe-area padding. body/#app must not add a second
+     inset or increase the viewport-height claim. Keep visible breathing
+     room even when an installed app reports zero safe-area insets. */
+  padding: calc(var(--screen-gutter-y) + var(--safe-top))
+    calc(var(--screen-gutter-x) + var(--safe-right))
+    calc(var(--screen-gutter-y) + var(--safe-bottom))
+    calc(var(--screen-gutter-x) + var(--safe-left));
 }
 
-/* Each screen gets its own colour field -- flat, saturated, cartoon. */
+/* Each screen gets its own flat colour field. */
 .chapter-select-screen {
   background: var(--screen-select);
 }
@@ -217,10 +214,12 @@ button {
    at the foot of every card. */
 .chapter-grid:has(> :nth-child(6)) .chapter-card {
   justify-content: flex-start;
+  padding-block: 10px;
 }
 
 .chapter-grid:has(> :nth-child(6)) .chapter-card-art {
   flex: 0 0 auto;
+  height: clamp(64px, 7.37svh, 88px);
 }
 
 .chapter-card:active:not(:disabled) {
@@ -230,12 +229,21 @@ button {
 
 .chapter-card.cleared {
   border-color: var(--border);
-  background: #c8f5a8;
+  background: #d6e7c5;
 }
 
 .chapter-card.locked {
-  opacity: 0.5;
+  color: var(--text-muted);
   box-shadow: none;
+}
+
+/* Flatten the composed SVG, including its PNG atlas. Fill/stroke rules
+   cannot hide raster colour. Override the legacy inline shadow opacity so
+   locked portraits are genuinely black, without blackening the card. */
+.chapter-card.locked .carbot-art,
+.stage-node.locked .carbot-art {
+  filter: brightness(0) !important;
+  opacity: 1;
 }
 
 .chapter-card-art {
@@ -280,7 +288,7 @@ button {
 /* Narrower cards, so the title backs off just enough that the longest
    chapter title ("Pixel Kingdom Passage") stays within two lines. */
 .chapter-grid:has(> :nth-child(6)) .chapter-card-title {
-  font-size: clamp(20px, 3.4svh, 42px);
+  font-size: clamp(20px, 2.68svh, 32px);
 }
 
 /* "Chapter 7" wrapped to two lines in the 244px card of the seven-card grid,
@@ -288,7 +296,13 @@ button {
    the least interesting text on the card -- the number is already implied by
    position -- so it, not the chapter's name, is what gives way. */
 .chapter-grid:has(> :nth-child(6)) .chapter-card-order {
-  font-size: clamp(20px, 2.9svh, 36px);
+  font-size: clamp(20px, 2.18svh, 26px);
+}
+
+/* Cleared cards add a status row. Size that secondary label explicitly so
+   seven completed chapters still fit three rows inside both safe gutters. */
+.chapter-grid:has(> :nth-child(6)) .chapter-card-badge {
+  font-size: clamp(20px, 2.01svh, 24px);
 }
 
 /* "Chapters 22-28" on the world screen must never break: normal line
@@ -382,7 +396,7 @@ button {
 
 .stage-node.cleared {
   border-color: var(--border);
-  background: #c8f5a8;
+  background: #d6e7c5;
   color: var(--success-dark);
 }
 
@@ -390,7 +404,7 @@ button {
   width: clamp(116px, 14.8svh, 184px);
   height: clamp(116px, 14.8svh, 184px);
   border-color: var(--border);
-  background: #ffc9cb;
+  background: #ecd0d0;
   padding: 12px;
 }
 
@@ -400,7 +414,7 @@ button {
 }
 
 .stage-node.locked {
-  opacity: 0.5;
+  color: var(--text-muted);
   box-shadow: none;
 }
 
@@ -798,7 +812,7 @@ button {
   border-radius: 26px;
   border: 5px solid var(--border);
   background: var(--accent);
-  color: #fff;
+  color: var(--ink);
   font-size: clamp(36px, 5.6svh, 67px);
   font-weight: 700;
   box-shadow: 0 8px 0 var(--border);
@@ -1004,7 +1018,7 @@ button {
 
 .option-btn.selected {
   border-color: var(--border);
-  background: #c8f5a8;
+  background: #d6e7c5;
 }
 
 .option-emoji {
@@ -1682,12 +1696,7 @@ button {
 @media (orientation: landscape) and (max-height: 900px) {
   .screen {
     max-width: 1080px;
-    /* Same `+ env()` composition as the base rule (see its comment) --
-       landscape does not drop the safe-area inset, it just starts from a
-       different UI-padding baseline. */
-    padding: calc(12px + env(safe-area-inset-top))
-      calc(24px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom))
-      calc(24px + env(safe-area-inset-left));
+    --screen-gutter-x: 24px;
   }
 
   /* Map: lay stage nodes out in a wrapping row instead of one tall
@@ -1789,8 +1798,8 @@ button {
        begins (measured via CDP getBoundingClientRect: topbar.left=57 vs
        battleScene.left=81). Mirroring .screen's own landscape padding
        formula exactly lines the bar's left edge up with the card's. */
-    top: calc(12px + env(safe-area-inset-top));
-    left: calc(24px + env(safe-area-inset-left));
+    top: calc(var(--screen-gutter-y) + var(--safe-top));
+    left: calc(var(--screen-gutter-x) + var(--safe-left));
     width: 244px;
     justify-content: space-between;
     z-index: 2;

@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "pending": [],
+  "checks": {
+    "mapping": {
+      "characters": 295,
+      "newHeroes": 33,
+      "finalBosses": 33,
+      "reserved": 4
+    },
+    "pngHeaders": {
+      "pngCount": 14,
+      "frameCount": 136
+    },
+    "emblemsAndFusion": {
+      "emblemsPreserved": 130,
+      "chaptersPassed": 33
+    },
+    "renderedCharacters": 295
+  }
+}

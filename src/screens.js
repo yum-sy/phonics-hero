@@ -37,7 +37,8 @@ import {
   unlockAudio,
   whenAudioIdle,
 } from './audio.js'
-import { heroArt, villainArt, heroEmblem } from './art.js'
+import { heroArt, villainArt } from './art.js'
+import { fusionLineup } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
 
 const app = document.getElementById('app')
@@ -1826,29 +1827,7 @@ function renderNonScoredBeat(runtime, beat) {
   // The whole intro is CSS-driven and lasts ~1.6 s, or ends early on a tap.
   if (runtime.stage.chapterBoss && beat.kind === 'teach' && runtime.beatIndex === 0) {
     const chapter = getChapterForStage(runtime.stage.id)
-    // A chapter's non-boss heroes aren't 1:1 with the sounds it teaches: one
-    // sound's two stages sometimes share a single hero (chapters 1-14: the
-    // tutorial stage reuses stage 2's), sometimes use two different named
-    // heroes for flavor (some blend chapters 15-33 give each of a blend's 2
-    // stages its own character). A plain index slice assumed one fixed
-    // shape and broke on the other -- it could show one *sound* (not just
-    // one hero) twice while another sound never got a slot. Deduping by
-    // EMBLEM (the sound/blend a hero represents, not which character draws
-    // it) is what the combine animation is actually supposed to count, and
-    // is shape-agnostic across both patterns. Heroes with no emblem (a
-    // boss's own capstone form showing up early, or a data gap) fall back
-    // to deduping by art slug so they don't all collapse into one blank key.
-    const nonBossStages = chapter.stages.filter((s) => !s.chapterBoss)
-    const seen = new Set()
-    const lineup = nonBossStages
-      .filter((s) => {
-        const emblem = s.hero && heroEmblem(s.hero)
-        const key = emblem || (s.hero && s.hero.art)
-        if (!key || seen.has(key)) return false
-        seen.add(key)
-        return true
-      })
-      .slice(0, 3)
+    const lineup = fusionLineup(chapter.stages)
     const dirs = ['from-left', 'from-right', 'from-left']
     const robotsHtml = lineup
       .map(

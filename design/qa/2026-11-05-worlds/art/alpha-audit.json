@@ -1,0 +1,259 @@
+{
+  "measured": [
+    "robot-worlds",
+    "comic-worlds",
+    "dino-worlds",
+    "pixel-worlds",
+    "brick-worlds",
+    "career-worlds",
+    "deco-worlds"
+  ],
+  "audits": {
+    "robot-worlds": {
+      "rowCuts": [
+        0,
+        444,
+        887
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          355,
+          710,
+          1064,
+          1419,
+          1774
+        ],
+        [
+          0,
+          355,
+          710,
+          1064,
+          1419,
+          1774
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "comic-worlds": {
+      "rowCuts": [
+        0,
+        490,
+        1024
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          328,
+          608,
+          919,
+          1233,
+          1536
+        ],
+        [
+          0,
+          324,
+          589,
+          883,
+          1231,
+          1536
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [
+        {
+          "slot": 6,
+          "edges": [
+            "right"
+          ]
+        }
+      ],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "dino-worlds": {
+      "rowCuts": [
+        0,
+        444,
+        887
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          355,
+          710,
+          1057,
+          1419,
+          1774
+        ],
+        [
+          0,
+          355,
+          710,
+          1064,
+          1419,
+          1774
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "pixel-worlds": {
+      "rowCuts": [
+        0,
+        489,
+        1024
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          294,
+          624,
+          924,
+          1200,
+          1536
+        ],
+        [
+          0,
+          323,
+          585,
+          902,
+          1218,
+          1536
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "brick-worlds": {
+      "rowCuts": [
+        0,
+        512,
+        1024
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          307,
+          614,
+          922,
+          1229,
+          1536
+        ],
+        [
+          0,
+          307,
+          614,
+          920,
+          1229,
+          1536
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "career-worlds": {
+      "rowCuts": [
+        0,
+        495,
+        1024
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          308,
+          620,
+          921,
+          1216,
+          1536
+        ],
+        [
+          0,
+          341,
+          625,
+          910,
+          1207,
+          1536
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "deco-worlds": {
+      "rowCuts": [
+        0,
+        512,
+        1024
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          307,
+          614,
+          922,
+          1229,
+          1536
+        ],
+        [
+          0,
+          305,
+          614,
+          922,
+          1228,
+          1536
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    }
+  },
+  "failures": []
+}

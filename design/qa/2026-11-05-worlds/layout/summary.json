@@ -1,0 +1,38 @@
+{
+  "environment": "Desktop headless Chrome; not physical iPad/WebKit or installed PWA evidence",
+  "command": "node scripts/check-safe-layout.mjs http://localhost:5174",
+  "passed": 84,
+  "total": 84,
+  "clipCases": [],
+  "spillCases": [],
+  "consoleErrors": 0,
+  "imageDecodeFailures": 0,
+  "safeInsets": {
+    "normal": [
+      0,
+      0
+    ],
+    "simulated": [
+      24,
+      20
+    ],
+    "expectedPaddingTopBottom": {
+      "normal": [
+        16,
+        16
+      ],
+      "simulated": [
+        40,
+        36
+      ]
+    }
+  },
+  "selectedScreenshots": [
+    "landscape-safe-reward33.png",
+    "portrait-safe-battle1.png",
+    "portrait-world-locked.png",
+    "portrait-safe-map1-locked.png",
+    "landscape-safe-boss5.png",
+    "portrait-safe-chapters.png"
+  ]
+}

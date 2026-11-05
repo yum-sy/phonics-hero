@@ -5,6 +5,7 @@
 
 import { renderCharacterAsset } from './art/atlas.js'
 import { CHARACTER_ASSETS, CHARACTER_DEFAULT_EMBLEMS } from './art/character-assets.js'
+import { WORLD_CHARACTER_ASSETS } from './art/world-character-assets.js'
 
 import {
   heroRobot,
@@ -1375,7 +1376,8 @@ function resolveArt(input, palettes, styles) {
 
 export function heroArt(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
-  const asset = CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
+  const asset = WORLD_CHARACTER_ASSETS[spec.art] || WORLD_CHARACTER_ASSETS[spec.name]
+    || CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
   if (asset) return renderCharacterAsset({ ...asset, emblem: heroEmblem(heroOrName) })
   return resolveArt(heroOrName, HERO_PALETTES, HERO_STYLES)
 }
@@ -1394,7 +1396,8 @@ export function heroEmblem(heroOrName) {
 
 export function villainArt(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
-  const asset = CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
+  const asset = WORLD_CHARACTER_ASSETS[spec.art] || WORLD_CHARACTER_ASSETS[spec.name]
+    || CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
   if (asset) return renderCharacterAsset(asset)
   return resolveArt(heroOrName, VILLAIN_PALETTES, VILLAIN_STYLES)
 }

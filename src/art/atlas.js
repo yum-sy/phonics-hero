@@ -1,13 +1,15 @@
 // Art stays independent of chapter data: callers resolve a character's stable
 // identity to a family/slot and pass the existing curriculum emblem separately.
 import frames from './atlas-frames.json' with { type: 'json' }
+import worldFrames from './world-atlas-frames.json' with { type: 'json' }
 
-const ART_BASE = `${import.meta.env?.BASE_URL || '/'}art/v2/`
+const ART_BASE = `${import.meta.env?.BASE_URL || '/'}art/`
 const FONT = "system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
 
 export const CHARACTER_ATLASES = Object.freeze(Object.fromEntries(
-  Object.entries(frames).map(([family, sheet]) => [family, Object.freeze({
-    ...sheet, columns: 3, rows: family === 'career' ? 4 : 3,
+  Object.entries({ ...frames, ...worldFrames }).map(([key, sheet]) => [key, Object.freeze({
+    ...sheet, columns: key.endsWith('-worlds') ? 5 : 3,
+    rows: key.endsWith('-worlds') ? 2 : key === 'career' ? 4 : 3,
   })]),
 ))
 
@@ -30,8 +32,8 @@ function emblemBadge(emblem) {
 }
 
 /** Row-major slot, zero-based. Omit emblem for villains; ★ marks fusion heroes. */
-export function renderCharacterAsset({ family, slot, emblem }) {
-  const { width, height, frames: crops } = CHARACTER_ATLASES[family]
+export function renderCharacterAsset({ family, sheet = family, slot, emblem }) {
+  const { width, height, frames: crops } = CHARACTER_ATLASES[sheet]
   const [cropX, cropY, cellWidth, cellHeight] = crops[slot]
   const badge = emblemBadge(emblem)
   const availableHeight = badge ? 114 : 140
@@ -42,9 +44,9 @@ export function renderCharacterAsset({ family, slot, emblem }) {
   const artY = (availableHeight - artHeight) / 2
   // A nested SVG clips in its own tile coordinates without shared clipPath IDs.
   // Multiple instances can safely coexist in the map and combine introduction.
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" class="carbot-art character-asset" data-art-family="${family}" data-art-slot="${slot}" aria-hidden="true">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" class="carbot-art character-asset" data-art-family="${family}" data-art-sheet="${sheet}" data-art-slot="${slot}" aria-hidden="true">
     <svg x="${artX}" y="${artY}" width="${artWidth}" height="${artHeight}" viewBox="0 0 ${cellWidth} ${cellHeight}" preserveAspectRatio="xMidYMid meet" overflow="hidden">
-      <image href="${ART_BASE}${family}.png" x="${-cropX}" y="${-cropY}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"${family === 'pixel' ? ' style="image-rendering:pixelated"' : ''}/>
+      <image href="${ART_BASE}${sheet.endsWith('-worlds') ? 'v3' : 'v2'}/${sheet}.png" x="${-cropX}" y="${-cropY}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"${family === 'pixel' ? ' style="image-rendering:pixelated"' : ''}/>
     </svg>
     ${badge}
   </svg>`
