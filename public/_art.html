@@ -34,14 +34,13 @@
     justify-content: center;
     overflow: hidden;
   }
-  .box svg { width: 100%; height: 100%; display: block; }
+  .box > svg { width: 100%; height: 100%; display: block; }
   .cap { font-size: 12px; margin-top: 8px; max-width: 130px; word-break: break-word; }
   .cap b { display: block; font-size: 13px; }
   .cap span { color: #6b6478; font-size: 11px; }
-  /* Silhouette mode: flatten every fill/stroke to one grey so shape alone is
-     judged -- the "does it read in 1 second" test the design agents run. */
-  body.silhouette .box svg * { fill: #6b6478 !important; stroke: #6b6478 !important; }
-  body.silhouette .box svg [opacity] { opacity: 1 !important; }
+  /* Filtering the composed result includes raster atlases; fill/stroke
+     overrides only flatten vectors and would leave full-color sprite art. */
+  body.silhouette .box > svg { filter: brightness(0); }
 
   .verdict { display: flex; gap: 4px; justify-content: center; margin-top: 6px; }
   .verdict button {
@@ -114,25 +113,23 @@
   ])
 
   const FAMILY = {
-    'chapter-1': '카봇 (변신 로봇)',
-    'chapter-2': '마블 히어로 계열',
-    'chapter-3': '공룡',
-    'chapter-4': '포켓몬 계열 (크리처)',
-    'chapter-5': '마리오 계열 (플랫포머)',
-    'chapter-6': '토이스토리 계열 (장난감)',
-    'chapter-7': 'DC 히어로 계열',
-    'chapter-8': '마블 히어로 계열 (월드2 재배정)',
+    'chapter-1': '카봇 · 셀 애니메이션',
+    'chapter-2': '마블 · 코믹북',
+    'chapter-3': '공룡 · 클레이 완구',
+    'chapter-4': '픽셀 몬스터',
+    'chapter-5': '조립 블록 완구',
+    'chapter-6': '직업 히어로 · 웹툰',
+    'chapter-7': 'DC · 아르데코 애니메이션',
+    'chapter-8': '마블 · 코믹북 (월드2)',
   }
 
   const out = document.getElementById('out')
   let html = ''
 
   for (const ch of chapters) {
-    // World 2+ (chapter order > 7) reuses World 1 hero assets verbatim --
-    // no new hero art to verify, so the gallery only needs to show villains
-    // for those chapters (사용자 지시: 히어로 세트는 이미 계열이 명시돼 있고
-    // 재사용이라 검증 대상이 아님).
-    const showHeroes = ch.order <= 7
+    // Repeated families can now assign additional career roles, and their
+    // phonics badges differ. Keep every identity available for device review.
+    const showHeroes = true
     const cast = []
     const seen = new Set()
     for (const st of ch.stages) {
@@ -152,7 +149,8 @@
     for (const [label, group] of groups) {
       html += `<div class="note">${label}</div><div class="row">`
       for (const c of group) {
-        const key = 'char:' + c.slug
+        // Old SVG approvals must not mark newly generated art as reviewed.
+        const key = 'char:v2:' + c.slug
         html += `<div class="cell" data-vkey="${key}"><div class="box art">${c.svg}</div>
           <div class="cap"><b>${c.name}</b><span>${c.slug}</span></div>
           <div class="verdict"><button data-v="ok">OK</button><button data-v="no">NO</button></div></div>`

@@ -3,6 +3,9 @@
 // already did (see ./art/robots.js). Everything below is the superhero
 // family plus the name/style resolution the rest of the app calls into.
 
+import { renderCharacterAsset } from './art/atlas.js'
+import { CHARACTER_ASSETS, CHARACTER_DEFAULT_EMBLEMS } from './art/character-assets.js'
+
 import {
   heroRobot,
   heroDeluxeRobot,
@@ -1371,6 +1374,9 @@ function resolveArt(input, palettes, styles) {
 }
 
 export function heroArt(heroOrName) {
+  const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
+  const asset = CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
+  if (asset) return renderCharacterAsset({ ...asset, emblem: heroEmblem(heroOrName) })
   return resolveArt(heroOrName, HERO_PALETTES, HERO_STYLES)
 }
 
@@ -1383,9 +1389,12 @@ export function heroArt(heroOrName) {
 export function heroEmblem(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
   const entry = HERO_PALETTES[spec.art] || HERO_PALETTES[spec.name] || {}
-  return entry.emblem
+  return entry.emblem ?? CHARACTER_DEFAULT_EMBLEMS[spec.art] ?? CHARACTER_DEFAULT_EMBLEMS[spec.name]
 }
 
 export function villainArt(heroOrName) {
+  const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
+  const asset = CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
+  if (asset) return renderCharacterAsset(asset)
   return resolveArt(heroOrName, VILLAIN_PALETTES, VILLAIN_STYLES)
 }

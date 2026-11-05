@@ -1,0 +1,1462 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T13:54:19.270Z",
+  "gallery": {
+    "uniqueCharacters": 295,
+    "missing": [],
+    "badgeErrors": [],
+    "families": {
+      "robot": 45,
+      "comic": 44,
+      "dino": 45,
+      "pixel": 36,
+      "brick": 45,
+      "career": 36,
+      "deco": 44
+    },
+    "images": [
+      {
+        "url": "http://localhost:5174/art/v2/robot.png",
+        "width": 1312,
+        "height": 1199
+      },
+      {
+        "url": "http://localhost:5174/art/v2/comic.png",
+        "width": 1254,
+        "height": 1254
+      },
+      {
+        "url": "http://localhost:5174/art/v2/dino.png",
+        "width": 1292,
+        "height": 1217
+      },
+      {
+        "url": "http://localhost:5174/art/v2/pixel.png",
+        "width": 1254,
+        "height": 1254
+      },
+      {
+        "url": "http://localhost:5174/art/v2/brick.png",
+        "width": 1199,
+        "height": 1312
+      },
+      {
+        "url": "http://localhost:5174/art/v2/career.png",
+        "width": 1086,
+        "height": 1448
+      },
+      {
+        "url": "http://localhost:5174/art/v2/deco.png",
+        "width": 1216,
+        "height": 1293
+      }
+    ],
+    "galleryCharacters": 296,
+    "galleryMapped": 296,
+    "consoleErrors": [],
+    "networkFailures": []
+  },
+  "cases": [
+    {
+      "name": "portrait-battle1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=72px(6.1%)@y1122 bgap=70px(7.8%)@y415/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=53px(4.5%)@y457 bgap=53px(5.9%)@y457/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss1after",
+      "family": "robot",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=66px(5.5%)@y1128 bgap=64px(7.0%)@y954/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=34px(2.9%)@y766",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=battle2 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=72px(6.0%)@y1122 bgap=70px(7.7%)@y417/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=boss2 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=15px(1.3%)@y458 bgap=43px(4.8%)@y279/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss2after",
+      "family": "comic",
+      "hud": "NOSCROLL shot=boss2after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=66px(5.5%)@y1128 bgap=64px(7.0%)@y954/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=34px(2.9%)@y766",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=battle3 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=59px(6.6%)@y458/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=53px(5.9%)@y457/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss3after",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=47px(3.9%)@y1147 bgap=45px(5.0%)@y991/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=34px(2.9%)@y1016",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=59px(6.6%)@y458/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=boss4 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=8px(0.7%)@y462 bgap=43px(4.8%)@y279/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss4after",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=boss4after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=47px(3.9%)@y1147 bgap=45px(5.0%)@y991/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=34px(2.9%)@y766",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=battle5 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=59px(6.6%)@y458/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=53px(4.5%)@y457 bgap=53px(5.9%)@y457/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss5after",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=47px(3.9%)@y1147 bgap=45px(5.0%)@y991/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=44px(3.7%)@y1150",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle6",
+      "family": "career",
+      "hud": "NOSCROLL shot=battle6 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=59px(6.6%)@y962/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss6",
+      "family": "career",
+      "hud": "NOSCROLL shot=boss6 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=43px(4.8%)@y279/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss6after",
+      "family": "career",
+      "hud": "NOSCROLL shot=boss6after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=47px(3.9%)@y1147 bgap=45px(5.0%)@y991/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward6",
+      "family": "career",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=46px(3.9%)@y802",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=61px(5.1%)@y1133 bgap=59px(6.6%)@y458/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=49px(4.1%)@y457 bgap=49px(5.5%)@y457/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss7after",
+      "family": "deco",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=50px(4.2%)@y1144 bgap=48px(5.3%)@y986/col901",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-reward7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=28px(2.4%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=12px(1.4%)@y0 bgap=73px(9.0%)@y150/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(4.7%)@y175/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss1after",
+      "family": "robot",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=80px(10.0%)@y573/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward1",
+      "family": "robot",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=battle2 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=73px(9.0%)@y150/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=boss2 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=28px(3.5%)@y12/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss2after",
+      "family": "comic",
+      "hud": "NOSCROLL shot=boss2after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=80px(10.0%)@y573/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward2",
+      "family": "comic",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=battle3 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=12px(1.4%)@y0 bgap=61px(7.6%)@y196/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(4.7%)@y175/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss3after",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=59px(7.3%)@y616/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=9px(1.1%)@y0 bgap=61px(7.6%)@y196/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=boss4 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=28px(3.5%)@y12/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss4after",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=boss4after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=46px(5.8%)@y641/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward4",
+      "family": "pixel",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=39px(4.6%)@y795",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=battle5 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=12px(1.4%)@y0 bgap=61px(7.6%)@y196/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(4.7%)@y175/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss5after",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=59px(7.3%)@y616/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle6",
+      "family": "career",
+      "hud": "NOSCROLL shot=battle6 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=61px(7.6%)@y609/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss6",
+      "family": "career",
+      "hud": "NOSCROLL shot=boss6 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=28px(3.5%)@y12/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss6after",
+      "family": "career",
+      "hud": "NOSCROLL shot=boss6after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=59px(7.3%)@y616/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward6",
+      "family": "career",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=61px(7.6%)@y196/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=34px(4.2%)@y175/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss7after",
+      "family": "deco",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=62px(7.6%)@y611/col806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-reward7",
+      "family": "deco",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    }
+  ],
+  "failures": []
+}

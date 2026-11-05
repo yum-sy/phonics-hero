@@ -10,6 +10,8 @@
 - 소리 표기는 `src/data/chapters/index.js`의 `SOUND_TABLE`만 바꾼다. 챕터 데이터에 직접 쓰지 않는다
 - 하이픈형(`t-t-t`)·공백 연결(`a a a`) 금지, `repeatAudio`에 단어/이름 금지
 - 캐릭터 색·외형은 `art.js`/`art/*.js` 소유. 데이터는 `{ name, art, style }`만
+- 캐릭터 V2는 `CLAUDE.md` 맨 위 새 규칙 우선: 투명 PNG 아틀라스 + 별도 학습 배지.
+  픽셀 몬스터는 공룡과 구분, 직업군 합체는 우주비행사, 마지막 빌런은 별도 보스 디자인.
 - 콘솔에 `[chapters]`(validateChapters) 에러가 있으면 커밋하지 않는다
 - iPad 세로/가로 스크롤 0 — 눈이 아니라 `public/_probe.html` HUD로 판정
 - 실기기(WebKit) 증거 없이 "안전해 보이는" 오디오 예외를 만들지 않는다
