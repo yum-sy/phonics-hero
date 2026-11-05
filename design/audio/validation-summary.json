@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-06",
+  "passed": true,
+  "model": "gpt-4o-mini-tts",
+  "voice": "nova",
+  "voiceSampleSelectedByUser": true,
+  "entries": 590,
+  "korean": 57,
+  "english": 533,
+  "protectedPhonemesUnchanged": 41,
+  "rejectedNovaCandidatesRegenerated": 9,
+  "bytes": 9757315,
+  "seconds": 858.606,
+  "rmsMin": 0.07365,
+  "rmsMax": 0.12049,
+  "peakMax": 0.99094,
+  "clippedFiles": 0,
+  "trimmedFiles": 413,
+  "checks": [
+    "590 request hashes match final inventory + nova model/voice",
+    "590 published file hashes match manifest",
+    "590 AAC files decoded by afconvert and measured during publication",
+    "57 Korean instructions exactly match user-selected Nova sample",
+    "41 original phoneme SHA256 unchanged",
+    "No stale generated variants in public/narration",
+    "Single-letter name/multi-letter lowercase input parity 5 assertions",
+    "WAV preprocessing source preservation/margins/gain/silence/clipping 7 assertions"
+  ],
+  "listeningVerified": false,
+  "iPadVerified": false
+}
