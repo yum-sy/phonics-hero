@@ -1,6 +1,8 @@
 // Run against Vite: node scripts/check-safe-layout.mjs [http://localhost:5174]
 // Uses a private headless Chrome process, never the user's browser/profile.
 // Optional: CHROME_PATH, LAYOUT_CHECK_OUTPUT, LAYOUT_CHECK_CASES=chapters,chapters-locked
+// LAYOUT_PARENT_MODE=1 checks editor controls; LAYOUT_PARENT_PROGRESS=partial
+// seeds a mixed completion/lock fixture instead of clearing the full curriculum.
 // LAYOUT_REDUCED_MOTION=1 also checks static battle feedback under reduced motion.
 // 24 screens × portrait/landscape × normal/simulated safe insets = 96 cases.
 // Desktop layout evidence only: injected CSS insets do not emulate iOS or installed PWA behavior.
@@ -112,7 +114,15 @@ try {
   if (process.env.LAYOUT_REDUCED_MOTION === '1') {
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
   }
-  await command('Page.addScriptToEvaluateOnNewDocument', {source:'localStorage.clear()'});
+  const parentMode = process.env.LAYOUT_PARENT_MODE === '1'
+  const partialProgress = parentMode && process.env.LAYOUT_PARENT_PROGRESS === 'partial'
+  await command('Page.addScriptToEvaluateOnNewDocument', {source: `
+    localStorage.clear(); sessionStorage.clear();
+    ${parentMode ? "sessionStorage.setItem('phonics-hero-parent-access-v1', '1');" : ''}
+    ${partialProgress ? `localStorage.setItem('carbot-phonics-progress-v1', JSON.stringify({
+      clearedStages: ['stage-1'], stars: {'stage-1': 3}, lockedStages: ['stage-3'], checkpoint: null
+    }));` : ''}
+  `});
   const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7','listen1','finale1','finale2'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
   cases.unshift(...['world','chapters','map1'].map(name=>({name:name+'-locked',query:'shot='+name,locked:true,screen:name==='map1'?'map-screen':'chapter-select-screen'})));
   const filter = process.env.LAYOUT_CHECK_CASES?.split(',')
@@ -124,7 +134,7 @@ try {
       report.cases.push(entry)
       try {
         const safeCSS = `:root{--safe-top:${safeTop}px;--safe-bottom:${safeBottom}px}`
-        await navigate(`/_probe.html?${item.query}${item.locked ? '' : '&unlock=1'}&delay=1200&css=${encodeURIComponent(safeCSS)}`)
+        await navigate(`/_probe.html?${item.query}${item.locked || partialProgress ? '' : '&unlock=1'}&delay=1200&css=${encodeURIComponent(safeCSS)}`)
         entry.hud=await until(() => evaluate(`document.documentElement.getAttribute('data-probe')`),label)
         entry.images=await evaluate(decodedImages)
         entry.dom=await evaluate(`({viewport:[innerWidth,innerHeight],families:[...new Set([...document.querySelectorAll('#app .character-asset')].map(e=>e.dataset.artFamily))],legacy:[...document.querySelectorAll('#app svg.carbot-art')].filter(e=>!e.classList.contains('character-asset')).length})`)

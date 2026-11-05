@@ -1,5 +1,8 @@
+import { stages as authoredStages } from './data/chapters/index.js'
+
 const STORAGE_KEY = 'carbot-phonics-progress-v1'
 const PARENT_ACCESS_KEY = 'phonics-hero-parent-access-v1'
+const validStageIds = new Set(authoredStages.map(stage => stage.id))
 
 function loadParentAccess() {
   try { return sessionStorage.getItem(PARENT_ACCESS_KEY) === '1' }
@@ -16,7 +19,7 @@ let parentAccess = loadParentAccess()
 const DEV_UNLOCK_ALL = false
 
 function emptyProgress() {
-  return { clearedStages: [], stars: {}, checkpoint: null }
+  return { clearedStages: [], stars: {}, checkpoint: null, lockedStages: [] }
 }
 
 // A checkpoint written by an older build (or truncated mid-write) must never
@@ -52,6 +55,9 @@ function load() {
       stars:
         parsed.stars && typeof parsed.stars === 'object' ? parsed.stars : {},
       checkpoint: sanitizeCheckpoint(parsed.checkpoint),
+      lockedStages: Array.isArray(parsed.lockedStages)
+        ? [...new Set(parsed.lockedStages.filter(id => validStageIds.has(id)))]
+        : [],
     }
   } catch (e) {
     return emptyProgress()
@@ -63,10 +69,12 @@ export const progress = load()
 // Explicitly enabled only by the separate review entry point. Keep the exported
 // object identity, but detach every mutable field from the child's saved data.
 let reviewMode = false
+let parentUndo = null
 
 export function enableReviewMode() {
   if (reviewMode) return
   reviewMode = true
+  parentUndo = null
   Object.assign(progress, emptyProgress())
 }
 
@@ -74,8 +82,8 @@ export function isReviewMode() {
   return reviewMode
 }
 
-// Access bypass only: never mark a stage cleared or rewrite earned progress.
-// sessionStorage survives reloads in this tab, but is not permanent progress.
+// Entering parent mode only enables the editor/navigation bypass. Progress
+// changes require a separate explicit scope edit through setParentProgress.
 export function isParentAccessEnabled() {
   return !reviewMode && parentAccess
 }
@@ -83,6 +91,7 @@ export function isParentAccessEnabled() {
 export function toggleParentAccess() {
   if (reviewMode) return false
   parentAccess = !parentAccess
+  if (!parentAccess) parentUndo = null
   try {
     if (parentAccess) sessionStorage.setItem(PARENT_ACCESS_KEY, '1')
     else sessionStorage.removeItem(PARENT_ACCESS_KEY)
@@ -90,13 +99,72 @@ export function toggleParentAccess() {
   return parentAccess
 }
 
-export function save() {
-  if (reviewMode) return
+export function save({ preserveParentUndo = false } = {}) {
+  if (!preserveParentUndo) parentUndo = null
+  if (reviewMode) return false
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+    return true
   } catch (e) {
-    // ignore (e.g. private mode quota)
+    return false // e.g. private mode quota; parent editor can show save failure.
   }
+}
+
+function scopeIds(stageIds) {
+  if (!Array.isArray(stageIds) || stageIds.length === 0 ||
+      stageIds.some(id => typeof id !== 'string' || !validStageIds.has(id))) {
+    throw new TypeError('Parent progress scope must contain known stage IDs')
+  }
+  return [...new Set(stageIds)]
+}
+
+function copyProgress() {
+  return {
+    clearedStages: [...progress.clearedStages], stars: { ...progress.stars },
+    checkpoint: progress.checkpoint ? { ...progress.checkpoint } : null,
+    lockedStages: [...progress.lockedStages],
+  }
+}
+
+export function getParentProgressStatus(stageIds) {
+  const ids = scopeIds(stageIds)
+  const cleared = ids.filter(isStageCleared).length
+  const locked = ids.filter(id => progress.lockedStages.includes(id)).length
+  const complete = cleared === ids.length
+  return { status: complete ? 'complete' : locked === ids.length ? 'locked' : 'partial',
+    total: ids.length, cleared, locked, complete }
+}
+
+// Only the selected subtree changes. Explicit locks survive a completed
+// predecessor; a later normal playthrough cannot silently reopen them.
+export function setParentProgress(stageIds, completed) {
+  if (!isParentAccessEnabled()) return { changed: false, count: 0, completed, saved: false }
+  if (typeof completed !== 'boolean') throw new TypeError('Completion must be boolean')
+  const ids = scopeIds(stageIds), scope = new Set(ids)
+  const before = copyProgress()
+  if (completed) {
+    progress.clearedStages = [...new Set([...progress.clearedStages, ...ids])]
+    progress.lockedStages = progress.lockedStages.filter(id => !scope.has(id))
+    for (const id of ids) progress.stars[id] = Math.max(progress.stars[id] || 0, 3)
+  } else {
+    progress.clearedStages = progress.clearedStages.filter(id => !scope.has(id))
+    progress.lockedStages = [...new Set([...progress.lockedStages, ...ids])]
+    for (const id of ids) delete progress.stars[id]
+  }
+  if (scope.has(progress.checkpoint?.stageId)) progress.checkpoint = null
+  parentUndo = before
+  return { changed: true, count: ids.length, completed, saved: save({ preserveParentUndo: true }) }
+}
+
+export function canUndoParentProgress() {
+  return isParentAccessEnabled() && parentUndo !== null
+}
+
+export function undoParentProgress() {
+  if (!canUndoParentProgress()) return { changed: false, saved: false }
+  Object.assign(progress, parentUndo)
+  parentUndo = null
+  return { changed: true, saved: save() }
 }
 
 // Opt-in dev convenience (?resetprogress=1, see main.js) for wiping a
@@ -106,6 +174,7 @@ export function resetProgress() {
   progress.clearedStages = []
   progress.stars = {}
   progress.checkpoint = null
+  progress.lockedStages = []
   save()
 }
 
@@ -118,10 +187,11 @@ export function forceClearStage(stageId) {
 }
 
 export function isStageCleared(stageId) {
-  return progress.clearedStages.includes(stageId)
+  return !progress.lockedStages.includes(stageId) && progress.clearedStages.includes(stageId)
 }
 
 export function markStageCleared(stageId, stars = 3) {
+  progress.lockedStages = progress.lockedStages.filter(id => id !== stageId)
   if (!progress.clearedStages.includes(stageId)) {
     progress.clearedStages.push(stageId)
   }
@@ -162,6 +232,8 @@ export function clearCheckpoint() {
 
 export function isStageUnlocked(stages, stageId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
+  if (progress.lockedStages.includes(stageId)) return false
+  if (isStageCleared(stageId)) return true
   const idx = stages.findIndex((s) => s.id === stageId)
   if (idx <= 0) return true
   return isStageCleared(stages[idx - 1].id)
@@ -172,6 +244,9 @@ export function isStageUnlocked(stages, stageId) {
 export function isChapterUnlocked(chapters, chapterId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
   const idx = chapters.findIndex((c) => c.id === chapterId)
+  const chapter = chapters[idx]
+  if (chapter?.stages.length && chapter.stages.every(stage => progress.lockedStages.includes(stage.id))) return false
+  if (chapter?.stages.some(stage => isStageCleared(stage.id))) return true
   if (idx <= 0) return true
   const prevChapter = chapters[idx - 1]
   const bossStage = prevChapter.stages.find((s) => s.chapterBoss)
@@ -195,6 +270,9 @@ export function isChapterCleared(chapter) {
 export function isWorldUnlocked(worlds, worldId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
   const idx = worlds.findIndex((w) => w.id === worldId)
+  const stages = worlds[idx]?.slots.flatMap(slot => slot.chapter?.stages || []) || []
+  if (stages.length && stages.every(stage => progress.lockedStages.includes(stage.id))) return false
+  if (stages.some(stage => isStageCleared(stage.id))) return true
   if (idx <= 0) return true
   const prevWorld = worlds[idx - 1]
   const lastSlot = prevWorld.slots[prevWorld.slots.length - 1]

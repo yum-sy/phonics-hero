@@ -21,6 +21,10 @@ import {
   isReviewMode,
   isParentAccessEnabled,
   toggleParentAccess,
+  setParentProgress,
+  getParentProgressStatus,
+  undoParentProgress,
+  canUndoParentProgress,
   isStageCleared,
   isStageUnlocked,
   isWorldCleared,
@@ -78,6 +82,7 @@ function installParentCommand(title, refreshLocks) {
   updateStatus()
   releaseParentHold = bindParentHold(title, () => {
     toggleParentAccess()
+    parentProgressMessage = ''
     if (refreshLocks) refreshLocks()
     else updateStatus() // Play keeps its current beat, HP and audio untouched.
   })
@@ -605,6 +610,46 @@ function waitForTransition(minDelayMs) {
   return showTransitionCountdown(Promise.all([whenAudioIdle(), sleep(minDelayMs)]))
 }
 
+// Parent edits are separate sibling buttons: navigation never changes progress.
+let parentProgressMessage = ''
+const parentAttribute = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
+function parentScopeIds(kind, id) {
+  if (kind === 'world') return getWorldById(id).slots.flatMap(slot => slot.chapter?.stages.map(stage => stage.id) || [])
+  if (kind === 'chapter') return getChapterById(id).stages.map(stage => stage.id)
+  return [id]
+}
+function parentProgressControls(kind, id, label) {
+  if (!isParentAccessEnabled()) return ''
+  const status = getParentProgressStatus(parentScopeIds(kind, id))
+  const action = status.complete ? '다시 잠금' : '완료 처리'
+  const attrs = `data-parent-scope="${kind}" data-parent-id="${parentAttribute(id)}"`
+  return `<div class="parent-progress-controls">
+    <button type="button" class="parent-progress-toggle" ${attrs} data-parent-completed="${!status.complete}" aria-label="${parentAttribute(label)}: 하위 ${status.total}개 스테이지 ${action}" title="${action}"><span aria-hidden="true">${status.complete ? '🔓' : '🔒'}</span>${kind === 'stage' ? '' : `<span>${status.cleared}/${status.total}</span>`}</button>
+    ${!status.complete && (status.cleared > 0 || (status.locked > 0 && status.locked < status.total)) ? `<button type="button" class="parent-progress-relock" ${attrs} data-parent-completed="false" aria-label="${parentAttribute(label)}: 하위 ${status.total}개 스테이지 다시 잠금">다시 잠금</button>` : ''}
+  </div>`
+}
+function parentProgressBar() {
+  if (!isParentAccessEnabled()) return ''
+  return `<div class="parent-progress-bar"><span role="status">${parentProgressMessage || '🔒 완료 처리 · 🔓 다시 잠금 · 변경은 자동 저장'}</span><button type="button" id="parent-progress-undo" ${canUndoParentProgress() ? '' : 'disabled'}>↶ 되돌리기</button></div>`
+}
+function installParentProgressControls(refresh) {
+  if (!isParentAccessEnabled()) return
+  app.querySelectorAll('[data-parent-scope]').forEach(button => button.addEventListener('click', event => {
+    event.preventDefault()
+    event.stopPropagation()
+    const completed = button.dataset.parentCompleted === 'true'
+    const result = setParentProgress(parentScopeIds(button.dataset.parentScope, button.dataset.parentId), completed)
+    parentProgressMessage = `${result.count}개 스테이지 ${completed ? '완료 처리' : '다시 잠금'} · ${result.saved ? '저장됨' : '저장하지 못했어요'}`
+    refresh()
+  }))
+  app.querySelector('#parent-progress-undo')?.addEventListener('click', event => {
+    event.preventDefault()
+    const result = undoParentProgress()
+    parentProgressMessage = result.changed ? `직전 변경을 되돌렸어요 · ${result.saved ? '저장됨' : '저장하지 못했어요'}` : '되돌릴 변경이 없어요'
+    refresh()
+  })
+}
+
 // ---------- WORLD SELECT SCREEN ----------
 //
 // Top-level screen: the 33-chapter curriculum is grouped into 5 "worlds"
@@ -648,6 +693,7 @@ function worldSelectScreen() {
         : '<i class="lock">🔒</i>'
       const [start, end] = world.chapterRange
       return `
+        ${isParentAccessEnabled() ? '<div class="parent-progress-card">' : ''}
         <button class="${cls}" data-world="${world.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked world"'
       }>
@@ -655,7 +701,7 @@ function worldSelectScreen() {
           <div class="chapter-card-order">${world.title}</div>
           <div class="chapter-card-title range">Chapters ${start}-${end}</div>
           ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
-        </button>`
+        </button>${parentProgressControls('world', world.id, world.title)}${isParentAccessEnabled() ? '</div>' : ''}`
     })
     .join('')
 
@@ -668,14 +714,16 @@ function worldSelectScreen() {
   // computed to, and the vw term only wins when the line would not fit.
   // Landscape has 1032px to work with and keeps the full 48px.
   app.innerHTML = `
-    <div class="screen chapter-select-screen">
+    <div class="screen chapter-select-screen ${isParentAccessEnabled() ? 'parent-progress-editor' : ''}">
       <div class="map-header"><span style="font-size:min(1em,5.5vw)">Yum JiHoon's Phonics · Pick a World</span></div>
+      ${parentProgressBar()}
       <div class="chapter-grid">${cards}</div>
       <p class="audio-credit">단어·안내 음성은 AI로 제작했어요. 파닉스는 녹음 음원이에요.</p>
     </div>
   `
 
   installParentCommand(app.querySelector('.map-header'), renderWorldSelect)
+  installParentProgressControls(renderWorldSelect)
   onTapAll(app.querySelectorAll('.chapter-card[data-world]'), (btn) => () => {
     unlockAudio()
     renderChapterSelect(btn.dataset.world)
@@ -712,6 +760,7 @@ function chapterSelectScreen(worldId) {
           unlocked && isStageCleared(faceStage.id)
         ) + (unlocked ? '' : lockBadgeHtml())
       return `
+        ${isParentAccessEnabled() ? '<div class="parent-progress-card">' : ''}
         <button class="${cls}" data-chapter="${chapter.id}" ${
         unlocked ? '' : 'disabled aria-label="Locked chapter"'
       }>
@@ -719,19 +768,21 @@ function chapterSelectScreen(worldId) {
           <div class="chapter-card-order">Chapter ${chapter.order}</div>
           <div class="chapter-card-title">${unlocked ? chapter.title : '???'}</div>
           ${cleared ? '<div class="chapter-card-badge">Clear! ⭐</div>' : ''}
-        </button>`
+        </button>${parentProgressControls('chapter', chapter.id, `Chapter ${chapter.order}`)}${isParentAccessEnabled() ? '</div>' : ''}`
     })
     .join('')
 
   app.innerHTML = `
-    <div class="screen chapter-select-screen">
+    <div class="screen chapter-select-screen ${isParentAccessEnabled() ? 'parent-progress-editor' : ''}">
       <button class="back-btn" id="back-to-worlds" aria-label="Back to worlds">◀ Worlds</button>
       <div class="map-header">${world.title} · Pick a Chapter</div>
+      ${parentProgressBar()}
       <div class="chapter-grid">${cards}</div>
     </div>
   `
 
   installParentCommand(app.querySelector('.map-header'), () => isWorldUnlocked(worlds, worldId) ? renderChapterSelect(worldId) : renderWorldSelect())
+  installParentProgressControls(() => renderChapterSelect(worldId))
   onTap(document.getElementById('back-to-worlds'), renderWorldSelect)
 
   onTapAll(app.querySelectorAll('.chapter-card[data-chapter]'), (btn) => () => {
@@ -792,19 +843,22 @@ function mapScreen(chapterId) {
           <div class="stage-label">${
             unlocked ? stageTitleHtml(stage.title) : ''
           }</div>
+          ${parentProgressControls('stage', stage.id, stage.title)}
         </div>`
     })
     .join('')
 
   app.innerHTML = `
-    <div class="screen map-screen">
+    <div class="screen map-screen ${isParentAccessEnabled() ? 'parent-progress-editor' : ''}">
       <button class="back-btn" id="back-to-chapters" aria-label="Back to chapters">◀ Chapters</button>
       <div class="map-header">Chapter ${chapter.order} · ${chapter.title}</div>
+      ${parentProgressBar()}
       <div class="map-path">${nodes}</div>
     </div>
   `
 
   installParentCommand(app.querySelector('.map-header'), () => returnToAccessibleMap(chapterId))
+  installParentProgressControls(() => renderMap(chapterId))
   onTap(document.getElementById('back-to-chapters'), () => {
     const world = getWorldForChapterOrder(chapter.order)
     renderChapterSelect(world.id)
