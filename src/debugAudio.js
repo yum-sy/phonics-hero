@@ -38,6 +38,14 @@ export function mountAudioDebugPanel() {
   // over the game's own bottom-anchored buttons (confirm/options), which
   // made the game unplayable underneath it. A fixed-width side column never
   // overlaps that area regardless of how much log accumulates.
+  //
+  // Starts COLLAPSED (real-device report, 2026-10: the full 240px-wide
+  // column -- even with just its button bar showing -- sat over enough of
+  // the stage screen's own left-side controls to block play entirely on the
+  // iPad's narrower-than-desktop viewport). Collapsed state shrinks to a
+  // small floating toggle rather than keeping the full-height column
+  // around at a smaller width, so NOTHING of the game is covered until the
+  // child/QA tester deliberately asks to see the log.
   const wrap = document.createElement('div')
   wrap.style.cssText =
     'position:fixed;left:0;top:0;bottom:0;width:240px;z-index:99999;' +
@@ -45,6 +53,31 @@ export function mountAudioDebugPanel() {
     'font:10px/1.35 monospace;padding:6px;white-space:pre-wrap;word-break:break-word;' +
     'border-right:2px solid #0f0;'
   document.body.appendChild(wrap)
+
+  const toggleTab = document.createElement('button')
+  toggleTab.textContent = '🐞'
+  toggleTab.style.cssText =
+    'position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:100000;' +
+    'font:14px monospace;padding:8px 6px;background:rgba(0,0,0,0.75);color:#0f0;' +
+    'border:1px solid #0f0;border-left:none;border-radius:0 6px 6px 0;'
+  document.body.appendChild(toggleTab)
+
+  // A dedicated, unmissable close control -- separate from the "collapse"
+  // text button buried among the TEST A/B/C buttons in `bar` below, which
+  // real usage showed wasn't obvious enough as "the way to get the panel
+  // off the screen". Fixed to the panel's own top-right corner (inside
+  // `wrap`, so it only exists while the panel is open) rather than in the
+  // button row, so it's the first thing a thumb finds.
+  const closeBtn = document.createElement('button')
+  closeBtn.textContent = '✕'
+  closeBtn.style.cssText =
+    'position:sticky;top:0;float:right;z-index:1;font:14px monospace;' +
+    'padding:2px 8px;background:#300;color:#f55;border:1px solid #f55;' +
+    'border-radius:4px;'
+  closeBtn.onclick = () => {
+    collapsed = true
+    applyCollapsed()
+  }
 
   const bar = document.createElement('div')
   bar.style.cssText =
@@ -59,10 +92,19 @@ export function mountAudioDebugPanel() {
     return b
   }
   const body = document.createElement('div')
-  let collapsed = false
+  let collapsed = true
+  const applyCollapsed = () => {
+    wrap.style.display = collapsed ? 'none' : 'block'
+    toggleTab.style.display = collapsed ? 'block' : 'none'
+  }
+  applyCollapsed()
+  toggleTab.onclick = () => {
+    collapsed = false
+    applyCollapsed()
+  }
   mkBtn('collapse', () => {
-    collapsed = !collapsed
-    body.style.display = collapsed ? 'none' : 'block'
+    collapsed = true
+    applyCollapsed()
   })
   mkBtn('clear', () => {
     lines.length = 0
@@ -134,6 +176,7 @@ export function mountAudioDebugPanel() {
     copyBox.select()
     log('[textarea below is selected -- use the native "Copy" popup, or just screenshot the log]')
   })
+  wrap.appendChild(closeBtn)
   wrap.appendChild(bar)
   wrap.appendChild(copyBox)
   wrap.appendChild(body)

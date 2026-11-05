@@ -1685,9 +1685,6 @@ export function clearAudioQueue() {
   for (const item of queue) item.resolve()
   queue.length = 0
   pendingTap = null
-  // The child is leaving this screen/stage -- see releaseMicStream()'s own
-  // comment for why this is where the mic actually gets let go.
-  releaseMicStream()
   // Waive the gap in front of whatever speaks next. The reserved silence
   // belonged to a screen the child has left, and making the new screen's
   // first sound sit behind it is the "nothing happens when I press it"
@@ -1852,9 +1849,17 @@ export function speechRecognitionAvailable() {
 // The mic stream, once granted, is kept open and reused across attempts
 // instead of re-requesting getUserMedia every tap -- re-requesting would
 // flash the OS mic-in-use indicator off and on for every ATTACK press.
-// releaseMicStream() (called from clearAudioQueue(), i.e. on every
-// "leaving this context" navigation the app already has) is what actually
-// lets it go, so the mic is not left hot past the stage the child is on.
+// releaseMicStream() used to also run from clearAudioQueue(), i.e. on every
+// in-app screen/stage navigation -- that was wrong (real-device report,
+// 2026-10): the first ATTACK after a fresh permission grant works, but the
+// very next stage's ATTACK goes dead with no re-prompt and no way to
+// recover, blocking the game outright. Stopping the tracks every navigation
+// and immediately re-requesting them on the next ATTACK is exactly the
+// stop/restart cycle real iPadOS appears not to handle reliably for a mic
+// session (see the bounded micCtx.resume() wait below for the other half of
+// this). Correct behavior per product decision: once granted, the mic stays
+// open for the rest of the session -- only an actual page exit
+// (releaseMicStream() wired to `pagehide` below) lets it go.
 let micStream = null
 let micStreamPromise = null
 // Sticky once true: a denied prompt or a missing API is not a transient
@@ -1879,12 +1884,42 @@ export function shoutAttackApiPresent() {
   return micApiPresent()
 }
 
+// Real-device report (2026-10, confirmed via ?debugaudio=1's [shout] log):
+// the FIRST ATTACK after granting permission works (max rms 0.0138, well
+// over threshold). Every ATTACK after that reads a flatline rms=0.0000 for
+// the entire listen window -- not quiet, EXACTLY zero, every single sample
+// -- once any TTS (speakEN) has played in between. Crucially, the mic
+// track's `readyState` stays `'live'` and `'ended'` never fires (the
+// earlier liveness check this function used to do never caught it), so the
+// track itself isn't what died. What's shared across every failing attempt
+// is the cached `micCtx`/`micAnalyser` pair: iOS appears to silently starve
+// that specific AudioContext's audio unit of real input once the page's
+// AVAudioSession gets flipped for speechSynthesis playback, without ever
+// surfacing that as a state change JS can observe (ctx.state keeps reading
+// 'running'). The fix that matches the evidence: stop trying to detect "is
+// the cached stream/context still good" and instead never reuse either
+// across attempts -- re-request getUserMedia and build a brand new
+// AudioContext + analyser every single attemptShoutAttack() call, exactly
+// like the one call that's confirmed to always work (the very first one).
+// `micUnavailable` is the only thing still cached across calls (a real
+// permission denial is permanent for the session). Trade-off accepted: the
+// OS mic-in-use indicator may blink off/on between attempts instead of
+// staying steady -- a working ATTACK matters more than a steady indicator.
 function ensureMicStream() {
-  if (micStream) return Promise.resolve(micStream)
   if (micUnavailable) return Promise.resolve(null)
   if (micStreamPromise) return micStreamPromise
   micStreamPromise = (async () => {
     try {
+      if (micStream) {
+        for (const track of micStream.getTracks()) {
+          try {
+            track.stop()
+          } catch (e) {
+            // ignore
+          }
+        }
+        micStream = null
+      }
       // Raw signal only -- { audio: true } leaves the browser's call-quality
       // processing on by default, and autoGainControl actively normalizes
       // quiet input toward a "normal speaking volume" target. That defeats
@@ -1915,19 +1950,25 @@ function ensureMicStream() {
 // A dedicated AudioContext, separate from the one phoneme playback uses
 // (see ensureAudioCtx above): analysis-only, never connected to
 // ctx.destination (that would loop the child's own mic input back out of
-// the speakers), and its lifecycle is independent of the phoneme buffer
-// path's suspend/resume dance.
+// the speakers). Rebuilt fresh on every call now (see ensureMicStream's
+// comment on why reuse was the actual bug) -- the previous context is
+// closed first so a long play session doesn't leak an unbounded number of
+// open AudioContexts (iOS enforces a small hard cap on how many can exist
+// at once).
 function ensureMicAnalyser(stream) {
   const Ctx = window.AudioContext || window.webkitAudioContext
-  if (!micCtx) {
-    micCtx = new Ctx()
+  if (micCtx) {
+    try {
+      micCtx.close()
+    } catch (e) {
+      // ignore
+    }
   }
-  if (!micAnalyser) {
-    const source = micCtx.createMediaStreamSource(stream)
-    micAnalyser = micCtx.createAnalyser()
-    micAnalyser.fftSize = 512
-    source.connect(micAnalyser)
-  }
+  micCtx = new Ctx()
+  const source = micCtx.createMediaStreamSource(stream)
+  micAnalyser = micCtx.createAnalyser()
+  micAnalyser.fftSize = 512
+  source.connect(micAnalyser)
   return micAnalyser
 }
 
@@ -2018,7 +2059,25 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
     let analyser
     try {
       analyser = ensureMicAnalyser(stream)
-      if (micCtx.state !== 'running') await micCtx.resume()
+      if (micCtx.state !== 'running') {
+        // NEVER `await` this unguarded -- same rule as resumeAudioCtx()'s own
+        // comment and CLAUDE.md's "오디오 큐" section for the main playback
+        // context: a resume() promise with no gesture backing it can simply
+        // never settle. This context is now only ever suspended by something
+        // outside this module's control (e.g. the OS backgrounding the tab
+        // between ATTACKs), not by releaseMicStream() mid-session anymore
+        // (that call was removed from the per-navigation path -- see its own
+        // comment), but the same "no gesture behind this resume" risk still
+        // applies whenever it does happen. Awaiting it unconditionally used
+        // to mean `timeoutId` below never even got armed -- the ATTACK
+        // button stayed stuck on "listening" forever with no fallback.
+        // Bounding the wait guarantees this always reaches the
+        // tick()/timeoutId setup below, which can still finish the beat via
+        // 'timeout' even if the context truly never resumes.
+        const resumePromise = micCtx.resume()
+        if (resumePromise && resumePromise.catch) resumePromise.catch(() => {})
+        await Promise.race([resumePromise, sleep(300)])
+      }
     } catch (e) {
       // Analyser/context setup failed on this engine after all -- same
       // no-mic-gate fallback as an outright missing API.
@@ -2058,11 +2117,14 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
   return controller
 }
 
-// Called from clearAudioQueue() -- every "leaving this context" navigation
-// the app already has (see that function's own comment). Stopping the
-// tracks is what actually turns off the OS mic-in-use indicator; the
-// AnalyserNode/context are left alone to be lazily recreated by the next
-// ensureMicAnalyser() call rather than torn down and rebuilt every stage.
+// Stopping the tracks is what actually turns off the OS mic-in-use
+// indicator; the AnalyserNode/context are left alone (see the
+// `micAnalyser = null` below) rather than torn down, since this is now only
+// ever called once, at real page exit (see the `pagehide` listener below) --
+// not on every in-app stage navigation anymore (that cycle was the bug:
+// real-device report, 2026-10, "first ATTACK after granting works, the next
+// stage's ATTACK just goes dead" -- stopping+immediately re-requesting the
+// mic on every screen transition is not a cycle real iPadOS tolerates well).
 function releaseMicStream() {
   if (!micStream) return
   for (const track of micStream.getTracks()) {
@@ -2073,22 +2135,26 @@ function releaseMicStream() {
     }
   }
   micStream = null
-  // Bug fixed 2026-08: this used to leave `micAnalyser` (and the
-  // MediaStreamAudioSourceNode inside it) wired to the now-stopped stream.
-  // ensureMicAnalyser()'s `if (!micAnalyser)` guard then skipped rebuilding
-  // it against the NEXT stage's freshly granted stream, so every ATTACK
-  // after the first stage silently analyzed a dead, disconnected source --
-  // permanently reading ~0 RMS, i.e. the child's shout could never cross
-  // SHOUT_RMS_THRESHOLD again for the rest of the session (real QA report:
-  // "stage 1 worked, stage 2 doesn't"). Clearing it here forces
-  // ensureMicAnalyser() to build a new source node from whatever stream
-  // ensureMicStream() hands it next.
+  // ensureMicAnalyser() now rebuilds micCtx/micAnalyser fresh on every
+  // attemptShoutAttack() call regardless (see its own comment), so this is
+  // just releasing whatever the page's final attempt left behind at exit.
   try {
-    if (micAnalyser) micAnalyser.disconnect()
+    if (micCtx) micCtx.close()
   } catch (e) {
     // ignore
   }
+  micCtx = null
   micAnalyser = null
+}
+
+// The one remaining caller of releaseMicStream(): an actual page exit, not
+// an in-app navigation (see that function's own comment on why it was
+// pulled out of clearAudioQueue()). `pagehide` over `beforeunload` -- it
+// also fires on iOS Safari backgrounding/tab-switch-away, which is the
+// closest this app gets to "the child stopped playing" without an explicit
+// quit action, and unlike `unload` it doesn't block the bfcache.
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', releaseMicStream)
 }
 
 // NOT CURRENTLY CALLED -- kept for when a design actually consumes the
