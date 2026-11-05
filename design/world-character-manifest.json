@@ -1,0 +1,2218 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-05",
+  "generator": "Built-in image_gen; PNG originals preserved; alpha measurement only",
+  "counts": {
+    "newDesigns": 70,
+    "activeNewDesigns": 66,
+    "reservedNewDesigns": 4,
+    "characterIdentities": 295,
+    "heroIdentities": 130,
+    "villainIdentities": 165,
+    "baseStoredFrames": 66,
+    "newStoredFrames": 70,
+    "totalStoredFrames": 136,
+    "baseProductionSlots": 65,
+    "activeBaseVisuals": 51,
+    "activeWorldVisuals": 66,
+    "totalDistinctActiveVisuals": 117
+  },
+  "layout": {
+    "columns": 5,
+    "rows": 2,
+    "topRow": "Worlds 1–5 ordinary heroes",
+    "bottomRow": "Worlds 1–5 final bosses"
+  },
+  "validation": {
+    "nodeRegression": {
+      "passed": true,
+      "mappedIdentities": 295,
+      "pngHeaders": 14,
+      "frameRectangles": 136,
+      "preservedHeroEmblems": 130,
+      "fusionChapters": 33
+    },
+    "alphaMeasurement": {
+      "threshold": "alpha > 128",
+      "sheetsPassed": 7,
+      "framesPassed": 70,
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0,
+      "visibleCropBoundaryPixels": 0,
+      "visibleSourceEdgePixels": 0,
+      "sharedTransparentPadding": [
+        {
+          "sheet": "comic-worlds",
+          "slot": 6,
+          "edge": "right",
+          "sourceColumn": 589,
+          "reason": "Single alpha-empty separator column is shared with adjacent crop; neither opaque content nor its coverage is duplicated"
+        }
+      ],
+      "limitation": "Alpha 1–128 fringes/halos may lie outside tight rectangles. This is not a claim of alpha>0 lossless extraction."
+    },
+    "browser": {
+      "reportedBy": "parent integration agent",
+      "screenCasesPassed": 56,
+      "screenCasesTotal": 56,
+      "rendererCasesPassed": 84,
+      "rendererCasesTotal": 84,
+      "newProductionCropsVisuallyReviewed": 70,
+      "buildPassed": true
+    },
+    "iPadPhysicalDevice": {
+      "verified": false
+    }
+  },
+  "notes": [
+    "70 newly generated designs are distinct from the 66 bound identities; World 5 pixel/career hero and boss slots are reserved.",
+    "295 character identities remain stable; art names/slugs and phonics data were not expanded to new curriculum stages.",
+    "Stage-4 ordinary heroes and final villains use world-specific sheets; existing fusion heroes remain, including the career astronaut.",
+    "Chapter 13 beacon is shared by ordinary stages 1, 2 and 4; all receive its world-specific hero.",
+    "Fusion lineup still deduplicates by phonics emblem and preserves sound order, preferring the world newcomer for duplicated sounds.",
+    "Concept names in this manifest describe visual designs; gameplay display names remain those in chapter data."
+  ],
+  "reserved": [
+    {
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "world": 5,
+      "slots": [
+        4,
+        9
+      ],
+      "reason": "World 5 has no pixel-monster chapter"
+    },
+    {
+      "family": "career",
+      "sheet": "career-worlds",
+      "world": 5,
+      "slots": [
+        4,
+        9
+      ],
+      "reason": "World 5 has no career chapter"
+    }
+  ],
+  "retiredBaseVisuals": [
+    "robot:2",
+    "robot:8",
+    "comic:2",
+    "comic:8",
+    "dino:2",
+    "dino:8",
+    "pixel:2",
+    "pixel:8",
+    "brick:2",
+    "brick:8",
+    "career:10",
+    "career:4",
+    "deco:2",
+    "deco:8"
+  ],
+  "sheets": [
+    {
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "path": "public/art/v3/robot-worlds.png",
+      "sha256": "0d3928a3acb29cf516616ea0d8c5d277369be68493a819d0e2cabe0c371811ee",
+      "bytes": 1052472,
+      "width": 1774,
+      "height": 887,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "path": "public/art/v3/comic-worlds.png",
+      "sha256": "0bf9a33e8396707fcacc71eca4d213fc6062dc43abce3928b3edf1de312e74cb",
+      "bytes": 3114733,
+      "width": 1536,
+      "height": 1024,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "path": "public/art/v3/dino-worlds.png",
+      "sha256": "7cc13d630426a5066c40bddc52269a1834773a27ded028dd82edbf1fa4b2175d",
+      "bytes": 985317,
+      "width": 1774,
+      "height": 887,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "path": "public/art/v3/pixel-worlds.png",
+      "sha256": "b355860bea4370be8afc2067f6bd3d88bbcb0b9ec5cdcd83dc048787d547e74a",
+      "bytes": 2214087,
+      "width": 1536,
+      "height": 1024,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "path": "public/art/v3/brick-worlds.png",
+      "sha256": "e5ab84fefa2167c28aa686ed44bd6d8580a7b04f853325704103159cae22b280",
+      "bytes": 1877127,
+      "width": 1536,
+      "height": 1024,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "career",
+      "sheet": "career-worlds",
+      "path": "public/art/v3/career-worlds.png",
+      "sha256": "1cc6c29d6cf8fe3e81a16d32f18f9453e3c6c54c68357bdb36f4393adc60a116",
+      "bytes": 2610920,
+      "width": 1536,
+      "height": 1024,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    },
+    {
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "path": "public/art/v3/deco-worlds.png",
+      "sha256": "97b7a132f57f28e8f49ad03f9caeae9ffe27ec6b792b09a1b421162a39416b50",
+      "bytes": 1701628,
+      "width": 1536,
+      "height": 1024,
+      "columns": 5,
+      "rows": 2,
+      "frameCount": 10
+    }
+  ],
+  "designs": [
+    {
+      "id": "robot-w1-hero",
+      "family": "robot",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 0,
+      "conceptName": "Rescue Coupe",
+      "palette": "coral red / cream / slate blue",
+      "description": "Compact rescue-car robot, circular shoulder hose reel, asymmetric forearm shield, wheel boots.",
+      "artSlugs": [
+        "turbo"
+      ]
+    },
+    {
+      "id": "robot-w1-boss",
+      "family": "robot",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 5,
+      "conceptName": "Furnace Titan",
+      "palette": "burnt orange / black iron / brass",
+      "description": "Massive boiler torso, towering twin exhaust stacks, enormous clamp fists; low wide stance, NO cape.",
+      "artSlugs": [
+        "dark-spark"
+      ]
+    },
+    {
+      "id": "robot-w2-hero",
+      "family": "robot",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 1,
+      "conceptName": "Sky Courier",
+      "palette": "sky blue / white / orange",
+      "description": "Agile delivery-van robot, square parcel shoulders, short roof antenna, slim waist, thick tire ankles.",
+      "artSlugs": [
+        "stormer"
+      ]
+    },
+    {
+      "id": "robot-w2-boss",
+      "family": "robot",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 6,
+      "conceptName": "Tidal Dreadnought",
+      "palette": "deep teal / ivory / copper",
+      "description": "Tall submarine admiral, cylindrical turbine shoulders, anchor gauntlet, diving-helmet face, streamlined fin armor.",
+      "artSlugs": [
+        "overclock"
+      ]
+    },
+    {
+      "id": "robot-w3-hero",
+      "family": "robot",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 2,
+      "conceptName": "Harbor Hauler",
+      "palette": "sea green / ivory / charcoal",
+      "description": "Sturdy tow-truck robot, low hook arm, broad bumper chest, round helmet, wide flat boots.",
+      "artSlugs": [
+        "chromewing-c20"
+      ]
+    },
+    {
+      "id": "robot-w3-boss",
+      "family": "robot",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 7,
+      "conceptName": "Crimson Rail King",
+      "palette": "crimson / steel / ink blue",
+      "description": "Locomotive warlord, wedge snowplow chest, giant train-wheel shoulders, piston legs, pointed engine-nose helmet.",
+      "artSlugs": [
+        "direforge-c20"
+      ]
+    },
+    {
+      "id": "robot-w4-hero",
+      "family": "robot",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 3,
+      "conceptName": "Rally Scout",
+      "palette": "sunflower yellow / navy / silver",
+      "description": "Lean rally-buggy robot, exposed roll-cage shoulder arches, long shin suspension, wide visor.",
+      "artSlugs": [
+        "cragrunner"
+      ]
+    },
+    {
+      "id": "robot-w4-boss",
+      "family": "robot",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 8,
+      "conceptName": "Storm Excavator",
+      "palette": "sand gold / dark olive / cream",
+      "description": "Construction colossus, unequal bucket fist and hydraulic pincer, rectangular cab head, giant track boots.",
+      "artSlugs": [
+        "voltmaw"
+      ]
+    },
+    {
+      "id": "robot-w5-hero",
+      "family": "robot",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 4,
+      "conceptName": "Polar Driller",
+      "palette": "ice white / cyan / vermilion",
+      "description": "Bulky snow explorer robot, tread feet, compact drill forearm, roof-lamp helmet, thick insulated panels.",
+      "artSlugs": [
+        "ratchett"
+      ]
+    },
+    {
+      "id": "robot-w5-boss",
+      "family": "robot",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "robot-worlds",
+      "slot": 9,
+      "conceptName": "Arctic Sentinel",
+      "palette": "white ceramic / cobalt / black chrome",
+      "description": "Elite faceted sovereign, broad horizontal shoulder blades, six short radial back fins, narrow blue visor.",
+      "artSlugs": [
+        "voltrust"
+      ]
+    },
+    {
+      "id": "comic-w1-hero",
+      "family": "comic",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 0,
+      "conceptName": "Copper Comet",
+      "palette": "copper / turquoise / cream",
+      "description": "Masked courier, swept ear fins, short scarf, oversized sprint boots, confident open hand.",
+      "artSlugs": [
+        "nord"
+      ]
+    },
+    {
+      "id": "comic-w1-boss",
+      "family": "comic",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 5,
+      "conceptName": "Iron Bull",
+      "palette": "forest green / brass / cream",
+      "description": "Enormous armored wrestler, short bull-helmet fins, riveted shoulders, huge brass gloves; NO cape.",
+      "artSlugs": [
+        "shadow-king"
+      ]
+    },
+    {
+      "id": "comic-w2-hero",
+      "family": "comic",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 1,
+      "conceptName": "Jade Beacon",
+      "palette": "jade / white / gold",
+      "description": "Shield heroine, open-face helmet, short bob, circular shield held low, broad cuffs.",
+      "artSlugs": [
+        "nord-c8"
+      ]
+    },
+    {
+      "id": "comic-w2-boss",
+      "family": "comic",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 6,
+      "conceptName": "Scarlet Conductor",
+      "palette": "scarlet / white / black",
+      "description": "Elegant sonic maestro, high fan collar, swept silver hair, asymmetric tailcoat, compact tuning-fork device.",
+      "artSlugs": [
+        "king-static"
+      ]
+    },
+    {
+      "id": "comic-w3-hero",
+      "family": "comic",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 2,
+      "conceptName": "Red Dynamo",
+      "palette": "scarlet / charcoal / silver",
+      "description": "Compact technology hero, circular forearm coils, angular white mask lenses, squat mechanical boots.",
+      "artSlugs": [
+        "voltarc-c19"
+      ]
+    },
+    {
+      "id": "comic-w3-boss",
+      "family": "comic",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 7,
+      "conceptName": "Clockwork Monarch",
+      "palette": "antique gold / petrol blue / bone",
+      "description": "Regal gear halo, geometric breastplate, narrow mechanical staff, long precise silhouette; NO crown.",
+      "artSlugs": [
+        "umbraking-c19"
+      ]
+    },
+    {
+      "id": "comic-w4-hero",
+      "family": "comic",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 3,
+      "conceptName": "Blue Atlas",
+      "palette": "royal blue / ivory / ochre",
+      "description": "Tall strength hero, triangular torso, shoulder straps, enormous ivory gauntlets, friendly visible jaw.",
+      "artSlugs": [
+        "pip-c24"
+      ]
+    },
+    {
+      "id": "comic-w4-boss",
+      "family": "comic",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 8,
+      "conceptName": "Glacier Goliath",
+      "palette": "ice cyan / navy / silver",
+      "description": "Huge square ice-armored champion, jagged shoulder slabs, block gauntlets, tiny recessed stern face.",
+      "artSlugs": [
+        "overload-prime"
+      ]
+    },
+    {
+      "id": "comic-w5-hero",
+      "family": "comic",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 4,
+      "conceptName": "Solar Skipper",
+      "palette": "yellow / coral / navy",
+      "description": "Agile half-masked hero, swept hair, grappling belt reel, short folded shoulder cape.",
+      "artSlugs": [
+        "voltbeam"
+      ]
+    },
+    {
+      "id": "comic-w5-boss",
+      "family": "comic",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "comic-worlds",
+      "slot": 9,
+      "conceptName": "Obsidian Mantis",
+      "palette": "black / lime / orange",
+      "description": "Agile insect mastermind, folded blade-like forearm guards, tapered helmet, four short angular back appendages.",
+      "artSlugs": [
+        "lord-static"
+      ]
+    },
+    {
+      "id": "dino-w1-hero",
+      "family": "dino",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 0,
+      "conceptName": "Sunny Pachy",
+      "palette": "honey / teal / cream",
+      "description": "Friendly pachycephalosaurus, enormous dome head, tiny arms, thick low tail, little neckerchief.",
+      "artSlugs": [
+        "huey"
+      ]
+    },
+    {
+      "id": "dino-w1-boss",
+      "family": "dino",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 5,
+      "conceptName": "Granite Triceratops",
+      "palette": "slate gray / rust red / ivory",
+      "description": "Huge shield-like frill, thick cream horns, red stone armor, low powerful quadruped; NO crown.",
+      "artSlugs": [
+        "shadow-rex"
+      ]
+    },
+    {
+      "id": "dino-w2-hero",
+      "family": "dino",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 1,
+      "conceptName": "Cobalt Ankyl",
+      "palette": "cobalt / apricot / cream",
+      "description": "Low wide ankylosaurus, orange armor knobs, broad rounded tail club, cheerful face.",
+      "artSlugs": [
+        "wingo"
+      ]
+    },
+    {
+      "id": "dino-w2-boss",
+      "family": "dino",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 6,
+      "conceptName": "Copper Spinosaurus",
+      "palette": "copper / deep teal / cream",
+      "description": "Magnificent striped sail, long strong snout, thick balancing tail; sail dominates silhouette.",
+      "artSlugs": [
+        "bonecrash"
+      ]
+    },
+    {
+      "id": "dino-w3-hero",
+      "family": "dino",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 2,
+      "conceptName": "Fern Parasaur",
+      "palette": "leaf green / peach / ivory",
+      "description": "Upright parasaurolophus, long backward head crest, stout legs, compact explorer satchel.",
+      "artSlugs": [
+        "skyfin-c15"
+      ]
+    },
+    {
+      "id": "dino-w3-boss",
+      "family": "dino",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 7,
+      "conceptName": "Cinder Ankylosaur",
+      "palette": "charcoal / lava orange / sandstone",
+      "description": "Huge low fortress body, layered molten-stone plates, massive club tail, thick cheek guards.",
+      "artSlugs": [
+        "voidrex-c15"
+      ]
+    },
+    {
+      "id": "dino-w4-hero",
+      "family": "dino",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 3,
+      "conceptName": "Coral Ceratops",
+      "palette": "coral / pale aqua / cream",
+      "description": "Compact centrosaurus, scalloped frill, single obvious nose horn, broad cheeks, four sturdy legs.",
+      "artSlugs": [
+        "wingo-c26"
+      ]
+    },
+    {
+      "id": "dino-w4-boss",
+      "family": "dino",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 8,
+      "conceptName": "Ocean Therizinosaur",
+      "palette": "sea blue / turquoise / ochre",
+      "description": "Tall feathered giant, long cream claws held inward, broad fan tail, sweeping yellow ruff.",
+      "artSlugs": [
+        "boneshade"
+      ]
+    },
+    {
+      "id": "dino-w5-hero",
+      "family": "dino",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 4,
+      "conceptName": "Snow Raptor",
+      "palette": "ivory / sky blue / amber",
+      "description": "Small feathered raptor, clay arm tufts, swept head plume, long hind legs, bright eyes.",
+      "artSlugs": [
+        "skyra"
+      ]
+    },
+    {
+      "id": "dino-w5-boss",
+      "family": "dino",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "dino-worlds",
+      "slot": 9,
+      "conceptName": "Ruby Tyrant",
+      "palette": "ruby red / cream / dark brown",
+      "description": "Spectacular tyrannosaur, double brow crest, massive legs, broad sculpted back plates; NO royal cape.",
+      "artSlugs": [
+        "voidjaw"
+      ]
+    },
+    {
+      "id": "pixel-w1-hero",
+      "family": "pixel",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 0,
+      "conceptName": "Spark Stoat",
+      "palette": "cream / orange / electric blue",
+      "description": "Electric stoat, upright lightning-tipped ears, fluffy curled tail, tiny mitten paws.",
+      "artSlugs": [
+        "drillo"
+      ]
+    },
+    {
+      "id": "pixel-w1-boss",
+      "family": "pixel",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 5,
+      "conceptName": "Crimson Crab Baron",
+      "palette": "crimson / cream / navy",
+      "description": "Grand armored crab, one huge square claw and one long pincer, broad legs, proud eyebrows.",
+      "artSlugs": [
+        "pixel-muncher"
+      ]
+    },
+    {
+      "id": "pixel-w2-hero",
+      "family": "pixel",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 1,
+      "conceptName": "Lotus Pup",
+      "palette": "mint / coral pink / dark green",
+      "description": "Round botanical sprite, lotus-bud head, four leaf feet, two stem arms; no animal tail.",
+      "artSlugs": [
+        "drillbit"
+      ]
+    },
+    {
+      "id": "pixel-w2-boss",
+      "family": "pixel",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 6,
+      "conceptName": "Emerald Stag Beetle",
+      "palette": "emerald / brass / black",
+      "description": "Towering beetle, massive antler-like mandibles, angular polished shell, six short armored legs.",
+      "artSlugs": [
+        "glitch-emperor"
+      ]
+    },
+    {
+      "id": "pixel-w3-hero",
+      "family": "pixel",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 2,
+      "conceptName": "Cloud Cub",
+      "palette": "sky blue / white / gold",
+      "description": "Squat cloud bear, round ears, star cheek tufts, puffy spiral tail, broad little paws.",
+      "artSlugs": [
+        "drillbit-c18"
+      ]
+    },
+    {
+      "id": "pixel-w3-boss",
+      "family": "pixel",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 7,
+      "conceptName": "Solar Lion",
+      "palette": "gold / ivory / deep orange",
+      "description": "Majestic feline, layered sunburst mane, broad cream paws, thick tufted tail; no horns or wings.",
+      "artSlugs": [
+        "munchor-c18"
+      ]
+    },
+    {
+      "id": "pixel-w4-hero",
+      "family": "pixel",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 3,
+      "conceptName": "Ember Beetle",
+      "palette": "coral / charcoal / cream",
+      "description": "Cute sturdy beetle, shiny pixel shell, short antennae, four visible feet; no horns.",
+      "artSlugs": [
+        "drillbit-c28"
+      ]
+    },
+    {
+      "id": "pixel-w4-boss",
+      "family": "pixel",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "pixel-worlds",
+      "slot": 8,
+      "conceptName": "Tidal Octopus",
+      "palette": "cobalt / aqua / coral",
+      "description": "Broad domed head, intelligent gold eyes, eight curling tentacles forming a ground-supported throne silhouette.",
+      "artSlugs": [
+        "static-muncher"
+      ]
+    },
+    {
+      "id": "pixel-w5-hero",
+      "family": "pixel",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": true,
+      "sheet": "pixel-worlds",
+      "slot": 4,
+      "conceptName": "Pearl Spirit",
+      "palette": "ivory / aqua / gold",
+      "description": "Floating bell spirit, broad ribbon ears, tiny hands, star-shaped footless lower wisp.",
+      "artSlugs": []
+    },
+    {
+      "id": "pixel-w5-boss",
+      "family": "pixel",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": true,
+      "sheet": "pixel-worlds",
+      "slot": 9,
+      "conceptName": "Snow Owl Sovereign",
+      "palette": "white / teal / charcoal",
+      "description": "Enormous owl, geometric partly folded wings, dark teal face mask, layered feather shoulders, gold talons.",
+      "artSlugs": []
+    },
+    {
+      "id": "brick-w1-hero",
+      "family": "brick",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 0,
+      "conceptName": "Red Rover",
+      "palette": "brick red / cream / navy",
+      "description": "Trail explorer, studded red cap, navy bib torso, small brick binoculars, chunky red boots.",
+      "artSlugs": [
+        "umo"
+      ]
+    },
+    {
+      "id": "brick-w1-boss",
+      "family": "brick",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 5,
+      "conceptName": "Red Fortress Giant",
+      "palette": "brick red / charcoal / gold",
+      "description": "Huge fortress golem, unequal tower shoulders, recessed grin, hinged clamp hands, stacked-brick feet.",
+      "artSlugs": [
+        "bug-king"
+      ]
+    },
+    {
+      "id": "brick-w2-hero",
+      "family": "brick",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 1,
+      "conceptName": "Aqua Diver",
+      "palette": "aqua / orange / ivory",
+      "description": "Underwater explorer, round brick diving helmet, face window, orange tank pack, studded flipper boots.",
+      "artSlugs": [
+        "blocky"
+      ]
+    },
+    {
+      "id": "brick-w2-boss",
+      "family": "brick",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 6,
+      "conceptName": "Jade Gear Baron",
+      "palette": "jade / copper / cream",
+      "description": "Tall mechanical villain, oversized shoulder cog, small top-hat module, long jointed arms; uneven silhouette.",
+      "artSlugs": [
+        "glitchking"
+      ]
+    },
+    {
+      "id": "brick-w3-hero",
+      "family": "brick",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 2,
+      "conceptName": "Green Mechanic",
+      "palette": "grass green / yellow / charcoal",
+      "description": "Builder, square yellow hardhat, green modular torso, chunky wrench, visible gray hinge knees.",
+      "artSlugs": [
+        "blockhart-c21"
+      ]
+    },
+    {
+      "id": "brick-w3-boss",
+      "family": "brick",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 7,
+      "conceptName": "Ice Block Colossus",
+      "palette": "white / cyan / dark blue",
+      "description": "Snow fortress, huge cyan block fists, tiny dark helmet window, broad squared shoulder slabs.",
+      "artSlugs": [
+        "glitchmar-c21"
+      ]
+    },
+    {
+      "id": "brick-w4-hero",
+      "family": "brick",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 3,
+      "conceptName": "Blue Mountaineer",
+      "palette": "royal blue / white / coral",
+      "description": "Climber, tall block helmet, side rope coil, stepped shoulders, massive coral boot soles.",
+      "artSlugs": [
+        "blocky-c25"
+      ]
+    },
+    {
+      "id": "brick-w4-boss",
+      "family": "brick",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 8,
+      "conceptName": "Copper Airship Captain",
+      "palette": "copper / navy / ivory",
+      "description": "Wide sideways captain hat, compact shoulder rotors, hinged-plate coat, giant brass control gauntlet.",
+      "artSlugs": [
+        "glitchsink"
+      ]
+    },
+    {
+      "id": "brick-w5-hero",
+      "family": "brick",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 4,
+      "conceptName": "Amber Aviator",
+      "palette": "amber / teal / cream",
+      "description": "Pilot, studded flight helmet, square raised goggles, teal jacket plates, tiny folded propeller backpack.",
+      "artSlugs": [
+        "coggo"
+      ]
+    },
+    {
+      "id": "brick-w5-boss",
+      "family": "brick",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "brick-worlds",
+      "slot": 9,
+      "conceptName": "Black Chess Emperor",
+      "palette": "black / cream / red",
+      "description": "Chess-rook sovereign, tall white crenellated helmet, black shoulder towers, red claws, heavy stepped brick robe.",
+      "artSlugs": [
+        "faultline"
+      ]
+    },
+    {
+      "id": "career-w1-hero",
+      "family": "career",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 0,
+      "conceptName": "Patrol Officer",
+      "palette": "navy / sky blue / cream",
+      "description": "Police officer, peaked cap, light-blue shirt, dark trousers, radio, open greeting hand.",
+      "artSlugs": [
+        "bobo"
+      ]
+    },
+    {
+      "id": "career-w1-boss",
+      "family": "career",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 5,
+      "conceptName": "Scarlet Saboteur",
+      "palette": "scarlet / charcoal / silver",
+      "description": "Industrial mastermind, heavy red exosuit, oversized pressure tanks, silver wrench gauntlets, clever open-face grin.",
+      "artSlugs": [
+        "wind-down"
+      ]
+    },
+    {
+      "id": "career-w2-hero",
+      "family": "career",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 1,
+      "conceptName": "Rescue Navigator",
+      "palette": "white / navy / orange",
+      "description": "Sailor, nautical cap, practical uniform, prominent orange-white lifebuoy held at side, sturdy boots.",
+      "artSlugs": [
+        "blocko-jr"
+      ]
+    },
+    {
+      "id": "career-w2-boss",
+      "family": "career",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 6,
+      "conceptName": "White Smuggler Admiral",
+      "palette": "ivory / deep teal / brass",
+      "description": "Charismatic rogue captain, wide ivory coat, dark sash, large nautical hat, brass mechanical hand.",
+      "artSlugs": [
+        "windup-duke"
+      ]
+    },
+    {
+      "id": "career-w3-hero",
+      "family": "career",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 2,
+      "conceptName": "Test Pilot",
+      "palette": "sage / orange / charcoal",
+      "description": "Fighter pilot, flight suit, orange harness, oxygen-hose helmet tucked under arm, short windswept hair.",
+      "artSlugs": [
+        "stax-c17"
+      ]
+    },
+    {
+      "id": "career-w3-boss",
+      "family": "career",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 7,
+      "conceptName": "Copper Sky Marshal",
+      "palette": "copper / midnight blue / cream",
+      "description": "Rogue aviation commander, swept flight helmet, compact broad turbine pack, reinforced forearms, short flight jacket.",
+      "artSlugs": [
+        "windup-king-c17"
+      ]
+    },
+    {
+      "id": "career-w4-hero",
+      "family": "career",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 3,
+      "conceptName": "Field Soldier",
+      "palette": "olive / tan / dark green",
+      "description": "Soldier, cap, tan webbing, compact rifle held diagonally DOWN; never aiming or shooting, no giant backpack.",
+      "artSlugs": [
+        "blocko-jr-c27"
+      ]
+    },
+    {
+      "id": "career-w4-boss",
+      "family": "career",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "career-worlds",
+      "slot": 8,
+      "conceptName": "Arctic Machine Commander",
+      "palette": "ice blue / white / charcoal",
+      "description": "Powerful commander, broad insulated collar, angular chest armor, short silver hair, large control gauntlet; no cape.",
+      "artSlugs": [
+        "windup-baron"
+      ]
+    },
+    {
+      "id": "career-w5-hero",
+      "family": "career",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": true,
+      "sheet": "career-worlds",
+      "slot": 4,
+      "conceptName": "Rescue Firefighter",
+      "palette": "yellow / red / charcoal",
+      "description": "Firefighter, red helmet, reflective coat, hose nozzle low, coiled red hose; broad practical stance.",
+      "artSlugs": []
+    },
+    {
+      "id": "career-w5-boss",
+      "family": "career",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": true,
+      "sheet": "career-worlds",
+      "slot": 9,
+      "conceptName": "Golden Space Corsair",
+      "palette": "gold / dark red / black",
+      "description": "Grand space pirate, asymmetric gold shoulder guard, dark-red command coat, black boots, luminous navigation globe.",
+      "artSlugs": []
+    },
+    {
+      "id": "deco-w1-hero",
+      "family": "deco",
+      "world": 1,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 0,
+      "conceptName": "Copper Falcon",
+      "palette": "copper / navy / ivory",
+      "description": "Masked guardian, angular falcon brow, short triangular shoulder cape, wide wrist guards, friendly smile.",
+      "artSlugs": [
+        "cloak"
+      ]
+    },
+    {
+      "id": "deco-w1-boss",
+      "family": "deco",
+      "world": 1,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 5,
+      "conceptName": "Ivory Sphinx",
+      "palette": "ivory / dark teal / copper",
+      "description": "Elegant mastermind, huge Egyptian-inspired geometric fan collar, angular chest armor, narrow waist; no crown.",
+      "artSlugs": [
+        "nightfall"
+      ]
+    },
+    {
+      "id": "deco-w2-hero",
+      "family": "deco",
+      "world": 2,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 1,
+      "conceptName": "Jade Strider",
+      "palette": "jade / cream / ochre",
+      "description": "Tall speed guardian, two swept helmet fins, tapered chest, long legs, cream boots; no cape.",
+      "artSlugs": [
+        "beacon"
+      ]
+    },
+    {
+      "id": "deco-w2-boss",
+      "family": "deco",
+      "world": 2,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 6,
+      "conceptName": "Red Monolith",
+      "palette": "deep red / black / sandstone",
+      "description": "Enormous rectangular tyrant, block shoulders, tiny recessed mask, colossal square fists; no cape.",
+      "artSlugs": [
+        "nightshade"
+      ]
+    },
+    {
+      "id": "deco-w3-hero",
+      "family": "deco",
+      "world": 3,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 2,
+      "conceptName": "Scarlet Shield",
+      "palette": "scarlet / charcoal / gold",
+      "description": "Broad-shouldered heroine, half-mask, angular hair, low pentagonal shield, short geometric cape.",
+      "artSlugs": [
+        "nightveil-c16"
+      ]
+    },
+    {
+      "id": "deco-w3-boss",
+      "family": "deco",
+      "world": 3,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 7,
+      "conceptName": "Jade Moth Regent",
+      "palette": "emerald / pale gold / ink blue",
+      "description": "Theatrical villain, huge folded geometric moth-wing panels, thin gold face mask, long tapered legs.",
+      "artSlugs": [
+        "duskfall-c16"
+      ]
+    },
+    {
+      "id": "deco-w4-hero",
+      "family": "deco",
+      "world": 4,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 3,
+      "conceptName": "Azure Sentinel",
+      "palette": "azure / white / brass",
+      "description": "Compact armored guardian, rectangular visor, white shoulder wedges, cylindrical brass gauntlets; no cape.",
+      "artSlugs": [
+        "quill-c23"
+      ]
+    },
+    {
+      "id": "deco-w4-boss",
+      "family": "deco",
+      "world": 4,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 8,
+      "conceptName": "Silver Clockmaster",
+      "palette": "silver / ochre / midnight blue",
+      "description": "Precision villain, circular segmented shoulder halo, pointed neat helmet, asymmetric coat, oversized mechanical glove.",
+      "artSlugs": [
+        "umbral-king"
+      ]
+    },
+    {
+      "id": "deco-w5-hero",
+      "family": "deco",
+      "world": 5,
+      "role": "ordinary-hero",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 4,
+      "conceptName": "Sunlit Ranger",
+      "palette": "amber / dark teal / cream",
+      "description": "Lean guardian, open-face cowl, short fan collar, neatly folded teal cape, long angular boots.",
+      "artSlugs": [
+        "halcyon"
+      ]
+    },
+    {
+      "id": "deco-w5-boss",
+      "family": "deco",
+      "world": 5,
+      "role": "final-boss",
+      "reserved": false,
+      "sheet": "deco-worlds",
+      "slot": 9,
+      "conceptName": "Solar Obelisk",
+      "palette": "gold / burnt orange / charcoal",
+      "description": "Monumental emperor, enormous triangular shoulder fans, tapered dark torso, rigid split orange cape, heavy gauntlets.",
+      "artSlugs": [
+        "duskfang-c29"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "art": "turbo",
+      "displayName": "Turbo",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 1,
+      "stages": [
+        "stage-4"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 0,
+      "emblem": "T",
+      "designId": "robot-w1-hero"
+    },
+    {
+      "art": "dark-spark",
+      "displayName": "Dark Spark",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 1,
+      "stages": [
+        "stage-5"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 5,
+      "designId": "robot-w1-boss"
+    },
+    {
+      "art": "nord",
+      "displayName": "Nord",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 2,
+      "stages": [
+        "c2-stage-4"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 0,
+      "emblem": "N",
+      "designId": "comic-w1-hero"
+    },
+    {
+      "art": "shadow-king",
+      "displayName": "Shadow King",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 2,
+      "stages": [
+        "c2-stage-5"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 5,
+      "designId": "comic-w1-boss"
+    },
+    {
+      "art": "huey",
+      "displayName": "Huey",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 3,
+      "stages": [
+        "c3-stage-4"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 0,
+      "emblem": "H",
+      "designId": "dino-w1-hero"
+    },
+    {
+      "art": "shadow-rex",
+      "displayName": "Shadow Rex",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 3,
+      "stages": [
+        "c3-stage-5"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 5,
+      "designId": "dino-w1-boss"
+    },
+    {
+      "art": "drillo",
+      "displayName": "Drillo",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 4,
+      "stages": [
+        "c4-stage-4"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 0,
+      "emblem": "D",
+      "designId": "pixel-w1-hero"
+    },
+    {
+      "art": "pixel-muncher",
+      "displayName": "Pixel Muncher",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 4,
+      "stages": [
+        "c4-stage-5"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 5,
+      "designId": "pixel-w1-boss"
+    },
+    {
+      "art": "umo",
+      "displayName": "Umo",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 5,
+      "stages": [
+        "c5-stage-4"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 0,
+      "emblem": "U",
+      "designId": "brick-w1-hero"
+    },
+    {
+      "art": "bug-king",
+      "displayName": "Bug King",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 5,
+      "stages": [
+        "c5-stage-5"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 5,
+      "designId": "brick-w1-boss"
+    },
+    {
+      "art": "bobo",
+      "displayName": "Bobo",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 6,
+      "stages": [
+        "c6-stage-4"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 0,
+      "emblem": "B",
+      "designId": "career-w1-hero"
+    },
+    {
+      "art": "wind-down",
+      "displayName": "Wind-Down",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 6,
+      "stages": [
+        "c6-stage-5"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 5,
+      "designId": "career-w1-boss"
+    },
+    {
+      "art": "cloak",
+      "displayName": "Cloak",
+      "role": "ordinary-hero",
+      "world": 1,
+      "chapter": 7,
+      "stages": [
+        "c7-stage-4"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 0,
+      "emblem": "OA",
+      "designId": "deco-w1-hero"
+    },
+    {
+      "art": "nightfall",
+      "displayName": "Nightfall",
+      "role": "final-boss",
+      "world": 1,
+      "chapter": 7,
+      "stages": [
+        "c7-stage-5"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 5,
+      "designId": "deco-w1-boss"
+    },
+    {
+      "art": "nord-c8",
+      "displayName": "Nord",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 8,
+      "stages": [
+        "c8-stage-4"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 1,
+      "emblem": "OR",
+      "designId": "comic-w2-hero"
+    },
+    {
+      "art": "king-static",
+      "displayName": "King Static",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 8,
+      "stages": [
+        "c8-stage-5"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 6,
+      "designId": "comic-w2-boss"
+    },
+    {
+      "art": "wingo",
+      "displayName": "Wingo",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 9,
+      "stages": [
+        "c9-stage-4"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 1,
+      "emblem": "NG",
+      "designId": "dino-w2-hero"
+    },
+    {
+      "art": "bonecrash",
+      "displayName": "Bonecrash",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 9,
+      "stages": [
+        "c9-stage-5"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 6,
+      "designId": "dino-w2-boss"
+    },
+    {
+      "art": "blocky",
+      "displayName": "Blocky",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 10,
+      "stages": [
+        "c10-stage-4"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 1,
+      "emblem": "Y",
+      "designId": "brick-w2-hero"
+    },
+    {
+      "art": "glitchking",
+      "displayName": "Glitchking",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 10,
+      "stages": [
+        "c10-stage-5"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 6,
+      "designId": "brick-w2-boss"
+    },
+    {
+      "art": "blocko-jr",
+      "displayName": "Blocko Jr.",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 11,
+      "stages": [
+        "c11-stage-4"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 1,
+      "emblem": "SH",
+      "designId": "career-w2-hero"
+    },
+    {
+      "art": "windup-duke",
+      "displayName": "Windup Duke",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 11,
+      "stages": [
+        "c11-stage-5"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 6,
+      "designId": "career-w2-boss"
+    },
+    {
+      "art": "stormer",
+      "displayName": "Stormer",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 12,
+      "stages": [
+        "c12-stage-4"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 1,
+      "emblem": "OU",
+      "designId": "robot-w2-hero"
+    },
+    {
+      "art": "overclock",
+      "displayName": "Overclock",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 12,
+      "stages": [
+        "c12-stage-5"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 6,
+      "designId": "robot-w2-boss"
+    },
+    {
+      "art": "beacon",
+      "displayName": "Beacon",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 13,
+      "stages": [
+        "c13-stage-1",
+        "c13-stage-2",
+        "c13-stage-4"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 1,
+      "emblem": "OI",
+      "designId": "deco-w2-hero"
+    },
+    {
+      "art": "nightshade",
+      "displayName": "Nightshade",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 13,
+      "stages": [
+        "c13-stage-5"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 6,
+      "designId": "deco-w2-boss"
+    },
+    {
+      "art": "drillbit",
+      "displayName": "Drillbit",
+      "role": "ordinary-hero",
+      "world": 2,
+      "chapter": 14,
+      "stages": [
+        "c14-stage-4"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 1,
+      "emblem": "★",
+      "designId": "pixel-w2-hero"
+    },
+    {
+      "art": "glitch-emperor",
+      "displayName": "Glitch Emperor",
+      "role": "final-boss",
+      "world": 2,
+      "chapter": 14,
+      "stages": [
+        "c14-stage-5"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 6,
+      "designId": "pixel-w2-boss"
+    },
+    {
+      "art": "skyfin-c15",
+      "displayName": "Skyfin",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 15,
+      "stages": [
+        "c15-stage-4"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 2,
+      "emblem": "SN",
+      "designId": "dino-w3-hero"
+    },
+    {
+      "art": "voidrex-c15",
+      "displayName": "Voidrex",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 15,
+      "stages": [
+        "c15-stage-5"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 7,
+      "designId": "dino-w3-boss"
+    },
+    {
+      "art": "nightveil-c16",
+      "displayName": "Nightveil",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 16,
+      "stages": [
+        "c16-stage-4"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 2,
+      "emblem": "FR",
+      "designId": "deco-w3-hero"
+    },
+    {
+      "art": "duskfall-c16",
+      "displayName": "Duskfall",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 16,
+      "stages": [
+        "c16-stage-5"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 7,
+      "designId": "deco-w3-boss"
+    },
+    {
+      "art": "stax-c17",
+      "displayName": "Stax",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 17,
+      "stages": [
+        "c17-stage-4"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 2,
+      "emblem": "GL",
+      "designId": "career-w3-hero"
+    },
+    {
+      "art": "windup-king-c17",
+      "displayName": "Windup King",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 17,
+      "stages": [
+        "c17-stage-5"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 7,
+      "designId": "career-w3-boss"
+    },
+    {
+      "art": "drillbit-c18",
+      "displayName": "Drillbit",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 18,
+      "stages": [
+        "c18-stage-4"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 2,
+      "emblem": "NT",
+      "designId": "pixel-w3-hero"
+    },
+    {
+      "art": "munchor-c18",
+      "displayName": "Munchor",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 18,
+      "stages": [
+        "c18-stage-5"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 7,
+      "designId": "pixel-w3-boss"
+    },
+    {
+      "art": "voltarc-c19",
+      "displayName": "Voltarc",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 19,
+      "stages": [
+        "c19-stage-4"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 2,
+      "emblem": "FT",
+      "designId": "comic-w3-hero"
+    },
+    {
+      "art": "umbraking-c19",
+      "displayName": "Umbraking",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 19,
+      "stages": [
+        "c19-stage-5"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 7,
+      "designId": "comic-w3-boss"
+    },
+    {
+      "art": "chromewing-c20",
+      "displayName": "Chromewing",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 20,
+      "stages": [
+        "c20-stage-4"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 2,
+      "emblem": "SK",
+      "designId": "robot-w3-hero"
+    },
+    {
+      "art": "direforge-c20",
+      "displayName": "Direforge",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 20,
+      "stages": [
+        "c20-stage-5"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 7,
+      "designId": "robot-w3-boss"
+    },
+    {
+      "art": "blockhart-c21",
+      "displayName": "Blockhart",
+      "role": "ordinary-hero",
+      "world": 3,
+      "chapter": 21,
+      "stages": [
+        "c21-stage-4"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 2,
+      "emblem": "DR",
+      "designId": "brick-w3-hero"
+    },
+    {
+      "art": "glitchmar-c21",
+      "displayName": "Glitchmar",
+      "role": "final-boss",
+      "world": 3,
+      "chapter": 21,
+      "stages": [
+        "c21-stage-5"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 7,
+      "designId": "brick-w3-boss"
+    },
+    {
+      "art": "drillbit-c28",
+      "displayName": "Drillbit",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 22,
+      "stages": [
+        "c22-stage-4"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 3,
+      "emblem": "GL",
+      "designId": "pixel-w4-hero"
+    },
+    {
+      "art": "static-muncher",
+      "displayName": "Static Muncher",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 22,
+      "stages": [
+        "c22-stage-5"
+      ],
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "slot": 8,
+      "designId": "pixel-w4-boss"
+    },
+    {
+      "art": "quill-c23",
+      "displayName": "Quill",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 23,
+      "stages": [
+        "c23-stage-4"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 3,
+      "emblem": "FT",
+      "designId": "deco-w4-hero"
+    },
+    {
+      "art": "umbral-king",
+      "displayName": "Umbral King",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 23,
+      "stages": [
+        "c23-stage-5"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 8,
+      "designId": "deco-w4-boss"
+    },
+    {
+      "art": "pip-c24",
+      "displayName": "Pip",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 24,
+      "stages": [
+        "c24-stage-4"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 3,
+      "emblem": "STR",
+      "designId": "comic-w4-hero"
+    },
+    {
+      "art": "overload-prime",
+      "displayName": "Overload Prime",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 24,
+      "stages": [
+        "c24-stage-5"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 8,
+      "designId": "comic-w4-boss"
+    },
+    {
+      "art": "blocky-c25",
+      "displayName": "Blocky",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 25,
+      "stages": [
+        "c25-stage-4"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 3,
+      "emblem": "NK",
+      "designId": "brick-w4-hero"
+    },
+    {
+      "art": "glitchsink",
+      "displayName": "Glitchsink",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 25,
+      "stages": [
+        "c25-stage-5"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 8,
+      "designId": "brick-w4-boss"
+    },
+    {
+      "art": "wingo-c26",
+      "displayName": "Wingo",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 26,
+      "stages": [
+        "c26-stage-4"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 3,
+      "emblem": "LF",
+      "designId": "dino-w4-hero"
+    },
+    {
+      "art": "boneshade",
+      "displayName": "Boneshade",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 26,
+      "stages": [
+        "c26-stage-5"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 8,
+      "designId": "dino-w4-boss"
+    },
+    {
+      "art": "blocko-jr-c27",
+      "displayName": "Blocko Jr.",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 27,
+      "stages": [
+        "c27-stage-4"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 3,
+      "emblem": "XT",
+      "designId": "career-w4-hero"
+    },
+    {
+      "art": "windup-baron",
+      "displayName": "Windup Baron",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 27,
+      "stages": [
+        "c27-stage-5"
+      ],
+      "family": "career",
+      "sheet": "career-worlds",
+      "slot": 8,
+      "designId": "career-w4-boss"
+    },
+    {
+      "art": "cragrunner",
+      "displayName": "Cragrunner",
+      "role": "ordinary-hero",
+      "world": 4,
+      "chapter": 28,
+      "stages": [
+        "c28-stage-4"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 3,
+      "emblem": "MP",
+      "designId": "robot-w4-hero"
+    },
+    {
+      "art": "voltmaw",
+      "displayName": "Voltmaw",
+      "role": "final-boss",
+      "world": 4,
+      "chapter": 28,
+      "stages": [
+        "c28-stage-5"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 8,
+      "designId": "robot-w4-boss"
+    },
+    {
+      "art": "halcyon",
+      "displayName": "Halcyon",
+      "role": "ordinary-hero",
+      "world": 5,
+      "chapter": 29,
+      "stages": [
+        "c29s4"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 4,
+      "emblem": "★",
+      "designId": "deco-w5-hero"
+    },
+    {
+      "art": "duskfang-c29",
+      "displayName": "Duskfang",
+      "role": "final-boss",
+      "world": 5,
+      "chapter": 29,
+      "stages": [
+        "c29s5"
+      ],
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "slot": 9,
+      "designId": "deco-w5-boss"
+    },
+    {
+      "art": "coggo",
+      "displayName": "Coggo",
+      "role": "ordinary-hero",
+      "world": 5,
+      "chapter": 30,
+      "stages": [
+        "c30s4"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 4,
+      "emblem": "★",
+      "designId": "brick-w5-hero"
+    },
+    {
+      "art": "faultline",
+      "displayName": "Faultline",
+      "role": "final-boss",
+      "world": 5,
+      "chapter": 30,
+      "stages": [
+        "c30s5"
+      ],
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "slot": 9,
+      "designId": "brick-w5-boss"
+    },
+    {
+      "art": "ratchett",
+      "displayName": "Ratchett",
+      "role": "ordinary-hero",
+      "world": 5,
+      "chapter": 31,
+      "stages": [
+        "c31s4"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 4,
+      "emblem": "★",
+      "designId": "robot-w5-hero"
+    },
+    {
+      "art": "voltrust",
+      "displayName": "Voltrust",
+      "role": "final-boss",
+      "world": 5,
+      "chapter": 31,
+      "stages": [
+        "c31s5"
+      ],
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "slot": 9,
+      "designId": "robot-w5-boss"
+    },
+    {
+      "art": "voltbeam",
+      "displayName": "Voltbeam",
+      "role": "ordinary-hero",
+      "world": 5,
+      "chapter": 32,
+      "stages": [
+        "c32s4"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 4,
+      "emblem": "★",
+      "designId": "comic-w5-hero"
+    },
+    {
+      "art": "lord-static",
+      "displayName": "Lord Static",
+      "role": "final-boss",
+      "world": 5,
+      "chapter": 32,
+      "stages": [
+        "c32s5"
+      ],
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "slot": 9,
+      "designId": "comic-w5-boss"
+    },
+    {
+      "art": "skyra",
+      "displayName": "Skyra",
+      "role": "ordinary-hero",
+      "world": 5,
+      "chapter": 33,
+      "stages": [
+        "c33s4"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 4,
+      "emblem": "★",
+      "designId": "dino-w5-hero"
+    },
+    {
+      "art": "voidjaw",
+      "displayName": "Voidjaw",
+      "role": "final-boss",
+      "world": 5,
+      "chapter": 33,
+      "stages": [
+        "c33s5"
+      ],
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "slot": 9,
+      "designId": "dino-w5-boss"
+    }
+  ],
+  "metadataSources": {
+    "plan": {
+      "path": "design/world-art-plan.json",
+      "sha256": "fd92348a3cc0029203aca909fac9c63e6e4dc933a80d2fc219a5ee450e5bf3d0"
+    },
+    "frames": {
+      "path": "src/art/world-atlas-frames.json",
+      "sha256": "f85f3450db2eda482c476bca5792b7e8664a062f57aac065192c6d6fe31e2fe1"
+    },
+    "mapping": {
+      "path": "src/art/world-character-assets.js",
+      "sha256": "9c91e3e7332ccecb757f4b103fb550b5ba5f8686cb30a6742d4ef4cc4effa2bb"
+    }
+  }
+}

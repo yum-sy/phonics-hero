@@ -1,0 +1,689 @@
+{
+  "version": 1,
+  "totalNewDesigns": 70,
+  "usedInCurrentCurriculum": 66,
+  "reservedDesigns": 4,
+  "layout": {
+    "columns": 5,
+    "rows": 2,
+    "topRow": "worlds1..5 ordinary heroes",
+    "bottomRow": "worlds1..5 final bosses",
+    "slotRule": "hero=world-1; boss=5+world-1"
+  },
+  "globalConstraints": [
+    "No dominant purple. Every design needs a different silhouette, not only a recolor.",
+    "Hero and boss remain recognizable in solid-black silhouette: vary head, shoulder, equipment and body proportions.",
+    "Bosses are elaborate and impressive, but not all crowned/caped humanoids.",
+    "Moderately lively grounded ready poses, full body and gear visible, child-friendly not horrific.",
+    "Transparent background; no shadows outside figure, text, badges, logos, labels or grid.",
+    "Broad transparent gutters; each figure entirely within its equal cell.",
+    "Pixel creatures must not resemble dinosaurs, dragons or reptiles. Career fusion remains astronaut."
+  ],
+  "families": {
+    "robot": {
+      "style": "Crisp transforming-car anime: dark expressive ink, angular cel-shaded metal armor, layered mechanical joints and visible vehicle parts.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "robot-w1-hero",
+            "name": "Rescue Coupe",
+            "palette": "coral red / cream / slate blue",
+            "description": "Compact rescue-car robot, circular shoulder hose reel, asymmetric forearm shield, wheel boots.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "robot-w1-boss",
+            "name": "Furnace Titan",
+            "palette": "burnt orange / black iron / brass",
+            "description": "Massive boiler torso, towering twin exhaust stacks, enormous clamp fists; low wide stance, NO cape.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "robot-w2-hero",
+            "name": "Sky Courier",
+            "palette": "sky blue / white / orange",
+            "description": "Agile delivery-van robot, square parcel shoulders, short roof antenna, slim waist, thick tire ankles.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "robot-w2-boss",
+            "name": "Tidal Dreadnought",
+            "palette": "deep teal / ivory / copper",
+            "description": "Tall submarine admiral, cylindrical turbine shoulders, anchor gauntlet, diving-helmet face, streamlined fin armor.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "robot-w3-hero",
+            "name": "Harbor Hauler",
+            "palette": "sea green / ivory / charcoal",
+            "description": "Sturdy tow-truck robot, low hook arm, broad bumper chest, round helmet, wide flat boots.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "robot-w3-boss",
+            "name": "Crimson Rail King",
+            "palette": "crimson / steel / ink blue",
+            "description": "Locomotive warlord, wedge snowplow chest, giant train-wheel shoulders, piston legs, pointed engine-nose helmet.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "robot-w4-hero",
+            "name": "Rally Scout",
+            "palette": "sunflower yellow / navy / silver",
+            "description": "Lean rally-buggy robot, exposed roll-cage shoulder arches, long shin suspension, wide visor.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "robot-w4-boss",
+            "name": "Storm Excavator",
+            "palette": "sand gold / dark olive / cream",
+            "description": "Construction colossus, unequal bucket fist and hydraulic pincer, rectangular cab head, giant track boots.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": false,
+          "hero": {
+            "id": "robot-w5-hero",
+            "name": "Polar Driller",
+            "palette": "ice white / cyan / vermilion",
+            "description": "Bulky snow explorer robot, tread feet, compact drill forearm, roof-lamp helmet, thick insulated panels.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "robot-w5-boss",
+            "name": "Arctic Sentinel",
+            "palette": "white ceramic / cobalt / black chrome",
+            "description": "Elite faceted sovereign, broad horizontal shoulder blades, six short radial back fins, narrow blue visor.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "comic": {
+      "style": "Vintage American superhero comic: bold brush inks, visible Ben-Day halftone shadows, strong printed colors, expressive heroic faces.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "comic-w1-hero",
+            "name": "Copper Comet",
+            "palette": "copper / turquoise / cream",
+            "description": "Masked courier, swept ear fins, short scarf, oversized sprint boots, confident open hand.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "comic-w1-boss",
+            "name": "Iron Bull",
+            "palette": "forest green / brass / cream",
+            "description": "Enormous armored wrestler, short bull-helmet fins, riveted shoulders, huge brass gloves; NO cape.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "comic-w2-hero",
+            "name": "Jade Beacon",
+            "palette": "jade / white / gold",
+            "description": "Shield heroine, open-face helmet, short bob, circular shield held low, broad cuffs.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "comic-w2-boss",
+            "name": "Scarlet Conductor",
+            "palette": "scarlet / white / black",
+            "description": "Elegant sonic maestro, high fan collar, swept silver hair, asymmetric tailcoat, compact tuning-fork device.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "comic-w3-hero",
+            "name": "Red Dynamo",
+            "palette": "scarlet / charcoal / silver",
+            "description": "Compact technology hero, circular forearm coils, angular white mask lenses, squat mechanical boots.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "comic-w3-boss",
+            "name": "Clockwork Monarch",
+            "palette": "antique gold / petrol blue / bone",
+            "description": "Regal gear halo, geometric breastplate, narrow mechanical staff, long precise silhouette; NO crown.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "comic-w4-hero",
+            "name": "Blue Atlas",
+            "palette": "royal blue / ivory / ochre",
+            "description": "Tall strength hero, triangular torso, shoulder straps, enormous ivory gauntlets, friendly visible jaw.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "comic-w4-boss",
+            "name": "Glacier Goliath",
+            "palette": "ice cyan / navy / silver",
+            "description": "Huge square ice-armored champion, jagged shoulder slabs, block gauntlets, tiny recessed stern face.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": false,
+          "hero": {
+            "id": "comic-w5-hero",
+            "name": "Solar Skipper",
+            "palette": "yellow / coral / navy",
+            "description": "Agile half-masked hero, swept hair, grappling belt reel, short folded shoulder cape.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "comic-w5-boss",
+            "name": "Obsidian Mantis",
+            "palette": "black / lime / orange",
+            "description": "Agile insect mastermind, folded blade-like forearm guards, tapered helmet, four short angular back appendages.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "dino": {
+      "style": "Handmade clay stop-motion dinosaur figures: matte sculpted clay, fingerprints, rounded physical volume; actual dinosaur-inspired anatomy.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "dino-w1-hero",
+            "name": "Sunny Pachy",
+            "palette": "honey / teal / cream",
+            "description": "Friendly pachycephalosaurus, enormous dome head, tiny arms, thick low tail, little neckerchief.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "dino-w1-boss",
+            "name": "Granite Triceratops",
+            "palette": "slate gray / rust red / ivory",
+            "description": "Huge shield-like frill, thick cream horns, red stone armor, low powerful quadruped; NO crown.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "dino-w2-hero",
+            "name": "Cobalt Ankyl",
+            "palette": "cobalt / apricot / cream",
+            "description": "Low wide ankylosaurus, orange armor knobs, broad rounded tail club, cheerful face.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "dino-w2-boss",
+            "name": "Copper Spinosaurus",
+            "palette": "copper / deep teal / cream",
+            "description": "Magnificent striped sail, long strong snout, thick balancing tail; sail dominates silhouette.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "dino-w3-hero",
+            "name": "Fern Parasaur",
+            "palette": "leaf green / peach / ivory",
+            "description": "Upright parasaurolophus, long backward head crest, stout legs, compact explorer satchel.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "dino-w3-boss",
+            "name": "Cinder Ankylosaur",
+            "palette": "charcoal / lava orange / sandstone",
+            "description": "Huge low fortress body, layered molten-stone plates, massive club tail, thick cheek guards.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "dino-w4-hero",
+            "name": "Coral Ceratops",
+            "palette": "coral / pale aqua / cream",
+            "description": "Compact centrosaurus, scalloped frill, single obvious nose horn, broad cheeks, four sturdy legs.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "dino-w4-boss",
+            "name": "Ocean Therizinosaur",
+            "palette": "sea blue / turquoise / ochre",
+            "description": "Tall feathered giant, long cream claws held inward, broad fan tail, sweeping yellow ruff.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": false,
+          "hero": {
+            "id": "dino-w5-hero",
+            "name": "Snow Raptor",
+            "palette": "ivory / sky blue / amber",
+            "description": "Small feathered raptor, clay arm tufts, swept head plume, long hind legs, bright eyes.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "dino-w5-boss",
+            "name": "Ruby Tyrant",
+            "palette": "ruby red / cream / dark brown",
+            "description": "Spectacular tyrannosaur, double brow crest, massive legs, broad sculpted back plates; NO royal cape.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "pixel": {
+      "style": "Crisp 16-bit monster pixel art: square pixel clusters, stepped dark outlines, limited saturated palettes. NO reptile, dinosaur or dragon anatomy.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "pixel-w1-hero",
+            "name": "Spark Stoat",
+            "palette": "cream / orange / electric blue",
+            "description": "Electric stoat, upright lightning-tipped ears, fluffy curled tail, tiny mitten paws.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "pixel-w1-boss",
+            "name": "Crimson Crab Baron",
+            "palette": "crimson / cream / navy",
+            "description": "Grand armored crab, one huge square claw and one long pincer, broad legs, proud eyebrows.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "pixel-w2-hero",
+            "name": "Lotus Pup",
+            "palette": "mint / coral pink / dark green",
+            "description": "Round botanical sprite, lotus-bud head, four leaf feet, two stem arms; no animal tail.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "pixel-w2-boss",
+            "name": "Emerald Stag Beetle",
+            "palette": "emerald / brass / black",
+            "description": "Towering beetle, massive antler-like mandibles, angular polished shell, six short armored legs.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "pixel-w3-hero",
+            "name": "Cloud Cub",
+            "palette": "sky blue / white / gold",
+            "description": "Squat cloud bear, round ears, star cheek tufts, puffy spiral tail, broad little paws.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "pixel-w3-boss",
+            "name": "Solar Lion",
+            "palette": "gold / ivory / deep orange",
+            "description": "Majestic feline, layered sunburst mane, broad cream paws, thick tufted tail; no horns or wings.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "pixel-w4-hero",
+            "name": "Ember Beetle",
+            "palette": "coral / charcoal / cream",
+            "description": "Cute sturdy beetle, shiny pixel shell, short antennae, four visible feet; no horns.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "pixel-w4-boss",
+            "name": "Tidal Octopus",
+            "palette": "cobalt / aqua / coral",
+            "description": "Broad domed head, intelligent gold eyes, eight curling tentacles forming a ground-supported throne silhouette.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": true,
+          "hero": {
+            "id": "pixel-w5-hero",
+            "name": "Pearl Spirit",
+            "palette": "ivory / aqua / gold",
+            "description": "Floating bell spirit, broad ribbon ears, tiny hands, star-shaped footless lower wisp.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "pixel-w5-boss",
+            "name": "Snow Owl Sovereign",
+            "palette": "white / teal / charcoal",
+            "description": "Enormous owl, geometric partly folded wings, dark teal face mask, layered feather shoulders, gold talons.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "brick": {
+      "style": "Photorealistic buildable brick toys: exposed studs, interlocking plates, connector holes, C-shaped hands, glossy ABS, compact square heads.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "brick-w1-hero",
+            "name": "Red Rover",
+            "palette": "brick red / cream / navy",
+            "description": "Trail explorer, studded red cap, navy bib torso, small brick binoculars, chunky red boots.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "brick-w1-boss",
+            "name": "Red Fortress Giant",
+            "palette": "brick red / charcoal / gold",
+            "description": "Huge fortress golem, unequal tower shoulders, recessed grin, hinged clamp hands, stacked-brick feet.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "brick-w2-hero",
+            "name": "Aqua Diver",
+            "palette": "aqua / orange / ivory",
+            "description": "Underwater explorer, round brick diving helmet, face window, orange tank pack, studded flipper boots.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "brick-w2-boss",
+            "name": "Jade Gear Baron",
+            "palette": "jade / copper / cream",
+            "description": "Tall mechanical villain, oversized shoulder cog, small top-hat module, long jointed arms; uneven silhouette.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "brick-w3-hero",
+            "name": "Green Mechanic",
+            "palette": "grass green / yellow / charcoal",
+            "description": "Builder, square yellow hardhat, green modular torso, chunky wrench, visible gray hinge knees.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "brick-w3-boss",
+            "name": "Ice Block Colossus",
+            "palette": "white / cyan / dark blue",
+            "description": "Snow fortress, huge cyan block fists, tiny dark helmet window, broad squared shoulder slabs.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "brick-w4-hero",
+            "name": "Blue Mountaineer",
+            "palette": "royal blue / white / coral",
+            "description": "Climber, tall block helmet, side rope coil, stepped shoulders, massive coral boot soles.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "brick-w4-boss",
+            "name": "Copper Airship Captain",
+            "palette": "copper / navy / ivory",
+            "description": "Wide sideways captain hat, compact shoulder rotors, hinged-plate coat, giant brass control gauntlet.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": false,
+          "hero": {
+            "id": "brick-w5-hero",
+            "name": "Amber Aviator",
+            "palette": "amber / teal / cream",
+            "description": "Pilot, studded flight helmet, square raised goggles, teal jacket plates, tiny folded propeller backpack.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "brick-w5-boss",
+            "name": "Black Chess Emperor",
+            "palette": "black / cream / red",
+            "description": "Chess-rook sovereign, tall white crenellated helmet, black shoulder towers, red claws, heavy stepped brick robe.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "career": {
+      "style": "Korean color webtoon: clean expressive ink, controlled bright cel shading, appealing adult faces and occupational uniforms. Existing fusion astronaut remains.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "career-w1-hero",
+            "name": "Patrol Officer",
+            "palette": "navy / sky blue / cream",
+            "description": "Police officer, peaked cap, light-blue shirt, dark trousers, radio, open greeting hand.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "career-w1-boss",
+            "name": "Scarlet Saboteur",
+            "palette": "scarlet / charcoal / silver",
+            "description": "Industrial mastermind, heavy red exosuit, oversized pressure tanks, silver wrench gauntlets, clever open-face grin.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "career-w2-hero",
+            "name": "Rescue Navigator",
+            "palette": "white / navy / orange",
+            "description": "Sailor, nautical cap, practical uniform, prominent orange-white lifebuoy held at side, sturdy boots.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "career-w2-boss",
+            "name": "White Smuggler Admiral",
+            "palette": "ivory / deep teal / brass",
+            "description": "Charismatic rogue captain, wide ivory coat, dark sash, large nautical hat, brass mechanical hand.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "career-w3-hero",
+            "name": "Test Pilot",
+            "palette": "sage / orange / charcoal",
+            "description": "Fighter pilot, flight suit, orange harness, oxygen-hose helmet tucked under arm, short windswept hair.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "career-w3-boss",
+            "name": "Copper Sky Marshal",
+            "palette": "copper / midnight blue / cream",
+            "description": "Rogue aviation commander, swept flight helmet, compact broad turbine pack, reinforced forearms, short flight jacket.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "career-w4-hero",
+            "name": "Field Soldier",
+            "palette": "olive / tan / dark green",
+            "description": "Soldier, cap, tan webbing, compact rifle held diagonally DOWN; never aiming or shooting, no giant backpack.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "career-w4-boss",
+            "name": "Arctic Machine Commander",
+            "palette": "ice blue / white / charcoal",
+            "description": "Powerful commander, broad insulated collar, angular chest armor, short silver hair, large control gauntlet; no cape.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": true,
+          "hero": {
+            "id": "career-w5-hero",
+            "name": "Rescue Firefighter",
+            "palette": "yellow / red / charcoal",
+            "description": "Firefighter, red helmet, reflective coat, hose nozzle low, coiled red hose; broad practical stance.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "career-w5-boss",
+            "name": "Golden Space Corsair",
+            "palette": "gold / dark red / black",
+            "description": "Grand space pirate, asymmetric gold shoulder guard, dark-red command coat, black boots, luminous navigation globe.",
+            "slot": 9
+          }
+        }
+      ]
+    },
+    "deco": {
+      "style": "Art Deco superhero animation: clean geometric shapes, broad flat colors, large angular two-tone shadows, restrained outlines; no halftone or 3D.",
+      "worlds": [
+        {
+          "world": 1,
+          "reserved": false,
+          "hero": {
+            "id": "deco-w1-hero",
+            "name": "Copper Falcon",
+            "palette": "copper / navy / ivory",
+            "description": "Masked guardian, angular falcon brow, short triangular shoulder cape, wide wrist guards, friendly smile.",
+            "slot": 0
+          },
+          "boss": {
+            "id": "deco-w1-boss",
+            "name": "Ivory Sphinx",
+            "palette": "ivory / dark teal / copper",
+            "description": "Elegant mastermind, huge Egyptian-inspired geometric fan collar, angular chest armor, narrow waist; no crown.",
+            "slot": 5
+          }
+        },
+        {
+          "world": 2,
+          "reserved": false,
+          "hero": {
+            "id": "deco-w2-hero",
+            "name": "Jade Strider",
+            "palette": "jade / cream / ochre",
+            "description": "Tall speed guardian, two swept helmet fins, tapered chest, long legs, cream boots; no cape.",
+            "slot": 1
+          },
+          "boss": {
+            "id": "deco-w2-boss",
+            "name": "Red Monolith",
+            "palette": "deep red / black / sandstone",
+            "description": "Enormous rectangular tyrant, block shoulders, tiny recessed mask, colossal square fists; no cape.",
+            "slot": 6
+          }
+        },
+        {
+          "world": 3,
+          "reserved": false,
+          "hero": {
+            "id": "deco-w3-hero",
+            "name": "Scarlet Shield",
+            "palette": "scarlet / charcoal / gold",
+            "description": "Broad-shouldered heroine, half-mask, angular hair, low pentagonal shield, short geometric cape.",
+            "slot": 2
+          },
+          "boss": {
+            "id": "deco-w3-boss",
+            "name": "Jade Moth Regent",
+            "palette": "emerald / pale gold / ink blue",
+            "description": "Theatrical villain, huge folded geometric moth-wing panels, thin gold face mask, long tapered legs.",
+            "slot": 7
+          }
+        },
+        {
+          "world": 4,
+          "reserved": false,
+          "hero": {
+            "id": "deco-w4-hero",
+            "name": "Azure Sentinel",
+            "palette": "azure / white / brass",
+            "description": "Compact armored guardian, rectangular visor, white shoulder wedges, cylindrical brass gauntlets; no cape.",
+            "slot": 3
+          },
+          "boss": {
+            "id": "deco-w4-boss",
+            "name": "Silver Clockmaster",
+            "palette": "silver / ochre / midnight blue",
+            "description": "Precision villain, circular segmented shoulder halo, pointed neat helmet, asymmetric coat, oversized mechanical glove.",
+            "slot": 8
+          }
+        },
+        {
+          "world": 5,
+          "reserved": false,
+          "hero": {
+            "id": "deco-w5-hero",
+            "name": "Sunlit Ranger",
+            "palette": "amber / dark teal / cream",
+            "description": "Lean guardian, open-face cowl, short fan collar, neatly folded teal cape, long angular boots.",
+            "slot": 4
+          },
+          "boss": {
+            "id": "deco-w5-boss",
+            "name": "Solar Obelisk",
+            "palette": "gold / burnt orange / charcoal",
+            "description": "Monumental emperor, enormous triangular shoulder fans, tapered dark torso, rigid split orange cape, heavy gauntlets.",
+            "slot": 9
+          }
+        }
+      ]
+    }
+  }
+}

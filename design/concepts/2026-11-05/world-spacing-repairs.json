@@ -1,0 +1,22 @@
+[
+  {
+    "family": "robot",
+    "source": "/Users/kami.san/.codex/generated_images/01a1abc6-6515-7d52-8695-cd33c0ad2f5a/exec-946a84f1-0396-4093-9510-e6d174612a44.png",
+    "prompt": "Edit target: supplied transparent ten-character sprite atlas. Preserve all TEN character identities, exact colors, costumes, medium, upper hero row and lower boss row and their exact left-to-right order. ONLY FIX SPACING. Recompose a 5-column by 2-row atlas on transparent alpha. Make EVERY character much smaller, occupying at most 65% of its cell width and 75% cell height. Center within cell. This means a full 35% cell width EMPTY transparent gutter between neighbors and 25% height between rows. Even largest boss arms, tails, horns, capes, tools fully confined within own cell with large clear gutters. All ten characters complete full-body, no cropped edges. No background or shadows or typography. Wide landscape canvas. Do not add or remove any character; keep same style and details. This is a production crop spacing repair, not a redesign."
+  },
+  {
+    "family": "dino",
+    "source": "/Users/kami.san/.codex/generated_images/01a1abc6-6515-7d52-8695-cd33c0ad2f5a/exec-379d43cb-65e7-431b-ace0-7aaa87be969e.png",
+    "prompt": "Edit target: supplied transparent ten-character sprite atlas. Preserve all TEN character identities, exact colors, costumes, medium, upper hero row and lower boss row and their exact left-to-right order. ONLY FIX SPACING. Recompose a 5-column by 2-row atlas on transparent alpha. Make EVERY character much smaller, occupying at most 65% of its cell width and 75% cell height. Center within cell. This means a full 35% cell width EMPTY transparent gutter between neighbors and 25% height between rows. Even largest boss arms, tails, horns, capes, tools fully confined within own cell with large clear gutters. All ten characters complete full-body, no cropped edges. No background or shadows or typography. Wide landscape canvas. Do not add or remove any character; keep same style and details. This is a production crop spacing repair, not a redesign."
+  },
+  {
+    "family": "brick",
+    "source": "/Users/kami.san/.codex/generated_images/01a1abc6-6515-7d52-8695-cd33c0ad2f5a/exec-5cb33a0d-3efc-4721-83b1-9802d5dec28a.png",
+    "prompt": "Edit target: supplied transparent ten-character sprite atlas. Preserve all TEN character identities, exact colors, costumes, medium, upper hero row and lower boss row and their exact left-to-right order. ONLY FIX SPACING. Recompose a 5-column by 2-row atlas on transparent alpha. Make EVERY character much smaller, occupying at most 65% of its cell width and 75% cell height. Center within cell. This means a full 35% cell width EMPTY transparent gutter between neighbors and 25% height between rows. Even largest boss arms, tails, horns, capes, tools fully confined within own cell with large clear gutters. All ten characters complete full-body, no cropped edges. No background or shadows or typography. Wide landscape canvas. Do not add or remove any character; keep same style and details. This is a production crop spacing repair, not a redesign."
+  },
+  {
+    "family": "deco",
+    "source": "/Users/kami.san/.codex/generated_images/01a1abc6-6515-7d52-8695-cd33c0ad2f5a/exec-88f72553-f2a4-43f5-aa7b-b33bcf3ca777.png",
+    "prompt": "Edit target: supplied transparent ten-character sprite atlas. Preserve all TEN character identities, exact colors, costumes, medium, upper hero row and lower boss row and their exact left-to-right order. ONLY FIX SPACING. Recompose a 5-column by 2-row atlas on transparent alpha. Make EVERY character much smaller, occupying at most 65% of its cell width and 75% cell height. Center within cell. This means a full 35% cell width EMPTY transparent gutter between neighbors and 25% height between rows. Even largest boss arms, tails, horns, capes, tools fully confined within own cell with large clear gutters. All ten characters complete full-body, no cropped edges. No background or shadows or typography. Wide landscape canvas. Do not add or remove any character; keep same style and details. This is a production crop spacing repair, not a redesign."
+  }
+]

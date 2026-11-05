@@ -1,0 +1,5 @@
+{
+  "family": "deco",
+  "prompt": "Remove ALL background and colored fog/shadows from this sprite sheet, making everything outside the TEN figures genuinely completely transparent alpha0. Preserve all10 figures exactly, top5 and bottom5, existing generous spacing and geometric flat animation style and full bodies. No white, no gray, no gradient behind figures. No floor or cast shadow. Clean crisp character edges. Keep exact grid positions and colors. Transparent game sprites.",
+  "source": "/Users/kami.san/.codex/generated_images/01a1abc6-6515-7d52-8695-cd33c0ad2f5a/exec-85fadc64-87c5-418d-a761-de5255e40fd4.png"
+}
