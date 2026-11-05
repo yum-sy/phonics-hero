@@ -1,7 +1,8 @@
 // Run against Vite: node scripts/check-safe-layout.mjs [http://localhost:5174]
 // Uses a private headless Chrome process, never the user's browser/profile.
 // Optional: CHROME_PATH, LAYOUT_CHECK_OUTPUT, LAYOUT_CHECK_CASES=chapters,chapters-locked
-// 21 screens × portrait/landscape × normal/simulated safe insets = 84 cases.
+// LAYOUT_REDUCED_MOTION=1 also checks static battle feedback under reduced motion.
+// 24 screens × portrait/landscape × normal/simulated safe insets = 96 cases.
 // Desktop layout evidence only: injected CSS insets do not emulate iOS or installed PWA behavior.
 import { spawn } from 'node:child_process'
 import { mkdtemp, readFile, mkdir, writeFile, rm } from 'node:fs/promises'
@@ -108,8 +109,11 @@ try {
   })
   await Promise.all([command('Page.enable'), command('Runtime.enable'), command('Network.enable')])
   await command('Emulation.setDeviceMetricsOverride', { width: 834, height: 1194, deviceScaleFactor: 1, mobile: false })
+  if (process.env.LAYOUT_REDUCED_MOTION === '1') {
+    await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
+  }
   await command('Page.addScriptToEvaluateOnNewDocument', {source:'localStorage.clear()'});
-  const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
+  const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7','listen1','finale1','finale2'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
   cases.unshift(...['world','chapters','map1'].map(name=>({name:name+'-locked',query:'shot='+name,locked:true,screen:name==='map1'?'map-screen':'chapter-select-screen'})));
   const filter = process.env.LAYOUT_CHECK_CASES?.split(',')
   for (const [orientation,width,height,safeTop,safeBottom] of [['portrait',834,1194,0,0],['landscape',1194,834,0,0],['portrait-safe',834,1194,24,20],['landscape-safe',1194,834,24,20]]) {
@@ -128,6 +132,7 @@ try {
         entry.networkFailures=[...currentNetworkFailures]
         assert.match(entry.hud,/^NOSCROLL\b/,'HUD reports scrolling')
         assert(!entry.hud.includes('***'),'HUD reports wrong beat or expectation failure')
+        assert(!/CLIP=|SPILL=/.test(entry.hud), 'HUD reports clipping or content spill')
         assert(entry.hud.includes(item.screen) && !entry.hud.includes('on=[none|'),'HUD rendered wrong screen')
         assert.deepEqual(entry.dom.viewport,[width,height],'Viewport differs from iPad dimensions')
 
@@ -142,6 +147,17 @@ try {
         assert.equal(entry.bounds.padding.top,16+safeTop,'Top inset counted incorrectly');
         assert.equal(entry.bounds.padding.bottom,16+safeBottom,'Bottom inset counted incorrectly');
         if(item.locked) {assert(entry.bounds.locked.length>0,'Missing locked art');assert(entry.bounds.locked.every(x=>x.filter==='brightness(0)'&&x.opacity==='1'&&x.parentOpacity==='1'),'Locked silhouette not opaque black');}
+        entry.motion = await evaluate(`(() => {
+          const scene = document.querySelector('.battle-scene');
+          return { reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+            state: scene?.dataset.combatState,
+            activeBattleAnimations: scene ? scene.getAnimations({subtree:true}).filter(a => a.playState === 'running').length : 0,
+            badges: document.querySelectorAll('.character-asset text').length };
+        })()`)
+        if (entry.motion.reduced || entry.motion.state === 'studying') {
+          assert.equal(entry.motion.activeBattleAnimations, 0, 'Battle animation runs while studying or reduced motion')
+        }
+        assert.equal(entry.motion.badges, 0, 'Character learning badge remains')
         entry.passed=true
         await screenshot(label)
         console.log(`PASS ${label}`)

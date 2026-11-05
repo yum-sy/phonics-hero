@@ -123,7 +123,7 @@ try {
       if (doc.querySelector('parsererror') || !root.classList.contains('character-asset')) { missing.push(role+':'+spec.art); continue; }
       const family = root.getAttribute('data-art-family'); families[family]=(families[family]||0)+1;
       for (const im of doc.querySelectorAll('image')) urls.add(new URL(im.getAttribute('href'),location.href).href);
-      if (role==='hero' && root.querySelector('text')?.textContent !== String(art.heroEmblem(spec))) badgeErrors.push(spec.art);
+      if (root.querySelectorAll('text').length !== 0) badgeErrors.push(spec.art);
     }
     const images=await Promise.all([...urls].map(async url=>{const im=new Image();im.src=url;try{await im.decode();return {url,width:im.naturalWidth,height:im.naturalHeight}}catch{return {url,error:'decode failed'}}}));
     return {uniqueCharacters:unique.size,missing,badgeErrors,families,images,galleryCharacters:document.querySelectorAll('.box.art').length,galleryMapped:document.querySelectorAll('.box.art > .character-asset').length};
@@ -132,7 +132,7 @@ try {
   report.gallery.networkFailures = [...currentNetworkFailures]
   assert.equal(report.gallery.uniqueCharacters, 295, 'Expected all 295 current character identities')
   assert.deepEqual(report.gallery.missing, [], 'Legacy/unmapped character art')
-  assert.deepEqual(report.gallery.badgeErrors, [], 'Hero emblem mismatch')
+  assert.deepEqual(report.gallery.badgeErrors, [], 'Character SVG contains a permanent text badge')
   assert.equal(Object.keys(report.gallery.families).length, 7, 'All seven families must be mapped')
   assert.equal(report.gallery.galleryCharacters, report.gallery.galleryMapped, 'Gallery has legacy art')
   assert.equal(report.gallery.images.length, 14, 'Expected base and world sheets for all seven families')

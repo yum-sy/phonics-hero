@@ -444,7 +444,7 @@
     ...Object.fromEntries(
       [1, 2, 3, 4, 5, 6, 7, 8].map((n) => [
         `boss${n}`,
-        { has: ['#boss-intro', '.boss-intro-hero', '.mini-bot'], not: ['.beat-equation'] },
+        { has: ['#boss-intro', '.boss-intro-hero', '.mini-bot', '.fusion-sound-strip', '.fusion-sound'], not: ['.beat-equation'] },
       ])
     ),
     // ---- the screen after the tap: the letter equation -------------------
@@ -856,7 +856,9 @@
       // same class; without this entry shape6 reported *** WRONG-BEAT.
       'match-shape': 'choose-beat',
     }
-    const kindOk = !wantKind || beatCls.includes(KIND_CLASS[wantKind] || wantKind)
+    // Single-target listen/finale intentionally route to the shared attack UI.
+    const attackRoute = ['listen-repeat', 'finale'].includes(wantKind) && beatCls.includes('attack-beat')
+    const kindOk = !wantKind || attackRoute || beatCls.includes(KIND_CLASS[wantKind] || wantKind)
     // Screen class alone cannot tell two shots apart: renderWorldSelect and
     // renderChapterSelect both emit `.chapter-select-screen`, so `world` and
     // `chapters` reported an identical `on=[...]` and a swapped or broken

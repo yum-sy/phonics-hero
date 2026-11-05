@@ -1,0 +1,81 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T15:17:04.335Z",
+  "cases": [
+    {
+      "name": "allstages",
+      "passed": false,
+      "verdict": "FAIL all-stages-playthrough :: 3/5 clean; FAILED: stage-4[threw=beat[5] kind=drag-build id=s4-r4-build: Cannot read properties of undefined (reading 'click') reached=false zeroHealth=false cpMid=true recap=false() cpCleared=false errs=0] | stage-5[threw=null reached=true zeroHealth=true cpMid=true recap=false(ko@10 en@[-1,-1,-1,11]) cpCleared=true errs=0]",
+      "errors": [],
+      "stages": [
+        {
+          "id": "stage-1",
+          "pass": true,
+          "threw": null,
+          "reached": true,
+          "sawZeroHealth": true,
+          "sawCheckpointMidStage": true,
+          "recapOk": true,
+          "recapDetail": "ko@23 en@[24,25,26]",
+          "checkpointClearedAfter": true,
+          "errors": 0
+        },
+        {
+          "id": "stage-2",
+          "pass": true,
+          "threw": null,
+          "reached": true,
+          "sawZeroHealth": true,
+          "sawCheckpointMidStage": true,
+          "recapOk": true,
+          "recapDetail": "ko@16 en@[17,18,19]",
+          "checkpointClearedAfter": true,
+          "errors": 0
+        },
+        {
+          "id": "stage-3",
+          "pass": true,
+          "threw": null,
+          "reached": true,
+          "sawZeroHealth": true,
+          "sawCheckpointMidStage": true,
+          "recapOk": true,
+          "recapDetail": "ko@15 en@[16,17]",
+          "checkpointClearedAfter": true,
+          "errors": 0
+        },
+        {
+          "id": "stage-4",
+          "pass": false,
+          "threw": "beat[5] kind=drag-build id=s4-r4-build: Cannot read properties of undefined (reading 'click')",
+          "reached": false,
+          "sawZeroHealth": false,
+          "sawCheckpointMidStage": true,
+          "recapOk": false,
+          "recapDetail": "",
+          "checkpointClearedAfter": false,
+          "errors": 0
+        },
+        {
+          "id": "stage-5",
+          "pass": false,
+          "threw": null,
+          "reached": true,
+          "sawZeroHealth": true,
+          "sawCheckpointMidStage": true,
+          "recapOk": false,
+          "recapDetail": "ko@10 en@[-1,-1,-1,11]",
+          "checkpointClearedAfter": true,
+          "errors": 0
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "name": "allstages",
+      "verdict": "FAIL all-stages-playthrough :: 3/5 clean; FAILED: stage-4[threw=beat[5] kind=drag-build id=s4-r4-build: Cannot read properties of undefined (reading 'click') reached=false zeroHealth=false cpMid=true recap=false() cpCleared=false errs=0] | stage-5[threw=null reached=true zeroHealth=true cpMid=true recap=false(ko@10 en@[-1,-1,-1,11]) cpCleared=true errs=0]",
+      "errors": []
+    }
+  ]
+}

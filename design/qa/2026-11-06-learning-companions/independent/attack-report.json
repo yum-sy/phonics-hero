@@ -1,0 +1,13 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T15:14:36.475Z",
+  "cases": [
+    {
+      "name": "attackflow",
+      "passed": true,
+      "verdict": "PASS wrong-answer-no-damage | PASS correct-answer-charges-without-damage | PASS attack-instruction-encourages-voice | PASS denied-microphone-fallback-one-hit :: requests=1; HP=100→80 | PASS duplicate-attack-no-extra-damage | PASS back-replayed-answer-no-duplicate-damage :: HP=80→80 | PASS attack-flow-no-character-text",
+      "errors": []
+    }
+  ],
+  "failures": []
+}

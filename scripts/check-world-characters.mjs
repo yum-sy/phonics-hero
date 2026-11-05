@@ -139,6 +139,7 @@ try {
     if (!pending.length) {
       for (const [slug, { role, spec }] of characters) {
         const rendered = art[`${role}Art`](spec)
+        assert(!/<text\b/i.test(rendered), `Permanent character badge: ${slug}`)
         const asset = worldAssets[slug] || CHARACTER_ASSETS[slug]
         const sheet = asset.sheet || asset.family
         const version = asset.sheet ? 'v3' : 'v2'

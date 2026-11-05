@@ -147,7 +147,7 @@
   async function clickWhenEnabled(sel, tries = 200) {
     for (let i = 0; i < tries; i++) {
       const el = document.querySelector(sel)
-      if (el && !el.disabled) {
+      if (el && !el.disabled && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden') {
         el.click()
         return true
       }
@@ -505,7 +505,32 @@
   // first available control -- a multiselect's wrong option never disables
   // itself, so a kind-blind walker can get stuck reclicking it forever.
   async function playThroughStage(stage) {
-    return walkBeats(stage, 0, stage.beats.length)
+    const played = screens.withGeneratedReview(stage)
+    return walkBeats(played, 0, played.beats.length)
+  }
+
+  // Both legacy read confirmation and current ATTACK/Next are valid flows.
+  // A denied microphone uses the production accessibility fallback.
+  async function finishSpokenAttack() {
+    for (let i = 0; i < 200; i++) {
+      const button = document.querySelector('#attack-btn, #mic-btn')
+      if (button && !button.disabled) {
+        const attack = button.id === 'attack-btn'
+        button.click()
+        if (attack) {
+          const next = document.querySelector('#attack-next-btn')
+          if (!await clickWhenEnabled('#attack-next-btn')) throw new Error('ATTACK did not reveal Next')
+          for (let n = 0; next?.isConnected && n < 200; n++) await wait(100)
+          if (next?.isConnected) throw new Error('Attack Next did not advance')
+        } else {
+          for (let n = 0; button.isConnected && n < 200; n++) await wait(100)
+          if (button.isConnected) throw new Error('Read confirmation did not advance')
+        }
+        return
+      }
+      await wait(100)
+    }
+    throw new Error('No enabled read/attack confirmation')
   }
 
   async function walkBeats(stage, from, to) {
@@ -546,6 +571,7 @@
         await confirmPick()
       } else if (beat.kind === 'drag-build') {
         await until('.build-slots')
+        const buildRoot = document.querySelector('.build-slots')
         // Same normalisation the renderer does: a target is a list of
         // SLOTS, either a plain word or an explicit array whose entries can
         // be digraphs ('AI'). Splitting characters here would look for an
@@ -557,16 +583,20 @@
           tile.click()
           await wait(150)
         }
+        if (!beat.scored || !beat.readAloud) {
+          for (let n = 0; buildRoot.isConnected && n < 200; n++) await wait(100)
+          if (buildRoot.isConnected) throw new Error('Completed build did not advance')
+        }
       } else if (beat.kind === 'listen-repeat' || beat.kind === 'finale') {
         for (let i = 0; i < beat.words.length; i++) {
-          await clickWhenEnabled('#mic-btn')
+          await finishSpokenAttack()
           await wait(150)
         }
       }
       // A scored beat with readAloud lands on the read-aloud confirmation
       // screen next, regardless of which branch above just ran.
       if (beat.scored && beat.readAloud) {
-        await clickWhenEnabled('#mic-btn')
+        await finishSpokenAttack()
       }
       } catch (e) {
         e.message = `beat[${bi}] kind=${beat.kind} id=${beat.id}: ${e.message}`
@@ -676,12 +706,21 @@
   // Never mutates chapter data (N1 lesson: this walks the app purely by
   // click, through the same module instances the app itself uses).
   async function allStagesPlaythrough() {
+    const mediaDescriptor = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices')
+    Object.defineProperty(navigator, 'mediaDevices', {configurable:true, value:{
+      getUserMedia: async () => { throw new DOMException('QA denied microphone', 'NotAllowedError') },
+    }})
     const onlyChapter = params.get('ch')
     const results = []
     for (const chapter of chapters) {
-      if (onlyChapter && chapter.id !== onlyChapter) continue
+      if (onlyChapter && chapter.id !== onlyChapter) {
+        chapter.stages.forEach(s => state.forceClearStage(s.id))
+        continue
+      }
       for (let i = 0; i < chapter.stages.length; i++) {
         const stage = chapter.stages[i]
+        if (params.get('stage') && stage.id !== params.get('stage')) continue
+        chapter.stages.slice(0, i).forEach(s => state.forceClearStage(s.id))
         errors = 0
         spoken = []
         state.clearCheckpoint()
@@ -751,6 +790,7 @@
           checkpointClearedAfter,
           errors,
         })
+        window.__gameFlowProgress = results.slice()
         // Leave no state behind for the next stage in the loop.
         state.clearCheckpoint()
       }
@@ -772,6 +812,8 @@
     )
     // Full per-stage ledger, independent of pass/fail, for the report.
     document.documentElement.setAttribute('data-stage-ledger', JSON.stringify(results))
+    if (mediaDescriptor) Object.defineProperty(navigator, 'mediaDevices', mediaDescriptor)
+    else delete navigator.mediaDevices
   }
 
   // Isolates the real chapter-4 match-shape beat (not a synthetic one) for
@@ -3782,7 +3824,129 @@
     )
   }
 
+  async function attackFlowRegression() {
+    const mediaDescriptor = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices')
+    let micCalls = 0
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: {
+      getUserMedia: async () => { micCalls++; throw new DOMException('QA denied microphone', 'NotAllowedError') },
+    } })
+    try {
+      const stage = chapters[0].stages[0]
+      const bi = stage.beats.findIndex(b => b.kind === 'choose' && b.scored && b.readAloud)
+      const beat = stage.beats[bi]
+      await enterStage(chapters[0].id, 0)
+      await walkBeats(stage, 0, bi)
+      const hp = healthPct()
+      let sawCharge = false, sawProjectile = false, chargeTargetsHero = false, projectileFromHero = false
+      const atCenter = (node, end, selector) => {
+        const r = document.querySelector(selector).getBoundingClientRect()
+        return Math.abs(parseFloat(node.style.getPropertyValue(`--fx-x${end}`)) - (r.left+r.width/2)) <= 2 &&
+          Math.abs(parseFloat(node.style.getPropertyValue(`--fx-y${end}`)) - (r.top+r.height/2)) <= 2
+      }
+      const effects = new MutationObserver(records => {
+        for (const record of records) for (const node of record.addedNodes) {
+          if (node.nodeType !== 1) continue
+          if (node.matches('.energy-transfer')) { sawCharge = true; chargeTargetsHero = atCenter(node, 2, '#hero-sprite') }
+          if (node.matches('.fx-bolt')) { sawProjectile = true; projectileFromHero = atCenter(node, 1, '#hero-sprite') && atCenter(node, 2, '#villain-sprite') }
+        }
+      })
+      effects.observe(document.body, {childList:true,subtree:true})
+      const wrong = beat.options.find(o => !o.correct)
+      await answer(wrong.id)
+      await wait(600)
+      await audio.whenAudioIdle()
+      check('wrong-answer-no-damage', healthPct() === hp && !document.querySelector('.fx-bolt'))
+      await answer(beat.options.find(o => o.correct).id)
+      if (!await until('#attack-btn')) throw new Error('Correct answer did not enter ATTACK')
+      await audio.whenAudioIdle()
+      check('correct-answer-charges-without-damage', healthPct() === hp &&
+        document.querySelector('.battle-scene')?.dataset.combatState === 'charging' && sawCharge && chargeTargetsHero && !sawProjectile)
+      check('attack-instruction-encourages-voice', document.querySelector('.attack-beat .beat-instruction')?.textContent.includes('목소리로 응원'))
+      const attack = document.querySelector('#attack-btn')
+      await clickWhenEnabled('#attack-btn')
+      attack.click() // excited duplicate tap must not request a second attack
+      await until('#attack-next-btn:not([style*="none"])')
+      await wait(800)
+      const hitHp = healthPct()
+      check('denied-microphone-fallback-one-hit', micCalls === 1 && hitHp < hp && sawProjectile && projectileFromHero, `requests=${micCalls}; HP=${hp}→${hitHp}`)
+      attack.click()
+      await wait(250)
+      check('duplicate-attack-no-extra-damage', healthPct() === hitHp && micCalls === 1)
+      await clickWhenEnabled('#attack-next-btn')
+      await wait(500)
+      await clickWhenEnabled('#review-back')
+      await wait(300)
+      await answer(beat.options.find(o => o.correct).id)
+      await until('#attack-btn')
+      await audio.whenAudioIdle()
+      await clickWhenEnabled('#attack-btn')
+      await until('#attack-next-btn:not([style*="none"])')
+      await wait(800)
+      check('back-replayed-answer-no-duplicate-damage', healthPct() === hitHp, `HP=${hitHp}→${healthPct()}`)
+      check('attack-flow-no-character-text', !document.querySelector('.character-asset text'))
+      effects.disconnect()
+    } finally {
+      screens.renderMap(chapters[0].id)
+      if (mediaDescriptor) Object.defineProperty(navigator, 'mediaDevices', mediaDescriptor)
+      else delete navigator.mediaDevices
+    }
+  }
+
+  async function slotHighlightRegression() {
+    const stage = chapters[0].stages[3]
+    chapters[0].stages.slice(0,3).forEach(s => state.forceClearStage(s.id))
+    const bi = stage.beats.findIndex(b => b.kind === 'drag-build')
+    state.saveCheckpoint(stage.id, bi, 0)
+    await enterStage(chapters[0].id, 3, true)
+    await until('.build-slot')
+    await audio.whenAudioIdle()
+    const tiles = [...document.querySelectorAll('.letter-tile')]
+    const slot = document.querySelector('.build-slot')
+    tiles[0].click()
+    await wait(20)
+    check('slot-sound-highlight-starts', slot.classList.contains('sound-active'))
+    document.querySelector('#clear-btn').click()
+    check('undo-clears-sound-highlight', !slot.classList.contains('sound-active') && !slot.textContent)
+    tiles[1].click()
+    // Allow queued completion callbacks to settle without assuming that a
+    // phoneme uses TTS: prerecorded phonemes never enter the spoken log.
+    await wait(20)
+    check('replacement-sound-keeps-own-highlight', slot.classList.contains('sound-active') && slot.textContent === tiles[1].dataset.letter)
+    await audio.whenAudioIdle()
+    await wait(50)
+    check('completed-sound-clears-highlight', !slot.classList.contains('sound-active'))
+    screens.renderMap(chapters[0].id)
+    state.clearCheckpoint()
+  }
+
+  async function fusionFlowRegression() {
+    const { fusionLineup } = await import('/src/art/fusion-lineup.js')
+    const { heroEmblem } = await import('/src/art.js')
+    for (const chapter of chapters) {
+      // Unlock only within this isolated test profile; production rules stay on.
+      chapter.stages.slice(0, 4).forEach(s => state.forceClearStage(s.id))
+      const expected = fusionLineup(chapter.stages)
+      await enterStage(chapter.id, 4)
+      const labels = [...document.querySelectorAll('.fusion-sound')].map(el => el.textContent)
+      const seen = new Set()
+      const original = chapter.stages.filter(s => {
+        if (s.chapterBoss) return false
+        const key = heroEmblem(s.hero) || s.hero.art
+        if (seen.has(key)) return false
+        seen.add(key); return true
+      }).slice(0, 3).map(s => String(heroEmblem(s.hero))).filter(sound => sound && sound !== '★')
+      const newcomers = expected.some(s => s.hero.art === chapter.stages[3].hero.art)
+      check(`fusion-${chapter.id}`, JSON.stringify(labels) === JSON.stringify(original) && newcomers &&
+        document.querySelectorAll('.mini-bot .character-asset').length === expected.length &&
+        !document.querySelector('.mini-bot text'), `sounds=${labels.join(',')}; newcomer=${newcomers}`)
+    }
+    screens.renderMap(chapters[0].id)
+  }
+
   const CASES = {
+    attackflow: attackFlowRegression,
+    fusionflow: fusionFlowRegression,
+    slothighlight: slotHighlightRegression,
     worldheader: worldHeaderFit,
     tap: tapBacklog,
     poison: queuePoison,

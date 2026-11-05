@@ -1,0 +1,18 @@
+{
+  "environment": "Desktop headless Chrome only; no iPad, WebKit or installed PWA verification",
+  "commands": [
+    "node scripts/check-safe-layout.mjs http://localhost:5174",
+    "LAYOUT_REDUCED_MOTION=1 LAYOUT_CHECK_CASES=battle1,boss5,listen1 node scripts/check-safe-layout.mjs http://localhost:5174",
+    "LAYOUT_CHECK_CASES=boss5 node scripts/check-safe-layout.mjs http://localhost:5174"
+  ],
+  "layoutPassed": 96,
+  "layoutTotal": 96,
+  "reducedMotionPassed": 12,
+  "clipSpillCases": [],
+  "consoleErrors": 0,
+  "imageDecodeFailures": 0,
+  "reducedMotionActiveBattleAnimations": 0,
+  "badgeAssertionSelector": ".character-asset text",
+  "correctedBadgeAssertionPassed": 4,
+  "badgeAssertionNote": "Earlier reduced-motion report used an absent .learning-badge class; badge-selector-report.json reruns the corrected text-node assertion on four boss5 layouts."
+}

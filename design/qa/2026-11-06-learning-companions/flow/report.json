@@ -1,0 +1,25 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T15:23:40.106Z",
+  "cases": [
+    {
+      "name": "attackflow",
+      "passed": true,
+      "verdict": "PASS wrong-answer-no-damage | PASS correct-answer-charges-without-damage | PASS attack-instruction-encourages-voice | PASS denied-microphone-fallback-one-hit :: requests=1; HP=100→80 | PASS duplicate-attack-no-extra-damage | PASS back-replayed-answer-no-duplicate-damage :: HP=80→80 | PASS attack-flow-no-character-text",
+      "errors": []
+    },
+    {
+      "name": "fusionflow",
+      "passed": true,
+      "verdict": "PASS fusion-chapter-1 :: sounds=S,A,T; newcomer=true | PASS fusion-chapter-2 :: sounds=I,P,N; newcomer=true | PASS fusion-chapter-3 :: sounds=C,E,H; newcomer=true | PASS fusion-chapter-4 :: sounds=R,M,D; newcomer=true | PASS fusion-chapter-5 :: sounds=G,O,U; newcomer=true | PASS fusion-chapter-6 :: sounds=L,F,B; newcomer=true | PASS fusion-chapter-7 :: sounds=AI,J,OA; newcomer=true | PASS fusion-chapter-8 :: sounds=IE,EE,OR; newcomer=true | PASS fusion-chapter-9 :: sounds=Z,W,NG; newcomer=true | PASS fusion-chapter-10 :: sounds=V,OO,Y; newcomer=true | PASS fusion-chapter-11 :: sounds=X,CH,SH; newcomer=true | PASS fusion-chapter-12 :: sounds=TH,QU,OU; newcomer=true | PASS fusion-chapter-13 :: sounds=OI,UE; newcomer=true | PASS fusion-chapter-14 :: sounds=AR,ER; newcomer=true | PASS fusion-chapter-15 :: sounds=ST,SN; newcomer=true | PASS fusion-chapter-16 :: sounds=TR,FR; newcomer=true | PASS fusion-chapter-17 :: sounds=CL,GL; newcomer=true | PASS fusion-chapter-18 :: sounds=ND,NT; newcomer=true | PASS fusion-chapter-19 :: sounds=NK,FT; newcomer=true | PASS fusion-chapter-20 :: sounds=SP,SK; newcomer=true | PASS fusion-chapter-21 :: sounds=PL,DR; newcomer=true | PASS fusion-chapter-22 :: sounds=TW,CT,GL; newcomer=true | PASS fusion-chapter-23 :: sounds=NT,FT; newcomer=true | PASS fusion-chapter-24 :: sounds=NCH,STR; newcomer=true | PASS fusion-chapter-25 :: sounds=SCR,NK; newcomer=true | PASS fusion-chapter-26 :: sounds=LT,LF; newcomer=true | PASS fusion-chapter-27 :: sounds=LK,XT; newcomer=true | PASS fusion-chapter-28 :: sounds=SC,MP; newcomer=true | PASS fusion-chapter-29 :: sounds=ST,TR; newcomer=true | PASS fusion-chapter-30 :: sounds=CL,FR; newcomer=true | PASS fusion-chapter-31 :: sounds=TW,SN; newcomer=true | PASS fusion-chapter-32 :: sounds=STR,NCH; newcomer=true | PASS fusion-chapter-33 :: sounds=THR,SHR; newcomer=true",
+      "errors": []
+    },
+    {
+      "name": "slothighlight",
+      "passed": true,
+      "verdict": "PASS slot-sound-highlight-starts | PASS undo-clears-sound-highlight | PASS replacement-sound-keeps-own-highlight | PASS completed-sound-clears-highlight",
+      "errors": []
+    }
+  ],
+  "failures": []
+}
