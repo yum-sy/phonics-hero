@@ -1,0 +1,19 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T16:07:41.279Z",
+  "cases": [
+    {
+      "name": "attackflow",
+      "passed": true,
+      "verdict": "PASS wrong-answer-no-damage | PASS correct-answer-charges-without-damage | PASS attack-instruction-encourages-voice | PASS attack-keeps-impact-screen | PASS attack-auto-advances | PASS denied-microphone-one-hit :: requests=1; HP=100→80 | PASS duplicate-attack-no-extra-damage | PASS back-replayed-answer-no-duplicate-damage :: HP=80→80 | PASS attack-flow-no-character-text | PASS attack-flow-plays-generated-narration :: native clips=11 | PASS back-during-attack-does-not-auto-advance | PASS exit-during-attack-does-not-auto-advance",
+      "errors": []
+    },
+    {
+      "name": "attackdetected",
+      "passed": true,
+      "verdict": "PASS wrong-answer-no-damage | PASS correct-answer-charges-without-damage | PASS attack-instruction-encourages-voice | PASS silent-timeout-stays-on-attack | PASS audio-cancels-listen-without-advancing | PASS attack-keeps-impact-screen | PASS attack-auto-advances | PASS detected-microphone-one-hit :: requests=1; HP=100→80 | PASS duplicate-attack-no-extra-damage | PASS back-replayed-answer-no-duplicate-damage :: HP=80→80 | PASS attack-flow-no-character-text | PASS attack-flow-plays-generated-narration :: native clips=12 | PASS back-during-attack-does-not-auto-advance | PASS exit-during-attack-does-not-auto-advance",
+      "errors": []
+    }
+  ],
+  "failures": []
+}

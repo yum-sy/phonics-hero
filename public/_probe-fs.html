@@ -79,9 +79,46 @@
   // Realistic-but-fast TTS: resolves via onend like a real engine, and
   // records what actually got spoken.
   let spoken = []
+  let played = [] // ordered starts across TTS and generated native narration
+  let nativeNarrationStarts = 0
   window.speechSynthesis.speak = (u) => {
     spoken.push(u.text)
+    played.push(u.text)
     setTimeout(() => u.onend && u.onend(), 120)
+  }
+
+  // Observe real generated-file playback without replacing fetch, decoding,
+  // source.start, or queue timing. TTS-only regressions retain `spoken`.
+  const narrationManifest = await (await fetch('/narration/manifest.json')).json()
+  const narrationText = new Map(narrationManifest.entries.map(e => [e.file, e.text]))
+  const fetchedNarration = new WeakMap(), decodedNarration = new WeakMap()
+  const nativeFetch = window.fetch.bind(window)
+  window.fetch = async (...args) => {
+    const response = await nativeFetch(...args)
+    const file = new URL(response.url).pathname.split('/').pop()
+    if (narrationText.has(file)) {
+      const nativeArrayBuffer = response.arrayBuffer.bind(response)
+      response.arrayBuffer = async () => {
+        const bytes = await nativeArrayBuffer()
+        fetchedNarration.set(bytes, narrationText.get(file))
+        return bytes
+      }
+    }
+    return response
+  }
+  const nativeDecode = AudioContext.prototype.decodeAudioData
+  AudioContext.prototype.decodeAudioData = function(bytes, ...args) {
+    const text = fetchedNarration.get(bytes)
+    const result = nativeDecode.call(this, bytes, ...args)
+    if (text) result.then(buffer => decodedNarration.set(buffer, text), () => {})
+    return result
+  }
+  const nativeStart = AudioBufferSourceNode.prototype.start
+  AudioBufferSourceNode.prototype.start = function(...args) {
+    const result = nativeStart.apply(this, args)
+    const text = decodedNarration.get(this.buffer)
+    if (text) { played.push(text); nativeNarrationStarts++ }
+    return result
   }
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -509,23 +546,15 @@
     return walkBeats(played, 0, played.beats.length)
   }
 
-  // Both legacy read confirmation and current ATTACK/Next are valid flows.
+  // Both legacy read confirmation and ATTACK auto-advance are valid flows.
   // A denied microphone uses the production accessibility fallback.
   async function finishSpokenAttack() {
     for (let i = 0; i < 200; i++) {
       const button = document.querySelector('#attack-btn, #mic-btn')
       if (button && !button.disabled) {
-        const attack = button.id === 'attack-btn'
         button.click()
-        if (attack) {
-          const next = document.querySelector('#attack-next-btn')
-          if (!await clickWhenEnabled('#attack-next-btn')) throw new Error('ATTACK did not reveal Next')
-          for (let n = 0; next?.isConnected && n < 200; n++) await wait(100)
-          if (next?.isConnected) throw new Error('Attack Next did not advance')
-        } else {
-          for (let n = 0; button.isConnected && n < 200; n++) await wait(100)
-          if (button.isConnected) throw new Error('Read confirmation did not advance')
-        }
+        for (let n = 0; button.isConnected && n < 200; n++) await wait(100)
+        if (button.isConnected) throw new Error('Read/attack confirmation did not auto-advance')
         return
       }
       await wait(100)
@@ -723,6 +752,7 @@
         chapter.stages.slice(0, i).forEach(s => state.forceClearStage(s.id))
         errors = 0
         spoken = []
+        played = []
         state.clearCheckpoint()
         let sawZeroHealth = false
         const obs = new MutationObserver(() => {
@@ -755,25 +785,24 @@
         let recapOk = false
         let recapDetail = ''
         if (reached) {
-          const en0 = stage.recapAudio ? stage.recapAudio.en : []
-          const lastEn = en0[en0.length - 1]
-          if (lastEn) {
-            await waitForSpeech(
-              (sp) => sp.lastIndexOf(lastEn) > sp.lastIndexOf(stage.recapAudio.ko)
-            )
-          }
+          // speakSequence queues each word after the previous finishes, so an
+          // idle snapshot between words is not completion of the full recap.
+          const recap = stage.recapAudio
+          const lastEn = recap?.en?.at(-1)
+          for (let n = 0; n < 300 && lastEn &&
+            !(played.lastIndexOf(recap.ko) >= 0 && played.lastIndexOf(lastEn) > played.lastIndexOf(recap.ko)); n++) await wait(100)
           await audio.whenAudioIdle()
           const ko = stage.recapAudio && stage.recapAudio.ko
           const en = (stage.recapAudio && stage.recapAudio.en) || []
-          const idxKo = ko ? spoken.lastIndexOf(ko) : -1
+          const idxKo = ko ? played.lastIndexOf(ko) : -1
           let cursor = idxKo
           const enIdx = en.map((w) => {
-            const idx = spoken.indexOf(w, cursor + 1)
+            const idx = played.indexOf(w, cursor + 1)
             if (idx !== -1) cursor = idx
             return idx
           })
           recapOk = idxKo !== -1 && enIdx.every((v) => v !== -1)
-          recapDetail = `ko@${idxKo} en@${JSON.stringify(enIdx)}`
+          recapDetail = `native+tts ko@${idxKo} en@${JSON.stringify(enIdx)}`
         }
         const checkpointClearedAfter = state.progress.checkpoint === null
         const pass =
@@ -3824,11 +3853,29 @@
     )
   }
 
-  async function attackFlowRegression() {
+  async function attackFlowRegression(mode = 'denied') {
+    const nativeStartsBefore = nativeNarrationStarts
     const mediaDescriptor = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices')
     let micCalls = 0
+    let micSample = 0.05
+    const NativeAudioContext = window.AudioContext
+    const previousDebugLog = window.__debugAudioLog
+    const shoutLog = []
+    window.__debugAudioLog = line => shoutLog.push(line)
     Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: {
-      getUserMedia: async () => { micCalls++; throw new DOMException('QA denied microphone', 'NotAllowedError') },
+      getUserMedia: async () => {
+        micCalls++
+        if (mode === 'denied') throw new DOMException('QA denied microphone', 'NotAllowedError')
+        // Exercise the real detected branch with a deterministic analyser
+        // sample. This is synthetic input, not an actual microphone test.
+        window.AudioContext = class {
+          constructor() { this.state = 'running'; window.AudioContext = NativeAudioContext }
+          createMediaStreamSource() { return { connect() {} } }
+          createAnalyser() { return { fftSize: 512, getFloatTimeDomainData(data) { data.fill(micSample) } } }
+          close() { return Promise.resolve() }
+        }
+        return { getTracks: () => [{ stop() {} }] }
+      },
     } })
     try {
       const stage = chapters[0].stages[0]
@@ -3862,30 +3909,72 @@
       check('correct-answer-charges-without-damage', healthPct() === hp &&
         document.querySelector('.battle-scene')?.dataset.combatState === 'charging' && sawCharge && chargeTargetsHero && !sawProjectile)
       check('attack-instruction-encourages-voice', document.querySelector('.attack-beat .beat-instruction')?.textContent.includes('목소리로 응원'))
+      if (mode === 'detected') {
+        micSample = 0
+        await clickWhenEnabled('#attack-btn')
+        await wait(2200)
+        check('silent-timeout-stays-on-attack', !!document.querySelector('#attack-btn') && healthPct() === hp && shoutLog.some(line => line.includes('-> timeout')))
+        await clickWhenEnabled('#attack-btn')
+        await wait(100)
+        document.querySelector('#replay-btn').click()
+        await audio.whenAudioIdle()
+        await wait(100)
+        check('audio-cancels-listen-without-advancing', !!document.querySelector('#attack-btn') && healthPct() === hp && shoutLog.some(line => line.includes('-> cancelled')))
+        micSample = 0.05
+        micCalls = 0
+      }
       const attack = document.querySelector('#attack-btn')
       await clickWhenEnabled('#attack-btn')
       attack.click() // excited duplicate tap must not request a second attack
-      await until('#attack-next-btn:not([style*="none"])')
-      await wait(800)
+      await wait(150)
+      check('attack-keeps-impact-screen', attack.isConnected && !document.querySelector('#attack-next-btn'))
+      for (let n = 0; attack.isConnected && n < 100; n++) await wait(100)
+      check('attack-auto-advances', !attack.isConnected && !document.querySelector('#attack-next-btn'))
       const hitHp = healthPct()
-      check('denied-microphone-fallback-one-hit', micCalls === 1 && hitHp < hp && sawProjectile && projectileFromHero, `requests=${micCalls}; HP=${hp}→${hitHp}`)
+      check(`${mode}-microphone-one-hit`, micCalls === 1 && hitHp < hp && sawProjectile && projectileFromHero && shoutLog.some(line => line.includes(mode === 'denied' ? '-> unsupported' : '-> detected')), `requests=${micCalls}; HP=${hp}→${hitHp}`)
       attack.click()
       await wait(250)
       check('duplicate-attack-no-extra-damage', healthPct() === hitHp && micCalls === 1)
-      await clickWhenEnabled('#attack-next-btn')
-      await wait(500)
       await clickWhenEnabled('#review-back')
       await wait(300)
       await answer(beat.options.find(o => o.correct).id)
       await until('#attack-btn')
       await audio.whenAudioIdle()
+      const replayAttack = document.querySelector('#attack-btn')
       await clickWhenEnabled('#attack-btn')
-      await until('#attack-next-btn:not([style*="none"])')
-      await wait(800)
+      for (let n = 0; replayAttack.isConnected && n < 100; n++) await wait(100)
       check('back-replayed-answer-no-duplicate-damage', healthPct() === hitHp, `HP=${hitHp}→${healthPct()}`)
       check('attack-flow-no-character-text', !document.querySelector('.character-asset text'))
+      check('attack-flow-plays-generated-narration', nativeNarrationStarts > nativeStartsBefore, `native clips=${nativeNarrationStarts - nativeStartsBefore}`)
       effects.disconnect()
+      // Back during impact must keep the preceding beat, even after the
+      // old completion timer has elapsed.
+      state.saveCheckpoint(stage.id, bi, 0)
+      await enterStage(chapters[0].id, 0, true)
+      await answer(beat.options.find(o => o.correct).id)
+      await until('#attack-btn')
+      await audio.whenAudioIdle()
+      await clickWhenEnabled('#attack-btn')
+      await wait(150)
+      await clickWhenEnabled('#review-back')
+      const precedingBeat = document.querySelector('#beat-area').firstElementChild
+      await wait(1200)
+      check('back-during-attack-does-not-auto-advance', precedingBeat.isConnected)
+      // Exit during the automatic transition must remain on the map.
+      state.saveCheckpoint(stage.id, bi, 0)
+      await enterStage(chapters[0].id, 0, true)
+      await answer(beat.options.find(o => o.correct).id)
+      await until('#attack-btn')
+      await audio.whenAudioIdle()
+      await clickWhenEnabled('#attack-btn')
+      await wait(150)
+      await clickWhenEnabled('#exit-stage')
+      const map = document.querySelector('.map-screen')
+      await wait(1200)
+      check('exit-during-attack-does-not-auto-advance', !!map && map.isConnected && !document.querySelector('#beat-area'))
     } finally {
+      window.AudioContext = NativeAudioContext
+      window.__debugAudioLog = previousDebugLog
       screens.renderMap(chapters[0].id)
       if (mediaDescriptor) Object.defineProperty(navigator, 'mediaDevices', mediaDescriptor)
       else delete navigator.mediaDevices
@@ -3945,6 +4034,7 @@
 
   const CASES = {
     attackflow: attackFlowRegression,
+    attackdetected: () => attackFlowRegression('detected'),
     fusionflow: fusionFlowRegression,
     slothighlight: slotHighlightRegression,
     worldheader: worldHeaderFit,

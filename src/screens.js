@@ -19,6 +19,8 @@ import {
   isChapterCleared,
   isChapterUnlocked,
   isReviewMode,
+  isParentAccessEnabled,
+  toggleParentAccess,
   isStageCleared,
   isStageUnlocked,
   isWorldCleared,
@@ -38,9 +40,11 @@ import {
   unlockAudio,
   whenAudioIdle,
 } from './audio.js'
-import { heroArt, villainArt, heroEmblem } from './art.js'
-import { fusionLineup } from './art/fusion-lineup.js'
+import { heroArt, villainArt } from './art.js'
+import { fusionLineup, fusionSounds } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
+import { bindParentHold } from './parent-command.js'
+import { rosterInstruction } from './art/hero-roster.js'
 
 const app = document.getElementById('app')
 
@@ -55,10 +59,36 @@ const app = document.getElementById('app')
 // previous one, and anything resuming after an await checks it still owns
 // the screen.
 let navGeneration = 0
+let releaseParentHold = () => {}
 
 function beginScreen() {
+  releaseParentHold()
+  releaseParentHold = () => {}
   navGeneration += 1
   return navGeneration
+}
+
+function installParentCommand(title, refreshLocks) {
+  if (!title || isReviewMode()) return
+  title.classList.add('parent-hold-target')
+  const updateStatus = () => {
+    title.dataset.parentUnlocked = String(isParentAccessEnabled())
+    title.setAttribute('aria-label', `${title.textContent.trim()}${isParentAccessEnabled() ? ' · Parent mode' : ''}`)
+  }
+  updateStatus()
+  releaseParentHold = bindParentHold(title, () => {
+    toggleParentAccess()
+    if (refreshLocks) refreshLocks()
+    else updateStatus() // Play keeps its current beat, HP and audio untouched.
+  })
+}
+
+function returnToAccessibleMap(chapterId) {
+  const chapter = getChapterById(chapterId)
+  const world = getWorldForChapterOrder(chapter.order)
+  if (!isWorldUnlocked(worlds, world.id)) renderWorldSelect()
+  else if (!isChapterUnlocked(chapters, chapterId)) renderChapterSelect(world.id)
+  else renderMap(chapterId)
 }
 
 function ownsScreen(runtime) {
@@ -641,9 +671,11 @@ function worldSelectScreen() {
     <div class="screen chapter-select-screen">
       <div class="map-header"><span style="font-size:min(1em,5.5vw)">Yum JiHoon's Phonics · Pick a World</span></div>
       <div class="chapter-grid">${cards}</div>
+      <p class="audio-credit">단어·안내 음성은 AI로 제작했어요. 파닉스는 녹음 음원이에요.</p>
     </div>
   `
 
+  installParentCommand(app.querySelector('.map-header'), renderWorldSelect)
   onTapAll(app.querySelectorAll('.chapter-card[data-world]'), (btn) => () => {
     unlockAudio()
     renderChapterSelect(btn.dataset.world)
@@ -699,6 +731,7 @@ function chapterSelectScreen(worldId) {
     </div>
   `
 
+  installParentCommand(app.querySelector('.map-header'), () => isWorldUnlocked(worlds, worldId) ? renderChapterSelect(worldId) : renderWorldSelect())
   onTap(document.getElementById('back-to-worlds'), renderWorldSelect)
 
   onTapAll(app.querySelectorAll('.chapter-card[data-chapter]'), (btn) => () => {
@@ -771,6 +804,7 @@ function mapScreen(chapterId) {
     </div>
   `
 
+  installParentCommand(app.querySelector('.map-header'), () => returnToAccessibleMap(chapterId))
   onTap(document.getElementById('back-to-chapters'), () => {
     const world = getWorldForChapterOrder(chapter.order)
     renderChapterSelect(world.id)
@@ -1097,6 +1131,7 @@ function renderHealthShell(runtime) {
     <div class="screen stage-screen">
       <div class="stage-topbar" style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
         <button class="back-btn" id="exit-stage" aria-label="Exit stage">◀ Exit</button>
+        <div class="stage-parent-title"><span class="stage-parent-title-copy">${stage.title}</span></div>
         <button class="back-btn review-back-btn" id="review-back" aria-label="Back to previous step" style="display:none">↺ Back</button>
       </div>
       <div class="battle-scene" data-combat-state="studying">
@@ -1122,11 +1157,12 @@ function renderHealthShell(runtime) {
     </div>
   `
 
+  installParentCommand(app.querySelector('.stage-parent-title'))
   onTap(document.getElementById('exit-stage'), () => {
     // Leaving on purpose means "start this one over next time".
     clearCheckpoint()
     const chapter = getChapterForStage(stage.id)
-    renderMap(chapter.id)
+    returnToAccessibleMap(chapter.id)
   })
 
   // The nameplate reads as a button (QA: a child tapped "Noisebot" expecting
@@ -1215,6 +1251,7 @@ function beatArea() {
 
 function runBeat(runtime) {
   if (!ownsScreen(runtime)) return
+  releaseParentHold.cancel?.()
   const { stage, beatIndex } = runtime
   try {
     if (beatIndex >= stage.beats.length) {
@@ -1508,7 +1545,7 @@ function confirmOddOneOut(area, beat, correctOpt) {
   // this file (e.g. recapAudio's ko/en split).
   speakKO('정답이에요!')
   speakEN(optionSpeech(correctOpt))
-  speakKO('만 다른 소리를 내요.')
+  speakKO('이 단어만 다른 소리를 내요.')
 }
 
 function redemonstrateOption(area, beatOrStep, correctOpt) {
@@ -1852,7 +1889,7 @@ function renderNonScoredBeat(runtime, beat) {
     : `<div class="teach-focus">${visual}${letterHtml}</div>`
 
   const teachInner = `
-    <div class="beat-instruction">${beat.instructionKo}</div>
+    <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
     ${focus}
     <button class="replay-btn" id="replay-btn">🔊 Listen</button>
     <button class="primary-btn" id="continue-btn">Next ▶</button>
@@ -1867,10 +1904,8 @@ function renderNonScoredBeat(runtime, beat) {
     const chapter = getChapterForStage(runtime.stage.id)
     const lineup = fusionLineup(chapter.stages)
     // Labels remain learning content, independent of each character image.
-    // They are the same deduplicated sound keys used to choose the lineup;
-    // word-building equations below still come from targetSlots, never names.
-    const soundsHtml = lineup.map((s) => heroEmblem(s.hero))
-      .filter((sound) => sound && sound !== '★')
+    // Returning appearances never change sound order or word-building content.
+    const soundsHtml = fusionSounds(chapter.stages)
       .map((sound) => `<span class="fusion-sound">${sound}</span>`)
       .join('<span class="fusion-sound-plus" aria-hidden="true">+</span>')
     const dirs = ['from-left', 'from-right', 'from-left']
@@ -2102,7 +2137,7 @@ function renderChooseBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${beat.instructionKo}</div>
+      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
       ${promptHtml}
       ${replayHtml}
       <div class="options-grid">${optionsHtml}</div>
@@ -2195,7 +2230,7 @@ function renderMatchShapeBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${beat.instructionKo}</div>
+      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
       ${promptHtml}
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
@@ -2254,7 +2289,7 @@ function renderChooseSequenceBeat(runtime, beat) {
       .join('')
     area.innerHTML = `
       <div class="beat choose-beat">
-        <div class="beat-instruction">${beat.instructionKo} (${
+        <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)} (${
       stepIndex + 1
     }/${beat.steps.length})</div>
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
@@ -2328,7 +2363,7 @@ function renderMultiselectBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat multiselect-beat">
-      <div class="beat-instruction">${beat.instructionKo}</div>
+      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
@@ -2427,7 +2462,7 @@ function renderBuildBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat build-beat">
-      <div class="beat-instruction">${beat.instructionKo}</div>
+      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
       <div class="build-slots">${slotsHtml}</div>
       <div class="tile-row">${tilesHtml}</div>
       <button class="secondary-btn" id="clear-btn">↺ Undo</button>
@@ -2585,7 +2620,7 @@ function renderListenRepeatBeat(runtime, beat) {
     // choose/multiselect/drag-build "you got it right" screen -- so it gets
     // the same shout-to-ATTACK confirmation instead of a plain "I read it!"
     // tap. Reuses runAttackReadAloud() wholesale rather than re-deriving the
-    // mic-listen/fallback/Next-button plumbing here. The one thing it can't
+    // mic-listen/fallback/auto-advance plumbing here. The one thing it can't
     // supply on its own is the finger-trace box (its default word display is
     // the plain shout-burst target word) -- trace beats pass that markup in
     // as an override so tracing still works right up to the attack tap.
@@ -2617,7 +2652,7 @@ function renderListenRepeatBeat(runtime, beat) {
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
-        <div class="beat-instruction">${beat.instructionKo}</div>
+        <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
         ${wordHtml}
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
@@ -2681,7 +2716,6 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <div class="attack-energy-cue">⚡ Energy ready</div>
       <button class="mic-btn attack-btn" id="attack-btn">⚔️ ATTACK</button>
-      <button class="primary-btn attack-next-btn" id="attack-next-btn" style="display:none">Next ▶</button>
       <div class="beat-feedback" id="beat-feedback"></div>
     </div>
   `
@@ -2689,10 +2723,9 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
   onTap(document.getElementById('replay-btn'), () => speakTap(say))
 
   const attackBtn = document.getElementById('attack-btn')
-  const nextBtn = document.getElementById('attack-next-btn')
   const feedback = () => area.querySelector('#beat-feedback')
 
-  let settled = false // true once the hit has landed and Next is showing
+  let settled = false // true once an attack is committed; blocks duplicate taps
   let listening = false // true while a shout window is open
   let activeController = null
 
@@ -2732,7 +2765,9 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
   // listener existed to see it; give it the same "re-enable once done" pass.
   whenAudioIdle().then(syncAttackEnabled)
 
-  const landHit = () => {
+  const landHit = withRecovery(runtime, async () => {
+    if (settled || !ownsScreen(runtime) || !attackBtn.isConnected) return
+    const attackBeatIndex = runtime.beatIndex
     settled = true
     unsubscribeActivity()
     const boltFlightMs = fireHeroAttack()
@@ -2744,19 +2779,15 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     dealHit(runtime, beat, boltFlightMs, () => {
       if (feedbackEl && feedbackEl.isConnected) feedbackEl.textContent = 'Hit! 💥'
     })
-    nextBtn.style.display = ''
-    // Manual "Next" rather than the usual auto-advance -- the whole point of
-    // this round is the child reading "I attacked" off their own action, and
-    // an automatic transition right after would blur that back into "stuff
-    // just happens on this screen" (explicit product decision this round).
-    onTap(
-      nextBtn,
-      withRecovery(runtime, async () => {
-        await waitForTransition(300)
-        advanceBeat(runtime)
-      })
-    )
-  }
+    // Keep the bolt flight and impact visible, then move on without a second
+    // tap. Existing audio still drains through the shared transition gate.
+    // hit-shake lasts 700ms after landing (the spark is shorter).
+    await waitForTransition(boltFlightMs + 700)
+    // Back/Exit can replace this beat while the impact/audio finishes. A
+    // delayed completion must never advance the replacement screen.
+    if (!ownsScreen(runtime) || !attackBtn.isConnected || runtime.beatIndex !== attackBeatIndex) return
+    advanceBeat(runtime)
+  })
 
   const startListen = () => {
     if (settled || listening || attackBtn.disabled) return
@@ -2769,7 +2800,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     controller.promise.then((result) => {
       if (activeController !== controller) return // superseded already
       activeController = null
-      if (!ownsScreen(runtime) || !area.isConnected) return
+      if (!ownsScreen(runtime) || !attackBtn.isConnected) return
       listening = false
       if (result === 'cancelled') {
         // Audio started mid-listen -- quiet reset, no blame on the child.
@@ -2885,7 +2916,7 @@ function renderReward(runtime) {
   speakSequence(stage.recapAudio.en, 'en-US')
   onTap(document.getElementById('back-to-map'), () => {
       const chapter = getChapterForStage(stage.id)
-      renderMap(chapter.id)
+      returnToAccessibleMap(chapter.id)
     })
 }
 

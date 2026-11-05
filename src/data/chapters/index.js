@@ -13,6 +13,8 @@
 // stages.js, screens.js and state.js all consume `chapters`/`stages`/`worlds`
 // from here and don't care how many chapters exist.
 
+import { applyHeroRotation } from '../../art/hero-roster.js'
+
 import { chapter1 } from './chapter-01.js'
 import { chapter2 } from './chapter-02.js'
 import { chapter3 } from './chapter-03.js'
@@ -47,7 +49,7 @@ import { chapter31 } from './chapter-31.js'
 import { chapter32 } from './chapter-32.js'
 import { chapter33 } from './chapter-33.js'
 
-export const chapters = [
+export const chapters = applyHeroRotation([
   chapter1,
   chapter2,
   chapter3,
@@ -81,7 +83,7 @@ export const chapters = [
   chapter31,
   chapter32,
   chapter33,
-]
+])
 
 export const stages = chapters.flatMap((c) => c.stages)
 

@@ -1,0 +1,11 @@
+PASS mixed phoneme/word/Korean stays serial and uses recorded audio
+PASS raw case keeps letter name distinct from original a phoneme
+PASS missing narration failure uses system voice
+PASS broken narration failure uses system voice
+PASS startfail narration failure uses system voice
+PASS unmapped narration failure uses system voice
+PASS clear drops pending narration but lets current duration finish
+PASS decoded narration is cached
+PASS stalled network aborts and queue falls back within a finite deadline
+PASS unsettled resume promise never blocks narration fallback indefinitely
+10 checks passed; browser doubles only, not real-device audio evidence.

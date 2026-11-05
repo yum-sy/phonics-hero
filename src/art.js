@@ -6,6 +6,7 @@
 import { renderCharacterAsset } from './art/atlas.js'
 import { CHARACTER_ASSETS, CHARACTER_DEFAULT_EMBLEMS } from './art/character-assets.js'
 import { WORLD_CHARACTER_ASSETS } from './art/world-character-assets.js'
+import { HERO_ROSTER } from './art/hero-roster.js'
 
 import {
   heroRobot,
@@ -1376,7 +1377,7 @@ function resolveArt(input, palettes, styles) {
 
 export function heroArt(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
-  const asset = WORLD_CHARACTER_ASSETS[spec.art] || WORLD_CHARACTER_ASSETS[spec.name]
+  const asset = HERO_ROSTER[spec.art]?.asset || WORLD_CHARACTER_ASSETS[spec.art] || WORLD_CHARACTER_ASSETS[spec.name]
     || CHARACTER_ASSETS[spec.art] || CHARACTER_ASSETS[spec.name]
   if (asset) return renderCharacterAsset(asset)
   return resolveArt(heroOrName, HERO_PALETTES, HERO_STYLES)
@@ -1390,8 +1391,9 @@ export function heroArt(heroOrName) {
 // alone can't answer "how many distinct things does this chapter combine").
 export function heroEmblem(heroOrName) {
   const spec = typeof heroOrName === 'string' ? { name: heroOrName } : heroOrName || {}
-  const entry = HERO_PALETTES[spec.art] || HERO_PALETTES[spec.name] || {}
-  return entry.emblem ?? CHARACTER_DEFAULT_EMBLEMS[spec.art] ?? CHARACTER_DEFAULT_EMBLEMS[spec.name]
+  const soundArt = HERO_ROSTER[spec.art]?.soundArt || spec.art
+  const entry = HERO_PALETTES[soundArt] || HERO_PALETTES[spec.name] || {}
+  return entry.emblem ?? CHARACTER_DEFAULT_EMBLEMS[soundArt] ?? CHARACTER_DEFAULT_EMBLEMS[spec.name]
 }
 
 export function villainArt(heroOrName) {

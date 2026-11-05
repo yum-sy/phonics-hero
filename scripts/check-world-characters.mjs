@@ -30,19 +30,26 @@ try {
     import('../src/art/character-assets.js'),
     import('../src/art/world-character-assets.js'),
   ])
+  const { HERO_ROSTER, HERO_ROSTER_BASELINES } = await import('../src/art/hero-roster.js')
   const { wordIconKeys } = await import('../src/icons.js')
   assert.deepEqual(validateChapters(chapters, wordIconKeys), [], 'Chapter contract errors')
   const characters = new Map()
+  const baselineCharacters = new Map()
   for (const chapter of chapters) for (const stage of chapter.stages) {
     for (const role of ['hero', 'villain']) {
       const spec = stage[role]
       const prior = characters.get(spec.art)
       assert(!prior || prior.role === role, `Hero/villain slug collision: ${spec.art}`)
       characters.set(spec.art, { role, spec })
-      assert(CHARACTER_ASSETS[spec.art], `Missing baseline asset: ${spec.art}`)
+      assert(CHARACTER_ASSETS[spec.art] || HERO_ROSTER[spec.art], `Missing active asset: ${spec.art}`)
+      const baseline = role === 'hero' ? HERO_ROSTER_BASELINES.get(stage.id) : spec
+      baselineCharacters.set(baseline.art, { role, spec: baseline })
+      assert(CHARACTER_ASSETS[baseline.art], `Missing baseline asset: ${baseline.art}`)
     }
   }
-  assert.equal(characters.size, 295)
+  assert.equal(baselineCharacters.size, 295)
+  assert.equal(characters.size, 296) // Ch13 now has three distinct ordinary roles.
+  assert.equal(Object.keys(HERO_ROSTER).length, 52)
   assert.equal(Object.keys(CHARACTER_ASSETS).length, 295)
   assert.equal(Object.keys(worldAssets).length, 66)
   const selectedHeroes = new Set(), selectedBosses = new Set(), worldSlots = new Set()
@@ -69,7 +76,7 @@ try {
   const reserved = metadata.reserved.flatMap(entry => entry.slots.map(slot => `${entry.sheet}:${slot}`))
   assert.deepEqual(reserved.sort(), ['career-worlds:4', 'career-worlds:9', 'pixel-worlds:4', 'pixel-worlds:9'])
   for (const key of reserved) assert(!worldSlots.has(key), `Reserved slot is in use: ${key}`)
-  report.checks.mapping = { characters: 295, newHeroes: 33, finalBosses: 33, reserved: 4 }
+  report.checks.mapping = { baselineCharacters: 295, activeCharacters: 296, rosterAliases: 52, newHeroes: 33, finalBosses: 33, reserved: 4 }
 
   const baselineFrames = await json('src/art/atlas-frames.json')
   const worldFrames = await optionalJson('src/art/world-atlas-frames.json')
@@ -105,10 +112,10 @@ try {
   pending.splice(0, pending.length, ...new Set(pending))
   report.checks.pngHeaders = { pngCount, frameCount }
 
-  let art, fusionLineup
+  let art, fusionLineup, fusionSounds
   try {
     art = await import('../src/art.js')
-    ;({ fusionLineup } = await import('../src/art/fusion-lineup.js'))
+    ;({ fusionLineup, fusionSounds } = await import('../src/art/fusion-lineup.js'))
   } catch (error) {
     if (error.code !== 'ERR_MODULE_NOT_FOUND' && error.code !== 'ENOENT') throw error
     pending.push(`runtime integration: ${error.message}`)
@@ -117,7 +124,7 @@ try {
     const inventory = await json('design/character-inventory.json')
     let heroCount = 0
     for (const entry of inventory.characters.filter(character => character.role === 'hero')) {
-      const spec = characters.get(entry.art).spec
+      const spec = baselineCharacters.get(entry.art).spec
       assert.equal(String(art.heroEmblem(spec)), entry.renderedText[0], `Changed phonics emblem: ${entry.art}`)
       heroCount++
     }
@@ -131,16 +138,16 @@ try {
         seen.add(key); return true
       }).slice(0, 3)
       const after = fusionLineup(chapter.stages)
-      assert.deepEqual(after.map(sound), before.map(sound), `Fusion sound order/count: chapter ${chapter.order}`)
-      assert.equal(new Set(after.map(sound)).size, after.length, `Duplicate fusion sound: chapter ${chapter.order}`)
-      assert(after.some(stage => stage.hero.art === chapter.stages[3].hero.art), `New hero absent from fusion: chapter ${chapter.order}`)
+      assert.deepEqual(fusionSounds(chapter.stages), before.map(stage => art.heroEmblem(stage.hero)).filter(key => key && key !== '★'), `Fusion sound order/count: chapter ${chapter.order}`)
+      assert.deepEqual(after.map(stage => stage.id), [0, 2, 3].map(index => chapter.stages[index].id), `Current team absent from fusion: chapter ${chapter.order}`)
+      assert.equal(new Set(after.map(stage => stage.hero.art)).size, 3, `Duplicate fusion hero: chapter ${chapter.order}`)
     }
     report.checks.emblemsAndFusion = { emblemsPreserved: heroCount, chaptersPassed: chapters.length }
     if (!pending.length) {
       for (const [slug, { role, spec }] of characters) {
         const rendered = art[`${role}Art`](spec)
         assert(!/<text\b/i.test(rendered), `Permanent character badge: ${slug}`)
-        const asset = worldAssets[slug] || CHARACTER_ASSETS[slug]
+        const asset = HERO_ROSTER[slug]?.asset || worldAssets[slug] || CHARACTER_ASSETS[slug]
         const sheet = asset.sheet || asset.family
         const version = asset.sheet ? 'v3' : 'v2'
         assert(rendered.includes(`/art/${version}/${sheet}.png`), `Renderer uses wrong sheet: ${slug}`)

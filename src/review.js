@@ -53,6 +53,7 @@ function renderCatalog(chapterId) {
         <a class="review-game-link" href="./">일반 게임으로</a>
       </header>
       <p class="review-notice">검수 모드 · 실제 진행 기록에 저장하지 않아요</p>
+      <p class="audio-credit">단어·안내 음성은 AI로 제작했어요. 파닉스는 녹음 음원이에요.</p>
       <nav class="review-chapter-nav" aria-label="챕터 선택">
         <button type="button" id="review-prev" ${chapterIndex === 0 ? 'disabled' : ''} aria-label="이전 챕터">◀ 이전</button>
         <label class="review-chapter-field">

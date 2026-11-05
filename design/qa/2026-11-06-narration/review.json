@@ -1,0 +1,218 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T16:03:32.074Z",
+  "cases": [
+    {
+      "name": "catalog-safe-1-834x1194",
+      "passed": true,
+      "safeTop": 24,
+      "safeBottom": 20,
+      "verdict": true,
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "spill": [],
+      "clipped": []
+    },
+    {
+      "name": "catalog-safe-33-834x1194",
+      "passed": true,
+      "safeTop": 24,
+      "safeBottom": 20,
+      "verdict": true,
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "spill": [],
+      "clipped": []
+    },
+    {
+      "name": "catalog-834x1194",
+      "passed": true,
+      "chapters": 33,
+      "enabledStageCards": 165
+    },
+    {
+      "name": "play-exit-stage-1-834x1194",
+      "passed": true
+    },
+    {
+      "name": "play-exit-c17-stage-5-834x1194",
+      "passed": true
+    },
+    {
+      "name": "play-exit-c33s5-834x1194",
+      "passed": true
+    },
+    {
+      "name": "catalog-safe-1-1194x834",
+      "passed": true,
+      "safeTop": 24,
+      "safeBottom": 20,
+      "verdict": true,
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "spill": [],
+      "clipped": []
+    },
+    {
+      "name": "catalog-safe-33-1194x834",
+      "passed": true,
+      "safeTop": 24,
+      "safeBottom": 20,
+      "verdict": true,
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "spill": [],
+      "clipped": []
+    },
+    {
+      "name": "catalog-1194x834",
+      "passed": true,
+      "chapters": 33,
+      "enabledStageCards": 165
+    },
+    {
+      "name": "play-exit-stage-1-1194x834",
+      "passed": true
+    },
+    {
+      "name": "play-exit-c17-stage-5-1194x834",
+      "passed": true
+    },
+    {
+      "name": "play-exit-c33s5-1194x834",
+      "passed": true
+    },
+    {
+      "name": "atlas-decode",
+      "passed": true,
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/brick.png",
+          "width": 1199,
+          "height": 1312
+        },
+        {
+          "url": "http://localhost:5174/art/v3/brick-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        },
+        {
+          "url": "http://localhost:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        },
+        {
+          "url": "http://localhost:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "name": "checkpoint-clear-reset-storage-isolation",
+      "passed": true,
+      "checkpoint": "{\"stageId\":\"c33s5\",\"beatIndex\":2,\"hitsDealt\":1}",
+      "cleared": true,
+      "reset": true,
+      "stored": "{\"clearedStages\":[\"stage-1\"],\"stars\":{\"stage-1\":2},\"checkpoint\":{\"stageId\":\"stage-2\",\"beatIndex\":1,\"hitsDealt\":0},\"qaSentinel\":\"review-must-preserve-exact-bytes\"}"
+    },
+    {
+      "name": "reload-isolated-deep-link",
+      "passed": true
+    },
+    {
+      "name": "normal-game-progression-remains-locked",
+      "passed": true,
+      "normal": [
+        {
+          "id": "stage-1",
+          "locked": false,
+          "disabled": false
+        },
+        {
+          "id": "stage-2",
+          "locked": false,
+          "disabled": false
+        },
+        {
+          "id": "stage-3",
+          "locked": true,
+          "disabled": true
+        },
+        {
+          "id": "stage-4",
+          "locked": true,
+          "disabled": true
+        },
+        {
+          "id": "stage-5",
+          "locked": true,
+          "disabled": true
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "entryScripts": [
+    "http://localhost:5174/@vite/client",
+    "http://localhost:5174/src/review.js"
+  ]
+}

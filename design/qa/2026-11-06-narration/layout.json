@@ -1,0 +1,807 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T16:03:30.843Z",
+  "cases": [
+    {
+      "name": "portrait-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=16px(1.3%)@y1178",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=16px(1.3%)@y1178",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=73px(6.1%)@y1121 bgap=69px(7.7%)@y419/col893",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 16,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y818",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y818",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=72px(9.0%)@y588/col802",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 16,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=84px(7.0%)@y1110 bgap=60px(7.0%)@y434/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=36px(4.3%)@y798",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen|-] chapter=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=36px(4.3%)@y798",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://localhost:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=63px(8.3%)@y168/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    }
+  ],
+  "failures": []
+}

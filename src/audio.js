@@ -3,6 +3,8 @@
 // The manual "다 읽었어요!" button is always the primary, reliable path —
 // SpeechRecognition is unreliable on iPadOS Safari, so it's only ever a bonus.
 
+import { narrationFor } from './audio/narration-assets.js'
+
 let audioUnlocked = false
 let speechGestureEstablished = false
 let gestureWaiters = []
@@ -512,6 +514,68 @@ async function resolveAssetAudio(text, lang) {
 
   const buffer = soundBuffers.get(key)
   return buffer ? { buffer } : { skip: true }
+}
+
+// Generated words and Korean narration share the existing queue and native
+// buffer playback. Original phonemes are resolved above FIRST and never use
+// this fallback. Load only requested clips; cap decoded memory for long iPad
+// sessions instead of preloading the whole narration library at startup.
+const NARRATION_BASE = `${import.meta.env.BASE_URL || '/'}narration/`
+const narrationBuffers = new Map()
+const narrationLoading = new Map()
+const MAX_NARRATION_BUFFERS = 32
+
+async function resolveNarrationAudio(text, lang) {
+  const clip = narrationFor(text, lang)
+  if (!clip) return null
+  const ctx = ensureAudioCtx()
+  if (!ctx) return null
+  if (ctx.state !== 'running') {
+    resumeAudioCtx()
+    const deadline = Date.now() + ASSET_WAIT_TIMEOUT_MS
+    while (ctx.state !== 'running' && Date.now() < deadline) await sleep(50)
+    if (ctx.state !== 'running') return null
+  }
+  const key = clip.file
+  if (!narrationBuffers.has(key) && !narrationLoading.has(key)) {
+    const pending = (async () => {
+      let buffer = null
+      const controller = new AbortController()
+      let timer
+      try {
+        const load = (async () => {
+          const response = await fetch(`${NARRATION_BASE}${key}`, { signal: controller.signal })
+          return response.ok ? (await ctx.decodeAudioData(await response.arrayBuffer())) || null : null
+        })()
+        const timeout = new Promise(resolve => {
+          timer = setTimeout(() => {
+            controller.abort()
+            resolve(null)
+          }, ASSET_WAIT_TIMEOUT_MS)
+        })
+        buffer = await Promise.race([load, timeout])
+        if (buffer && (!Number.isFinite(buffer.duration) || buffer.duration <= 0)) buffer = null
+      } catch (e) {
+        // Missing or invalid narration keeps the existing system-TTS fallback.
+      } finally {
+        clearTimeout(timer)
+      }
+      narrationBuffers.set(key, buffer)
+      while (narrationBuffers.size > MAX_NARRATION_BUFFERS) {
+        narrationBuffers.delete(narrationBuffers.keys().next().value)
+      }
+      narrationLoading.delete(key)
+    })()
+    narrationLoading.set(key, pending)
+  }
+  const pending = narrationLoading.get(key)
+  if (pending) await pending // the fetch/decode race above is always bounded
+  const buffer = narrationBuffers.get(key)
+  if (narrationBuffers.has(key)) {
+    narrationBuffers.delete(key)
+    narrationBuffers.set(key, buffer)
+  }
+  return buffer || null
 }
 
 function resumeAudioCtx() {
@@ -1223,15 +1287,18 @@ async function pump() {
           // trusted, i.e. treated exactly like a short successful play.
           trusted = true
         } else {
-          // Not an asset key at all -- real word / Korean text / etc. TTS
-          // is the correct and only path, unchanged from before. Gated on
-          // the gesture ping (see waitForSpeechGesture): only matters for
-          // the session's very first real TTS call, and only when it lost
-          // the race against establishSpeechGesture's click -- resolves
-          // immediately once that click lands, so this is a no-op after
-          // the first tap or two of a session.
-          await waitForSpeechGesture(400)
-          trusted = await speakNow(item.text, item.lang, item.rate, item.volume)
+          // Real words / Korean text use published narration when available.
+          // Reuse playSound without a phoneme gain key: generated clips play
+          // at their native rate and volume. Failed loads/starts still use the
+          // existing system voice, with its unchanged gesture/queue rules.
+          const narration = await resolveNarrationAudio(item.text, item.lang)
+          trusted = narration ? await playSound(narration, null) : null
+          if (trusted === null) {
+            // TTS fallback keeps the gesture gate. This only waits when the
+            // first content tap raced establishSpeechGesture's click.
+            await waitForSpeechGesture(400)
+            trusted = await speakNow(item.text, item.lang, item.rate, item.volume)
+          }
         }
       } catch (e) {
         // ignore -- treat as spoken, and as untrustworthy

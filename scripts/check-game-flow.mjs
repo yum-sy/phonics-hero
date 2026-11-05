@@ -19,6 +19,9 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const chrome = spawn(chromePath, [
   '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
   '--disable-background-networking', '--ignore-certificate-errors',
+  // The harness clicks programmatically; permit real buffer playback instead
+  // of silently exercising only the system-TTS fallback in suspended contexts.
+  '--autoplay-policy=no-user-gesture-required',
   '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank',
 ], { stdio: ['ignore', 'ignore', 'pipe'] })
 let chromeErrors = ''
@@ -100,7 +103,7 @@ try {
   })
   await Promise.all([command('Page.enable'), command('Runtime.enable'), command('Network.enable')])
   await command('Emulation.setDeviceMetricsOverride', { width: 834, height: 1194, deviceScaleFactor: 1, mobile: false })
-  const suites = (process.env.GAME_FLOW_CASES || 'attackflow,fusionflow,slothighlight').split(',')
+  const suites = (process.env.GAME_FLOW_CASES || 'attackflow,attackdetected,fusionflow,slothighlight').split(',')
   for (const suite of suites) {
     await navigate(`/_probe-fs.html?only=${encodeURIComponent(suite)}${process.env.GAME_FLOW_CHAPTER ? '&ch='+encodeURIComponent(process.env.GAME_FLOW_CHAPTER) : ''}${process.env.GAME_FLOW_STAGE ? '&stage='+encodeURIComponent(process.env.GAME_FLOW_STAGE) : ''}`)
     const verdict = await until(() => evaluate(`document.documentElement.getAttribute('data-results')`), suite, Number(process.env.GAME_FLOW_TIMEOUT || 300000))

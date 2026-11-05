@@ -1,18 +1,25 @@
 import { heroEmblem } from '../art.js'
-import { WORLD_CHARACTER_ASSETS } from './world-character-assets.js'
 
-// A sound still gets exactly one place in the fusion sequence. When two heroes
-// teach that sound, show the world's newcomer instead of hiding it behind the
-// earlier stage's hero. Replacing a Map value preserves the original sound order.
+// The whole current team joins visually, even when two members teach the
+// same sound. Returning heroes have stable per-chapter roster identities.
 export function fusionLineup(stages) {
-  const representatives = new Map()
-  for (const stage of stages) {
-    if (stage.chapterBoss || !stage.hero) continue
+  const seen = new Set()
+  return stages.filter(stage => {
+    if (stage.chapterBoss || !stage.hero || seen.has(stage.hero.art)) return false
+    seen.add(stage.hero.art)
+    return true
+  }).slice(0, 3)
+}
+
+// Learning order remains the original sound order, independent of the team.
+export function fusionSounds(stages) {
+  const seen = new Set()
+  return stages.filter(stage => {
+    if (stage.chapterBoss || !stage.hero) return false
     const key = heroEmblem(stage.hero) || stage.hero.art
-    if (!key) continue
-    if (!representatives.has(key) || WORLD_CHARACTER_ASSETS[stage.hero.art]) {
-      representatives.set(key, stage)
-    }
-  }
-  return [...representatives.values()].slice(0, 3)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  }).slice(0, 3).map(stage => heroEmblem(stage.hero))
+    .filter(sound => sound && sound !== '★')
 }

@@ -130,7 +130,7 @@ try {
   })()`)
   report.gallery.consoleErrors = [...currentErrors]
   report.gallery.networkFailures = [...currentNetworkFailures]
-  assert.equal(report.gallery.uniqueCharacters, 295, 'Expected all 295 current character identities')
+  assert.equal(report.gallery.uniqueCharacters, 296, 'Expected 296 active identities after separating Ch13 ordinary roles')
   assert.deepEqual(report.gallery.missing, [], 'Legacy/unmapped character art')
   assert.deepEqual(report.gallery.badgeErrors, [], 'Character SVG contains a permanent text badge')
   assert.equal(Object.keys(report.gallery.families).length, 7, 'All seven families must be mapped')

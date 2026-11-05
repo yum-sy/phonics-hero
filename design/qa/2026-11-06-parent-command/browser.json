@@ -1,0 +1,29 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T16:38:49.364Z",
+  "gallery": null,
+  "cases": [
+    {
+      "name": "trusted-pointer-11-second-unlock",
+      "passed": true,
+      "elapsedBeforeCheckMs": 11300
+    },
+    {
+      "name": "all-hierarchy-access-without-clears",
+      "passed": true
+    },
+    {
+      "name": "trusted-pointer-play-relock-preserves-beat-hp-checkpoint",
+      "passed": true
+    },
+    {
+      "name": "relock-restores-earned-progress",
+      "passed": true
+    },
+    {
+      "name": "review-command-isolated",
+      "passed": true
+    }
+  ],
+  "failures": []
+}

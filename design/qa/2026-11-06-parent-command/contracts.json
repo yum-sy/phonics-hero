@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "holdMs": 11000,
+  "checks": [
+    "short-hold",
+    "11s-toggle",
+    "one-toggle-per-hold",
+    "second-toggle",
+    "pointercancel",
+    "move-off",
+    "blur",
+    "hidden",
+    "beat/navigation-cleanup",
+    "all-three-lock-levels",
+    "session-reload",
+    "earned-progress-exact",
+    "review-isolation"
+  ]
+}

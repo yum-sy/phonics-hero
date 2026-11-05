@@ -1,0 +1,27 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T15:55:52.642Z",
+  "cases": [
+    {
+      "name": "allstages",
+      "passed": true,
+      "verdict": "PASS all-stages-playthrough :: 1/1 stages clean: stage-4",
+      "errors": [],
+      "stages": [
+        {
+          "id": "stage-4",
+          "pass": true,
+          "threw": null,
+          "reached": true,
+          "sawZeroHealth": true,
+          "sawCheckpointMidStage": true,
+          "recapOk": true,
+          "recapDetail": "ko@14 en@[15,16]",
+          "checkpointClearedAfter": true,
+          "errors": 0
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

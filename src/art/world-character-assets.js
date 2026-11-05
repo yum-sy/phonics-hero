@@ -1,9 +1,9 @@
-// Per-world newcomers use stable art identities, preserving names and phonics
-// badges. Each 5-column x 2-row sheet has ordinary heroes W1..W5 above the
-// corresponding final bosses W1..W5. No curriculum import is needed at runtime.
-// Stage-4 hero slugs are replaced. Ch13 intentionally shares beacon across
-// stages 1, 2 and 4, so all three receive that world's newcomer. Fusion lineup
-// deduplication must prefer these newcomers when another hero shares a sound.
+// Baseline newcomer/boss assets: 5 columns x 2 rows, ordinary heroes W1..W5
+// above the corresponding final bosses. Stage-4 identities select each new
+// world hero. hero-roster.js carries those appearances into later teams via
+// aliases, while preserving the destination role's original sound metadata.
+// Ch13's raw beacon identity is shared by stages1/2/4; roster aliases separate
+// its returning leader from its newcomer in the assembled curriculum.
 export const WORLD_CHARACTER_ASSETS = {
   'turbo': { family: 'robot', sheet: 'robot-worlds', slot: 0 }, // World 1, chapter 1, hero
   'dark-spark': { family: 'robot', sheet: 'robot-worlds', slot: 5 }, // World 1, chapter 1, boss
@@ -73,6 +73,8 @@ export const WORLD_CHARACTER_ASSETS = {
   'voidjaw': { family: 'dino', sheet: 'dino-worlds', slot: 9 }, // World 5, chapter 33, boss
 }
 
+// Historical V3 generation inventory; the legacy shared-role/preference lists
+// describe baseline data before the later hero-roster rotation.
 export const WORLD_CHARACTER_ASSET_METADATA = {
   "columns": 5,
   "rows": 2,

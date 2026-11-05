@@ -1,0 +1,23 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-05T16:45:32.434Z",
+  "gallery": null,
+  "cases": [
+    {
+      "name": "chapter-33-stage-1",
+      "passed": true,
+      "instruction": "Skyfin 히어로가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+    },
+    {
+      "name": "chapter-33-stage-5",
+      "passed": true,
+      "instruction": "Skyfin + Wingo II + Skyra, 세 히어로가 최후의 합체를 해요! 지금까지 배운 모든 소리의 힘을 모아 THREE를 만들어요!"
+    },
+    {
+      "name": "chapter-13-stage-5",
+      "passed": true,
+      "instruction": "Jett + Cloak + Beacon, 세 히어로가 합체해요! 먼저 coin을 만들어요."
+    }
+  ],
+  "failures": []
+}
