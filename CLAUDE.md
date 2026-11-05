@@ -90,8 +90,10 @@
   보스는 보라/금색 반복 대신 서로 다른 주색·체형·장비·소재를 가진다. 단순 색갈이 금지.
 - 잠긴 카드/스테이지의 래스터 그림은 `brightness(0)`으로 검정 실루엣을 만든다.
   SVG fill만 덮어쓰면 PNG 색은 숨겨지지 않는다. 부모 opacity로 검정을 희석하지 않는다.
-- `.screen`만 안전 영역 패딩을 소유한다. 상하 기본16px + `--safe-top/bottom`,
-  가로모드 절대배치 상단 버튼도 같은 변수를 쓴다. body/#app에 중복 여백 금지.
+- `.screen`만 안전 영역 패딩을 소유한다. 기본 상하16px + 기기 안전 영역이며,
+  홈 화면 설치형(`display-mode: standalone`) 상단은 `16px + max(24px, --safe-top)`로
+  최소40px를 확보한다. `--screen-inset-top`을 가로모드 절대배치 상단 버튼도 공유한다.
+  body/#app에 중복 여백 금지. 실제 iPad 가림 해소는 사용자 재확인 전까지 미확인이다.
 - 부드러운 UI 색상을 유지하면서 학습 글자/버튼은 진한 잉크색으로 대비를 확보한다.
   설치형 status-bar 메타는 `default`. 실제 iOS 가림 해소는 실기기 확인 전까지 단정 금지.
 - 검증: `check-world-characters.mjs`, `check-character-assets.mjs`, `check-safe-layout.mjs`.

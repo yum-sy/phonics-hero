@@ -4,6 +4,7 @@
 // LAYOUT_PARENT_MODE=1 checks editor controls; LAYOUT_PARENT_PROGRESS=partial
 // seeds a mixed completion/lock fixture instead of clearing the full curriculum.
 // LAYOUT_REDUCED_MOTION=1 also checks static battle feedback under reduced motion.
+// LAYOUT_STANDALONE=1 activates the shipped standalone CSS rule (not iOS emulation).
 // 24 screens × portrait/landscape × normal/simulated safe insets = 96 cases.
 // Desktop layout evidence only: injected CSS insets do not emulate iOS or installed PWA behavior.
 import { spawn } from 'node:child_process'
@@ -31,7 +32,8 @@ let requestId = 0
 const pending = new Map()
 let currentErrors = []
 let currentNetworkFailures = []
-const report = { base, generatedAt: new Date().toISOString(), cases: [], failures: [] }
+const standalone = process.env.LAYOUT_STANDALONE === '1'
+const report = { standalone, base, generatedAt: new Date().toISOString(), cases: [], failures: [] }
 
 async function until(fn, description, timeout = 20000) {
   const end = Date.now() + timeout
@@ -111,9 +113,9 @@ try {
   })
   await Promise.all([command('Page.enable'), command('Runtime.enable'), command('Network.enable')])
   await command('Emulation.setDeviceMetricsOverride', { width: 834, height: 1194, deviceScaleFactor: 1, mobile: false })
-  if (process.env.LAYOUT_REDUCED_MOTION === '1') {
-    await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
-  }
+  const mediaFeatures = []
+  if (process.env.LAYOUT_REDUCED_MOTION === '1') mediaFeatures.push({ name: 'prefers-reduced-motion', value: 'reduce' })
+  await command('Emulation.setEmulatedMedia', { features: mediaFeatures })
   const parentMode = process.env.LAYOUT_PARENT_MODE === '1'
   const partialProgress = parentMode && process.env.LAYOUT_PARENT_PROGRESS === 'partial'
   await command('Page.addScriptToEvaluateOnNewDocument', {source: `
@@ -135,6 +137,15 @@ try {
       try {
         const safeCSS = `:root{--safe-top:${safeTop}px;--safe-bottom:${safeBottom}px}`
         await navigate(`/_probe.html?${item.query}${item.locked || partialProgress ? '' : '&unlock=1'}&delay=1200&css=${encodeURIComponent(safeCSS)}`)
+        if (standalone) {
+          await until(() => evaluate(`(() => {
+            const rule = [...document.styleSheets].flatMap(sheet => [...sheet.cssRules])
+              .find(rule => rule.media?.mediaText === '(display-mode: standalone)');
+            if (!rule) return false;
+            rule.media.mediaText = 'all';
+            return true;
+          })()`), 'shipped standalone CSS rule');
+        }
         entry.hud=await until(() => evaluate(`document.documentElement.getAttribute('data-probe')`),label)
         entry.images=await evaluate(decodedImages)
         entry.dom=await evaluate(`({viewport:[innerWidth,innerHeight],families:[...new Set([...document.querySelectorAll('#app .character-asset')].map(e=>e.dataset.artFamily))],legacy:[...document.querySelectorAll('#app svg.carbot-art')].filter(e=>!e.classList.contains('character-asset')).length})`)
@@ -153,8 +164,9 @@ try {
         entry.bounds=await evaluate(`(()=>{const s=document.querySelector('#app > .screen'),c=getComputedStyle(s),r=s.getBoundingClientRect();return {screen:{top:r.top,bottom:r.bottom,height:r.height},padding:{top:parseFloat(c.paddingTop),bottom:parseFloat(c.paddingBottom),left:parseFloat(c.paddingLeft),right:parseFloat(c.paddingRight)},topbar:document.querySelector('.stage-topbar')?.getBoundingClientRect().top,locked:[...document.querySelectorAll('.locked .carbot-art')].map(e=>({filter:getComputedStyle(e).filter,opacity:getComputedStyle(e).opacity,parentOpacity:getComputedStyle(e.closest('.locked')).opacity}))}})()`)
         assert.equal(entry.bounds.screen.top, 0, 'Screen is offset from viewport');
         assert.equal(entry.bounds.screen.height, height, 'Screen exceeds viewport height');
-        if (entry.bounds.topbar !== undefined) assert(entry.bounds.topbar >= 16 + safeTop, 'Topbar overlaps safe gutter');
-        assert.equal(entry.bounds.padding.top,16+safeTop,'Top inset counted incorrectly');
+        const expectedTop = 16 + (standalone ? Math.max(24, safeTop) : safeTop);
+        if (entry.bounds.topbar !== undefined) assert(entry.bounds.topbar >= expectedTop, 'Topbar overlaps safe gutter');
+        assert.equal(entry.bounds.padding.top,expectedTop,'Top inset counted incorrectly');
         assert.equal(entry.bounds.padding.bottom,16+safeBottom,'Bottom inset counted incorrectly');
         if(item.locked) {assert(entry.bounds.locked.length>0,'Missing locked art');assert(entry.bounds.locked.every(x=>x.filter==='brightness(0)'&&x.opacity==='1'&&x.parentOpacity==='1'),'Locked silhouette not opaque black');}
         entry.motion = await evaluate(`(() => {

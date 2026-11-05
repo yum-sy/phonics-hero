@@ -26,6 +26,7 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  --screen-inset-top: var(--safe-top);
   --screen-gutter-y: 16px;
   --screen-gutter-x: 20px;
   /* Total lifetime of one .fx-bolt, flight plus impact burst. screens.js
@@ -44,6 +45,13 @@
   --fx-bolt-flight-ms: 392ms;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Home-screen apps need room for the iPad status area even when WebKit
+   reports a zero inset. Use a floor, not an extra inset, so a larger
+   device safe area is counted only once. */
+@media (display-mode: standalone) {
+  :root { --screen-inset-top: max(24px, var(--safe-top)); }
 }
 
 
@@ -122,7 +130,7 @@ button {
   /* Only this box owns safe-area padding. body/#app must not add a second
      inset or increase the viewport-height claim. Keep visible breathing
      room even when an installed app reports zero safe-area insets. */
-  padding: calc(var(--screen-gutter-y) + var(--safe-top))
+  padding: calc(var(--screen-gutter-y) + var(--screen-inset-top))
     calc(var(--screen-gutter-x) + var(--safe-right))
     calc(var(--screen-gutter-y) + var(--safe-bottom))
     calc(var(--screen-gutter-x) + var(--safe-left));
@@ -1798,7 +1806,7 @@ button {
        begins (measured via CDP getBoundingClientRect: topbar.left=57 vs
        battleScene.left=81). Mirroring .screen's own landscape padding
        formula exactly lines the bar's left edge up with the card's. */
-    top: calc(var(--screen-gutter-y) + var(--safe-top));
+    top: calc(var(--screen-gutter-y) + var(--screen-inset-top));
     left: calc(var(--screen-gutter-x) + var(--safe-left));
     width: 244px;
     justify-content: space-between;
