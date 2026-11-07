@@ -125,7 +125,7 @@ try {
       clearedStages: ['stage-1'], stars: {'stage-1': 3}, lockedStages: ['stage-3'], checkpoint: null
     }));` : ''}
   `});
-  const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7','listen1','finale1','finale2'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
+  const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7','listen1','finale1','finale2','lang6c','lang6t','lang6b','lang7m','lang9c','lang20t','reward6','reward16'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
   cases.unshift(...['world','chapters','map1'].map(name=>({name:name+'-locked',query:'shot='+name,locked:true,screen:name==='map1'?'map-screen':'chapter-select-screen'})));
   const filter = process.env.LAYOUT_CHECK_CASES?.split(',')
   for (const [orientation,width,height,safeTop,safeBottom] of [['portrait',834,1194,0,0],['landscape',1194,834,0,0],['portrait-safe',834,1194,24,20],['landscape-safe',1194,834,24,20]]) {

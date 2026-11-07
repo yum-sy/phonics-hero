@@ -728,8 +728,20 @@ button {
 /* Fallback set by fitBeatInstruction()/fitRecapLine() when one sentence per
    line cannot fit even at the font floor: sentences flow together instead,
    still breaking only between words. */
-.instruction-packed .instruction-line {
+.instruction-packed .instruction-line:not(.instruction-sub) {
   display: inline;
+}
+
+/* Bilingual phase (language-policy.js 'en-ko', chapters 6-14): the English
+   sentence is the primary .instruction-line and the Korean it replaces
+   follows as a subtitle at ~55% size. Same sentence-per-line / keep-all
+   rules; fitBeatInstruction()/fitRecapLine() shrink the subtitle first
+   (20px floor) before touching the primary size. */
+.instruction-line.instruction-sub {
+  font-size: 0.55em;
+  font-weight: 600;
+  opacity: 0.74;
+  margin-top: 0.1em;
 }
 
 /* Jolly Phonics action cue under a teach instruction (screens.js

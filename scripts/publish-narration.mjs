@@ -29,7 +29,14 @@ for (const recording of inventory.protectedRecordings) {
   assert.equal(hash(await readFile(join(root, recording.path))), recording.sha256)
 }
 
-const candidates = [], pending = []
+// The raw WAV cache (design/audio/generated/, gitignored) does not travel with
+// the repo. An entry whose cache is missing but whose published m4a already
+// exists for the same lang+text (sha256 intact, same model/voice) is kept as
+// published rather than treated as pending -- otherwise every machine without
+// the cache would have to re-buy the whole library to add a single clip.
+const existingManifest = await readFile(join(root, 'public/narration/manifest.json'), 'utf8').then(JSON.parse).catch(() => null)
+const existingByKey = new Map((existingManifest?.entries || []).map(e => [`${e.lang}\0${e.text}`, e]))
+const candidates = [], pending = [], kept = []
 for (const entry of inventory.entries) {
   assert(/^(en|ko)-[a-f0-9]{16}$/.test(entry.id))
   assert(!protectedKeys.has(entry.text))
@@ -43,6 +50,12 @@ for (const entry of inventory.entries) {
     bytes = await readFile(wav)
   } catch (error) {
     if (error.code !== 'ENOENT') throw error
+    const published = existingByKey.get(`${entry.lang}\0${entry.text}`)
+    if (published && published.model === model && published.voice === voice) {
+      let bytes = null
+      try { bytes = await readFile(join(root, 'public/narration', published.file)) } catch (e) { if (e.code !== 'ENOENT') throw e }
+      if (bytes && hash(bytes) === published.sha256) { kept.push({ ...published, id: entry.id }); continue }
+    }
     pending.push(entry.id); continue
   }
   assert.equal(metadata.requestHash, requestHash)
@@ -51,7 +64,7 @@ for (const entry of inventory.entries) {
   catch (error) { pending.push(entry.id); console.log(`Rejected ${entry.id}: ${error.message}`) }
 }
 if (pending.length && !options.available) throw new Error(`${pending.length} files pending; no manifest published`)
-assert(candidates.length, 'No generated candidates available')
+assert(candidates.length || kept.length, 'No generated candidates available')
 const output = join(root, 'public/narration')
 await mkdir(output, { recursive: true })
 const temporary = await mkdtemp(join(tmpdir(), 'phonics-narration-'))
@@ -72,15 +85,16 @@ try {
     entries.push({ id: entry.id, lang: entry.lang, text: entry.text, file, sha256: hash(compressed), sourceSha256, requestHash, model, voice, ...decodedMeasures, processing: prepared.processing, bytes: compressed.length, status: 'generated-automated-validation-only' })
   }
 } finally { await rm(temporary, { recursive: true, force: true }) }
-const manifest = { schemaVersion: 1, model, voice, format: 'aac-m4a', aiGenerated: true, expectedEntries: inventory.entries.length, complete: pending.length === 0, pending, listeningVerified: false, iPadVerified: false, entries }
+const allEntries = [...kept, ...entries].sort((a, b) => a.lang.localeCompare(b.lang, 'en') || a.text.localeCompare(b.text, 'en'))
+const manifest = { schemaVersion: 1, model, voice, format: 'aac-m4a', aiGenerated: true, expectedEntries: inventory.entries.length, complete: pending.length === 0, pending, keptFromPreviousPublish: kept.length, listeningVerified: false, iPadVerified: false, entries: allEntries }
 await writeFile(join(output, 'manifest.json.tmp'), JSON.stringify(manifest, null, 2) + '\n')
 await rename(join(output, 'manifest.json.tmp'), join(output, 'manifest.json'))
 // Only after the complete new manifest exists, remove our obsolete generated
 // variants. Source WAVs remain local for comparison; unrelated files stay intact.
 if (!pending.length) {
-  const used = new Set(entries.map(entry => entry.file))
+  const used = new Set(allEntries.map(entry => entry.file))
   for (const file of await readdir(output)) {
     if (/^(en|ko)-[a-f0-9]{16}-[a-f0-9]{16}(?:-p\d+)?\.m4a$/.test(file) && !used.has(file)) await rm(join(output, file))
   }
 }
-console.log(JSON.stringify({ published: entries.length, pending: pending.length, bytes: entries.reduce((n, x) => n + x.bytes, 0), phonemesChanged: 0, listeningVerified: false }))
+console.log(JSON.stringify({ published: entries.length, kept: kept.length, total: allEntries.length, pending: pending.length, bytes: entries.reduce((n, x) => n + x.bytes, 0), phonemesChanged: 0, listeningVerified: false }))

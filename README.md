@@ -10,6 +10,15 @@
 
 ---
 
+## 한글→영어 점진 전환 (2026-11-07)
+
+챕터 1~5는 한글, 6~7은 음성 전부 영어 + 지문 2개 국어(영어 크게·한글 자막), 8~14는 한글
+자막을 가족별로 하나씩 제거, 15장부터 영어만. 같은 상황엔 앱 전체에서 똑같은 영어 문장이
+반복된다(문구집 `src/data/phrasebook.js`, 생성기 `scripts/build-phrase-map.mjs`, 정책
+`src/data/language-policy.js`). 영어 안내 음성 479개는 Nova로 생성해 `public/narration/`에
+있다(총 1,069 클립). 검증: `node scripts/check-language-policy.mjs`,
+`node scripts/check-narration-assets.mjs`, `node scripts/check-safe-layout.mjs`(128/128).
+
 ## 지문 규칙과 Jolly 동작 큐 (2026-11-07)
 
 표시용 지문에는 캐릭터 이름 대신 `히어로`/`세 히어로`/`빌런`을 쓴다(히어로 순환·교체와

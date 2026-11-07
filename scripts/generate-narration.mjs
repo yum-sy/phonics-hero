@@ -51,7 +51,7 @@ for (const entry of inventory.entries) {
   assert(typeof entry.instructions === 'string' && entry.instructions.length > 0)
   assert(Array.isArray(entry.categories))
   assert(!protectedKeys.has(entry.text), `Refusing to synthesize phoneme ${entry.text}`)
-  if (entry.lang === 'en-US') {
+  if (entry.lang === 'en-US' && !entry.sentence) {
     const tokens = entry.text.split(/[\s,;.!?]+/).filter(Boolean)
     assert(!(tokens.length > 1 && tokens.some(x => protectedKeys.has(x))), 'Refusing compound phoneme synthesis')
   }

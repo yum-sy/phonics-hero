@@ -49,6 +49,8 @@ import { fusionLineup, fusionSounds } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
 import { bindParentHold } from './parent-command.js'
 import { rosterInstruction } from './art/hero-roster.js'
+import { audioLang, textMode } from './data/language-policy.js'
+import { phraseFor, englishFor } from './data/phrasebook.js'
 
 const app = document.getElementById('app')
 
@@ -620,7 +622,7 @@ const parentAttribute = value => String(value).replace(/[&<>"']/g, c => ({'&':'&
 // any syllable, so "들어보세요" could split as "들어보/세요" -- a false word
 // split that reads wrong to a child who is just learning to read. A trailing
 // parenthetical like "(연습이에요)" gets its own line too.
-function instructionHtml(text) {
+function instructionHtml(text, className = 'instruction-line') {
   const str = String(text ?? '').trim()
   if (!str) return ''
   // Some recapKo strings carry a literal `<br>` as an authored line break;
@@ -643,8 +645,55 @@ function instructionHtml(text) {
     }
   }
   return lines
-    .map(line => `<span class="instruction-line">${parentAttribute(line)}</span>`)
+    .map(line => `<span class="${className}">${parentAttribute(line)}</span>`)
     .join(' ')
+}
+
+// ---- Korean -> English transition (data/language-policy.js) ----
+// Chapter data stays Korean; the phrasebook maps each Korean string to its
+// fixed English sentence, and the policy decides per chapter + family
+// whether the child sees Korean, English + Korean subtitle, or English.
+// Unknown strings fall through to the Korean text unchanged.
+function chapterOrderOf(runtime) {
+  const chapter = runtime && getChapterForStage(runtime.stage.id)
+  return chapter ? chapter.order : 1
+}
+function localizedInstructionHtml(runtime, koText, suffix = '') {
+  const ko = String(koText ?? '')
+  const phrase = phraseFor(ko)
+  const mode = textMode(chapterOrderOf(runtime), phrase)
+  if (mode === 'ko') return instructionHtml(ko + suffix)
+  const en = instructionHtml(phrase.en + suffix)
+  if (mode === 'en') return en
+  return `${en} ${instructionHtml(ko, 'instruction-line instruction-sub')}`
+}
+// Plain-string variant for the one-line feedback slots (textContent): once a
+// family has switched the short feedback is English only -- the bilingual
+// pairing lives in the big instruction, not in a 1-line status slot.
+function uiText(runtime, ko) {
+  const mode = textMode(chapterOrderOf(runtime), phraseFor(ko))
+  return mode === 'ko' ? ko : englishFor(ko) || ko
+}
+// Spoken Korean lines: from chapter 6 the English phrase is queued instead
+// (narrationFor() picks up the generated clip; system TTS until then).
+function speakLocalized(runtime, ko) {
+  if (audioLang(chapterOrderOf(runtime)) === 'en') {
+    const en = englishFor(ko)
+    if (en) return speakEN(en)
+  }
+  return speakKO(ko)
+}
+// From chapter 6 every beat opens with its instruction read in English, once
+// per beat per stage visit (Back/review re-renders do not repeat it), queued
+// BEFORE the beat renders so it precedes the beat's own prompt audio.
+function narrateInstruction(runtime, beat) {
+  if (audioLang(chapterOrderOf(runtime)) !== 'en') return
+  const en = englishFor(rosterInstruction(runtime.stage.id, beat.instructionKo))
+  if (!en) return
+  runtime.narratedBeats ||= new Set()
+  if (runtime.narratedBeats.has(runtime.beatIndex)) return
+  runtime.narratedBeats.add(runtime.beatIndex)
+  speakEN(en)
 }
 // Jolly Phonics action cue for a teach beat: the sound tokens in
 // `repeatAudio` resolve through SOUND_CUES (chapters/index.js). Boss fusion
@@ -1374,6 +1423,7 @@ function runBeat(runtime) {
     setCombatState('studying')
     updateHealthBar(runtime)
     updateReviewBackButton(runtime)
+    narrateInstruction(runtime, beat)
 
     if (beat.kind === 'teach' || beat.kind === 'break') {
       renderNonScoredBeat(runtime, beat)
@@ -1423,6 +1473,7 @@ function refitBeatText() {
   if (!el) return
   el.style.fontSize = ''
   el.classList.remove('instruction-packed')
+  for (const sub of el.querySelectorAll('.instruction-sub')) sub.style.fontSize = ''
   for (const chip of document.querySelectorAll('.beat-cue-line')) chip.style.fontSize = ''
   fitBeatInstruction()
   fitBeatCue()
@@ -1456,11 +1507,15 @@ function fitBeatInstruction() {
   // than tiny type.
   const ONE_LINE_FLOOR_PX = 44
   const LINE_HEIGHT_RATIO = 1.14
-  const lines = el.querySelectorAll('.instruction-line')
+  const lines = el.querySelectorAll('.instruction-line:not(.instruction-sub)')
+  // Bilingual subtitle lines (language-policy 'en-ko') are budgeted by their
+  // own rendered height and shrunk first, so the primary sentence keeps its
+  // size as long as the subtitle can still give way.
+  const subs = Array.from(el.querySelectorAll('.instruction-sub'))
+  const SUB_FLOOR_PX = 20
   // Budget = one line per sentence (the whole point of .instruction-line),
   // never less than the historical 2-line budget so a single long sentence
   // is still allowed to wrap once instead of shrinking to the floor.
-  const maxLines = Math.max(2, lines.length)
   const wrapped = line => {
     const lh = parseFloat(getComputedStyle(line).lineHeight)
     return line.getBoundingClientRect().height > lh * 1.5
@@ -1477,8 +1532,27 @@ function fitBeatInstruction() {
     fontSize -= 2
     el.style.fontSize = `${fontSize}px`
   }
+  const screen = document.querySelector('.screen')
+  const screenOverflows = () => !!screen && screen.scrollHeight > screen.clientHeight + 1
+  if (subs.length) {
+    let subSize = parseFloat(getComputedStyle(subs[0]).fontSize)
+    for (let i = 0; i < 20 && subSize > SUB_FLOOR_PX; i++) {
+      if (!subs.some(wrapped) && !spills() && !screenOverflows()) break
+      subSize -= 2
+      for (const sub of subs) sub.style.fontSize = `${subSize}px`
+    }
+  }
+  // Rect height excludes the subtitle's top margin; count it or the budget
+  // comes up a few px short and tips the block into the packed fallback.
+  const subHeight = () =>
+    subs.reduce((h, sub) => h + sub.getBoundingClientRect().height + parseFloat(getComputedStyle(sub).marginTop || 0), 0)
+  // A sentence the one-line nudge could not hold at its 44px floor is allowed
+  // its one word-boundary wrap -- the budget grants that extra line, instead
+  // of pushing the whole block into the packed fallback (which is what a
+  // long English primary + paren note did at first).
+  const budgetLines = () => Math.max(2, lines.length + (anyWrapped() ? 1 : 0))
   const withinBudget = () =>
-    el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * maxLines + 1 && !spills()
+    el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * budgetLines() + subHeight() + 1 && !spills()
   for (let i = 0; i < 30 && fontSize > FLOOR_PX; i++) {
     // `keep-all` can push an unbreakable run past the box instead of
     // wrapping it, so horizontal spill is checked alongside the height.
@@ -1494,7 +1568,7 @@ function fitBeatInstruction() {
   el.style.fontSize = ''
   fontSize = parseFloat(getComputedStyle(el).fontSize)
   for (let i = 0; i < 30 && fontSize > FLOOR_PX; i++) {
-    if (el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * 2 + 1 && !spills()) return
+    if (el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * 2 + subHeight() + 1 && !spills()) return
     fontSize -= 2
     el.style.fontSize = `${fontSize}px`
   }
@@ -1736,7 +1810,7 @@ function isOddOneOutBeat(beat) {
 // still blocks the caller's next whenAudioIdle()-based transition, because
 // it's on the same shared audio queue as everything else. No extra delay
 // needs wiring in separately.
-function confirmOddOneOut(area, beat, correctOpt) {
+function confirmOddOneOut(runtime, area, beat, correctOpt) {
   if (!correctOpt || !area.isConnected) return
   pulseHint(area.querySelector(`[data-id="${correctOpt.id}"]`))
   const feedbackEl = document.getElementById('beat-feedback')
@@ -1745,16 +1819,16 @@ function confirmOddOneOut(area, beat, correctOpt) {
   // 다른 소리를 낸다'로." The extra sentence about the others sharing a
   // sound was true but unnecessary to say out loud every time.
   if (feedbackEl) {
-    feedbackEl.textContent = `정답이에요! ${correctOpt.label}만 다른 소리를 내요.`
+    feedbackEl.textContent = uiText(runtime, '정답이에요!') + ' ' + (textMode(chapterOrderOf(runtime), phraseFor('이 단어만 다른 소리를 내요.')) === 'ko' ? `${correctOpt.label}만 다른 소리를 내요.` : `Only ${correctOpt.label} sounds different.`)
   }
   // Korean and English text never share one speakKO/speakEN call (see
   // CLAUDE.md's TTS rules -- an English word read by the Korean voice comes
   // out as a mispronounced loanword), so the affirmation and the word
   // itself are two separate queued utterances, same as every other beat in
   // this file (e.g. recapAudio's ko/en split).
-  speakKO('정답이에요!')
+  speakLocalized(runtime, '정답이에요!')
   speakEN(optionSpeech(correctOpt))
-  speakKO('이 단어만 다른 소리를 내요.')
+  speakLocalized(runtime, '이 단어만 다른 소리를 내요.')
 }
 
 function redemonstrateOption(area, beatOrStep, correctOpt) {
@@ -2084,7 +2158,7 @@ function renderNonScoredBeat(runtime, beat) {
 
   const cueHtml = !isBossIntro && beat.kind === 'teach' ? teachCueHtml(beat) : ''
   const teachInner = `
-    <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+    <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
     ${cueHtml}
     ${focus}
     <button class="replay-btn" id="replay-btn">🔊 Listen</button>
@@ -2333,7 +2407,7 @@ function renderChooseBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       ${promptHtml}
       ${replayHtml}
       <div class="options-grid">${optionsHtml}</div>
@@ -2358,7 +2432,7 @@ function renderChooseBeat(runtime, beat) {
       ids.length === 1 &&
       !!beat.options.find((o) => o.id === ids[0] && o.correct),
     onWrong: () => {
-      document.getElementById('beat-feedback').textContent = '다시 들어볼까요?'
+      document.getElementById('beat-feedback').textContent = uiText(runtime, '다시 들어볼까요?')
       if (wrongStreak.registerWrong()) {
         const correct = beat.options.find((o) => o.correct)
         setTimeout(() => redemonstrateOption(area, beat, correct), 1200)
@@ -2367,7 +2441,7 @@ function renderChooseBeat(runtime, beat) {
     onCorrect: async () => {
       flashCorrect(area)
       if (isOddOneOutBeat(beat)) {
-        confirmOddOneOut(area, beat, beat.options.find((o) => o.correct))
+        confirmOddOneOut(runtime, area, beat, beat.options.find((o) => o.correct))
       }
       if (beat.scored && beat.readAloud) {
         await showTransitionCountdown(whenAudioIdle())
@@ -2426,7 +2500,7 @@ function renderMatchShapeBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       ${promptHtml}
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
@@ -2447,7 +2521,7 @@ function renderMatchShapeBeat(runtime, beat) {
       // "Listen again?" would be nonsense here -- nothing was played -- so
       // this round gets its own look-again phrasing rather than choose's
       // "들어볼까요?".
-      document.getElementById('beat-feedback').textContent = '다시 봐볼까요?'
+      document.getElementById('beat-feedback').textContent = uiText(runtime, '다시 봐볼까요?')
       if (wrongStreak.registerWrong()) {
         const correct = beat.options.find((o) => o.correct)
         setTimeout(() => redemonstrateShapeOption(area, correct), 1200)
@@ -2485,7 +2559,7 @@ function renderChooseSequenceBeat(runtime, beat) {
       .join('')
     area.innerHTML = `
       <div class="beat choose-beat">
-        <div class="beat-instruction">${instructionHtml(`${rosterInstruction(runtime.stage.id, beat.instructionKo)} (${stepIndex + 1}/${beat.steps.length})`)}</div>
+        <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo), ` (${stepIndex + 1}/${beat.steps.length})`)}</div>
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <div class="options-grid">${optionsHtml}</div>
         ${CONFIRM_BTN_HTML}
@@ -2509,7 +2583,7 @@ function renderChooseSequenceBeat(runtime, beat) {
         !!step.options.find((o) => o.id === ids[0] && o.correct),
       onWrong: () => {
         document.getElementById('beat-feedback').textContent =
-          '다시 들어볼까요?'
+          uiText(runtime, '다시 들어볼까요?')
         if (wrongStreak.registerWrong()) {
           const correct = step.options.find((o) => o.correct)
           setTimeout(() => redemonstrateOption(area, step, correct), 1200)
@@ -2519,7 +2593,7 @@ function renderChooseSequenceBeat(runtime, beat) {
       onCorrect: async (chosen, chargeFlightMs) => {
         flashCorrect(area)
         if (isOddOneOutBeat(beat)) {
-          confirmOddOneOut(area, beat, step.options.find((o) => o.correct))
+          confirmOddOneOut(runtime, area, beat, step.options.find((o) => o.correct))
         }
         stepIndex += 1
         if (stepIndex < beat.steps.length) {
@@ -2557,7 +2631,7 @@ function renderMultiselectBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat multiselect-beat">
-      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
@@ -2582,8 +2656,8 @@ function renderMultiselectBeat(runtime, beat) {
     onWrong: (ids) => {
       const hadWrongPick = ids.some((id) => !correctIds.has(id))
       document.getElementById('beat-feedback').textContent = hadWrongPick
-        ? '다시 골라볼까요?'
-        : '아직 더 있어요!'
+        ? uiText(runtime, '다시 골라볼까요?')
+        : uiText(runtime, '아직 더 있어요!')
       if (wrongStreak.registerWrong()) {
         const kept = new Set(ids.filter((id) => correctIds.has(id)))
         const remaining = beat.options.find(
@@ -2656,7 +2730,7 @@ function renderBuildBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat build-beat">
-      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       <div class="build-slots">${slotsHtml}</div>
       <div class="tile-row">${tilesHtml}</div>
       <button class="secondary-btn" id="clear-btn">↺ Undo</button>
@@ -2717,14 +2791,14 @@ function renderBuildBeat(runtime, beat) {
   function rejectWord() {
     shakeEl(slotRow)
     shakeEl(undoBtn)
-    feedback().textContent = '순서가 달라요! ↺ Undo 로 빼요'
+    feedback().textContent = uiText(runtime, '순서가 달라요! ↺ Undo 로 빼요')
     if (wrongStreak.registerWrong()) {
       // Two wrong words in a row: clear it for them rather than leaving a
       // 5-year-old to un-tap three tiles, then re-demonstrate the first
       // sound (same scaffolding the other beats use -- it points, it never
       // places the tile itself).
       while (undoOne()) {}
-      feedback().textContent = '처음부터 같이 해볼까요?'
+      feedback().textContent = uiText(runtime, '처음부터 같이 해볼까요?')
       setTimeout(() => redemonstrateLetterTile(area, letters, target[0]), 1200)
     }
   }
@@ -2738,7 +2812,7 @@ function renderBuildBeat(runtime, beat) {
         // nowhere to go. Silently swallowing the tap reads as a broken
         // screen; point at the one control that still does something.
         shakeEl(undoBtn)
-        feedback().textContent = '↺ Undo 로 한 글자 빼요'
+        feedback().textContent = uiText(runtime, '↺ Undo 로 한 글자 빼요')
         return
       }
       // Every placement speaks its own sound, so a wrong word is also heard
@@ -2846,7 +2920,7 @@ function renderListenRepeatBeat(runtime, beat) {
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
-        <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+        <div class="beat-instruction">${localizedInstructionHtml(runtime, rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
         ${wordHtml}
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
@@ -2905,7 +2979,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
   area.innerHTML = `
     <div class="beat readaloud-beat attack-beat">
-      <div class="beat-instruction">${instructionHtml('따라 읽고, 목소리로 응원해요!')}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, '따라 읽고, 목소리로 응원해요!')}</div>
       ${displayHtml}
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <div class="attack-energy-cue">⚡ Energy ready</div>
@@ -2988,7 +3062,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     listening = true
     syncAttackEnabled()
     const fb = feedback()
-    if (fb) fb.textContent = '소리쳐봐요! 🎤'
+    if (fb) fb.textContent = uiText(runtime, '소리쳐봐요! 🎤')
     const controller = attemptShoutAttack({ durationMs: 1800 })
     activeController = controller
     controller.promise.then((result) => {
@@ -3005,7 +3079,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
       }
       if (result === 'timeout') {
         const fb2 = feedback()
-        if (fb2) fb2.textContent = '다시 ATTACK을 눌러서 소리쳐봐요!'
+        if (fb2) fb2.textContent = uiText(runtime, '다시 ATTACK을 눌러서 소리쳐봐요!')
         syncAttackEnabled()
         return
       }
@@ -3035,7 +3109,7 @@ function runReadAloud(runtime, beat, readAloud) {
   })
   area.innerHTML = `
     <div class="beat readaloud-beat">
-      <div class="beat-instruction">${instructionHtml('정답이에요! 이제 소리내어 읽어볼까요?')}</div>
+      <div class="beat-instruction">${localizedInstructionHtml(runtime, '정답이에요! 이제 소리내어 읽어볼까요?')}</div>
       <div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
@@ -3094,7 +3168,7 @@ function renderReward(runtime) {
         )}</span>
       </div>
       <div class="reward-line">You beat ${stage.villain.name}!</div>
-      <div class="recap-line">${instructionHtml(stage.recapKo)}</div>
+      <div class="recap-line">${localizedInstructionHtml(runtime, stage.recapKo)}</div>
       <button class="primary-btn" id="back-to-map">◀ Back to Map</button>
     </div>
   `
@@ -3106,7 +3180,17 @@ function renderReward(runtime) {
   // explanation first, then each English target read as its own utterance
   // (speakSequence, not one crammed string) -- both still go through the
   // shared queue, so this never overlaps whatever the last beat was saying.
-  speakKO(stage.recapAudio.ko)
+  // Audio-first transition: from chapter 6 the English recap is spoken; in
+  // the bilingual chapters (6-7) the Korean follows it once so the child
+  // hears the pairing, and from chapter 8 the Korean is gone.
+  const order = chapterOrderOf(runtime)
+  const recapEn = audioLang(order) === 'en' ? englishFor(stage.recapAudio.ko) : null
+  if (recapEn) {
+    speakEN(recapEn)
+    if (order <= 7) speakKO(stage.recapAudio.ko)
+  } else {
+    speakKO(stage.recapAudio.ko)
+  }
   speakSequence(stage.recapAudio.en, 'en-US')
   onTap(document.getElementById('back-to-map'), () => {
       const chapter = getChapterForStage(stage.id)
@@ -3142,6 +3226,16 @@ function fitRecapLine() {
     // `keep-all` on .instruction-line can spill a long run sideways rather
     // than wrap it, so width is checked alongside the viewport height.
     recap.scrollWidth <= recap.clientWidth + 1
+  // Bilingual subtitle lines give way first (20px floor), then the primary.
+  const subs = Array.from(recap.querySelectorAll('.instruction-sub'))
+  if (subs.length) {
+    let subSize = parseFloat(getComputedStyle(subs[0]).fontSize)
+    for (let i = 0; i < 20 && subSize > 20; i++) {
+      if (fits()) break
+      subSize -= 2
+      for (const sub of subs) sub.style.fontSize = `${subSize}px`
+    }
+  }
   const shrinkUntilFits = () => {
     let fontSize = baseSize
     recap.style.fontSize = ''

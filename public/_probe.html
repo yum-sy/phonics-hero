@@ -274,6 +274,22 @@
     icons3multi: () => isolate('c3-stage-4', 'multiselect'), // hat / cat / hen / horse
     icons4multi: () => isolate('c4-stage-3', 'multiselect'), // cat / egg / key / cake
     teach2: () => isolate('c2-stage-2', 'teach'),
+    // Korean -> English transition (src/data/language-policy.js): chapter 6
+    // is the first bilingual chapter (English primary + Korean subtitle on
+    // the families that switched), 7 has every family bilingual, 9 is
+    // mid-fade, 20 is English only. The subtitle adds a line under the
+    // instruction, so these are the screens whose vertical budget changed.
+    lang6c: () => isolate('c6-stage-2', 'choose'),
+    lang6t: () => isolate('c6-stage-2', 'teach'),
+    lang6b: () => isolate('c6-stage-2', 'break'),
+    lang7m: () => isolate('c7-stage-3', 'multiselect'),
+    lang9c: () => isolate('c9-stage-2', 'choose'),
+    lang20t: () => isolate('c20-stage-1', 'teach'),
+    reward6: () => emptyStage('c6-stage-1'),
+    reward16: async () => {
+      __allStages.forEach((s) => { if (s.id !== 'c16-stage-1') markStageCleared(s.id, 3) })
+      await emptyStage('c16-stage-1')
+    },
     break1: () => isolate('stage-2', 'break'),
     choose2: () => isolate('c2-stage-2', 'choose'),
     choose2b: () => isolate('c2-stage-2', 'choose', 2),
@@ -469,6 +485,10 @@
     reward4: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     reward4d: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     reward33: { has: ['.reward-screen', '.reward-title', '.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
+    // Korean -> English transition reward screens (chapter 6 bilingual phase,
+    // chapter 16 English-only).
+    reward6: { has: ['.reward-screen', '.reward-title', '.recap-line'], not: ['.stars-row'] },
+    reward16: { has: ['.reward-screen', '.reward-title', '.recap-line'], not: ['.stars-row'] },
     victory: { has: ['.reward-hero.reward-victor', '.reward-villain.reward-defeated'], not: ['.stars-row'] },
     // #boss-intro-hint is `visibility:hidden` until the invite timer fires,
     // and the visibility filter is what makes requiring it meaningful: this

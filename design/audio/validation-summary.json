@@ -4,9 +4,9 @@
   "model": "gpt-4o-mini-tts",
   "voice": "nova",
   "voiceSampleSelectedByUser": true,
-  "entries": 590,
+  "entries": 1069,
   "korean": 57,
-  "english": 533,
+  "english": 1012,
   "protectedPhonemesUnchanged": 41,
   "rejectedNovaCandidatesRegenerated": 9,
   "bytes": 9757315,
@@ -27,5 +27,39 @@
     "WAV preprocessing source preservation/margins/gain/silence/clipping 7 assertions"
   ],
   "listeningVerified": false,
-  "iPadVerified": false
+  "iPadVerified": false,
+  "phraseBatch2026_11_07": {
+    "date": "2026-11-07",
+    "passed": true,
+    "model": "gpt-4o-mini-tts",
+    "voice": "nova",
+    "purpose": "Korean→English transition: English instruction/stage-clear/UI narration for chapters >= 6 (src/data/language-policy.js), text = exact englishFor(ko) from src/data/phrasebook.js",
+    "entries": 479,
+    "byCategory": {
+      "phrase-instruction": 447,
+      "phrase-stage-clear": 30,
+      "phrase-ui": 2
+    },
+    "generated": 479,
+    "failed": 0,
+    "rejectedSignalRetries": 0,
+    "reused": 0,
+    "bytes": 16702426,
+    "seconds": 1727.384,
+    "rmsMin": 0.08518,
+    "rmsMax": 0.12007,
+    "peakMax": 0.9639,
+    "clippedFiles": 0,
+    "minDurationMs": 813,
+    "keptFromPreviousPublish": 590,
+    "keptSha256Unchanged": true,
+    "bitrateKbps": 64,
+    "sizeDecision": "16.7 MB accepted by user; no re-encode",
+    "checkNarrationAssets": "decoded 1069/1069, 0 failures; 1070/1070 suites passed (desktop Chrome, not iPad/listening)",
+    "listeningVerified": false,
+    "iPadVerified": false
+  },
+  "bytesTotal": 26459741,
+  "secondsTotal": 2585.99,
+  "note": "Top-level bytes/seconds/rms fields describe the 2026-11-06 Nova batch of 590; totals for all 1,069 are bytesTotal/secondsTotal; the 2026-11-07 phrase batch is in phraseBatch2026_11_07."
 }

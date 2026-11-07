@@ -14,6 +14,7 @@
 // from here and don't care how many chapters exist.
 
 import { applyHeroRotation } from '../../art/hero-roster.js'
+import { phraseFor, PHRASE_MAP, PHRASE_FAMILIES } from '../phrasebook.js'
 
 import { chapter1 } from './chapter-01.js'
 import { chapter2 } from './chapter-02.js'
@@ -1865,6 +1866,33 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
   }
   for (const key of Object.keys(SOUND_CUES)) {
     if (!cueKeys.has(key)) problems.push(`SOUND_CUES 키 '${key}' 에 해당하는 SOUND_TABLE 행이 없다`)
+  }
+
+  // 문구집 계약 -- 아이에게 보이거나 들리는 한글 문장은 전부 영어 가족이
+  // 있어야 한다(한글→영어 전환의 전제). 챕터 텍스트를 고쳤으면
+  // `node scripts/build-phrase-map.mjs` 로 PHRASE_MAP 을 재생성해라.
+  for (const chapter of chapterList) {
+    for (const stage of chapter.stages) {
+      const where = `${chapter.id}/${stage.id}`
+      const texts = [
+        ['recapKo', stage.recapKo],
+        ['recapAudio.ko', stage.recapAudio?.ko],
+        ...(stage.beats ?? []).map((b) => [`${b.id}.instructionKo`, b.instructionKo]),
+      ]
+      for (const [field, text] of texts) {
+        if (typeof text !== 'string') continue
+        if (!phraseFor(text)) {
+          problems.push(`${where}/${field}: 문구집(PHRASE_MAP)에 없는 문장 -- build-phrase-map.mjs 재실행: '${text}'`)
+        }
+      }
+    }
+  }
+  for (const [ko, entry] of Object.entries(PHRASE_MAP)) {
+    if (!PHRASE_FAMILIES[entry.key]) problems.push(`PHRASE_MAP '${ko}' 가 없는 가족 '${entry.key}' 를 가리킨다`)
+  }
+  for (const [key, fam] of Object.entries(PHRASE_FAMILIES)) {
+    if (/[가-힣]/.test(fam.en)) problems.push(`PHRASE_FAMILIES['${key}'].en 에 한글이 있다: '${fam.en}'`)
+    if (!['instruction', 'recap', 'audio', 'ui'].includes(fam.field)) problems.push(`PHRASE_FAMILIES['${key}'].field 가 이상하다: '${fam.field}'`)
   }
 
   return problems

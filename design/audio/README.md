@@ -16,6 +16,42 @@ shimmer/nova의 동일 문장 샘플을 듣고 **2번 Nova**를 선택했다. �
 영어533개도 같은 여성 교사 톤으로, 단어를 노래처럼 늘리지 않고 정확한 발음을
 우선한다. 목소리 샘플 선택은 전체590개 발음의 청취 승인을 뜻하지 않는다.
 
+## 2026-11-07 — 한글→영어 전환용 영어 안내 음성 479개 (phrase 배치)
+
+챕터 6부터 안내 음성이 영어로 바뀐다(`src/data/language-policy.js`). 그 영어 문장은
+`src/data/phrasebook.js`의 `englishFor(ko)`가 돌려주는 **정확한 문자열**이고, 런타임
+조회 키도 그 문자열이다(`narrationFor(text, 'en-US')`). 이번 배치: 고유 **479**개 =
+지문 447(`phrase-instruction`, 자동 복습 문구 포함) + 클리어 안내 30(`phrase-stage-clear`,
+챕터 ≥6의 `recapAudio.ko` 영어판) + 음성 UI 2(`phrase-ui`: "Correct!" / "Only this word
+has a different sound."). 생성 479/실패 0/신호 재시도 0, AAC 64kbps 16,691,044바이트·
+1,726.6초, RMS 0.085–0.120, 피크 ≤0.964, 클리핑 0. **공개 manifest는 1,069개**
+(기존 590 유지 + 479). `check-narration-assets.mjs` 1069/1069 디코딩, 1070/1070 통과
+(데스크톱 Chrome 기준 — 청취·iPad 검증 아님). 용량 16.7MB 추가는 사용자가 수락했다.
+
+- 인벤토리 항목에 `sentence: true`가 붙은 것이 phrase 배치다(카테고리 `phrase` +
+  세부). 문장은 **대소문자를 유지**해 합성한다("S makes this sound"의 S는 글자 이름).
+  화면 표기용 기호는 합성 입력에서만 바꾼다: `✓`→"the check mark", `/s/`→"S"
+  (조회 키는 화면 문자열 그대로). 단어 목록용 "음소 키 토큰 포함 거부"(`a`, `or`, `ee`)는
+  문장에는 적용하지 않는다 — 문장 안의 `a`/`or`는 보통 영어 단어다.
+- 문장용 지시문(`instructions`): 성인 여성 보육교사 톤, 또렷하고 약간 느리게, 문장 사이
+  짧은 자연스러운 쉼, 글자 이름은 글자 이름으로, 따옴표 단어는 통째로, 노래조·진행자
+  말투·속삭임·추가 단어 금지(전문은 `narration-inventory.json`의 각 항목).
+- 한국어 odd-one-out 문구 2개는 이제 `screens.js`에서 `speakLocalized(runtime, '…')`로
+  불리므로 export 스캔이 그 호출도 잡고, 누락되면 assert로 중단한다(한국어 클립이
+  manifest에서 빠지면 공개 시 파일이 삭제되기 때문).
+- **공개 규칙 추가**: `design/audio/generated/` WAV 캐시는 gitignore라 다른 체크아웃에는
+  없다. `publish-narration.mjs`는 캐시가 없는 항목이라도 같은 언어+원문+모델+목소리의
+  공개 m4a가 있고 SHA256이 manifest와 일치하면 **그대로 유지**(`keptFromPreviousPublish`)
+  한다. 그래서 클립 하나를 추가할 때 590개를 다시 사지 않는다. 캐시도 공개 파일도 없는
+  항목만 pending이다.
+
+```sh
+node scripts/export-narration.mjs
+node scripts/generate-narration.mjs --model gpt-4o-mini-tts --voice nova --category phrase --concurrency 4 --generate
+node scripts/publish-narration.mjs --model gpt-4o-mini-tts --voice nova
+NODE_TLS_REJECT_UNAUTHORIZED=0 node scripts/check-narration-assets.mjs https://localhost:5174
+```
+
 ## 목록 재생성
 
 ```sh
@@ -24,7 +60,7 @@ node scripts/generate-narration.mjs --lang ko-KR --limit 6
 ```
 
 `narration-inventory.json`에는 실제 발화 필드의 원문·용도·출처 경로, 41개 원본 WAV의
-SHA256이 있다. 590개 고유 발화(한국어57, 영어533)이며 영어에는 탭해서 듣는 빌런
+SHA256이 있다. 1,069개 고유 발화(한국어57, 영어1,012 = 단어·이름 533 + phrase 문장 479)이며 영어에는 탭해서 듣는 빌런
 이름도 포함된다. 글자 이름의 대문자를 유지한다. `A`와 음소 키 `a`는 다르다.
 목록은 정적 호출 경로 분석이며 전체165스테이지 실행을 녹음한 결과는 아니다.
 실제 생성 입력은 기존 `speakNow`처럼 영어 다글자를 소문자로 만든다(`SAT`→`sat`).
@@ -103,3 +139,16 @@ node scripts/publish-narration.mjs --model MODEL_ID --voice nova
   새 파일의 실패 폴백과 음소 무음 처리 계약은 혼동하지 않는다.
 - AI 생성 음성임을 안내하고, 실기기에서 음소→단어→마이크→클리어 순서를
   청취한다. 기술적으로 검증돼 배포된 파일과 사람이 청취 승인한 파일을 구분한다.
+
+
+## 2026-11-07 추가 — 영어 안내 문장 479개 (phrase 카테고리)
+
+- 한글→영어 전환용. `export-narration.mjs`가 `src/data/phrasebook.js`의 `englishFor()`로
+  챕터 6+ 지문(447)·클리어 음성(30)·UI(2, "Correct!" / "Only this word has a different sound.")를
+  `phrase-*` 카테고리(`sentence: true`)로 내보낸다. 생성: `--category phrase --voice nova`.
+- 음성용 텍스트만 `✓`→"the check mark", `/s/`→"S"로 바꾸고 조회 키(원문)는 그대로다.
+- 발행 결과: 1,069 엔트리(기존 590 유지 + 479 신규), 신규 16.7 MB(64 kbps), 실패 0,
+  `check-narration-assets` 1,069/1,069 디코딩. `validation-summary.json`의 수치는 이 라운드
+  기준으로 재생성이 필요할 수 있다(인벤토리 JSON은 갱신됨).
+- 발행 규칙 변경: WAV 캐시가 없어도 lang+text+model+voice가 같고 sha256이 맞는 기존 m4a는
+  유지한다 — 다른 기기에서 돌려도 590개를 다시 생성하지 않는다.

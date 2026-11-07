@@ -1,5 +1,29 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-07 — 한글→영어 점진 전환 구현 완료 (배포), 실기기 미확인
+
+- 사용자 확정: 1~5 한글 → 6~7 음성 영어 + 지문 2개 국어 → 8~14 자막 페이드 → 15+ 영어.
+  영어 초안 94가족 "그대로" 승인. 규칙 전문은 CLAUDE.md 맨 위 "한글→영어 점진 전환" 절.
+- 구현: `src/data/phrasebook.js`(생성, 127가족/809문장/누락 0) + `build-phrase-map.mjs`;
+  `src/data/language-policy.js` + `check-language-policy.mjs` 11/11; `screens.js`
+  `localizedInstructionHtml`/`uiText`/`speakLocalized`/`narrateInstruction`; `style.css`
+  `.instruction-sub`; `_probe.html` lang6c/6t/6b/7m/9c/20t/reward6/16 샷; safe-layout 128/128.
+  Nova 영어 클립 479개(16.7 MB, 실패 0) → `public/narration/` 1,069 엔트리, 590 기존 유지.
+- **리더 검증**: 앱 로드(문구집 content-type `text/javascript` 확인 — Vite SPA 폴백 200 함정
+  재확인), validateChapters 0, game-flow 3/3, safe-layout 128/128(1회 1건 flake 후 재실행
+  통과), ch6 지문 40/40 영어 클립 매칭·클리어·Correct! 클립 존재, 세로 ch6 choose/가로
+  ch20 teach 스크린샷 육안 확인, Pages base 빌드 통과(dist 69 MB, narration 28 MB).
+- **사고 기록**: 렌더링 에이전트가 개발용 stub을 지우면서 같은 경로의 진짜 `phrasebook.js`를
+  삭제 → 생성기로 복구(해시 동일). 생성기는 챕터 모듈(→문구집 import)에 의존해 빈 stub
+  부트스트랩이 필요하다(CLAUDE.md에 기록).
+- **실기기 미확인**: iPad에서 ch6 2개 국어 가독성, 영어 지문 자동 재생 타이밍(beat 시작 →
+  지문 → 프롬프트 소리), Nova 영어 문장 발음, ch15+ 영어만 화면. `design/audio/
+  validation-summary.json` 수치 갱신은 미완(인벤토리 JSON은 갱신됨).
+
+### 다음
+- iPad에서 챕터 6·7·9·20 플레이: 2개 국어 지문, 영어 안내 음성, 리워드 음성 확인.
+- F 큐 "풍선 vs 물고기" 결정, 큐 칩 음성 여부 결정.
+
 ## 2026-11-07 — 한글→영어 전환 선행: beat 동작 판별을 텍스트에서 명시 플래그로
 
 - 사용자 결정(한글→영어 점진 전환): 챕터 1~5 한글 → 6~7 2개 국어(영어 크게+한글 작게,

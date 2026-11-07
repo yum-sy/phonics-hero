@@ -3,6 +3,35 @@
 > **새 세션이면 `HANDOFF.md` 를 먼저 읽어라.** 이 문서는 *항구적 규칙*이고,
 > `HANDOFF.md` 는 *지금 중단된 지점과 재발주 목록*이다. 둘은 역할이 다르다.
 
+## 한글→영어 점진 전환 — 문구집 · 언어 정책 · 영어 안내 음성 (2026-11-07, 사용자 확정)
+
+- **일정**: 챕터 1~5 한글(지문·음성) → 6~7 **음성은 전부 영어**, 지문은 2개 국어(영어 크게 +
+  한글 자막 작게; 가족 rank 짝수는 6에서, 나머지는 7에서 전환) → 8~14 가족별로 한글 자막
+  제거(`8 + rank % 7`, 14에서 전부 영어) → 15+ 영어만. `src/data/language-policy.js`의
+  `audioLang(order)`/`textMode(order, phrase)`가 단일 진실원, `scripts/check-language-policy.mjs`
+  가 표를 고정한다. 원칙: 같은 상황엔 **앱 전체에서 글자 하나 안 틀리는 같은 영어 문장**이
+  반복돼야 "저번에 본 그 설명"이 된다.
+- **문구집**: 챕터의 한글 원문은 그대로 두고(조사 변형 때문에 한글을 템플릿에서 생성하지
+  않는다), `scripts/build-phrase-map.mjs`가 챕터 모듈을 읽어 `src/data/phrasebook.js`를
+  **생성**한다(결정적, 손으로 고치지 말 것 — 가족/영어 템플릿을 바꾸려면 스크립트의 표를
+  고친다). 가족 127개, 한글 809종 → `phraseFor(ko)`/`englishFor(ko)`. `validateChapters()`가
+  매핑 누락·영어 템플릿의 한글을 잡는다. **부트스트랩 함정**: `chapters/index.js`가
+  문구집을 import하므로 파일이 없으면 생성기도 못 돈다 — 빈 stub을 먼저 두고 돌려라.
+  (실제로 한 에이전트가 "임시 stub 삭제"로 진짜 파일을 지운 적이 있다 — 같은 경로에 stub을
+  두지 마라.)
+- **렌더링**: `localizedInstructionHtml()` — 영어 `.instruction-line` + 한글
+  `.instruction-sub`(0.55em). 자막이 먼저 줄고(20px 하한) 그다음 본문. 고정 UI 문구
+  (피드백·ATTACK 안내·다른-소리 발화)도 `uiText`/`speakLocalized`로 같은 정책을 탄다.
+  Jolly 큐 칩은 한글 유지(문구집 밖). 부모 모드·음성 출처 표기는 아이 대상이 아니라 한글.
+- **영어 안내 음성**: 챕터 6부터 beat 렌더 시 `narrateInstruction()`이 영어 지문을 큐에
+  먼저 넣고(스테이지 방문당 beat 1회, Back 재렌더 반복 없음), 리워드는 `speakEN(englishFor
+  (recapAudio.ko))`(6~7은 한글이 짧게 뒤따름). 클립은 `public/narration/`의 Nova 영어
+  문장 479개(지문 447·클리어 30·UI 2; 총 1,069 엔트리), 없으면 시스템 TTS 폴백.
+  재생성: `design/audio/README.md`. 발행 규칙: WAV 캐시가 없어도 sha가 맞는 기존 m4a는
+  유지한다(다른 기기에서 590개를 다시 사지 않게).
+- 지문을 바꾸면 ① 문구집 재생성 ② 바뀐 영어 문장의 클립 생성(`--category phrase`) ③
+  `check-narration-assets` 순이다. 영어 문장이 바뀌면 클립 키(정확한 텍스트)도 바뀐다.
+
 ## 지문 규칙 — 캐릭터 이름 금지 / 문장 단위 줄바꿈 / Jolly 동작 큐 (2026-11-07)
 
 - **표시용 지문(`instructionKo`/`recapKo`)에 캐릭터 이름을 쓰지 않는다.** 캐릭터가
