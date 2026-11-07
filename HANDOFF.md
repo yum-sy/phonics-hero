@@ -1,5 +1,19 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-07 — 부모 다시 잠금이 순차 진행을 막던 버그 수정
+
+- **사용자 실기기 보고**: 테스트하려고 잠갔더니 아이가 스테이지를 깬 뒤 다음 스테이지
+  진입 불가. 원인: `isStageUnlocked()`가 `lockedStages`에 있으면 무조건 false,
+  챕터/월드도 "전부 잠김 → 금지" 특례. 사용자 결정: **잠금은 클리어 되돌리기일 뿐**,
+  열림은 평소 규칙(앞 스테이지 클리어)만 따른다. 상세 규칙은 CLAUDE.md 부모 절.
+- `state.js`: `isStageUnlocked`(단락 제거 + 바로 앞 스테이지 재잠금 게이트),
+  `isChapterUnlocked`/`isWorldUnlocked`(특례 제거), `setParentProgress`(복원 시 앞
+  스테이지 게이트 해제). `screens.js`는 변경 불필요(카드 상태가 두 함수에서 파생).
+- **검증**: `check-parent-progress.mjs` 19/19(새 시나리오 6개: 전부 잠가도 첫 스테이지
+  열림, 잠긴 스테이지 클리어 → 다음 열림, 중간 스테이지 재잠금은 바로 다음만 막음 등),
+  브라우저 13/13(`NODE_TLS_REJECT_UNAUTHORIZED=0 … https://localhost:5174`),
+  validateChapters 0, map2 NOSCROLL. 리더 재실행 포함. iPad 실기기는 미확인.
+
 ## 2026-11-07 — 지문 이름 잔재 제거 / 문장 단위 줄바꿈 / Jolly 동작 큐 42종
 
 - **무엇을 왜**: 캐릭터 전면 교체 후 지문의 `새미`/`Sparkit` 같은 이름이 무의미해졌다

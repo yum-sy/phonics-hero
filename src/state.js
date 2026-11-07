@@ -135,8 +135,10 @@ export function getParentProgressStatus(stageIds) {
     total: ids.length, cleared, locked, complete }
 }
 
-// Only the selected subtree changes. Explicit locks survive a completed
-// predecessor; a later normal playthrough cannot silently reopen them.
+// Only the selected subtree changes. A relock only takes the cleared
+// status/stars away -- it never forbids play: the ordinary predecessor rule
+// (isStageUnlocked) decides reachability, and markStageCleared() drops the
+// id again the moment the child clears the stage normally.
 export function setParentProgress(stageIds, completed) {
   if (!isParentAccessEnabled()) return { changed: false, count: 0, completed, saved: false }
   if (typeof completed !== 'boolean') throw new TypeError('Completion must be boolean')
@@ -144,7 +146,19 @@ export function setParentProgress(stageIds, completed) {
   const before = copyProgress()
   if (completed) {
     progress.clearedStages = [...new Set([...progress.clearedStages, ...ids])]
-    progress.lockedStages = progress.lockedStages.filter(id => !scope.has(id))
+    // A restore is authoritative: it must open the restored stages, so the
+    // relock gate on each one's immediate predecessor (see isStageUnlocked)
+    // is lifted -- but only where lifting changes nothing visible (the
+    // predecessor has no cleared record to resurface). A predecessor the
+    // parent deliberately relocked with a cleared record keeps gating until
+    // it is restored or replayed.
+    const lift = new Set(ids)
+    for (const id of ids) {
+      const idx = authoredStages.findIndex(stage => stage.id === id)
+      const prev = idx > 0 ? authoredStages[idx - 1].id : null
+      if (prev && !progress.clearedStages.includes(prev)) lift.add(prev)
+    }
+    progress.lockedStages = progress.lockedStages.filter(id => !lift.has(id))
     for (const id of ids) progress.stars[id] = Math.max(progress.stars[id] || 0, 3)
   } else {
     progress.clearedStages = progress.clearedStages.filter(id => !scope.has(id))
@@ -230,13 +244,23 @@ export function clearCheckpoint() {
   save()
 }
 
+// A parent relock (progress.lockedStages) is NOT consulted here on purpose:
+// it only means "not cleared" (see isStageCleared), so a relocked stage
+// whose predecessor is cleared stays playable and the child's sequential
+// progression can never be walled off. Real-device bug (2026-11-07): the
+// old `lockedStages.includes(stageId) -> false` short-circuit left the child
+// unable to enter the next stage after clearing the previous one.
 export function isStageUnlocked(stages, stageId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
-  if (progress.lockedStages.includes(stageId)) return false
-  if (isStageCleared(stageId)) return true
   const idx = stages.findIndex((s) => s.id === stageId)
   if (idx <= 0) return true
-  return isStageCleared(stages[idx - 1].id)
+  const prev = stages[idx - 1]
+  if (isStageCleared(prev.id)) return true
+  // A stage's own cleared record normally keeps it open (single-stage
+  // parent restore, ?forceclear=) -- except right behind a parent relock:
+  // relocking stage N is "play N again", so N+1 waits for that replay even
+  // if it was cleared before. Only the immediate successor is gated.
+  return isStageCleared(stageId) && !progress.lockedStages.includes(prev.id)
 }
 
 // Chapters unlock the same way stages do: chapter N+1 opens once chapter
@@ -245,7 +269,6 @@ export function isChapterUnlocked(chapters, chapterId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
   const idx = chapters.findIndex((c) => c.id === chapterId)
   const chapter = chapters[idx]
-  if (chapter?.stages.length && chapter.stages.every(stage => progress.lockedStages.includes(stage.id))) return false
   if (chapter?.stages.some(stage => isStageCleared(stage.id))) return true
   if (idx <= 0) return true
   const prevChapter = chapters[idx - 1]
@@ -271,7 +294,6 @@ export function isWorldUnlocked(worlds, worldId) {
   if (reviewMode || isParentAccessEnabled() || DEV_UNLOCK_ALL) return true
   const idx = worlds.findIndex((w) => w.id === worldId)
   const stages = worlds[idx]?.slots.flatMap(slot => slot.chapter?.stages || []) || []
-  if (stages.length && stages.every(stage => progress.lockedStages.includes(stage.id))) return false
   if (stages.some(stage => isStageCleared(stage.id))) return true
   if (idx <= 0) return true
   const prevWorld = worlds[idx - 1]

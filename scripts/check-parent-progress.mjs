@@ -78,7 +78,12 @@ check('single-stage-restoration-opens-ancestors-not-siblings', () => {
   assert(state.isChapterUnlocked(chapters, lastChapter.id))
   assert(state.isStageUnlocked(lastChapter.stages, target))
   assert(!state.isChapterUnlocked(chapters, chapters[28].id))
-  assert(!state.isStageUnlocked(lastChapter.stages, lastChapter.stages[0].id))
+  // Siblings follow the ordinary rule inside the now-open chapter: its
+  // first stage is playable, the second is gated by the (uncleared) first,
+  // the stage after the restored one opens because the restored one counts.
+  assert(state.isStageUnlocked(lastChapter.stages, lastChapter.stages[0].id))
+  assert(!state.isStageUnlocked(lastChapter.stages, lastChapter.stages[1].id))
+  assert(state.isStageUnlocked(lastChapter.stages, lastChapter.stages[4].id))
   assert.deepEqual(state.progress.clearedStages, [target])
 })
 state.toggleParentAccess()
@@ -110,24 +115,78 @@ state.setParentProgress([first, second], true)
 state.setParentProgress([second], false)
 state.toggleParentAccess()
 state = await import(`../src/state.js?progress-case=${++serial}`)
-check('explicit-lock-wins-over-cleared-predecessor-after-reload', () => {
+const third = chapters[0].stages[2].id
+check('relock-means-uncleared-not-forbidden-after-reload', () => {
   assert(state.isStageCleared(first))
-  assert(!state.isStageUnlocked(chapters[0].stages, second))
+  assert(!state.isStageCleared(second))
   assert.equal(state.progress.stars[second], undefined)
+  // The relocked stage is still reachable (its predecessor is cleared);
+  // what it gates is the stage AFTER it.
+  assert(state.isStageUnlocked(chapters[0].stages, second))
+  assert(!state.isStageUnlocked(chapters[0].stages, third))
+})
+state.markStageCleared(second)
+check('child-clearing-relocked-stage-reopens-next', () => {
+  assert(!state.progress.lockedStages.includes(second))
+  assert(state.isStageUnlocked(chapters[0].stages, third))
 })
 state.toggleParentAccess()
 state.setParentProgress(worldIds(worlds[0]), false)
 state.toggleParentAccess()
-check('first-world-and-first-stage-can-be-explicitly-locked', () => {
-  assert(!state.isWorldUnlocked(worlds, worlds[0].id))
-  assert(!state.isChapterUnlocked(chapters, chapters[0].id))
-  assert(!state.isStageUnlocked(chapters[0].stages, first))
+check('locking-first-world-keeps-first-stage-playable', () => {
+  assert(state.isWorldUnlocked(worlds, worlds[0].id))
+  assert(state.isChapterUnlocked(chapters, chapters[0].id))
+  assert(state.isStageUnlocked(chapters[0].stages, first))
+  assert(!state.isStageUnlocked(chapters[0].stages, second))
+  assert(!state.isChapterUnlocked(chapters, chapters[1].id))
+})
+state.toggleParentAccess()
+state.setParentProgress(chapters.flatMap(c => c.stages.map(st => st.id)), false)
+state.toggleParentAccess()
+check('locking-everything-leaves-exactly-first-stage-open', () => {
+  // A stage is reachable only through an unlocked chapter -- isStageUnlocked
+  // alone treats each chapter's first stage as open (chapter gating is
+  // isChapterUnlocked's job), so combine the two like the map screen does.
+  const open = chapters.flatMap(c => state.isChapterUnlocked(chapters, c.id)
+    ? c.stages.filter(st => state.isStageUnlocked(c.stages, st.id)).map(st => st.id) : [])
+  assert.deepEqual(open, [first])
+  state.markStageCleared(first)
+  assert(state.isStageUnlocked(chapters[0].stages, second))
+  assert(!state.isStageUnlocked(chapters[0].stages, third))
 })
 state.resetProgress()
 check('reset-removes-manual-locks', () => {
   assert.deepEqual(state.progress.lockedStages, [])
   assert(state.isWorldUnlocked(worlds, worlds[0].id))
   assert(state.isStageUnlocked(chapters[0].stages, first))
+})
+
+state = await fresh(null, true)
+const ch1 = chapters[0].stages.map(st => st.id), ch2 = chapters[1].stages.map(st => st.id)
+state.setParentProgress([...ch1, ...ch2], true)
+state.setParentProgress(ch2, false)
+state.toggleParentAccess()
+check('chapter-relock-keeps-its-first-stage-reachable', () => {
+  assert(state.isChapterUnlocked(chapters, chapters[1].id))
+  assert(state.isStageUnlocked(chapters[1].stages, ch2[0]))
+  assert(!state.isStageUnlocked(chapters[1].stages, ch2[1]))
+  assert(!state.isChapterUnlocked(chapters, chapters[2].id))
+  state.markStageCleared(ch2[0])
+  assert(state.isStageUnlocked(chapters[1].stages, ch2[1]))
+  assert(!state.isStageUnlocked(chapters[1].stages, ch2[2]))
+})
+state.toggleParentAccess()
+state.setParentProgress(ch1, true)
+state.setParentProgress([ch1[2]], false)
+state.toggleParentAccess()
+check('middle-stage-relock-gates-only-its-successor', () => {
+  assert(state.isStageUnlocked(chapters[0].stages, ch1[2]))
+  assert(!state.isStageUnlocked(chapters[0].stages, ch1[3]))
+  assert(state.progress.clearedStages.includes(ch1[3]))
+  assert(!state.isStageCleared(ch1[2]))
+  state.markStageCleared(ch1[2])
+  assert(state.isStageUnlocked(chapters[0].stages, ch1[3]))
+  assert(state.isStageCleared(ch1[3]))
 })
 
 state = await fresh({ clearedStages: [first], stars: { [first]: 2 }, lockedStages: [second, second, 'bad', null] }, true)
