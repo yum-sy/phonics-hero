@@ -1,5 +1,21 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-07 — 음성 공격이 소리 없이 즉시 판정되던 버그 (실기기 보고) 수정
+
+- 두 원인 모두 `abae776`(시도마다 마이크 재획득)의 부작용 후보라 둘 다 막았다:
+  (1) `getUserMedia` 재요청의 일시 실패(NotReadableError 등)가 `micUnavailable`을 영구
+  고정 → 이후 모든 공격이 'unsupported'=즉시 성공. 이제 NotAllowed/Security만 영구,
+  나머지는 250ms 후 1회 재시도, 그래도 실패하면 그 시도만 'unsupported'. stop→재요청
+  사이 150ms 간격. (2) 새 스트림 첫 프레임의 클릭/DC 버스트가 임계값(0.005)을 넘음 →
+  300ms 워밍업 동안은 판정하지 않고(로그만), 1800ms 창은 워밍업 뒤에 시작, 3프레임
+  연속 초과여야 'detected'.
+- `_probe-fs.html` attackdetected에 `startup-burst-not-detected`,
+  `transient-notreadable-retried-not-sticky` 추가. `GAME_FLOW_CASES=attackflow,attackdetected
+  node scripts/check-game-flow.mjs https://localhost:5174` 2/2(리더 재실행).
+- **실기기 미확인.** iPad `?debugaudio=1`에서 어느 원인이었는지 구분: `getUserMedia
+  transient failure: … -- retrying once`(원인 1) / `raw rms[1]=… (warm-up, not judged)`
+  첫 값이 큼(원인 2). 진짜 외침은 `RMS crossed threshold on 3 consecutive frames`.
+
 ## 2026-11-07 — 부모 다시 잠금이 순차 진행을 막던 버그 수정
 
 - **사용자 실기기 보고**: 테스트하려고 잠갔더니 아이가 스테이지를 깬 뒤 다음 스테이지

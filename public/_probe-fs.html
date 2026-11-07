@@ -3858,6 +3858,13 @@
     const mediaDescriptor = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices')
     let micCalls = 0
     let micSample = 0.05
+    // Optional per-frame signal (overrides micSample) and a one-shot
+    // transient getUserMedia failure -- both exist to prove the two
+    // "instant hit with no sound" causes stay fixed: a start-up click burst
+    // must not count, and a NotReadableError must not stick for the session.
+    let micSampleFn = null
+    let micFailOnce = false
+    let micStreamBornAt = 0
     const NativeAudioContext = window.AudioContext
     const previousDebugLog = window.__debugAudioLog
     const shoutLog = []
@@ -3866,12 +3873,14 @@
       getUserMedia: async () => {
         micCalls++
         if (mode === 'denied') throw new DOMException('QA denied microphone', 'NotAllowedError')
+        if (micFailOnce) { micFailOnce = false; throw new DOMException('QA device busy', 'NotReadableError') }
+        micStreamBornAt = Date.now()
         // Exercise the real detected branch with a deterministic analyser
         // sample. This is synthetic input, not an actual microphone test.
         window.AudioContext = class {
           constructor() { this.state = 'running'; window.AudioContext = NativeAudioContext }
           createMediaStreamSource() { return { connect() {} } }
-          createAnalyser() { return { fftSize: 512, getFloatTimeDomainData(data) { data.fill(micSample) } } }
+          createAnalyser() { return { fftSize: 512, getFloatTimeDomainData(data) { data.fill(micSampleFn ? micSampleFn() : micSample) } } }
           close() { return Promise.resolve() }
         }
         return { getTracks: () => [{ stop() {} }] }
@@ -3912,8 +3921,27 @@
       if (mode === 'detected') {
         micSample = 0
         await clickWhenEnabled('#attack-btn')
-        await wait(2200)
+        // 300ms warm-up (not judged) + 1800ms listen window + frame slack.
+        await wait(2700)
         check('silent-timeout-stays-on-attack', !!document.querySelector('#attack-btn') && healthPct() === hp && shoutLog.some(line => line.includes('-> timeout')))
+        // (i)+(iii) in one attempt: the device is "busy" on the first
+        // getUserMedia (transient NotReadableError -- must be retried, must
+        // NOT flip the session into mic-free mode), and once the stream is
+        // up the analyser delivers a loud 200ms start-up burst, then silence.
+        // The burst sits inside the warm-up window, so the only acceptable
+        // outcome is a timeout with no damage.
+        micFailOnce = true
+        micSampleFn = () => (Date.now() - micStreamBornAt < 200 ? 0.05 : 0)
+        micCalls = 0
+        shoutLog.length = 0
+        await clickWhenEnabled('#attack-btn')
+        await wait(3200)
+        check('startup-burst-not-detected', !!document.querySelector('#attack-btn') && healthPct() === hp &&
+          shoutLog.some(line => line.includes('-> timeout')) && !shoutLog.some(line => line.includes('-> detected')) &&
+          shoutLog.some(line => line.includes('warm-up, not judged')), `log=${shoutLog.slice(0, 6).join(' / ')}`)
+        check('transient-notreadable-retried-not-sticky', micCalls === 2 &&
+          shoutLog.some(line => line.includes('transient failure')) && !shoutLog.some(line => line.includes('-> unsupported')), `requests=${micCalls}`)
+        micSampleFn = null
         await clickWhenEnabled('#attack-btn')
         await wait(100)
         document.querySelector('#replay-btn').click()

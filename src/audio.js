@@ -1972,6 +1972,14 @@ export function shoutAttackApiPresent() {
 // permission denial is permanent for the session). Trade-off accepted: the
 // OS mic-in-use indicator may blink off/on between attempts instead of
 // staying steady -- a working ATTACK matters more than a steady indicator.
+const MIC_REACQUIRE_GAP_MS = 150
+const MIC_RETRY_DELAY_MS = 250
+
+function isPermanentMicError(e) {
+  const name = e && e.name
+  return name === 'NotAllowedError' || name === 'SecurityError' || name === 'PermissionDeniedError'
+}
+
 function ensureMicStream() {
   if (micUnavailable) return Promise.resolve(null)
   if (micStreamPromise) return micStreamPromise
@@ -1986,6 +1994,10 @@ function ensureMicStream() {
           }
         }
         micStream = null
+        // Give the OS a beat to actually release the capture device before
+        // asking for it again -- stop()+immediate re-request is the pattern
+        // most likely to come back as a transient NotReadableError on iOS.
+        await sleep(MIC_REACQUIRE_GAP_MS)
       }
       // Raw signal only -- { audio: true } leaves the browser's call-quality
       // processing on by default, and autoGainControl actively normalizes
@@ -1995,17 +2007,39 @@ function ensureMicStream() {
       // where the threshold is set (real report: attack fires on almost any
       // sound, not just a shout). None of these three are wanted for a
       // one-shot volume read, so all three are off.
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const constraints = {
         audio: { autoGainControl: false, noiseSuppression: false, echoCancellation: false },
-      })
+      }
+      let stream
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints)
+      } catch (e) {
+        // Only a real denial is permanent. Anything else (NotReadableError /
+        // AbortError while the device is still being released from the
+        // previous attempt's track.stop(), a transient OS hiccup) used to
+        // flip `micUnavailable` too -- and since the caller lands the hit on
+        // 'unsupported', ONE such hiccup turned every later ATTACK into an
+        // instant, silent hit for the rest of the session (real report:
+        // "attack lands the moment I press the button, no sound needed").
+        if (isPermanentMicError(e)) throw e
+        dlog(`  getUserMedia transient failure: ${e && e.name} -- retrying once`)
+        await sleep(MIC_RETRY_DELAY_MS)
+        stream = await navigator.mediaDevices.getUserMedia(constraints)
+      }
       micStream = stream
       return stream
     } catch (e) {
-      // Permission denied, no device, or any other getUserMedia failure --
-      // all fold into the same "this feature is off for the rest of the
-      // session" outcome. The caller falls back to an instant, mic-free
-      // attack; nothing about this is shown to the child as an error.
-      micUnavailable = true
+      if (isPermanentMicError(e)) {
+        // Permission denied (or a secure-context failure): off for the rest
+        // of the session, and never re-prompt. The caller falls back to an
+        // instant, mic-free attack; nothing is shown to the child as an error.
+        dlog(`  getUserMedia denied (${e && e.name}) -- mic off for this session`)
+        micUnavailable = true
+      } else {
+        // Transient failure twice in a row: this attempt goes mic-free, but
+        // the NEXT tap asks again instead of giving up for the session.
+        dlog(`  getUserMedia failed twice (${e && e.name}) -- mic-free for this attempt only`)
+      }
       return null
     } finally {
       micStreamPromise = null
@@ -2055,6 +2089,12 @@ function ensureMicAnalyser(stream) {
 // again if real play finds it too sensitive (silence/background noise
 // triggers it) or still too insensitive (a real shout still times out).
 const SHOUT_RMS_THRESHOLD = 0.005
+// See the warm-up comment inside attemptShoutAttack(): frames in the first
+// SHOUT_WARMUP_MS after the analyser starts delivering are never judged, and
+// a hit needs SHOUT_CONFIRM_FRAMES consecutive over-threshold frames (~50ms
+// at 60fps) -- a one-frame click/DC transient cannot land an attack.
+const SHOUT_WARMUP_MS = 300
+const SHOUT_CONFIRM_FRAMES = 3
 
 // Starts (or re-permission-checks) the mic and opens a listen window.
 // Resolves to one string, never rejects:
@@ -2119,7 +2159,7 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
     const stream = await ensureMicStream()
     if (settled || cancelled) return
     if (!stream) {
-      dlog('  ensureMicStream() returned null (permission denied, or a prior attempt failed and micUnavailable is now stuck true for the rest of this session)')
+      dlog(`  ensureMicStream() returned null (${micUnavailable ? 'permission denied earlier this session' : 'transient getUserMedia failure, this attempt only'})`)
       finish('unsupported')
       return
     }
@@ -2156,29 +2196,51 @@ export function attemptShoutAttack({ durationMs = 1800 } = {}) {
     const data = new Float32Array(analyser.fftSize)
     let maxRmsSeen = 0
     let sampleCount = 0
+    // A freshly built stream + AnalyserNode (every attempt, now) delivers a
+    // DC/click burst in its first frames; at a 0.005 threshold that burst
+    // alone crossed on the very first tick() and landed an instant hit with
+    // no sound from the child (real report). So: samples inside the warm-up
+    // window are logged but never judged, the listen window (`durationMs`)
+    // only starts once warm-up ends, and a hit needs the threshold crossed
+    // on SHOUT_CONFIRM_FRAMES consecutive frames rather than one.
+    let warmupEndsAt = 0
+    let armed = false
+    let hotStreak = 0
     const tick = () => {
       if (settled) return
       analyser.getFloatTimeDomainData(data)
       let sumSquares = 0
       for (let i = 0; i < data.length; i++) sumSquares += data[i] * data[i]
       const rms = Math.sqrt(sumSquares / data.length)
-      maxRmsSeen = Math.max(maxRmsSeen, rms)
       sampleCount++
+      const now = Date.now()
+      if (!warmupEndsAt) warmupEndsAt = now + SHOUT_WARMUP_MS
+      if (sampleCount <= 3) dlog(`  raw rms[${sampleCount}]=${rms.toFixed(4)}${now < warmupEndsAt ? ' (warm-up, not judged)' : ''}`)
+      if (now < warmupEndsAt) {
+        rafId = requestAnimationFrame(tick)
+        return
+      }
+      if (!armed) {
+        armed = true
+        dlog(`  warm-up over after ${sampleCount - 1} skipped frames -- listening for ${durationMs}ms`)
+        timeoutId = setTimeout(() => {
+          dlog(`  timing out after ${durationMs}ms, max rms seen was ${maxRmsSeen.toFixed(4)} (threshold ${SHOUT_RMS_THRESHOLD})`)
+          finish('timeout')
+        }, durationMs)
+      }
+      maxRmsSeen = Math.max(maxRmsSeen, rms)
       // Every ~15th frame (~250ms at 60fps) instead of every frame, so the
       // log stays readable instead of one line per animation frame.
       if (sampleCount % 15 === 0) dlog(`  rms=${rms.toFixed(4)} (max so far ${maxRmsSeen.toFixed(4)}, threshold ${SHOUT_RMS_THRESHOLD})`)
-      if (rms >= SHOUT_RMS_THRESHOLD) {
-        dlog(`  RMS crossed threshold: rms=${rms.toFixed(4)} >= ${SHOUT_RMS_THRESHOLD} after ${sampleCount} samples`)
+      hotStreak = rms >= SHOUT_RMS_THRESHOLD ? hotStreak + 1 : 0
+      if (hotStreak >= SHOUT_CONFIRM_FRAMES) {
+        dlog(`  RMS crossed threshold on ${hotStreak} consecutive frames: rms=${rms.toFixed(4)} >= ${SHOUT_RMS_THRESHOLD} after ${sampleCount} samples`)
         finish('detected')
         return
       }
       rafId = requestAnimationFrame(tick)
     }
     rafId = requestAnimationFrame(tick)
-    timeoutId = setTimeout(() => {
-      dlog(`  timing out after ${durationMs}ms, max rms seen was ${maxRmsSeen.toFixed(4)} (threshold ${SHOUT_RMS_THRESHOLD})`)
-      finish('timeout')
-    }, durationMs)
   })()
 
   return controller
