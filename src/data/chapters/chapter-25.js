@@ -59,7 +59,7 @@ export const chapter25 = {
         {
           "id": "c25s1-teach",
           "kind": "teach",
-          "instructionKo": "Bounce가 \"scrub\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"scrub\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -270,7 +270,7 @@ export const chapter25 = {
         {
           "id": "c25s2-teach",
           "kind": "teach",
-          "instructionKo": "Bounce가 \"scrub\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"scrub\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -549,7 +549,7 @@ export const chapter25 = {
         {
           "id": "c25s3-teach",
           "kind": "teach",
-          "instructionKo": "Zoomer가 \"sink\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"sink\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -756,7 +756,7 @@ export const chapter25 = {
         {
           "id": "c25s4-teach",
           "kind": "teach",
-          "instructionKo": "Blocky가 \"sink\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"sink\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -1291,7 +1291,7 @@ export const chapter25 = {
         {
           "id": "c25s5-teach",
           "kind": "teach",
-          "instructionKo": "Turbo Gum이 합체해요! 먼저 scrub을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 scrub을 만들어요.",
           "repeatAudio": [
             "sss",
             "kuh",

@@ -5,7 +5,6 @@ import { WORLD_CHARACTER_ASSETS } from './world-character-assets.js'
 // carries appearance and name forward. No curriculum or audio content lives here.
 export const HERO_ROSTER = Object.create(null)
 export const HERO_ROSTER_BASELINES = new Map()
-const instructionRoles = new Map()
 
 const assetFor = hero => HERO_ROSTER[hero.art]?.asset
   || WORLD_CHARACTER_ASSETS[hero.art] || CHARACTER_ASSETS[hero.art]
@@ -45,32 +44,14 @@ export function applyHeroRotation(chapters) {
       names.set(name, count)
       if (count > 1) stages[3].hero.name = `${name} ${roman(count)}`
     }
-    const originalTeam = [...new Set([0, 2, 3].map(i => original[i].hero.name))]
-    const currentTeam = [0, 2, 3].map(i => stages[i].hero.name)
-    for (const [i, stage] of stages.entries()) instructionRoles.set(stage.id, {
-      originalName: original[i].hero.name, currentName: stage.hero.name,
-      originalTeam, currentTeam, boss: !!stage.chapterBoss, rotated: !!prior,
-    })
     previous.set(family, stages)
     return { ...chapter, stages }
   })
 }
 
-const escapePattern = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-// Display-only story references: learning words, phoneme prompts, source data
-// and generated speech remain untouched. Korean particles attach to 히어로,
-// rather than guessing how an English proper name should be pronounced.
+// Passthrough: instructionKo/recapKo no longer name any character (they say
+// 히어로/세 히어로 instead), so there is nothing to rewrite per rotated stage.
+// Kept as an export only because screens.js still wraps every instruction in it.
 export function rosterInstruction(stageId, text) {
-  const role = instructionRoles.get(stageId)
-  if (!role?.rotated || typeof text !== 'string') return text
-  if (role.boss) {
-    const names = role.originalTeam.map(escapePattern).join('|')
-    const list = new RegExp(`^(?:${names})(?:\\s*\\+\\s*(?:${names})){1,2}[이가](?=\\s*(?:최후의\\s*)?합체)`)
-    return text.replace(list, `${role.currentTeam.join(' + ')}, 세 히어로가`)
-  }
-  if (role.originalName === role.currentName) return text
-  const mention = new RegExp(`(^|[^A-Za-z0-9])${escapePattern(role.originalName)}(가|이|는|은|를|을|와|과|의|에게)(?=\\s|$)`, 'g')
-  const particles = { 이:'가', 은:'는', 을:'를', 과:'와' }
-  return text.replace(mention, (_, prefix, particle) => `${prefix}${role.currentName} 히어로${particles[particle] || particle}`)
+  return text
 }

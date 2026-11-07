@@ -70,7 +70,7 @@ export const chapter18 = {
         {
           "id": "c18s1-teach-443",
           "kind": "teach",
-          "instructionKo": "Rocketail이 N과 D 소리를 나란히 들려줘요! 이번엔 단어 끝에서 나요.",
+          "instructionKo": "히어로가 N과 D 소리를 나란히 들려줘요! 이번엔 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -543,7 +543,7 @@ export const chapter18 = {
         {
           "id": "c18s3-teach-493",
           "kind": "teach",
-          "instructionKo": "Magnetip가 N과 T 소리를 나란히 들려줘요! 이번에도 단어 끝에서 나요.",
+          "instructionKo": "히어로가 N과 T 소리를 나란히 들려줘요! 이번에도 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -1319,7 +1319,7 @@ export const chapter18 = {
         {
           "id": "c18s5-teach-561",
           "kind": "teach",
-          "instructionKo": "Redcap가 합체해요! 먼저 sand를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 sand를 만들어요.",
           "repeatAudio": [
             "sss",
             "aaa",

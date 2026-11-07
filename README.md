@@ -10,6 +10,15 @@
 
 ---
 
+## 지문 규칙과 Jolly 동작 큐 (2026-11-07)
+
+표시용 지문에는 캐릭터 이름 대신 `히어로`/`세 히어로`/`빌런`을 쓴다(히어로 순환·교체와
+무관하게 읽힌다). teach 화면은 Jolly Phonics 공식 **동작 큐** 42종(`SOUND_CUES`)을
+`repeatAudio` 토큰으로 자동 조회해 지문 아래 칩으로 보여준다 — 몸동작·이미지만 적고
+한글로 소리를 적지 않는다(한글 근사 발음으로 가르치지 않는 규칙). 지문은 문장마다 한 줄,
+줄바꿈은 단어 사이에서만. 검증: `node scripts/check-hero-rotation.mjs`(이름 잔재 0),
+`node scripts/check-world-characters.mjs`(validateChapters), `node scripts/check-safe-layout.mjs`(96/96).
+
 ## 스테이지 검수 페이지
 
 단어·안내 음성은 미리 생성한 AI 음성 파일을 재생하고, 사용자 제공 파닉스41종은

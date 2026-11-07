@@ -59,7 +59,7 @@ export const chapter27 = {
         {
           "id": "c27s1-teach",
           "kind": "teach",
-          "instructionKo": "Sarge가 \"milk\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"milk\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -266,7 +266,7 @@ export const chapter27 = {
         {
           "id": "c27s2-teach",
           "kind": "teach",
-          "instructionKo": "Sarge가 \"milk\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"milk\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -541,7 +541,7 @@ export const chapter27 = {
         {
           "id": "c27s3-teach",
           "kind": "teach",
-          "instructionKo": "Pluma가 \"next\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"next\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "ksuh"
@@ -748,7 +748,7 @@ export const chapter27 = {
         {
           "id": "c27s4-teach",
           "kind": "teach",
-          "instructionKo": "Blocko Jr.가 \"next\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"next\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "ksuh"
@@ -1283,7 +1283,7 @@ export const chapter27 = {
         {
           "id": "c27s5-teach",
           "kind": "teach",
-          "instructionKo": "Captain Blockhead가 합체해요! 먼저 milk를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 milk를 만들어요.",
           "repeatAudio": [
             "mmm",
             "ihh",

@@ -135,7 +135,7 @@ export const chapter7 = {
         {
           id: 'c7s1-teach',
           kind: 'teach',
-          instructionKo: 'Ray가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['a'],
         },
@@ -402,7 +402,7 @@ export const chapter7 = {
         {
           id: 'c7s3-teach',
           kind: 'teach',
-          instructionKo: 'J는 Jett가 하늘을 가를 때처럼 J 소리를 내요!',
+          instructionKo: 'J는 하늘을 가를 때처럼 J 소리를 내요!',
           art: 'hero',
           letter: 'J',
           repeatAudio: ['J', 'juh'],
@@ -712,7 +712,7 @@ export const chapter7 = {
           words: [{ text: 'OA', say: 'oh' }, 'boat'],
         },
       ],
-      recapKo: '이제 AI, J, OA를 모두 알아요! Ray, Jett, Cloak이 합체할 준비를 해요!',
+      recapKo: '이제 AI, J, OA를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '오에이는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['boat', 'coat'],
@@ -734,7 +734,7 @@ export const chapter7 = {
         {
           id: 'c7s5-teach',
           kind: 'teach',
-          instructionKo: 'Ray + Jett + Cloak이 합체해요! 먼저 rain을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 rain을 만들어요.',
           repeatAudio: ['rrr', 'a', 'nnn', 'rain'],
         },
         {

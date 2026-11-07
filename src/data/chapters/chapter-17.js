@@ -70,7 +70,7 @@ export const chapter17 = {
         {
           "id": "c17s1-teach-296",
           "kind": "teach",
-          "instructionKo": "Rook가 C와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 C와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "kuh"
@@ -537,7 +537,7 @@ export const chapter17 = {
         {
           "id": "c17s3-teach-346",
           "kind": "teach",
-          "instructionKo": "Snuggles가 G와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 G와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "guh"
@@ -1313,7 +1313,7 @@ export const chapter17 = {
         {
           "id": "c17s5-teach-414",
           "kind": "teach",
-          "instructionKo": "BigTop가 합체해요! 먼저 clap을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 clap을 만들어요.",
           "repeatAudio": [
             "kuh",
             "lll",

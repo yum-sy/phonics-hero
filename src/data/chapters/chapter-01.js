@@ -94,7 +94,7 @@ export const chapter1 = {
         {
           id: 's1-teach',
           kind: 'teach',
-          instructionKo: '새미가 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['sss'],
         },
@@ -198,7 +198,7 @@ export const chapter1 = {
         {
           id: 's2-teach',
           kind: 'teach',
-          instructionKo: 'S는 새미처럼 S 소리를 내요!',
+          instructionKo: 'S는 이런 소리를 내요!',
           art: 'hero',
           letter: 'S',
           repeatAudio: ['S', 'sss'],
@@ -322,7 +322,7 @@ export const chapter1 = {
         {
           id: 's3-teach',
           kind: 'teach',
-          instructionKo: 'A는 에이스처럼 A 소리를 내요!',
+          instructionKo: 'A는 이런 소리를 내요!',
           art: 'hero',
           letter: 'A',
           repeatAudio: ['A', 'aaa'],
@@ -450,7 +450,7 @@ export const chapter1 = {
         {
           id: 's4-teach',
           kind: 'teach',
-          instructionKo: 'T는 터보의 엔진처럼 T 소리를 내요!',
+          instructionKo: 'T는 엔진 소리처럼 T 소리를 내요!',
           art: 'hero',
           letter: 'T',
           repeatAudio: ['T', 'tuh'],
@@ -590,7 +590,7 @@ export const chapter1 = {
           words: [{ text: 'T', say: 'tuh' }, 'top'],
         },
       ],
-      recapKo: '이제 S, A, T를 모두 알아요! 새미, 에이스, 터보가 합체할 준비를 해요!',
+      recapKo: '이제 S, A, T를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '티는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
         en: ['top', 'tap'],
@@ -609,7 +609,7 @@ export const chapter1 = {
         {
           id: 's5-teach',
           kind: 'teach',
-          instructionKo: '새미 + 에이스 + 터보가 합체해요! 천천히 들어보세요.',
+          instructionKo: '세 히어로가 합체해요! 천천히 들어보세요.',
           repeatAudio: ['sss', 'aaa', 'tuh', 'sat'],
         },
         {
@@ -723,7 +723,7 @@ export const chapter1 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '카봇이 외쳐요! 같이 말해볼까요?',
+          instructionKo: '히어로가 외쳐요! 같이 말해볼까요?',
           words: ['sat'],
         },
         {

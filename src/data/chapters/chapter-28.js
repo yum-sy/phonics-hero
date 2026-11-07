@@ -59,7 +59,7 @@ export const chapter28 = {
         {
           "id": "c28s1-teach",
           "kind": "teach",
-          "instructionKo": "Ridgebolt가 \"scan\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"scan\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -266,7 +266,7 @@ export const chapter28 = {
         {
           "id": "c28s2-teach",
           "kind": "teach",
-          "instructionKo": "Ridgebolt가 \"scan\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"scan\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -541,7 +541,7 @@ export const chapter28 = {
         {
           "id": "c28s3-teach",
           "kind": "teach",
-          "instructionKo": "Skidfire가 \"jump\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"jump\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "mmm"
@@ -748,7 +748,7 @@ export const chapter28 = {
         {
           "id": "c28s4-teach",
           "kind": "teach",
-          "instructionKo": "Cragrunner가 \"jump\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"jump\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "mmm"
@@ -1283,7 +1283,7 @@ export const chapter28 = {
         {
           "id": "c28s5-teach",
           "kind": "teach",
-          "instructionKo": "Titancore가 합체해요! 먼저 scan을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 scan을 만들어요.",
           "repeatAudio": [
             "sss",
             "kuh",

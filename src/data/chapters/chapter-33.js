@@ -51,7 +51,7 @@ export const chapter33 = {
           "repeatAudio": [
             "thhu"
           ],
-          "instructionKo": "Blaze가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c33s1-r1",
@@ -649,7 +649,7 @@ export const chapter33 = {
           "repeatAudio": [
             "shhu"
           ],
-          "instructionKo": "Titania가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c33s3-r1",
@@ -1268,7 +1268,7 @@ export const chapter33 = {
         {
           "id": "c33s5-teach",
           "kind": "teach",
-          "instructionKo": "Blaze + Titania + Skyra가 최후의 합체를 해요! 지금까지 배운 모든 소리의 힘을 모아 THREE를 만들어요!",
+          "instructionKo": "세 히어로가 최후의 합체를 해요! 지금까지 배운 모든 소리의 힘을 모아 THREE를 만들어요!",
           "repeatAudio": [
             "thhu",
             "rrr",

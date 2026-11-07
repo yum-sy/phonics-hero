@@ -209,7 +209,7 @@ export const chapter8 = {
         {
           id: 'c8s1-teach',
           kind: 'teach',
-          instructionKo: 'Comet이 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['eye'],
         },
@@ -627,7 +627,7 @@ export const chapter8 = {
           kind: 'teach',
           // OR 은 글자 이름이 아니라 별개의 장모음이라 IE/EE 의 "이름을
           // 말한다" 장치를 쓸 수 없다. 챕터 1~6 처럼 히어로 동작에 붙인다.
-          instructionKo: 'OR은 Torque의 회전력이 몰아칠 때처럼 소리를 내요!',
+          instructionKo: 'OR은 회전력이 몰아칠 때처럼 소리를 내요!',
           art: 'hero',
           letter: 'OR',
           repeatAudio: ['or'],
@@ -830,7 +830,7 @@ export const chapter8 = {
           words: [{ text: 'OR', say: 'or' }, 'corn'],
         },
       ],
-      recapKo: '이제 IE, EE, OR를 모두 알아요! Comet, Halo, Torque가 합체할 준비를 해요!',
+      recapKo: '이제 IE, EE, OR를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 두 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['fork', 'corn'],
@@ -854,7 +854,7 @@ export const chapter8 = {
           kind: 'teach',
           // 보스 인트로에는 emoji 를 달지 않는다 -- 이 자리에는
           // buildEquationsHtml() 의 글자 등식("T + IE = TIE")이 그려진다.
-          instructionKo: 'Comet + Halo + Torque가 합체해요! 먼저 tie를 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 tie를 만들어요.',
           repeatAudio: ['tuh', 'eye', 'tie'],
         },
         {

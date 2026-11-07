@@ -17,6 +17,9 @@
 - iPad 세로/가로 스크롤 0 — 눈이 아니라 `public/_probe.html` HUD로 판정
 - 실기기(WebKit) 증거 없이 "안전해 보이는" 오디오 예외를 만들지 않는다
 
+- 지문(`instructionKo`/`recapKo`)에 캐릭터 이름 금지 → `히어로`. 한글로 소리를 적지
+  않는다(`스~` 금지). 소리별 동작 큐는 `SOUND_CUES`에서만 고친다. 문장은 한 줄에.
+
 ## 개발
 - `npm install && npm run dev -- --host` (포트는 `.claude/launch.json` 기준 5174; 5173은 다른 프로젝트가 점유할 수 있다)
 - 검증 하네스: `public/_probe.html`(화면), `public/_probe-fs.html`(로직·오디오), `_art.html`/`_audio.html`(갤러리)

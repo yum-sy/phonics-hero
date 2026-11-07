@@ -69,7 +69,7 @@ export const chapter2 = {
         {
           id: 'c2s1-teach',
           kind: 'teach',
-          instructionKo: '잉키가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['ihh'],
         },
@@ -167,7 +167,7 @@ export const chapter2 = {
         {
           id: 'c2s2-teach',
           kind: 'teach',
-          instructionKo: 'I는 잉키처럼 I 소리를 내요!',
+          instructionKo: 'I는 이런 소리를 내요!',
           art: 'hero',
           letter: 'I',
           repeatAudio: ['I', 'ihh'],
@@ -268,7 +268,7 @@ export const chapter2 = {
         {
           id: 'c2s3-teach',
           kind: 'teach',
-          instructionKo: 'P는 파워피가 힘을 쏠 때처럼 P 소리를 내요!',
+          instructionKo: 'P는 힘을 쏠 때처럼 P 소리를 내요!',
           art: 'hero',
           letter: 'P',
           repeatAudio: ['P', 'puh'],
@@ -406,7 +406,7 @@ export const chapter2 = {
         {
           id: 'c2s4-teach',
           kind: 'teach',
-          instructionKo: 'N은 나이토의 그물처럼 N 소리를 내요!',
+          instructionKo: 'N은 그물을 던질 때처럼 N 소리를 내요!',
           art: 'hero',
           letter: 'N',
           repeatAudio: ['N', 'nnn'],
@@ -544,7 +544,7 @@ export const chapter2 = {
           words: [{ text: 'N', say: 'nnn' }, 'net'],
         },
       ],
-      recapKo: '이제 I, P, N을 모두 알아요! 잉키, 파워피, 나이토가 합체할 준비를 해요!',
+      recapKo: '이제 I, P, N을 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '엔은 이런 소리를 내요. 세 소리를 모두 배웠어요.',
         en: ['net', 'nut', 'nose'],
@@ -563,7 +563,7 @@ export const chapter2 = {
         {
           id: 'c2s5-teach',
           kind: 'teach',
-          instructionKo: '파워피 + 잉키 + 나이토가 합체해요! 천천히 들어보세요.',
+          instructionKo: '세 히어로가 합체해요! 천천히 들어보세요.',
           repeatAudio: ['puh', 'ihh', 'nnn', 'pin'],
         },
         {
@@ -677,7 +677,7 @@ export const chapter2 = {
           kind: 'listen-repeat',
           scored: true,
           hits: 1,
-          instructionKo: '캡틴핀이 외쳐요! 같이 말해볼까요?',
+          instructionKo: '히어로가 외쳐요! 같이 말해볼까요?',
           words: ['pin'],
         },
         {

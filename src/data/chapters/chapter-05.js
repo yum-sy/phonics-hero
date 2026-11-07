@@ -96,7 +96,7 @@ export const chapter5 = {
         {
           id: 'c5s1-teach',
           kind: 'teach',
-          instructionKo: 'Gogo가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['guh'],
         },
@@ -192,7 +192,7 @@ export const chapter5 = {
         {
           id: 'c5s2-teach',
           kind: 'teach',
-          instructionKo: 'G는 Gogo가 뛰어오를 때처럼 G 소리를 내요!',
+          instructionKo: 'G는 뛰어오를 때처럼 G 소리를 내요!',
           art: 'hero',
           letter: 'G',
           repeatAudio: ['G', 'guh'],
@@ -320,7 +320,7 @@ export const chapter5 = {
         {
           id: 'c5s3-teach',
           kind: 'teach',
-          instructionKo: 'O는 Ollie가 튕겨 오를 때처럼 O 소리를 내요!',
+          instructionKo: 'O는 튕겨 오를 때처럼 O 소리를 내요!',
           art: 'hero',
           letter: 'O',
           repeatAudio: ['O', 'awh'],
@@ -449,7 +449,7 @@ export const chapter5 = {
         {
           id: 'c5s4-teach',
           kind: 'teach',
-          instructionKo: 'U는 Umo가 힘을 낼 때처럼 U 소리를 내요!',
+          instructionKo: 'U는 힘을 낼 때처럼 U 소리를 내요!',
           art: 'hero',
           letter: 'U',
           repeatAudio: ['U', 'uh'],
@@ -610,7 +610,7 @@ export const chapter5 = {
           words: [{ text: 'U', say: 'uh' }, 'gum'],
         },
       ],
-      recapKo: '이제 G, O, U를 모두 알아요! Gogo, Ollie, Umo가 합체할 준비를 해요!',
+      recapKo: '이제 G, O, U를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '유는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['sun', 'nut'],
@@ -632,7 +632,7 @@ export const chapter5 = {
         {
           id: 'c5s5-teach',
           kind: 'teach',
-          instructionKo: 'Gogo + Ollie + Umo가 합체해요! 먼저 dog을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 dog을 만들어요.',
           repeatAudio: ['duh', 'awh', 'guh', 'dog'],
         },
         {

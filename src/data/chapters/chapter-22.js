@@ -56,7 +56,7 @@ export const chapter22 = {
         {
           "id": "c22s1-teach",
           "kind": "teach",
-          "instructionKo": "Sparkit가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "tuh"
@@ -263,7 +263,7 @@ export const chapter22 = {
         {
           "id": "c22s2-teach",
           "kind": "teach",
-          "instructionKo": "Sparkit가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"twin\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "tuh"
@@ -538,7 +538,7 @@ export const chapter22 = {
         {
           "id": "c22s3-teach",
           "kind": "teach",
-          "instructionKo": "Magnix가 \"act\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"act\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "kuh"
@@ -809,7 +809,7 @@ export const chapter22 = {
         {
           "id": "c22s4-teach",
           "kind": "teach",
-          "instructionKo": "Drillbit가 \"glue\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"glue\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "guh"
@@ -1340,7 +1340,7 @@ export const chapter22 = {
         {
           "id": "c22s5-teach",
           "kind": "teach",
-          "instructionKo": "Captain Ember가 합체해요! 먼저 twin을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 twin을 만들어요.",
           "repeatAudio": [
             "tuh",
             "weh",

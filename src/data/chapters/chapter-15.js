@@ -70,7 +70,7 @@ export const chapter15 = {
         {
           "id": "c15s1-teach-1",
           "kind": "teach",
-          "instructionKo": "Fernclaw가 S와 T 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 S와 T 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -543,7 +543,7 @@ export const chapter15 = {
         {
           "id": "c15s3-teach-51",
           "kind": "teach",
-          "instructionKo": "Bristleback가 S와 N 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 S와 N 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -1319,7 +1319,7 @@ export const chapter15 = {
         {
           "id": "c15s5-teach-120",
           "kind": "teach",
-          "instructionKo": "Duskmaw가 합체해요! 먼저 star를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 star를 만들어요.",
           "repeatAudio": [
             "sss",
             "tuh",

@@ -70,7 +70,7 @@ export const chapter16 = {
         {
           "id": "c16s1-teach-149",
           "kind": "teach",
-          "instructionKo": "Sparkline이 T와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 T와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "tuh"
@@ -543,7 +543,7 @@ export const chapter16 = {
         {
           "id": "c16s3-teach-199",
           "kind": "teach",
-          "instructionKo": "Vantage가 F와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 F와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "fff"
@@ -1319,7 +1319,7 @@ export const chapter16 = {
         {
           "id": "c16s5-teach-267",
           "kind": "teach",
-          "instructionKo": "Ironclad가 합체해요! 먼저 trap을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 trap을 만들어요.",
           "repeatAudio": [
             "tuh",
             "rrr",

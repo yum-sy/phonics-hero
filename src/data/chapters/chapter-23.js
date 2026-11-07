@@ -62,7 +62,7 @@ export const chapter23 = {
         {
           "id": "c23s1-teach",
           "kind": "teach",
-          "instructionKo": "Halo가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -265,7 +265,7 @@ export const chapter23 = {
         {
           "id": "c23s2-teach",
           "kind": "teach",
-          "instructionKo": "Halo가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"ant\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -536,7 +536,7 @@ export const chapter23 = {
         {
           "id": "c23s3-teach",
           "kind": "teach",
-          "instructionKo": "Vex가 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "fff"
@@ -743,7 +743,7 @@ export const chapter23 = {
         {
           "id": "c23s4-teach",
           "kind": "teach",
-          "instructionKo": "Quill이 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"gift\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "fff"
@@ -1278,7 +1278,7 @@ export const chapter23 = {
         {
           "id": "c23s5-teach",
           "kind": "teach",
-          "instructionKo": "Halo Ultra가 합체해요! 먼저 tent를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 tent를 만들어요.",
           "repeatAudio": [
             "tuh",
             "eh",

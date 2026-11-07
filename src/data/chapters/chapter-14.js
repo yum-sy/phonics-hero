@@ -64,7 +64,7 @@ export const chapter14 = {
         {
           id: 'c14s1-teach',
           kind: 'teach',
-          instructionKo: 'Sparkit이 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['arh'],
         },
@@ -163,7 +163,7 @@ export const chapter14 = {
         {
           id: 'c14s2-teach',
           kind: 'teach',
-          instructionKo: 'Sparkit이 엔진을 부릉거리며 AR 소리를 내요!',
+          instructionKo: '히어로가 엔진을 부릉거리며 AR 소리를 내요!',
           art: 'hero',
           letter: 'AR',
           repeatAudio: ['arh'],
@@ -320,7 +320,7 @@ export const chapter14 = {
         {
           id: 'c14s3-teach',
           kind: 'teach',
-          instructionKo: 'Magnix가 자석을 당기며 ER 소리를 내요!',
+          instructionKo: '히어로가 자석을 당기며 ER 소리를 내요!',
           art: 'hero',
           letter: 'ER',
           repeatAudio: ['erh'],
@@ -496,7 +496,7 @@ export const chapter14 = {
           words: [{ text: 'H', say: 'huh' }, { text: 'ER', say: 'erh' }, 'her'],
         },
       ],
-      recapKo: '이제 AR, ER을 모두 알아요! Sparkit과 Magnix가 힘을 합쳐요!',
+      recapKo: '이제 AR, ER을 모두 알아요! 두 히어로가 힘을 합쳐요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 두 소리를 모두 배웠어요.',
         en: ['her', 'fern'],
@@ -668,7 +668,7 @@ export const chapter14 = {
         {
           id: 'c14s5-teach',
           kind: 'teach',
-          instructionKo: 'Sparkit + Magnix가 합체해요! 먼저 car를 만들어요.',
+          instructionKo: '두 히어로가 합체해요! 먼저 car를 만들어요.',
           repeatAudio: ['kuh', 'arh', 'car'],
         },
         {

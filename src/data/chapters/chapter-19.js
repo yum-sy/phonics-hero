@@ -70,7 +70,7 @@ export const chapter19 = {
         {
           "id": "c19s1-teach-590",
           "kind": "teach",
-          "instructionKo": "Vaultleap가 N과 K 소리를 나란히 들려줘요! 단어 끝에서 나요.",
+          "instructionKo": "히어로가 N과 K 소리를 나란히 들려줘요! 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -543,7 +543,7 @@ export const chapter19 = {
         {
           "id": "c19s3-teach-639",
           "kind": "teach",
-          "instructionKo": "Bastion이 F와 T 소리를 나란히 들려줘요! 단어 끝에서 나요.",
+          "instructionKo": "히어로가 F와 T 소리를 나란히 들려줘요! 단어 끝에서 나요.",
           "art": "hero",
           "repeatAudio": [
             "fff"
@@ -1319,7 +1319,7 @@ export const chapter19 = {
         {
           "id": "c19s5-teach-708",
           "kind": "teach",
-          "instructionKo": "Ironvow가 합체해요! 먼저 pink를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 pink를 만들어요.",
           "repeatAudio": [
             "puh",
             "ihh",

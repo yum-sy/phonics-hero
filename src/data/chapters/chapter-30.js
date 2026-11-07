@@ -51,7 +51,7 @@ export const chapter30 = {
           "repeatAudio": [
             "kuh"
           ],
-          "instructionKo": "Bolty가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c30s1-r1",
@@ -653,7 +653,7 @@ export const chapter30 = {
           "repeatAudio": [
             "fff"
           ],
-          "instructionKo": "Ricochet가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c30s3-r1",
@@ -1268,7 +1268,7 @@ export const chapter30 = {
         {
           "id": "c30s5-teach",
           "kind": "teach",
-          "instructionKo": "Bolty + Ricochet + Coggo가 합체해요! 먼저 CLOUD를 만들어요.",
+          "instructionKo": "세 히어로가 합체해요! 먼저 CLOUD를 만들어요.",
           "repeatAudio": [
             "kuh",
             "lll",

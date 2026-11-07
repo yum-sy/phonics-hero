@@ -724,6 +724,93 @@ export const SOUND_TABLE = [
     ] },
 ]
 
+// ---------- Jolly Phonics 동작 큐 (SOUND_TABLE 행당 하나) ----------
+//
+// 소리마다 원 커리큘럼이 정한 몸동작·상황 비유. 지문은 **동작과 이미지**만
+// 말하고 소리 자체는 녹음 음소 에셋이 낸다 -- 이 파일 규칙("한글 근사 표기
+// 금지")대로 큐 문장에는 목표 소리의 한글 렌더(`스~`, `윙윙`, `트트트`)를
+// 넣지 않는다. 이미지 명사(뱀, 벌, 엔진)는 허용.
+//
+// 키는 SOUND_TABLE 행의 `say` 토큰이다 -- teach beat 가 소리를
+// `repeatAudio: ['sss']` 로 가리키므로 조회 키도 그 토큰이어야 한다. 따라서:
+//   - C/K 는 같은 토큰 `kuh` 하나 = 큐 하나 (Jolly 도 같은 동작, 캐스터네츠)
+//   - OO 둘은 토큰이 다르다(`uuu` /u:/, `uuh` /u/) = 엔트리 둘, 동작은 같다
+//   - TH 유성음은 `say: null`(표기 없음) 이라 토큰으로 못 가리킨다 --
+//     `soundCueKey()` 가 `letterform+ipa` 로 대체 키(`TH/dh/`)를 만든다. teach
+//     beat 의 repeatAudio 로는 영원히 도달하지 않는 엔트리지만 "행마다 큐 하나"
+//     계약을 지키기 위해 둔다
+// 평범한 객체 리터럴이라 미사용이면 tree-shaking 으로 사라진다(위 lazy 규칙).
+export const SOUND_CUES = {
+  // Group 1
+  sss: { action: '뱀처럼 팔을 구불구불 움직여요', image: '뱀', jolly: 'weave arm like a snake' },
+  aaa: { action: '개미처럼 손가락으로 팔을 타고 올라가요', image: '개미', jolly: 'wiggle fingers up the arm like ants' },
+  tuh: { action: '테니스 보듯 고개를 좌우로 돌려요', image: '테니스', jolly: 'turn head side to side as if watching tennis' },
+  ihh: { action: '생쥐 수염처럼 코끝에서 손가락을 꼼지락해요', image: '생쥐', jolly: "wiggle fingers at the end of the nose like a mouse's whiskers" },
+  puh: { action: '손가락을 촛불처럼 세우고 입김을 불어요', image: '촛불', jolly: 'hold up a finger like a candle and puff' },
+  nnn: { action: '비행기처럼 두 팔을 쭉 펴요', image: '비행기', jolly: 'arms out like an airplane' },
+  // Group 2 (C/K 공유)
+  kuh: { action: '캐스터네츠처럼 손가락을 튕겨요', image: '캐스터네츠', jolly: 'click fingers like castanets' },
+  eh: { action: '그릇에 달걀을 깨는 시늉을 해요', image: '달걀', jolly: 'crack an egg on the edge of a bowl' },
+  huh: { action: '가슴에 손을 얹고 숨을 몰아쉬어요', image: '숨', jolly: 'hand on chest, panting as if out of breath' },
+  rrr: { action: '걸레를 문 강아지처럼 고개를 흔들어요', image: '강아지', jolly: 'shake head like a dog with a rag' },
+  mmm: { action: '맛있다는 듯 배를 문질러요', image: '배', jolly: 'rub tummy' },
+  duh: { action: '북을 치듯 두 손을 위아래로 두드려요', image: '북', jolly: 'beat hands up and down like a drum' },
+  // Group 3
+  guh: { action: '물이 빠지듯 손을 빙글빙글 아래로 내려요', image: '하수구', jolly: 'spiral hand down like water gurgling down the drain' },
+  awh: { action: '전등 스위치를 켰다 껐다 해요', image: '전등 스위치', jolly: 'switch a light on and off' },
+  uh: { action: '우산을 펴는 시늉을 해요', image: '우산', jolly: 'put up an umbrella' },
+  lll: { action: '막대사탕을 핥는 시늉을 해요', image: '막대사탕', jolly: 'lick a lollipop' },
+  fff: { action: '바람 빠지는 풍선처럼 두 손을 살살 모아요', image: '풍선', jolly: 'hands come together gently like a deflating fish' },
+  buh: { action: '방망이로 공을 치는 시늉을 해요', image: '방망이', jolly: 'hit a ball with a bat' },
+  // Group 4
+  a: { action: '못 들은 듯 손을 귀에 갖다 대요', image: '귀', jolly: "cup hand over ear as if you didn't hear" },
+  juh: { action: '접시 위 젤리처럼 몸을 흔들흔들해요', image: '젤리', jolly: 'wobble like jelly on a plate' },
+  oh: { action: '깜짝 놀란 듯 손을 입에 가져가요', image: '놀람', jolly: 'bring hand over mouth as if surprised' },
+  eye: { action: '차렷하고 선장님께 경례해요', image: '경례', jolly: 'stand to attention and salute' },
+  ee: { action: '당나귀 귀처럼 손을 머리에 대고 펄럭여요', image: '당나귀', jolly: 'hands on head like donkey ears, flapping' },
+  or: { action: '당나귀 귀처럼 손을 머리에 대고 펄럭여요', image: '당나귀', jolly: 'hands on head like donkey ears, flapping' },
+  // Group 5 (OO 둘: 토큰이 다르고 동작은 같다)
+  zze: { action: '벌처럼 두 팔을 옆으로 펴고 날아요', image: '벌', jolly: 'arms out at sides and buzz like a bee' },
+  weh: { action: '바람처럼 펼친 손바닥에 입김을 불어요', image: '바람', jolly: 'blow onto open hand like the wind' },
+  ngh: { action: '역도 선수처럼 무거운 걸 머리 위로 들어요', image: '역도', jolly: 'weightlifter holding a weight above the head' },
+  vve: { action: '밴 운전대를 잡고 돌리는 시늉을 해요', image: '운전대', jolly: 'hold the steering wheel of a van' },
+  uuu: { action: '뻐꾸기시계처럼 고개를 앞뒤로 움직여요', image: '뻐꾸기시계', jolly: "move head forward and back like a cuckoo clock" },
+  uuh: { action: '뻐꾸기시계처럼 고개를 앞뒤로 움직여요', image: '뻐꾸기시계', jolly: "move head forward and back like a cuckoo clock" },
+  // Group 6 (TH 둘: 유성음은 대체 키)
+  yyuh: { action: '숟가락으로 요구르트를 떠먹는 시늉을 해요', image: '요구르트', jolly: 'eat yoghurt from a spoon' },
+  ksuh: { action: '엑스레이 찍듯 두 팔을 앞에서 엇갈려요', image: '엑스레이', jolly: 'take an x-ray with arms crossed in front' },
+  ch: { action: '기차처럼 두 팔을 옆에서 돌려요', image: '기차', jolly: 'move arms at sides like a train' },
+  shhu: { action: '검지를 입술에 대고 조용히 해요', image: '조용히', jolly: 'index finger over lips' },
+  thhu: { action: '장난꾸러기 광대처럼 혀를 살짝 내밀어요', image: '광대', jolly: 'stick tongue out a little like a naughty clown' },
+  'TH/dh/': { action: '장난꾸러기 광대처럼 혀를 살짝 내밀어요', image: '광대', jolly: 'stick tongue out a little like a naughty clown' },
+  // Group 7
+  kw: { action: '두 손으로 오리 부리를 만들어 벌렸다 닫아요', image: '오리', jolly: "make a duck's beak with hands and open/close it" },
+  ou: { action: '손가락을 바늘처럼 엄지에 찔러요', image: '바늘', jolly: 'finger is a needle, prick your thumb' },
+  oi: { action: '두 손을 입에 모으고 배를 향해 외쳐요', image: '선박', jolly: 'cup hands around mouth and shout to a ship' },
+  u: { action: '다른 사람을 손가락으로 가리켜요', image: '손가락', jolly: 'point to someone else' },
+  erh: { action: '믹서처럼 두 손을 빙글빙글 돌려요', image: '믹서', jolly: 'roll hands over each other like a food mixer' },
+  arh: { action: '진찰받듯 입을 크게 벌려요', image: '진찰', jolly: "open mouth wide like a doctor's check" },
+}
+
+export function soundCueKey(row) {
+  return row.say ?? `${row.letterform}${row.ipa}`
+}
+
+// `sayToken` 은 소리 표기(`'sss'`)가 기본이지만, 첫 노출 teach beat 들은
+// repeatAudio 에 **글자꼴**(`'S'`, 대문자 = 낱자 이름 내레이션)만 두는 경우가
+// 있어서 글자꼴도 받는다 -- 그 글자꼴의 SOUND_TABLE 행이 큐 키 하나로 모일 때만
+// 해석한다(C/K 처럼 행이 둘이어도 키가 같으면 OK, OO 처럼 키가 둘이면 null).
+// 단어(`'sat'`, 보스 합체 도입)는 소리가 아니므로 null.
+export function soundCueFor(sayToken) {
+  if (typeof sayToken !== 'string') return null
+  if (Object.prototype.hasOwnProperty.call(SOUND_CUES, sayToken)) return SOUND_CUES[sayToken]
+  if (!/^[A-Z]{1,2}$/.test(sayToken)) return null
+  const keys = new Set(SOUND_TABLE.filter((r) => r.letterform === sayToken).map(soundCueKey))
+  if (keys.size !== 1) return null
+  const [key] = keys
+  return SOUND_CUES[key] || null
+}
+
 // 채택 표기 전체의 **상호 판별성**도 측정했다(62종 x 2음성 한 해시 공간).
 // 결과: `a`==`eh`(기존 확정 충돌쌍)와 `oi`==`oy`(같은 음소의 두 철자, 정상)
 // 말고는 전부 서로 다르다. 이 검사가 `zzuh`==`juh` 와 `vvuh`==`buh` 를 잡았다 --
@@ -1713,6 +1800,30 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
   }
   for (const [kind, items] of byKind) {
     problems.push(...slotBiasProblems('전체 커리큘럼', items, `${kind} 문항`))
+  }
+
+  // ---------- Jolly 동작 큐 <-> SOUND_TABLE 양방향 계약 ----------
+  // 행마다 큐 하나(C/K 는 토큰이 같아 하나로 합쳐진다), 큐 키마다 행 하나.
+  // 큐 문장은 동작·이미지만 말해야 한다 -- 목표 소리의 한글 렌더 금지.
+  const cueKeys = new Set(SOUND_TABLE.map(soundCueKey))
+  for (const row of SOUND_TABLE) {
+    const key = soundCueKey(row)
+    const cue = SOUND_CUES[key]
+    if (!cue) {
+      problems.push(`SOUND_CUES: ${row.letterform} ${row.ipa} (키 '${key}') 에 Jolly 동작 큐가 없다`)
+      continue
+    }
+    for (const f of ['action', 'image', 'jolly']) {
+      if (typeof cue[f] !== 'string' || !cue[f].trim()) {
+        problems.push(`SOUND_CUES['${key}'].${f} 가 비어 있다`)
+      }
+    }
+    if (typeof cue.action === 'string' && !/요[!.]?$/.test(cue.action)) {
+      problems.push(`SOUND_CUES['${key}'].action 은 '요' 로 끝나야 한다: '${cue.action}'`)
+    }
+  }
+  for (const key of Object.keys(SOUND_CUES)) {
+    if (!cueKeys.has(key)) problems.push(`SOUND_CUES 키 '${key}' 에 해당하는 SOUND_TABLE 행이 없다`)
   }
 
   return problems

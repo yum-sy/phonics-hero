@@ -16,7 +16,7 @@ const asset = hero => HERO_ROSTER[hero.art]?.asset || WORLD_CHARACTER_ASSETS[her
 const visual = hero => JSON.stringify(asset(hero))
 const withoutHero = stage => { const { hero, ...rest } = stage; return rest }
 const previous = new Map()
-let rotations = 0, preservedSounds = 0, adjustedInstructions = 0
+let rotations = 0, preservedSounds = 0
 for (const [index, chapter] of chapters.entries()) {
   const raw = originals[index]
   assert.deepEqual(chapter.stages.map(withoutHero), raw.stages.map(withoutHero), `Learning content changed: ${chapter.id}`)
@@ -26,15 +26,16 @@ for (const [index, chapter] of chapters.entries()) {
     assert.equal(heroEmblem(stage.hero), heroEmblem(raw.stages[i].hero), `Sound changed: ${stage.id}`)
     preservedSounds++
   }
-  for (const [i, stage] of chapter.stages.entries()) for (const beat of stage.beats) {
-    if (typeof beat.instructionKo !== 'string') continue
-    const rendered = rosterInstruction(stage.id, beat.instructionKo)
-    if (rendered !== beat.instructionKo) adjustedInstructions++
-    if (!stage.chapterBoss && stage.hero.name !== raw.stages[i].hero.name && beat.instructionKo.includes(raw.stages[i].hero.name)) {
-      assert(rendered.includes(`${stage.hero.name} 히어로`), `Old instruction hero: ${stage.id}`)
-    }
-    if (stage.chapterBoss && beat.instructionKo.includes(' + ') && rendered !== beat.instructionKo) {
-      assert(rendered.startsWith([0,2,3].map(index => chapter.stages[index].hero.name).join(' + ') + ', 세 히어로가'))
+  // Display prose names no character (old or rotated) -- it says 히어로 --
+  // so rosterInstruction() is a passthrough and nothing may leak a name.
+  const heroNames = [...new Set([...chapter.stages, ...raw.stages].map(s => s.hero.name))]
+  for (const stage of chapter.stages) {
+    for (const text of [stage.recapKo, ...stage.beats.map(b => b.instructionKo)]) {
+      if (typeof text !== 'string') continue
+      assert.equal(rosterInstruction(stage.id, text), text, `Instruction rewritten: ${stage.id}`)
+      for (const name of heroNames) {
+        assert(!new RegExp(`(^|[^A-Za-z0-9])${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(가|이|는|은|를|을|와|과|의|에게|,|\\s*\\+)`).test(text), `Hero name in prose: ${stage.id} "${text}"`)
+      }
     }
   }
   assert.deepEqual(chapter.stages[4], raw.stages[4], `Fusion stage changed: ${chapter.id}`)
@@ -63,11 +64,7 @@ for (const [index, chapter] of chapters.entries()) {
   }
   previous.set(family, chapter)
 }
-assert.equal(rosterInstruction('c33s1', 'Blaze가 두 소리를 들려줘요.'), 'Skyfin 히어로가 두 소리를 들려줘요.')
-assert.equal(rosterInstruction('c33s1', 'Blaze는 Blaze를 Blaze와 함께 봐요.'), 'Skyfin 히어로는 Skyfin 히어로를 Skyfin 히어로와 함께 봐요.')
-assert.equal(rosterInstruction('c33s1', 'Blaze cat TH THREE'), 'Blaze cat TH THREE')
-assert.equal(rosterInstruction('c33s1', 'SuperBlaze가 소리를 내요.'), 'SuperBlaze가 소리를 내요.')
-assert(adjustedInstructions > 60)
+assert.equal(rosterInstruction('c33s1', 'Blaze가 두 소리를 들려줘요.'), 'Blaze가 두 소리를 들려줘요.')
 assert.equal(rotations, 26)
 assert.equal(preservedSounds, 165)
 assert.equal(Object.keys(HERO_ROSTER).length, 52)
@@ -75,4 +72,4 @@ assert.equal(JSON.stringify(originals), before, 'Original chapters mutated')
 assert.deepEqual(applyHeroRotation(originals), chapters, 'Repeated initialization changes roster')
 assert.equal(JSON.stringify(originals), before, 'Repeated initialization mutates originals')
 assert.deepEqual(validateChapters(chapters, wordIconKeys), [])
-console.log(JSON.stringify({ passed: true, chapters: chapters.length, rotations, aliases: Object.keys(HERO_ROSTER).length, preservedSounds, adjustedInstructions, currentTeamFusion: 33, originalContentUnchanged: true, repeatInitializationStable: true }, null, 2))
+console.log(JSON.stringify({ passed: true, chapters: chapters.length, rotations, aliases: Object.keys(HERO_ROSTER).length, preservedSounds, currentTeamFusion: 33, originalContentUnchanged: true, repeatInitializationStable: true }, null, 2))

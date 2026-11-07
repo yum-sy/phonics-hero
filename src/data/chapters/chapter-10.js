@@ -72,7 +72,7 @@ export const chapter10 = {
         {
           id: 'c10s1-teach',
           kind: 'teach',
-          instructionKo: 'Bounce가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['vve'],
         },
@@ -171,7 +171,7 @@ export const chapter10 = {
         {
           id: 'c10s2-teach',
           kind: 'teach',
-          instructionKo: 'Bounce의 엔진이 붕붕거리며 V 소리를 내요!',
+          instructionKo: '엔진이 붕붕거리며 V 소리를 내요!',
           art: 'hero',
           letter: 'V',
           repeatAudio: ['vve'],
@@ -309,7 +309,7 @@ export const chapter10 = {
           id: 'c10s3-teach',
           kind: 'teach',
           // 긴 oo(moon)를 먼저 가르친다 -- Jolly의 순서와 같다.
-          instructionKo: 'Zoomer가 달을 향해 뛰어오르며 OO 소리를 길게 내요!',
+          instructionKo: '히어로가 달을 향해 뛰어오르며 OO 소리를 길게 내요!',
           art: 'hero',
           letter: 'OO',
           repeatAudio: ['uuu'],
@@ -460,7 +460,7 @@ export const chapter10 = {
         {
           id: 'c10s4-teach',
           kind: 'teach',
-          instructionKo: 'Blocky가 벽돌을 옮기며 Y 소리를 내요!',
+          instructionKo: '히어로가 벽돌을 옮기며 Y 소리를 내요!',
           art: 'hero',
           letter: 'Y',
           repeatAudio: ['yyuh'],
@@ -633,7 +633,7 @@ export const chapter10 = {
           words: [{ text: 'Y', say: 'yyuh' }, 'yam'],
         },
       ],
-      recapKo: '이제 V, OO, Y를 모두 알아요! Bounce, Zoomer, Blocky가 합체할 준비를 해요!',
+      recapKo: '이제 V, OO, Y를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['yam', 'yes'],
@@ -656,7 +656,7 @@ export const chapter10 = {
         {
           id: 'c10s5-teach',
           kind: 'teach',
-          instructionKo: 'Bounce + Zoomer + Blocky가 합체해요! 먼저 van을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 van을 만들어요.',
           repeatAudio: ['vve', 'aaa', 'nnn', 'van'],
         },
         {

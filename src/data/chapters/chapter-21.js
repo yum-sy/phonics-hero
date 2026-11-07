@@ -70,7 +70,7 @@ export const chapter21 = {
         {
           "id": "c21s1-teach-874",
           "kind": "teach",
-          "instructionKo": "Hopkin이 P와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 P와 L 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "puh"
@@ -506,7 +506,7 @@ export const chapter21 = {
         {
           "id": "c21s3-teach-919",
           "kind": "teach",
-          "instructionKo": "Coilster가 D와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 D와 R 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "duh"
@@ -1245,7 +1245,7 @@ export const chapter21 = {
         {
           "id": "c21s5-teach-984",
           "kind": "teach",
-          "instructionKo": "Megashroom이 합체해요! 먼저 plum을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 plum을 만들어요.",
           "repeatAudio": [
             "puh",
             "lll",

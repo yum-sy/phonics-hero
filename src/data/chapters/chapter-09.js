@@ -70,7 +70,7 @@ export const chapter9 = {
         {
           id: 'c9s1-teach',
           kind: 'teach',
-          instructionKo: 'Fizz가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['zze'],
         },
@@ -170,7 +170,7 @@ export const chapter9 = {
         {
           id: 'c9s2-teach',
           kind: 'teach',
-          instructionKo: 'Fizz의 꼬리가 흔들리는 소리처럼 Z 소리를 내요!',
+          instructionKo: '꼬리가 흔들리는 소리처럼 Z 소리를 내요!',
           art: 'hero',
           letter: 'Z',
           repeatAudio: ['zze'],
@@ -285,7 +285,7 @@ export const chapter9 = {
           words: [{ text: 'Z', say: 'zze' }, 'zip'],
         },
       ],
-      recapKo: 'Z는 Fizz의 꼬리처럼 지지직 소리를 내요 — zip, zoo!',
+      recapKo: 'Z는 지지직 소리를 내요 — zip, zoo!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 지퍼, 주!',
         en: ['zip', 'zoo'],
@@ -307,7 +307,7 @@ export const chapter9 = {
         {
           id: 'c9s3-teach',
           kind: 'teach',
-          instructionKo: 'Talon이 바람을 가르며 W 소리를 내요!',
+          instructionKo: '히어로가 바람을 가르며 W 소리를 내요!',
           art: 'hero',
           letter: 'W',
           repeatAudio: ['weh'],
@@ -445,7 +445,7 @@ export const chapter9 = {
         {
           id: 'c9s4-teach',
           kind: 'teach',
-          instructionKo: 'Wingo가 날개를 펼치며 NG 소리로 크게 울어요!',
+          instructionKo: '히어로가 날개를 펼치며 NG 소리로 크게 울어요!',
           art: 'hero',
           letter: 'NG',
           repeatAudio: ['ngh'],
@@ -637,7 +637,7 @@ export const chapter9 = {
           words: [{ text: 'NG', say: 'ngh' }, 'ring'],
         },
       ],
-      recapKo: '이제 Z, W, NG를 모두 알아요! Fizz, Talon, Wingo가 합체할 준비를 해요!',
+      recapKo: '이제 Z, W, NG를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['king', 'ring'],
@@ -660,7 +660,7 @@ export const chapter9 = {
         {
           id: 'c9s5-teach',
           kind: 'teach',
-          instructionKo: 'Fizz + Talon + Wingo가 합체해요! 먼저 zip을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 zip을 만들어요.',
           repeatAudio: ['zze', 'ihh', 'puh', 'zip'],
         },
         {

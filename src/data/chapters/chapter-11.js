@@ -57,7 +57,7 @@ export const chapter11 = {
         {
           id: 'c11s1-teach',
           kind: 'teach',
-          instructionKo: 'Sarge가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['ksuh'],
         },
@@ -157,7 +157,7 @@ export const chapter11 = {
         {
           id: 'c11s2-teach',
           kind: 'teach',
-          instructionKo: 'Sarge가 상자를 잠그는 소리처럼 X 소리를 내요!',
+          instructionKo: '상자를 잠그는 소리처럼 X 소리를 내요!',
           art: 'hero',
           letter: 'X',
           repeatAudio: ['ksuh'],
@@ -296,7 +296,7 @@ export const chapter11 = {
         {
           id: 'c11s3-teach',
           kind: 'teach',
-          instructionKo: 'Pluma가 기차처럼 칙칙 CH 소리를 내요!',
+          instructionKo: '히어로가 기차처럼 칙칙 CH 소리를 내요!',
           art: 'hero',
           letter: 'CH',
           repeatAudio: ['ch'],
@@ -436,7 +436,7 @@ export const chapter11 = {
         {
           id: 'c11s4-teach',
           kind: 'teach',
-          instructionKo: 'Blocko Jr.가 조용히 하라는 듯 SH 소리를 내요!',
+          instructionKo: '히어로가 조용히 하라는 듯 SH 소리를 내요!',
           art: 'hero',
           letter: 'SH',
           repeatAudio: ['shhu'],
@@ -608,7 +608,7 @@ export const chapter11 = {
           words: [{ text: 'SH', say: 'shhu' }, 'ship'],
         },
       ],
-      recapKo: '이제 X, CH, SH를 모두 알아요! Sarge, Pluma, Blocko Jr.가 합체할 준비를 해요!',
+      recapKo: '이제 X, CH, SH를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['ship', 'shed'],
@@ -631,7 +631,7 @@ export const chapter11 = {
         {
           id: 'c11s5-teach',
           kind: 'teach',
-          instructionKo: 'Sarge + Pluma + Blocko Jr.가 합체해요! 먼저 box를 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 box를 만들어요.',
           repeatAudio: ['buh', 'awh', 'ksuh', 'box'],
         },
         {

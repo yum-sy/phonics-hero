@@ -70,7 +70,7 @@ export const chapter20 = {
         {
           "id": "c20s1-teach-737",
           "kind": "teach",
-          "instructionKo": "Gearspin이 S와 P 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 S와 P 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -506,7 +506,7 @@ export const chapter20 = {
         {
           "id": "c20s3-teach-782",
           "kind": "teach",
-          "instructionKo": "Turbolt가 S와 K 소리를 나란히 들려줘요! 잘 들어보세요.",
+          "instructionKo": "히어로가 S와 K 소리를 나란히 들려줘요! 잘 들어보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -1245,7 +1245,7 @@ export const chapter20 = {
         {
           "id": "c20s5-teach-845",
           "kind": "teach",
-          "instructionKo": "Titanvolt가 합체해요! 먼저 spin을 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 spin을 만들어요.",
           "repeatAudio": [
             "sss",
             "puh",

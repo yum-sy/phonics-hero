@@ -60,7 +60,7 @@ export const chapter12 = {
         {
           id: 'c12s1-teach',
           kind: 'teach',
-          instructionKo: 'Nitro가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['thhu'],
         },
@@ -159,7 +159,7 @@ export const chapter12 = {
         {
           id: 'c12s2-teach',
           kind: 'teach',
-          instructionKo: 'Nitro의 엔진이 식는 소리처럼 TH 소리를 내요!',
+          instructionKo: '엔진이 식는 소리처럼 TH 소리를 내요!',
           art: 'hero',
           letter: 'TH',
           repeatAudio: ['thhu'],
@@ -300,7 +300,7 @@ export const chapter12 = {
         {
           id: 'c12s3-teach',
           kind: 'teach',
-          instructionKo: 'Speedy가 바퀴를 굴리며 QU 소리를 내요!',
+          instructionKo: '히어로가 바퀴를 굴리며 QU 소리를 내요!',
           art: 'hero',
           letter: 'QU',
           repeatAudio: ['kw'],
@@ -440,7 +440,7 @@ export const chapter12 = {
         {
           id: 'c12s4-teach',
           kind: 'teach',
-          instructionKo: 'Stormer가 연기를 뿜으며 OU 소리를 크게 내요!',
+          instructionKo: '히어로가 연기를 뿜으며 OU 소리를 크게 내요!',
           art: 'hero',
           letter: 'OU',
           repeatAudio: ['ou'],
@@ -611,7 +611,7 @@ export const chapter12 = {
           words: [{ text: 'OU', say: 'ou' }, 'out'],
         },
       ],
-      recapKo: '이제 TH, QU, OU를 모두 알아요! Nitro, Speedy, Stormer가 합체할 준비를 해요!',
+      recapKo: '이제 TH, QU, OU를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['out', 'loud'],
@@ -634,7 +634,7 @@ export const chapter12 = {
         {
           id: 'c12s5-teach',
           kind: 'teach',
-          instructionKo: 'Nitro + Speedy + Stormer가 합체해요! 먼저 thin을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 thin을 만들어요.',
           repeatAudio: ['thhu', 'ihh', 'nnn', 'thin'],
         },
         {

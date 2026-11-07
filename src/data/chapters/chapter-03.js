@@ -56,7 +56,7 @@ export const chapter3 = {
         {
           id: 'c3s1-teach',
           kind: 'teach',
-          instructionKo: '케이라가 골짜기에서 나는 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 골짜기에서 나는 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['kuh'],
         },
@@ -156,7 +156,7 @@ export const chapter3 = {
         {
           id: 'c3s2-teach',
           kind: 'teach',
-          instructionKo: 'C는 케이라의 발톱처럼 C 소리를 내요!',
+          instructionKo: 'C는 발톱을 세울 때처럼 C 소리를 내요!',
           art: 'hero',
           letter: 'C',
           repeatAudio: ['C', 'kuh'],
@@ -301,7 +301,7 @@ export const chapter3 = {
         {
           id: 'c3s3-teach',
           kind: 'teach',
-          instructionKo: 'E는 에디가 알에서 나올 때처럼 E 소리를 내요!',
+          instructionKo: 'E는 알에서 나올 때처럼 E 소리를 내요!',
           art: 'hero',
           letter: 'E',
           repeatAudio: ['E', 'eh'],
@@ -455,7 +455,7 @@ export const chapter3 = {
         {
           id: 'c3s4-teach',
           kind: 'teach',
-          instructionKo: 'H는 허비가 숨을 헉헉 내쉬듯 H 소리를 내요!',
+          instructionKo: 'H는 숨을 헉헉 내쉬듯 H 소리를 내요!',
           art: 'hero',
           letter: 'H',
           repeatAudio: ['H', 'huh'],
@@ -596,7 +596,7 @@ export const chapter3 = {
           words: [{ text: 'H', say: 'huh' }, 'hen'],
         },
       ],
-      recapKo: '이제 C, E, H를 모두 알아요! 케이라, 에디, 허비가 합체할 준비를 해요!',
+      recapKo: '이제 C, E, H를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '에이치는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
         en: ['hat', 'hen', 'hand'],
@@ -615,7 +615,7 @@ export const chapter3 = {
         {
           id: 'c3s5-teach',
           kind: 'teach',
-          instructionKo: '케이라 + 에디 + 허비가 합체해요! 먼저 cat을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 cat을 만들어요.',
           repeatAudio: ['kuh', 'aaa', 'tuh', 'cat'],
         },
         {

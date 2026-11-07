@@ -1,5 +1,35 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-07 — 지문 이름 잔재 제거 / 문장 단위 줄바꿈 / Jolly 동작 큐 42종
+
+- **무엇을 왜**: 캐릭터 전면 교체 후 지문의 `새미`/`Sparkit` 같은 이름이 무의미해졌다
+  (사용자 보고). 표시용 1,648개 필드(챕터 1~33, `instructionKo`/`recapKo`만)에서
+  한글 13종·영어 121종 이름을 전부 `히어로/두·세 히어로/히어로들/빌런`으로 치환, 151개
+  문자열 변경. 읽어주는 `recapAudio.ko` 70문장에는 이름이 없어 **음성 재생성 불필요**.
+  `rosterInstruction()`은 passthrough, `check-hero-rotation.mjs`가 잔재 0을 강제.
+- **줄바꿈**: `instructionHtml()` → 문장별 `.instruction-line`(`keep-all`), 7+3개
+  지문 콜사이트와 `recapKo`(`<br>` 7건 호환). `fitBeatInstruction()`은 줄마다 한 줄 우선
+  축소(44px) → 단어 경계 줄바꿈 → 26px 하한 → `instruction-packed`. `resize`/다음
+  프레임 재적합(`scheduleRefit`). 2문장이 3줄로 나오던 가로 버그는 집계 높이 검사가
+  줄바꿈을 숨겨서였고 **줄별 검사**로 수정(c7-stage-1 landscape fs=58, h=132 = 2줄).
+- **Jolly 큐**: `SOUND_CUES` 42개(`chapters/index.js`, `say` 키; C/K 공유, OO·TH 각 2개,
+  TH 유성은 `TH/dh/` 키) + `soundCueFor()` + 검증기. 한글 소리 표기 0건(스캔). teach
+  139개 중 106개 자동 적용(33개는 보스 합체 도입, 단어 토큰). `teachCueHtml()`이
+  `.beat-cue` 칩(이미지 라벨 + 동작 문장)을 지문 아래에 그리고 `fitBeatCue()`(22px 하한).
+  `.teach-focus`는 줄일 필요 없었다. F는 "바람 빠지는 물고기" 대신 **풍선**(사용자 확인 대기).
+- **검증**: `check-world-characters` 33/33(validateChapters 0), `check-hero-rotation` 통과,
+  `check-safe-layout` **96/96**(리더 재실행 포함), HUD 세로/가로 NOSCROLL·SPILL 0
+  (teach2/battle1/boss1/build1/finale2/reward1/reward33/iso c7·c10·c12·c13·c15),
+  Pages base 빌드 통과. 리더가 스크린샷을 직접 봤다(세로 teach2, 가로 c7-stage-1 수정 후).
+- **실기기/추측 구분**: iPad 실기기는 미확인. "가로에서 Next 잘림"은 리더의 오판이었다 —
+  `?dbg=1` 기하로 `.primary-btn` bottom 770 ≤ 834, headless 스크린샷의 하단 87px 가상
+  영역에 HUD가 겹쳐 보인 것(CLAUDE.md에 기록). 큐 문장을 Nova로 읽어주는 것은 미구현
+  (42문장 생성은 API 호출이라 사용자 승인 후).
+
+### 다음
+- iPad에서 teach 화면 큐 칩 가독성·세로/가로 여백, 지문 줄바꿈을 눈으로 확인.
+- 큐 음성(Nova 42문장) 생성 여부 결정. F 이미지(풍선 vs 물고기) 확인.
+
 ## 2026-11-06 — 홈 화면 설치형 앱 상단 여백 보강
 
 - **사용자 실기기 보고**: iPad에서 상단이 조금 잘려 보이며, Safari 탭이 아니라

@@ -52,7 +52,7 @@ export const chapter31 = {
           "repeatAudio": [
             "tuh"
           ],
-          "instructionKo": "Torque가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 두 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c31s1-r1",
@@ -654,7 +654,7 @@ export const chapter31 = {
           "repeatAudio": [
             "sss"
           ],
-          "instructionKo": "Skidder가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c31s3-r1",
@@ -1269,7 +1269,7 @@ export const chapter31 = {
         {
           "id": "c31s5-teach",
           "kind": "teach",
-          "instructionKo": "Torque + Skidder + Ratchett가 합체해요! 먼저 TWIG을 만들어요.",
+          "instructionKo": "세 히어로가 합체해요! 먼저 TWIG을 만들어요.",
           "repeatAudio": [
             "tuh",
             "weh",

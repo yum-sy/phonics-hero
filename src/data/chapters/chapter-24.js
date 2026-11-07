@@ -59,7 +59,7 @@ export const chapter24 = {
         {
           "id": "c24s1-teach",
           "kind": "teach",
-          "instructionKo": "Inky가 \"bench\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"bench\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -266,7 +266,7 @@ export const chapter24 = {
         {
           "id": "c24s2-teach",
           "kind": "teach",
-          "instructionKo": "Inky가 \"bench\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"bench\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "nnn"
@@ -541,7 +541,7 @@ export const chapter24 = {
         {
           "id": "c24s3-teach",
           "kind": "teach",
-          "instructionKo": "Nord가 \"strap\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"strap\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -752,7 +752,7 @@ export const chapter24 = {
         {
           "id": "c24s4-teach",
           "kind": "teach",
-          "instructionKo": "Pip가 \"strap\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"strap\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "sss"
@@ -1291,7 +1291,7 @@ export const chapter24 = {
         {
           "id": "c24s5-teach",
           "kind": "teach",
-          "instructionKo": "Captain Pin이 합체해요! 먼저 bench를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 bench를 만들어요.",
           "repeatAudio": [
             "buh",
             "eh",

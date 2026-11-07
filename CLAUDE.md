@@ -3,6 +3,29 @@
 > **새 세션이면 `HANDOFF.md` 를 먼저 읽어라.** 이 문서는 *항구적 규칙*이고,
 > `HANDOFF.md` 는 *지금 중단된 지점과 재발주 목록*이다. 둘은 역할이 다르다.
 
+## 지문 규칙 — 캐릭터 이름 금지 / 문장 단위 줄바꿈 / Jolly 동작 큐 (2026-11-07)
+
+- **표시용 지문(`instructionKo`/`recapKo`)에 캐릭터 이름을 쓰지 않는다.** 캐릭터가
+  통째로 교체·순환되면서 `새미`/`Sparkit` 같은 이름이 아이에게 아무 의미가 없어졌다
+  (사용자: "새미가 뭔지 이해가 안돼"). 단수는 `히어로`, 둘은 `두 히어로`, 보스 합체는
+  `세 히어로`/`히어로들`, 빌런은 `빌런`. 세계관 단어(카봇·공룡)는 이름이 아니므로 가능.
+  `S는 새미처럼 S 소리를 내요` 류의 "X처럼" 비유는 `S는 이런 소리를 내요!`로 — 소리의
+  모델은 녹음 음소가 담당한다. `scripts/check-hero-rotation.mjs`가 히어로 이름 잔재를
+  잡고, `rosterInstruction()`(`art/hero-roster.js`)은 이제 passthrough다.
+- **한글 발음 유사성으로 소리를 가르치지 않는다**(지문에서도). F→ㅍ, R→ㄹ, Z→ㅈ,
+  TH→ㅆ, 단모음 A→애는 한국 학습자의 대표 오류다. 대신 **Jolly Phonics 공식 동작 큐**를
+  쓴다: `SOUND_CUES`(`chapters/index.js`, `say` 토큰 키, 42개)의 `action`은 몸동작과
+  이미지만 담고 **한글로 적은 소리(`스~`, `윙윙`, `트트트`)는 금지** — `validateChapters()`가
+  행 1:1 대응과 형식을 강제한다. teach beat는 `repeatAudio` 토큰으로 `soundCueFor()`를
+  자동 조회해 `.beat-cue` 칩으로 그린다(보스 합체 도입·단어 토큰은 큐 없음, 139개 중 106개).
+- **지문은 한 문장이 한 줄이다.** `instructionHtml()`이 문장 단위로 `.instruction-line`
+  블록을 만들고(`keep-all`, 단어 사이에서만 줄바꿈), `fitBeatInstruction()`은 줄마다
+  한 줄에 들어갈 때까지 먼저 축소(44px 하한)한 뒤에야 단어 경계 줄바꿈을 허용한다
+  (26px 하한, 그래도 넘치면 `instruction-packed`). `overflow-wrap: anywhere` 금지는 그대로.
+  **가로 모드 headless 스크린샷은 하단 87px이 실기기에 없는 영역**이라 버튼이 HUD에
+  가려 보여도 잘린 게 아니다 — `?dbg=1`의 `.primary-btn` bottom ≤ 뷰포트로 판정해라
+  (c7-stage-1 teach: 770/834).
+
 ## 음성 원본 보존과 공격 자동 진행 (2026-11-06)
 
 - 최종 선택 목소리는 **Nova**, 성인 여성 보육교사의 따뜻하고 또렷한 톤이다.

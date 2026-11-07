@@ -12,7 +12,7 @@ import {
 // from the module it actually lives in. Read-only: this file consumes
 // SOUND_TABLE (via this lookup) to build review rounds, never edits
 // src/data/chapters/** itself -- that stays phonics-owned.
-import { letterformSounds } from './data/chapters/index.js'
+import { letterformSounds, soundCueFor } from './data/chapters/index.js'
 import {
   clearCheckpoint,
   getCheckpoint,
@@ -613,6 +613,63 @@ function waitForTransition(minDelayMs) {
 // Parent edits are separate sibling buttons: navigation never changes progress.
 let parentProgressMessage = ''
 const parentAttribute = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
+
+// Korean instructions/recaps render one sentence per line (`.instruction-line`
+// is display:block) and only ever break *between* words inside a sentence
+// (`word-break: keep-all` in style.css). Default CJK wrapping breaks after
+// any syllable, so "들어보세요" could split as "들어보/세요" -- a false word
+// split that reads wrong to a child who is just learning to read. A trailing
+// parenthetical like "(연습이에요)" gets its own line too.
+function instructionHtml(text) {
+  const str = String(text ?? '').trim()
+  if (!str) return ''
+  // Some recapKo strings carry a literal `<br>` as an authored line break;
+  // honor it as a hard boundary (the text is otherwise escaped as plain text).
+  const parts = []
+  const re = /[^.!?]*[.!?]+(?=\s|$)|[^.!?]+$/g
+  for (const segment of str.split(/<br\s*\/?>/i)) {
+    for (const m of segment.trim().matchAll(re)) {
+      const chunk = m[0].trim()
+      if (chunk) parts.push(chunk)
+    }
+  }
+  const lines = []
+  for (const part of parts) {
+    const paren = part.match(/^(.*?)\s*(\([^()]*\))$/)
+    if (paren && paren[1]) {
+      lines.push(paren[1].trim(), paren[2])
+    } else {
+      lines.push(part)
+    }
+  }
+  return lines
+    .map(line => `<span class="instruction-line">${parentAttribute(line)}</span>`)
+    .join(' ')
+}
+// Jolly Phonics action cue for a teach beat: the sound tokens in
+// `repeatAudio` resolve through SOUND_CUES (chapters/index.js). Boss fusion
+// intros and word tokens resolve to nothing and so get no block. Capped at
+// two (blend chapters teach two sounds); C/K share one action, so dedupe by
+// the action text rather than by token.
+function teachCueHtml(beat) {
+  const seen = new Set()
+  const cues = []
+  for (const token of beat.repeatAudio || []) {
+    const cue = soundCueFor(token)
+    if (!cue || seen.has(cue.action)) continue
+    seen.add(cue.action)
+    cues.push(cue)
+    if (cues.length === 2) break
+  }
+  if (!cues.length) return ''
+  return `<div class="beat-cue">${cues
+    .map(
+      (cue) => `<div class="beat-cue-line"><span class="beat-cue-image">${parentAttribute(
+        cue.image
+      )}</span><span class="beat-cue-text">${instructionHtml(cue.action)}</span></div>`
+    )
+    .join('')}</div>`
+}
 function parentScopeIds(kind, id) {
   if (kind === 'world') return getWorldById(id).slots.flatMap(slot => slot.chapter?.stages.map(stage => stage.id) || [])
   if (kind === 'chapter') return getChapterById(id).stages.map(stage => stage.id)
@@ -1338,6 +1395,8 @@ function runBeat(runtime) {
       throw new Error(`unknown beat kind: ${beat.kind}`)
     }
     fitBeatInstruction()
+    fitBeatCue()
+    scheduleRefit()
   } catch (e) {
     renderBeatFailure(runtime, e)
   }
@@ -1353,6 +1412,29 @@ function runBeat(runtime) {
 // kind routes through it) instead of one per render*Beat function, so a
 // future beat kind can't forget to wire this in.
 //
+// The fits above only ever shrink, and they measure the viewport they ran
+// in. A later viewport change (rotation, the browser chrome appearing, a
+// headless capture resizing after load) must start again from the stylesheet
+// size, so reset the inline overrides and run both fits once more. One extra
+// pass on the next frame also covers layout that settles after runBeat().
+let refitFrame = 0
+function refitBeatText() {
+  const el = document.querySelector('.beat-instruction')
+  if (!el) return
+  el.style.fontSize = ''
+  el.classList.remove('instruction-packed')
+  for (const chip of document.querySelectorAll('.beat-cue-line')) chip.style.fontSize = ''
+  fitBeatInstruction()
+  fitBeatCue()
+}
+function scheduleRefit() {
+  cancelAnimationFrame(refitFrame)
+  refitFrame = requestAnimationFrame(refitBeatText)
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', scheduleRefit)
+}
+
 // Same recipe as fitRecapLine(): shrink only as far as THIS string's own
 // overflow demands -- a short instruction that already fits in 2 lines is
 // untouched, never capped down to a blanket smaller size. `line-height:
@@ -1369,13 +1451,80 @@ function fitBeatInstruction() {
   // gets shrunk to -- 26px is still comfortably above this app's smallest
   // deliberately-sized text.
   const FLOOR_PX = 26
+  // A lone long sentence is first nudged toward a single line, but only down
+  // to this size -- below it, wrapping once at a word boundary reads better
+  // than tiny type.
+  const ONE_LINE_FLOOR_PX = 44
   const LINE_HEIGHT_RATIO = 1.14
+  const lines = el.querySelectorAll('.instruction-line')
+  // Budget = one line per sentence (the whole point of .instruction-line),
+  // never less than the historical 2-line budget so a single long sentence
+  // is still allowed to wrap once instead of shrinking to the floor.
+  const maxLines = Math.max(2, lines.length)
+  const wrapped = line => {
+    const lh = parseFloat(getComputedStyle(line).lineHeight)
+    return line.getBoundingClientRect().height > lh * 1.5
+  }
+  const spills = () => el.scrollWidth > el.clientWidth + 1
   let fontSize = parseFloat(getComputedStyle(el).fontSize)
-  for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
-    const twoLineTarget = fontSize * LINE_HEIGHT_RATIO * 2
-    if (el.scrollHeight <= twoLineTarget + 1) break
+  // "One sentence per line" holds for ANY sentence count: shrink until no
+  // .instruction-line wraps, down to the one-line floor. Checked per line --
+  // an aggregate height test let a 2-sentence instruction pass with its
+  // first sentence wrapped (3 visual lines) in landscape.
+  const anyWrapped = () => Array.from(lines).some(wrapped)
+  for (let i = 0; i < 20 && fontSize > ONE_LINE_FLOOR_PX; i++) {
+    if (!anyWrapped() && !spills()) break
     fontSize -= 2
     el.style.fontSize = `${fontSize}px`
+  }
+  const withinBudget = () =>
+    el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * maxLines + 1 && !spills()
+  for (let i = 0; i < 30 && fontSize > FLOOR_PX; i++) {
+    // `keep-all` can push an unbreakable run past the box instead of
+    // wrapping it, so horizontal spill is checked alongside the height.
+    if (withinBudget()) return
+    fontSize -= 2
+    el.style.fontSize = `${fontSize}px`
+  }
+  if (withinBudget()) return
+  // Even the floor could not hold one sentence per line: let the sentences
+  // flow together (still word-boundary breaks only) at the base size and
+  // shrink once more against the plain 2-line budget.
+  el.classList.add('instruction-packed')
+  el.style.fontSize = ''
+  fontSize = parseFloat(getComputedStyle(el).fontSize)
+  for (let i = 0; i < 30 && fontSize > FLOOR_PX; i++) {
+    if (el.scrollHeight <= fontSize * LINE_HEIGHT_RATIO * 2 + 1 && !spills()) return
+    fontSize -= 2
+    el.style.fontSize = `${fontSize}px`
+  }
+}
+
+// The cue chip sits between the instruction and the hero/letter row, so it
+// is the first thing to give when a teach screen runs out of height: shrink
+// it (22px floor) while a chip wraps past one line, spills sideways
+// (keep-all), or the stage screen itself has become scrollable.
+function fitBeatCue() {
+  const chips = document.querySelectorAll('.beat-cue-line')
+  if (!chips.length) return
+  const FLOOR_PX = 22
+  const screen = document.querySelector('.screen')
+  const overflowing = () => {
+    if (screen && screen.scrollHeight > screen.clientHeight + 1) return true
+    for (const chip of chips) {
+      const text = chip.querySelector('.beat-cue-text')
+      if (chip.scrollWidth > chip.clientWidth + 1) return true
+      if (text && text.scrollWidth > text.clientWidth + 1) return true
+      const lh = parseFloat(getComputedStyle(chip).lineHeight)
+      if (text && text.getBoundingClientRect().height > lh * 1.5) return true
+    }
+    return false
+  }
+  let fontSize = parseFloat(getComputedStyle(chips[0]).fontSize)
+  for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
+    if (!overflowing()) return
+    fontSize -= 2
+    for (const chip of chips) chip.style.fontSize = `${fontSize}px`
   }
 }
 
@@ -1387,7 +1536,7 @@ function fitBeatInstruction() {
 function failurePanelHtml(escapeLabel) {
   return `
     <div class="beat teach-beat recovery-beat">
-      <div class="beat-instruction">앗, 여기서 잠깐 문제가 생겼어요.</div>
+      <div class="beat-instruction">${instructionHtml('앗, 여기서 잠깐 문제가 생겼어요.')}</div>
       <div class="beat-emoji">🔧</div>
       <button class="primary-btn" id="retry-beat">Try Again ▶</button>
       <button class="secondary-btn" id="failure-escape">${escapeLabel}</button>
@@ -1942,8 +2091,10 @@ function renderNonScoredBeat(runtime, beat) {
     ? traceBoxHtml(beat.letter)
     : `<div class="teach-focus">${visual}${letterHtml}</div>`
 
+  const cueHtml = !isBossIntro && beat.kind === 'teach' ? teachCueHtml(beat) : ''
   const teachInner = `
-    <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+    <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
+    ${cueHtml}
     ${focus}
     <button class="replay-btn" id="replay-btn">🔊 Listen</button>
     <button class="primary-btn" id="continue-btn">Next ▶</button>
@@ -2191,7 +2342,7 @@ function renderChooseBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       ${promptHtml}
       ${replayHtml}
       <div class="options-grid">${optionsHtml}</div>
@@ -2284,7 +2435,7 @@ function renderMatchShapeBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat choose-beat">
-      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       ${promptHtml}
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
@@ -2343,9 +2494,7 @@ function renderChooseSequenceBeat(runtime, beat) {
       .join('')
     area.innerHTML = `
       <div class="beat choose-beat">
-        <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)} (${
-      stepIndex + 1
-    }/${beat.steps.length})</div>
+        <div class="beat-instruction">${instructionHtml(`${rosterInstruction(runtime.stage.id, beat.instructionKo)} (${stepIndex + 1}/${beat.steps.length})`)}</div>
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <div class="options-grid">${optionsHtml}</div>
         ${CONFIRM_BTN_HTML}
@@ -2417,7 +2566,7 @@ function renderMultiselectBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat multiselect-beat">
-      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       <div class="options-grid">${optionsHtml}</div>
       ${CONFIRM_BTN_HTML}
       <div class="beat-feedback" id="beat-feedback"></div>
@@ -2516,7 +2665,7 @@ function renderBuildBeat(runtime, beat) {
 
   area.innerHTML = `
     <div class="beat build-beat">
-      <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+      <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
       <div class="build-slots">${slotsHtml}</div>
       <div class="tile-row">${tilesHtml}</div>
       <button class="secondary-btn" id="clear-btn">↺ Undo</button>
@@ -2706,7 +2855,7 @@ function renderListenRepeatBeat(runtime, beat) {
       : `<div class="target-word">${text}</div>`
     area.innerHTML = `
       <div class="beat listen-beat ${isFinale ? 'finale' : ''}">
-        <div class="beat-instruction">${rosterInstruction(runtime.stage.id, beat.instructionKo)}</div>
+        <div class="beat-instruction">${instructionHtml(rosterInstruction(runtime.stage.id, beat.instructionKo))}</div>
         ${wordHtml}
         <button class="replay-btn" id="replay-btn">🔊 Listen</button>
         <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
@@ -2765,7 +2914,7 @@ function runAttackReadAloud(runtime, beat, readAloud, wordHtml) {
     `<div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>`
   area.innerHTML = `
     <div class="beat readaloud-beat attack-beat">
-      <div class="beat-instruction">따라 읽고, 목소리로 응원해요!</div>
+      <div class="beat-instruction">${instructionHtml('따라 읽고, 목소리로 응원해요!')}</div>
       ${displayHtml}
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <div class="attack-energy-cue">⚡ Energy ready</div>
@@ -2895,7 +3044,7 @@ function runReadAloud(runtime, beat, readAloud) {
   })
   area.innerHTML = `
     <div class="beat readaloud-beat">
-      <div class="beat-instruction">정답이에요! 이제 소리내어 읽어볼까요?</div>
+      <div class="beat-instruction">${instructionHtml('정답이에요! 이제 소리내어 읽어볼까요?')}</div>
       <div class="target-word-wrap"><span class="shout-fx">${shoutBurst()}</span><div class="target-word">${text}</div></div>
       <button class="replay-btn" id="replay-btn">🔊 Listen</button>
       <button class="mic-btn" id="mic-btn">🎤 I read it!</button>
@@ -2954,7 +3103,7 @@ function renderReward(runtime) {
         )}</span>
       </div>
       <div class="reward-line">You beat ${stage.villain.name}!</div>
-      <div class="recap-line">${stage.recapKo}</div>
+      <div class="recap-line">${instructionHtml(stage.recapKo)}</div>
       <button class="primary-btn" id="back-to-map">◀ Back to Map</button>
     </div>
   `
@@ -2996,12 +3145,26 @@ function fitRecapLine() {
   // safety net for text nobody has measured yet, so it is allowed to go
   // slightly smaller than the floor tuned for known content.
   const FLOOR_PX = 28
-  let fontSize = parseFloat(getComputedStyle(recap).fontSize)
-  for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
-    const overflowY =
-      Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight
-    if (overflowY <= 0) break
-    fontSize -= 2
-    recap.style.fontSize = `${fontSize}px`
+  const baseSize = parseFloat(getComputedStyle(recap).fontSize)
+  const fits = () =>
+    Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight <= 0 &&
+    // `keep-all` on .instruction-line can spill a long run sideways rather
+    // than wrap it, so width is checked alongside the viewport height.
+    recap.scrollWidth <= recap.clientWidth + 1
+  const shrinkUntilFits = () => {
+    let fontSize = baseSize
+    recap.style.fontSize = ''
+    for (let i = 0; i < 20 && fontSize > FLOOR_PX; i++) {
+      if (fits()) return true
+      fontSize -= 2
+      recap.style.fontSize = `${fontSize}px`
+    }
+    return fits()
   }
+  if (shrinkUntilFits()) return
+  // One-sentence-per-line could not be held even at the floor (chapter 33's
+  // five-sentence recap in landscape): let the sentences flow together,
+  // still breaking only between words, and shrink again from the base size.
+  recap.classList.add('instruction-packed')
+  shrinkUntilFits()
 }

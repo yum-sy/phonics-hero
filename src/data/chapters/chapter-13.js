@@ -59,7 +59,7 @@ export const chapter13 = {
         {
           id: 'c13s1-teach',
           kind: 'teach',
-          instructionKo: 'Beacon이 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['oi'],
         },
@@ -158,7 +158,7 @@ export const chapter13 = {
         {
           id: 'c13s2-teach',
           kind: 'teach',
-          instructionKo: 'Beacon의 신호가 튀어오르는 것처럼 OI 소리를 내요!',
+          instructionKo: '신호가 튀어오르는 것처럼 OI 소리를 내요!',
           art: 'hero',
           letter: 'OI',
           repeatAudio: ['oi'],
@@ -476,7 +476,7 @@ export const chapter13 = {
           words: [{ text: 'C', say: 'kuh' }, { text: 'UE', say: 'u' }, 'cue'],
         },
       ],
-      recapKo: '이제 OI, UE를 모두 알아요! Beacon과 Cascade가 힘을 합쳐요!',
+      recapKo: '이제 OI, UE를 모두 알아요! 두 히어로가 힘을 합쳐요!',
       recapAudio: {
         ko: '이 글자는 이런 소리를 내요. 이제 두 소리를 모두 배웠어요.',
         en: ['cue', 'glue'],
@@ -646,7 +646,7 @@ export const chapter13 = {
         {
           id: 'c13s5-teach',
           kind: 'teach',
-          instructionKo: 'Beacon + Cascade가 합체해요! 먼저 coin을 만들어요.',
+          instructionKo: '두 히어로가 합체해요! 먼저 coin을 만들어요.',
           repeatAudio: ['kuh', 'oi', 'nnn', 'coin'],
         },
         {

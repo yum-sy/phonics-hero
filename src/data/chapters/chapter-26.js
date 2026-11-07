@@ -59,7 +59,7 @@ export const chapter26 = {
         {
           "id": "c26s1-teach",
           "kind": "teach",
-          "instructionKo": "Fizz가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -266,7 +266,7 @@ export const chapter26 = {
         {
           "id": "c26s2-teach",
           "kind": "teach",
-          "instructionKo": "Fizz가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"belt\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -541,7 +541,7 @@ export const chapter26 = {
         {
           "id": "c26s3-teach",
           "kind": "teach",
-          "instructionKo": "Talon이 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -748,7 +748,7 @@ export const chapter26 = {
         {
           "id": "c26s4-teach",
           "kind": "teach",
-          "instructionKo": "Wingo가 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
+          "instructionKo": "히어로가 \"self\"에 숨어있는 소리들을 들려줘요! 소리를 빠르게 이어서 말해보세요.",
           "art": "hero",
           "repeatAudio": [
             "lll"
@@ -1283,7 +1283,7 @@ export const chapter26 = {
         {
           "id": "c26s5-teach",
           "kind": "teach",
-          "instructionKo": "Roara가 합체해요! 먼저 belt를 만들어요.",
+          "instructionKo": "히어로가 합체해요! 먼저 belt를 만들어요.",
           "repeatAudio": [
             "buh",
             "eh",

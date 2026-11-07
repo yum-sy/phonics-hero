@@ -51,7 +51,7 @@ export const chapter32 = {
           "repeatAudio": [
             "sss"
           ],
-          "instructionKo": "Glide가 세 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 세 소리를 이어서 내는 법을 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c32s1-r1",
@@ -668,7 +668,7 @@ export const chapter32 = {
           "repeatAudio": [
             "nnn"
           ],
-          "instructionKo": "Bastion이 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
+          "instructionKo": "히어로가 또 다른 두 소리를 보여줘요! 먼저 이 소리를 들어보세요."
         },
         {
           "id": "c32s3-r1",
@@ -1283,7 +1283,7 @@ export const chapter32 = {
         {
           "id": "c32s5-teach",
           "kind": "teach",
-          "instructionKo": "Glide + Bastion + Voltbeam이 합체해요! 먼저 STRING을 만들어요.",
+          "instructionKo": "세 히어로가 합체해요! 먼저 STRING을 만들어요.",
           "repeatAudio": [
             "sss",
             "tuh",

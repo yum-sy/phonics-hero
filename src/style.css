@@ -712,6 +712,68 @@ button {
   line-height: 1.14;
 }
 
+/* One sentence per line (screens.js instructionHtml). Inside a sentence the
+   only legal break is between words: default CJK wrapping breaks after any
+   syllable and prints "들어보/세요" -- a false word split in a reading app.
+   Deliberately NOT overflow-wrap: anywhere/break-word (same rule as the
+   option labels); fitBeatInstruction()/fitRecapLine() shrink the font when
+   a run would otherwise spill sideways. */
+.instruction-line {
+  display: block;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  text-wrap: pretty;
+}
+
+/* Fallback set by fitBeatInstruction()/fitRecapLine() when one sentence per
+   line cannot fit even at the font floor: sentences flow together instead,
+   still breaking only between words. */
+.instruction-packed .instruction-line {
+  display: inline;
+}
+
+/* Jolly Phonics action cue under a teach instruction (screens.js
+   teachCueHtml). Secondary to the instruction: ~60% of its size, the same
+   svh clamp pattern so both scale together. Portrait had 242px of slack on
+   a teach beat (nat=1 HUD) and one chip costs ~80px at the cap; landscape
+   has ~105px, which one chip at 36px fits. fitBeatCue() shrinks it (22px
+   floor) before anything else on the screen has to move. */
+.beat-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.beat-cue-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  max-width: 100%;
+  padding: 0.18em 0.7em;
+  border-radius: 999px;
+  background: var(--sky);
+  color: var(--text);
+  font-size: clamp(22px, 4.3svh, 52px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.beat-cue-image {
+  flex: none;
+  padding: 0.05em 0.5em;
+  border-radius: 999px;
+  background: var(--accent-dark);
+  color: var(--surface);
+  font-weight: 700;
+  font-size: 0.78em;
+}
+
+.beat-cue-text {
+  min-width: 0;
+}
+
 .beat-emoji {
   font-size: clamp(70px, 10.4svh, 126px);
 }
@@ -1689,6 +1751,10 @@ button {
      per line before fitRecapLine() (screens.js) has to shrink the font. */
   max-width: 760px;
   margin: 0;
+  /* One sentence per line (.instruction-line) made chapter 33's 5-sentence
+     recap taller than its old free-wrapped form; the tighter leading is what
+     keeps it inside the viewport before fitRecapLine() has to shrink it. */
+  line-height: 1.15;
 }
 
 /* ---------- Landscape / short-viewport layout ----------
@@ -1883,6 +1949,10 @@ button {
 
   .beat-instruction {
     font-size: 66px;
+  }
+
+  .beat-cue-line {
+    font-size: 36px;
   }
 
   .beat-avatar {

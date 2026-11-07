@@ -52,7 +52,7 @@ export const chapter4 = {
         {
           id: 'c4s1-teach',
           kind: 'teach',
-          instructionKo: '로켓런이 달릴 때 나는 소리예요. 잘 들어보세요!',
+          instructionKo: '히어로가 달릴 때 나는 소리예요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['rrr'],
         },
@@ -148,7 +148,7 @@ export const chapter4 = {
         {
           id: 'c4s2-teach',
           kind: 'teach',
-          instructionKo: 'R은 로켓런의 엔진처럼 R 소리를 내요!',
+          instructionKo: 'R은 로켓 엔진처럼 R 소리를 내요!',
           art: 'hero',
           letter: 'R',
           repeatAudio: ['R', 'rrr'],
@@ -275,7 +275,7 @@ export const chapter4 = {
         {
           id: 'c4s3-teach',
           kind: 'teach',
-          instructionKo: 'M은 마그넷몬의 자석이 붙을 때처럼 M 소리를 내요!',
+          instructionKo: 'M은 자석이 붙을 때처럼 M 소리를 내요!',
           art: 'hero',
           letter: 'M',
           repeatAudio: ['M', 'mmm'],
@@ -409,7 +409,7 @@ export const chapter4 = {
         {
           id: 'c4s4-teach',
           kind: 'teach',
-          instructionKo: 'D는 드릴돌이가 땅을 파듯 D 소리를 내요!',
+          instructionKo: 'D는 드릴로 땅을 파듯 D 소리를 내요!',
           art: 'hero',
           letter: 'D',
           repeatAudio: ['D', 'duh'],
@@ -576,7 +576,7 @@ export const chapter4 = {
           words: [{ text: 'D', say: 'duh' }, 'red'],
         },
       ],
-      recapKo: '이제 R, M, D를 모두 알아요! 로켓런, 마그넷몬, 드릴돌이가 합체할 준비를 해요!',
+      recapKo: '이제 R, M, D를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '디는 이런 소리를 내요. 세 소리를 모두 배웠어요.',
         en: ['dog', 'dad', 'red'],
@@ -595,7 +595,7 @@ export const chapter4 = {
         {
           id: 'c4s5-teach',
           kind: 'teach',
-          instructionKo: '로켓런 + 마그넷몬 + 드릴돌이가 합체해요! 먼저 mat을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 mat을 만들어요.',
           repeatAudio: ['mmm', 'aaa', 'tuh', 'mat'],
         },
         {

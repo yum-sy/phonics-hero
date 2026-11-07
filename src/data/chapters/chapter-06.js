@@ -89,7 +89,7 @@ export const chapter6 = {
         {
           id: 'c6s1-teach',
           kind: 'teach',
-          instructionKo: 'Leo가 새로운 소리를 들려줘요. 잘 들어보세요!',
+          instructionKo: '히어로가 새로운 소리를 들려줘요. 잘 들어보세요!',
           art: 'hero',
           repeatAudio: ['lll'],
         },
@@ -190,7 +190,7 @@ export const chapter6 = {
         {
           id: 'c6s2-teach',
           kind: 'teach',
-          instructionKo: 'L은 Leo가 씩씩하게 행진할 때처럼 L 소리를 내요!',
+          instructionKo: 'L은 씩씩하게 행진할 때처럼 L 소리를 내요!',
           art: 'hero',
           letter: 'L',
           repeatAudio: ['L', 'lll'],
@@ -339,7 +339,7 @@ export const chapter6 = {
         {
           id: 'c6s3-teach',
           kind: 'teach',
-          instructionKo: 'F는 Fifi가 바람을 내뿜을 때처럼 F 소리를 내요!',
+          instructionKo: 'F는 바람을 내뿜을 때처럼 F 소리를 내요!',
           art: 'hero',
           letter: 'F',
           repeatAudio: ['F', 'fff'],
@@ -477,7 +477,7 @@ export const chapter6 = {
         {
           id: 'c6s4-teach',
           kind: 'teach',
-          instructionKo: 'B는 Bobo가 블록을 쌓을 때처럼 B 소리를 내요!',
+          instructionKo: 'B는 블록을 쌓을 때처럼 B 소리를 내요!',
           art: 'hero',
           letter: 'B',
           repeatAudio: ['B', 'buh'],
@@ -672,7 +672,7 @@ export const chapter6 = {
           words: [{ text: 'B', say: 'buh' }, 'big'],
         },
       ],
-      recapKo: '이제 L, F, B를 모두 알아요! Leo, Fifi, Bobo가 합체할 준비를 해요!',
+      recapKo: '이제 L, F, B를 모두 알아요! 히어로들이 합체할 준비를 해요!',
       recapAudio: {
         ko: '비는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.',
         en: ['bag', 'bed'],
@@ -694,7 +694,7 @@ export const chapter6 = {
         {
           id: 'c6s5-teach',
           kind: 'teach',
-          instructionKo: 'Leo + Fifi + Bobo가 합체해요! 먼저 fit을 만들어요.',
+          instructionKo: '세 히어로가 합체해요! 먼저 fit을 만들어요.',
           repeatAudio: ['fff', 'ihh', 'tuh', 'fit'],
         },
         {
