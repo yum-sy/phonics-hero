@@ -122,6 +122,7 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c5s1-gift', icon: 'gift', label: 'gift', correct: false },
             { id: 'c5s1-gum', icon: 'gum', label: 'gum', correct: false },
@@ -216,6 +217,7 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c5s2-gum', icon: 'gum', label: 'gum', correct: false },
             { id: 'c5s2-hen', icon: 'hen', label: 'hen', correct: true },
@@ -229,12 +231,14 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 G를 따라 그리면서 G 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'G', say: 'guh' }],
         },
         {
           id: 'c5s2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 g를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'g',
           repeatAudio: ['G', 'guh'],
@@ -344,6 +348,7 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c5s3-octopus', icon: 'octopus', label: 'octopus', correct: false },
             { id: 'c5s3-net', icon: 'net', label: 'net', correct: true },
@@ -357,12 +362,14 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 O를 따라 그리면서 O 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'O', say: 'awh' }],
         },
         {
           id: 'c5s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 o를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'o',
           repeatAudio: ['O', 'awh'],
@@ -476,6 +483,7 @@ export const chapter5 = {
           // 대신 이 챕터의 두 모음을 맞붙인다 -- /o/ 둘 + /u/ 하나라서 정답이
           // umbrella 이고, 모음 근접쌍이라 그냥 무작위 오답보다 훨씬 좋은 연습이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c5s4-orange', icon: 'orange', label: 'orange', correct: false },
             { id: 'c5s4-octopus', icon: 'octopus', label: 'octopus', correct: false },
@@ -489,12 +497,14 @@ export const chapter5 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 U를 따라 그리면서 U 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'U', say: 'uh' }],
         },
         {
           id: 'c5s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 u를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'u',
           repeatAudio: ['U', 'uh'],

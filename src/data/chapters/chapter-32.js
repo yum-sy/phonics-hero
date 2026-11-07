@@ -302,6 +302,7 @@ export const chapter32 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 S와 T를 따라 그리면서 소리를 이어보세요! (R까지 이으면 STR이 돼요)",
+          "trace": "upper",
           "words": [
             {
               "text": "S",

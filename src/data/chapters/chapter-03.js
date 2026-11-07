@@ -66,6 +66,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c3s1-cat', icon: 'cat', label: 'cat', correct: false },
             { id: 'c3s1-key', icon: 'key', label: 'key', correct: false },
@@ -86,6 +87,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c3s1-ink', icon: 'ink', label: 'ink', correct: true },
             { id: 'c3s1-cake', icon: 'cake', label: 'cake', correct: false },
@@ -180,6 +182,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c3s2-pin', icon: 'pin', label: 'pin', correct: true },
             { id: 'c3s2-cat', icon: 'cat', label: 'cat', correct: false },
@@ -193,6 +196,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 C를 따라 그리면서 C 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'C', say: 'kuh' }],
         },
         {
@@ -324,6 +328,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c3s3-cat', icon: 'cat', label: 'cat', correct: true },
             { id: 'c3s3-egg', icon: 'egg', label: 'egg', correct: false },
@@ -337,12 +342,14 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 E를 따라 그리면서 E 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'E', say: 'eh' }],
         },
         {
           id: 'c3s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 e를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'e',
           repeatAudio: ['E', 'eh'],
@@ -478,6 +485,7 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c3s4-egg', icon: 'egg', label: 'egg', correct: true },
             { id: 'c3s4-hat', icon: 'hat', label: 'hat', correct: false },
@@ -491,12 +499,14 @@ export const chapter3 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 H를 따라 그리면서 H 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'H', say: 'huh' }],
         },
         {
           id: 'c3s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 h를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'h',
           repeatAudio: ['H', 'huh'],

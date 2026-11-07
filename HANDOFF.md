@@ -1,5 +1,29 @@
 # 세션 인계 문서 (카봇 파닉스 대작전)
 
+## 2026-11-07 — 한글→영어 전환 선행: beat 동작 판별을 텍스트에서 명시 플래그로
+
+- 사용자 결정(한글→영어 점진 전환): 챕터 1~5 한글 → 6~7 2개 국어(영어 크게+한글 작게,
+  가족별 전환) → 8~14 한글 페이드아웃 → 15+ 영어만. **음성을 먼저** 영어로(챕터 6부터
+  모든 안내 음성 영어), 지문은 뒤따라 전환. Nova 영어 생성 승인됨(API).
+- 문구집 인벤토리(읽기 전용, 리더 검토 문서로 사용자에게 전달): 한글 문장 1,864회/고유
+  792 → 템플릿 가족 94개가 99% 커버, 읽어주는 음성 159문장. 영어 초안 검토 대기.
+  스크래치: `scratchpad/phrasebook/{families.md,all.tsv}`(세션 로컬, 레포 밖).
+- **선행 리팩터(이번 커밋)**: `screens.js`의 한글 텍스트 판별 3곳(`ODD_ONE_OUT_INSTRUCTION_RE`,
+  `그려볼까요`, `따라 그리`)을 삭제하고 beat 필드 `oddOneOut: true`(28) / `trace: 'lower'`(39) /
+  `trace: 'upper'`(58)로 교체. 옛 판별 집합과 플래그 집합 일치 0건 불일치(Node 검사).
+  `validateChapters()`가 옛 문구+플래그 누락, `trace` 값, `lower`의 `letter` 필요,
+  `upper`는 listen-repeat만 강제.
+- **발견**: `"{word}"와 같은 소리로 시작하는 걸 찾아보세요` 168개 beat(choose 139 등)는
+  "다른 것 찾기"가 아니라 "**같은** 소리로 시작하는 것 찾기"(`c3s1-r3`: cat → king 정답)
+  — 다른-소리 피드백(`이 단어만 다른 소리를 내요`)을 붙이면 거짓이 된다. 플래그 안 함.
+  인벤토리의 가족 키 `oddoneout-start-like-word`는 오명이고 영어 초안은 옳다.
+- 검증: validateChapters 0, check-world-characters 33/33, game-flow attackflow/
+  attackdetected/fusionflow 3/3, trace iso HUD NOSCROLL(`trace-canvas` 존재). 리더 재실행.
+
+### 다음
+- 사용자 영어 초안 검토 → 문구집 데이터(`src/data/phrasebook.js`: 가족 키 + 슬롯 → EN,
+  한글 원문은 챕터에 그대로) → 챕터별 언어 정책 + 2개 국어 렌더링 → Nova 영어 생성.
+
 ## 2026-11-07 — 음성 공격이 소리 없이 즉시 판정되던 버그 (실기기 보고) 수정
 
 - 두 원인 모두 `abae776`(시도마다 마이크 재획득)의 부작용 후보라 둘 다 막았다:

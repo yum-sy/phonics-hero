@@ -79,6 +79,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c2s1-ink', icon: 'ink', label: 'ink', correct: false },
             { id: 'c2s1-dog', icon: 'dog', label: 'dog', correct: true },
@@ -180,6 +181,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
+          oddOneOut: true,
           options: [
             { id: 'c2s2-ink', icon: 'ink', label: 'ink', correct: false },
             { id: 'c2s2-insect', icon: 'insect', label: 'insect', correct: false },
@@ -192,6 +194,7 @@ export const chapter2 = {
           id: 'c2s2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 i를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'i',
           repeatAudio: ['I', 'ihh'],
@@ -202,6 +205,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 I를 따라 그리면서 I 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'I', say: 'ihh' }],
         },
         {
@@ -289,6 +293,7 @@ export const chapter2 = {
           id: 'c2s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 p를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'p',
           repeatAudio: ['puh'],
@@ -326,6 +331,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
+          oddOneOut: true,
           options: [
             { id: 'c2s3-pig', icon: 'pig', label: 'pig', correct: false },
             { id: 'c2s3-pen', icon: 'pen', label: 'pen', correct: false },
@@ -354,6 +360,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 P를 따라 그리면서 P 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'P', say: 'puh' }],
         },
         {
@@ -415,6 +422,7 @@ export const chapter2 = {
           id: 'c2s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 n을 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'n',
           repeatAudio: ['N', 'nnn'],
@@ -426,6 +434,7 @@ export const chapter2 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요! (보기가 늘었어요)',
+          oddOneOut: true,
           options: [
             { id: 'c2s4-net', icon: 'net', label: 'net', correct: false },
             { id: 'c2s4-nut', icon: 'nut', label: 'nut', correct: false },

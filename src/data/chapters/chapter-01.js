@@ -110,6 +110,7 @@ export const chapter1 = {
           // 158개 옵션 그리드 지시문 전부에 UI 기제를 붙이면 매 화면의 문장이
           // 파닉스 내용 대신 버튼 설명이 된다. 첫 만남에서만 스캐폴딩한다.
           instructionKo: '다른 소리로 시작하는 걸 고르고 ✓를 누르세요!',
+          oddOneOut: true,
           options: [
             { id: 'dog', icon: 'dog', label: 'dog', correct: true },
             { id: 'sun', icon: 'sun', label: 'sun', correct: false },
@@ -144,6 +145,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           steps: [
             {
               promptAudio: 'sss',
@@ -221,6 +223,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'snake', icon: 'snake', label: 'snake', correct: false },
             { id: 'bus', icon: 'bus', label: 'bus', correct: true },
@@ -232,6 +235,7 @@ export const chapter1 = {
           id: 's2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 s를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 's',
           repeatAudio: ['S', 'sss'],
@@ -242,6 +246,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 S를 따라 그리면서 S 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'S', say: 'sss' }],
         },
         {
@@ -333,6 +338,7 @@ export const chapter1 = {
           // S 스테이지는 break 가 뒤(연습 이후)에 왔다. A 스테이지는 배운
           // 직후 바로 몸으로 그려보게 해서 순서 자체를 다르게 느끼게 한다.
           instructionKo: '손가락으로 소문자 a를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'a',
           repeatAudio: ['A', 'aaa'],
@@ -343,6 +349,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'bus', icon: 'bus', label: 'bus', correct: true },
             { id: 'ant', icon: 'ant', label: 'ant', correct: false },
@@ -398,6 +405,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 A를 따라 그리면서 A 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'A', say: 'aaa' }],
         },
         {
@@ -473,6 +481,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'top', icon: 'top', label: 'top', correct: false },
             { id: 'tap', icon: 'tap', label: 'tap', correct: false },
@@ -484,6 +493,7 @@ export const chapter1 = {
           id: 's4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 t를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 't',
           repeatAudio: ['tuh'],
@@ -535,6 +545,7 @@ export const chapter1 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 T를 따라 그리면서 T 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'T', say: 'tuh' }],
         },
         {

@@ -1715,13 +1715,19 @@ function pulseHint(el) {
 // first letters, same taught sound). So the line states the relationship
 // the quiz is actually testing (this one is the odd one out; the rest
 // share a sound) instead of naming the sound itself.
-const ODD_ONE_OUT_INSTRUCTION_RE =
-  /^다른 소리(로 시작하는|가 들어있는) 걸 (찾아보세요|고르고)/
+//
+// Selected by the beat's own `oddOneOut: true` field (chapter data), not by
+// matching the Korean instruction text -- the text is about to become
+// language-dependent (KO→EN transition), and `validateChapters()` now
+// enforces that any beat still phrased as the old "다른 소리… 찾아보세요"
+// prompt carries the flag. NOTE: the `"{word}"와 같은 소리로 시작하는 걸
+// 찾아보세요` beats are deliberately NOT odd-one-out: there the correct
+// option SHARES the prompt word's sound (c3s1-r3: cat → king, not moon/pig),
+// so "이 단어만 다른 소리를 내요" would be a false statement for them.
 function isOddOneOutBeat(beat) {
   return (
     (beat.kind === 'choose' || beat.kind === 'choose-sequence') &&
-    typeof beat.instructionKo === 'string' &&
-    ODD_ONE_OUT_INSTRUCTION_RE.test(beat.instructionKo)
+    beat.oddOneOut === true
   )
 }
 
@@ -1864,41 +1870,26 @@ const COMBINE_INVITE_MS = 1650
 // ---- finger-trace canvas (teach/break beats that ask the child to trace a
 // letter with their finger) ----
 //
-// Matched purely by `instructionKo` text, the same way isOddOneOutBeat()
-// matches its own beats above -- there is no dedicated data field for this,
-// per the task that added it, and CLAUDE.md's chapter contract owns
-// `chapters/**` so a new field can't be added here anyway. Every beat that
-// currently phrases the finger-trace prompt also carries `letter` (confirmed
-// via `grep -n "그려볼까요" src/data/chapters/*.js` cross-referenced with the
-// same beats' `letter` field), but the `letter` check is kept as a real
-// guard, not a formality: without a letter there is nothing to trace and
-// nothing to show as the faint guide glyph.
+// Selected by the beat's `trace: 'lower'` field (chapter data) -- this used
+// to be matched on the Korean prompt text ("그려볼까요"), which the KO→EN
+// transition makes language-dependent; `validateChapters()` keeps the old
+// phrasing and the flag in sync. The `letter` check is a real guard, not a
+// formality: without a letter there is nothing to trace and nothing to show
+// as the faint guide glyph.
 function isFingerTraceBeat(beat) {
-  return (
-    typeof beat.instructionKo === 'string' &&
-    beat.instructionKo.includes('그려볼까요') &&
-    !!beat.letter
-  )
+  return beat.trace === 'lower' && !!beat.letter
 }
 
-// The *second* finger-trace moment: a `listen-repeat` beat immediately
-// following the teach/break beat above reuses the same "따라 그리면서" prompt
-// phrasing to ask the child to trace again while saying the sound (confirmed
-// via `grep -rhoE "instructionKo: '[^']*따라 그리[^']*'" src/data/chapters/*.js`
-// -- 39 variants, all `kind: 'listen-repeat'`, none `finale`). Unlike the
+// The *second* finger-trace moment: a `listen-repeat` beat following the
+// teach/break beat above asks the child to trace again while saying the
+// sound. Selected by `trace: 'upper'` (chapter data; formerly matched on the
+// "따라 그리면서" prompt text -- see isFingerTraceBeat). Unlike the
 // teach/break beat, this one carries no `letter` field at all -- only
-// `words[]` -- so this helper only confirms the instruction text; the caller
-// (renderListenRepeatBeat's showWord()) resolves the actual glyph to trace
-// from `beat.words[wordIndex].text` per word shown. `finale` beats share the
-// same renderer and phrase their instructions completely differently (the
-// "shout the word" moment), so no explicit exclusion is needed here beyond
-// the `kind` check itself.
+// `words[]` -- so the caller (renderListenRepeatBeat's showWord()) resolves
+// the actual glyph to trace from `beat.words[wordIndex].text` per word
+// shown. `finale` beats share the same renderer, so the `kind` check stays.
 function isFingerTraceListenRepeatBeat(beat) {
-  return (
-    beat.kind === 'listen-repeat' &&
-    typeof beat.instructionKo === 'string' &&
-    beat.instructionKo.includes('따라 그리')
-  )
+  return beat.kind === 'listen-repeat' && beat.trace === 'upper'
 }
 
 // Small eraser glyph for the clear button -- no single emoji reads

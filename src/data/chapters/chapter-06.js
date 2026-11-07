@@ -115,6 +115,7 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c6s1-lion', icon: 'lion', label: 'lion', correct: false },
             { id: 'c6s1-dog', icon: 'dog', label: 'dog', correct: true },
@@ -217,6 +218,7 @@ export const chapter6 = {
           // 오답이 /r/ 이다 -- 한국어 화자에게 /l/ 대 /r/ 이 최대 난점이고
           // R 은 챕터 4 에서 이미 배웠으므로 여기가 이 대비를 넣을 첫 지점이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c6s2-rat', icon: 'rat', label: 'rat', correct: true },
             { id: 'c6s2-lion', icon: 'lion', label: 'lion', correct: false },
@@ -230,6 +232,7 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 L을 따라 그리면서 L 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'L', say: 'lll' }],
         },
         {
@@ -246,6 +249,7 @@ export const chapter6 = {
           // 세리프가 있는 대체 렌더링을 쓸 수 있으면 재검토하되, 그건 style.css
           // 소유자의 판단이다.
           instructionKo: '손가락으로 L을 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'L',
           repeatAudio: ['L', 'lll'],
@@ -365,6 +369,7 @@ export const chapter6 = {
           // 오답이 /p/ 다 -- 한국어에 /f/ 가 없어 ㅍ 로 대치하는 게 대표 오류이고
           // P 는 챕터 2 에서 이미 배웠다. 무작위 오답보다 훨씬 나은 연습이다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c6s3-fish', icon: 'fish', label: 'fish', correct: false },
             { id: 'c6s3-pig', icon: 'pig', label: 'pig', correct: true },
@@ -378,12 +383,14 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 F를 따라 그리면서 F 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'F', say: 'fff' }],
         },
         {
           id: 'c6s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 f를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'f',
           repeatAudio: ['F', 'fff'],
@@ -511,6 +518,7 @@ export const chapter6 = {
           // 있다 -- 다른 소리들은 그림이 2개뿐이라 이 형식을 못 늘린다(파일
           // 헤더의 "아이콘 사정" 참조, CLAUDE.md 의 난이도 곡선 절도 참조).
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c6s4-ball', icon: 'ball', label: 'ball', correct: false },
             { id: 'c6s4-box2', icon: 'box', label: 'box', correct: false },
@@ -525,12 +533,14 @@ export const chapter6 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 B를 따라 그리면서 B 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'B', say: 'buh' }],
         },
         {
           id: 'c6s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 b를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'b',
           repeatAudio: ['B', 'buh'],

@@ -288,6 +288,7 @@ export const chapter31 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 T와 W를 따라 그리면서 두 소리를 이어보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "T",

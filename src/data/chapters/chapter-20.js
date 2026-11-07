@@ -309,6 +309,7 @@ export const chapter20 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 P를 따라 그리면서 소리를 내보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "P",
@@ -788,6 +789,7 @@ export const chapter20 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 K를 따라 그리면서 소리를 내보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "K",

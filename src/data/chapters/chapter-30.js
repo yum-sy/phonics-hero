@@ -287,6 +287,7 @@ export const chapter30 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 C와 L을 따라 그리면서 두 소리를 이어보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "C",

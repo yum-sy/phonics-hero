@@ -1069,17 +1069,29 @@ const STAGE_KEYS = new Set([
   'reviewTargets',
 ])
 const BEAT_COMMON_KEYS = ['id', 'kind', 'instructionKo', 'scored', 'hits']
+// `trace` / `oddOneOut` are the explicit beat-behaviour flags that replaced
+// matching the Korean instructionKo text in screens.js (2026-11-07, the
+// KO→EN transition makes that text language-dependent):
+//   trace: 'lower'  -- teach/break finger-trace canvas (isFingerTraceBeat)
+//   trace: 'upper'  -- listen-repeat trace-again moment (isFingerTraceListenRepeatBeat)
+//   oddOneOut: true -- choose/choose-sequence "find the different sound"
+//                      confirmation (isOddOneOutBeat / confirmOddOneOut)
 const BEAT_KIND_KEYS = {
-  teach: ['art', 'emoji', 'letter', 'repeatAudio'],
-  break: ['art', 'emoji', 'letter', 'repeatAudio'],
-  choose: ['promptLetter', 'promptEmoji', 'promptAudio', 'options', 'readAloud'],
+  teach: ['art', 'emoji', 'letter', 'repeatAudio', 'trace'],
+  break: ['art', 'emoji', 'letter', 'repeatAudio', 'trace'],
+  choose: ['promptLetter', 'promptEmoji', 'promptAudio', 'options', 'readAloud', 'oddOneOut'],
   'match-shape': ['promptLetter', 'promptEmoji', 'options', 'readAloud'],
   multiselect: ['options', 'readAloud'],
-  'choose-sequence': ['steps'],
+  'choose-sequence': ['steps', 'oddOneOut'],
   'drag-build': ['letters', 'target', 'readAloud'],
-  'listen-repeat': ['words'],
+  'listen-repeat': ['words', 'trace'],
   finale: ['words'],
 }
+// The old text detectors, kept ONLY so the validator can catch a future
+// hand-written beat that is phrased like one of these but forgot its flag.
+const LEGACY_ODD_ONE_OUT_RE = /^다른 소리(로 시작하는|가 들어있는) 걸 (찾아보세요|고르고)/
+const LEGACY_TRACE_LOWER = '그려볼까요'
+const LEGACY_TRACE_UPPER = '따라 그리'
 const STEP_KEYS = new Set(['promptAudio', 'options'])
 const OPTION_KEYS = new Set(['id', 'icon', 'label', 'correct', 'say'])
 const READ_ALOUD_KEYS = new Set(['targetText', 'say'])
@@ -1242,6 +1254,35 @@ export function validateChapters(chapterList = chapters, iconKeys = null) {
           problems.push(`beat id 중복: '${beat.id}' (${beatIds.get(beat.id)}, ${stage.id})`)
         }
         beatIds.set(beat.id, stage.id)
+
+        // 행동 플래그와 (예전 판별 기준이던) 한글 문구의 동기화. 플래그가
+        // 진실이고 문구는 곧 언어별로 갈라지므로, 문구만 보고 "당연히
+        // 되겠지" 한 beat 를 여기서 잡는다.
+        {
+          const text = typeof beat.instructionKo === 'string' ? beat.instructionKo : ''
+          const isChooseKind = beat.kind === 'choose' || beat.kind === 'choose-sequence'
+          if (beat.oddOneOut !== undefined && beat.oddOneOut !== true) {
+            problems.push(`${at}: oddOneOut 은 true 만 허용된다 (받은 값: ${JSON.stringify(beat.oddOneOut)})`)
+          }
+          if (isChooseKind && LEGACY_ODD_ONE_OUT_RE.test(text) && beat.oddOneOut !== true) {
+            problems.push(`${at}: "다른 소리… 찾아보세요" 문구인데 oddOneOut: true 가 없다 -- 정답 확인 멘트(confirmOddOneOut)가 안 나온다`)
+          }
+          if (beat.trace !== undefined && beat.trace !== 'lower' && beat.trace !== 'upper') {
+            problems.push(`${at}: trace 는 'lower' | 'upper' 만 허용된다 (받은 값: ${JSON.stringify(beat.trace)})`)
+          }
+          if (beat.trace === 'lower' && !beat.letter) {
+            problems.push(`${at}: trace: 'lower' 인데 letter 가 없다 -- 따라 그릴 글자가 없다`)
+          }
+          if (beat.trace === 'upper' && beat.kind !== 'listen-repeat') {
+            problems.push(`${at}: trace: 'upper' 는 listen-repeat 전용이다 (kind: ${beat.kind})`)
+          }
+          if ((beat.kind === 'teach' || beat.kind === 'break') && text.includes(LEGACY_TRACE_LOWER) && beat.trace !== 'lower') {
+            problems.push(`${at}: "그려볼까요" 문구인데 trace: 'lower' 가 없다 -- 손가락 따라그리기 캔버스가 안 뜬다`)
+          }
+          if (beat.kind === 'listen-repeat' && text.includes(LEGACY_TRACE_UPPER) && beat.trace !== 'upper') {
+            problems.push(`${at}: "따라 그리" 문구인데 trace: 'upper' 가 없다 -- 따라그리기 캔버스가 안 뜬다`)
+          }
+        }
 
         const kindKeys = BEAT_KIND_KEYS[beat.kind]
         if (!kindKeys) {

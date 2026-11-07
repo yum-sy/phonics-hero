@@ -288,12 +288,14 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 AI를 따라 그리면서 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'AI', say: 'a' }],
         },
         {
           id: 'c7s2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 ai를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'ai',
           repeatAudio: ['a'],
@@ -429,6 +431,7 @@ export const chapter7 = {
           // J 는 다이그래프가 아니라 홑글자 초성이므로 이 챕터에서 유일하게
           // '시작하는' 형이 그대로 성립한다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c7s3-ball', icon: 'ball', label: 'ball', correct: true },
             { id: 'c7s3-jam', icon: 'jam', label: 'jam', correct: false },
@@ -442,12 +445,14 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 J를 따라 그리면서 J 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'J', say: 'juh' }],
         },
         {
           id: 'c7s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 j를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'j',
           repeatAudio: ['J', 'juh'],
@@ -567,6 +572,7 @@ export const chapter7 = {
           // 초성을 비교하면 둘도 서로 다르다(/b/ 대 /k/). 정답 key 는 어중
           // 모음이 /ee/ 로 갈라진다.
           instructionKo: '다른 소리가 들어있는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c7s4-boat', icon: 'boat', label: 'boat', correct: false },
             { id: 'c7s4-key', icon: 'key', label: 'key', correct: true },
@@ -580,12 +586,14 @@ export const chapter7 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 OA를 따라 그리면서 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'OA', say: 'oh' }],
         },
         {
           id: 'c7s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 oa를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'oa',
           repeatAudio: ['oh'],

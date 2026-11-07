@@ -78,6 +78,7 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c4s1-rat', icon: 'rat', label: 'rat', correct: false },
             { id: 'c4s1-dog', icon: 'dog', label: 'dog', correct: true },
@@ -171,6 +172,7 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c4s2-net', icon: 'net', label: 'net', correct: true },
             { id: 'c4s2-ring', icon: 'ring', label: 'ring', correct: false },
@@ -184,12 +186,14 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 R을 따라 그리면서 R 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'R', say: 'rrr' }],
         },
         {
           id: 'c4s2-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 r을 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'r',
           repeatAudio: ['R', 'rrr'],
@@ -300,6 +304,7 @@ export const chapter4 = {
           hits: 1,
           // moon 을 "다른 하나" 로 두어 /m/ 을 그림으로 한 번 들려준다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c4s3-pig', icon: 'pig', label: 'pig', correct: false },
             { id: 'c4s3-moon', icon: 'moon', label: 'moon', correct: true },
@@ -313,12 +318,14 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 M을 따라 그리면서 M 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'M', say: 'mmm' }],
         },
         {
           id: 'c4s3-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 m을 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'm',
           repeatAudio: ['M', 'mmm'],
@@ -435,6 +442,7 @@ export const chapter4 = {
           hits: 1,
           // dog 을 "다른 하나" 로 두어 /d/ 를 그림으로 들려준다.
           instructionKo: '다른 소리로 시작하는 걸 찾아보세요!',
+          oddOneOut: true,
           options: [
             { id: 'c4s4-egg', icon: 'egg', label: 'egg', correct: false },
             { id: 'c4s4-dog', icon: 'dog', label: 'dog', correct: true },
@@ -448,12 +456,14 @@ export const chapter4 = {
           scored: true,
           hits: 1,
           instructionKo: '손가락으로 D를 따라 그리면서 D 소리를 내보세요!',
+          trace: 'upper',
           words: [{ text: 'D', say: 'duh' }],
         },
         {
           id: 'c4s4-break',
           kind: 'break',
           instructionKo: '손가락으로 소문자 d를 그려볼까요? 함께 외쳐요!',
+          trace: 'lower',
           art: 'hero',
           letter: 'd',
           repeatAudio: ['D', 'duh'],

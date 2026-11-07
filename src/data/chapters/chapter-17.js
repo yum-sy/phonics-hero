@@ -346,6 +346,7 @@ export const chapter17 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 L을 따라 그리면서 소리를 내보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "L",
@@ -856,6 +857,7 @@ export const chapter17 = {
           "scored": true,
           "hits": 1,
           "instructionKo": "손가락으로 L을 따라 그리면서 소리를 내보세요!",
+          "trace": "upper",
           "words": [
             {
               "text": "L",
