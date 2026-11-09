@@ -16,10 +16,13 @@
 자막을 가족별로 하나씩 제거, 15장부터 영어만. 같은 상황엔 앱 전체에서 똑같은 영어 문장이
 반복된다(문구집 `src/data/phrasebook.js`, 생성기 `scripts/build-phrase-map.mjs`, 정책
 `src/data/language-policy.js`). 영어 안내 음성 479개는 Nova로 생성해 `public/narration/`에
-있다(총 1,069 클립). 검증: `node scripts/check-language-policy.mjs`,
+있다(동작 안내39개를 포함해 현재 총 1,108클립). 검증: `node scripts/check-language-policy.mjs`,
 `node scripts/check-narration-assets.mjs`, `node scripts/check-safe-layout.mjs`(128/128).
 
 ## 지문 규칙과 Jolly 동작 큐 (2026-11-07)
+
+동작 칩의 🔊를 누르면 Nova가 안내를 읽어준다. F는 풍선 동작이며, 원래 파닉스
+듣기 버튼과 분리되어 있다. 한국어 동작 안내는 기존 언어 전환의 예외를 유지한다.
 
 표시용 지문에는 캐릭터 이름 대신 `히어로`/`세 히어로`/`빌런`을 쓴다(히어로 순환·교체와
 무관하게 읽힌다). teach 화면은 Jolly Phonics 공식 **동작 큐** 42종(`SOUND_CUES`)을

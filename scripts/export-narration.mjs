@@ -4,7 +4,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import assert from 'node:assert/strict'
-import { chapters, SOUND_TABLE, validateChapters } from '../src/data/chapters/index.js'
+import { chapters, SOUND_TABLE, SOUND_CUES, validateChapters } from '../src/data/chapters/index.js'
 import { wordIconKeys } from '../src/icons.js'
 import { synthesisInput } from './narration-request.mjs'
 import { englishFor } from '../src/data/phrasebook.js'
@@ -49,6 +49,9 @@ function add(text, lang, category, source, { sentence = false } = {}) {
   if (!item.sources.includes(source)) item.sources.push(source)
   if (sentence) item.sentence = true
   entries.set(key, item)
+}
+for (const [key, cue] of Object.entries(SOUND_CUES)) {
+  add(cue.action, 'ko-KR', 'sound-cue', `SOUND_CUES.${key}.action`)
 }
 const spoken = item => typeof item === 'string' ? item : item.say || item.text
 function collectBeat(beat, source) {
@@ -136,7 +139,7 @@ const inventory = {
     'This export only inventories scripts. Generated/published audio status is in public/narration/manifest.json.',
     'Entries with sentence:true are phrasebook English (chapters >= 6 instructions, stage-clear, spoken UI). They keep raw case for synthesis and skip the compound-phoneme guard; exact text is the runtime lookup key.',
   ],
-  counts: { chapters: chapters.length, stages: chapters.reduce((n, c) => n + c.stages.length, 0), protectedRecordings: protectedRecordings.length, entries: list.length, korean: list.filter(x => x.lang === 'ko-KR').length, english: list.filter(x => x.lang === 'en-US').length, phraseSentences: list.filter(x => x.sentence).length, excludedUniqueTexts: exclusions.size },
+  counts: { chapters: chapters.length, stages: chapters.reduce((n, c) => n + c.stages.length, 0), protectedRecordings: protectedRecordings.length, entries: list.length, korean: list.filter(x => x.lang === 'ko-KR').length, english: list.filter(x => x.lang === 'en-US').length, phraseSentences: list.filter(x => x.sentence).length, soundCueSentences: list.filter(x => x.categories.includes('sound-cue')).length, excludedUniqueTexts: exclusions.size },
   protectedRecordings,
   entries: list,
   exclusions: [...exclusions.values()].sort((a, b) => a.text.localeCompare(b.text, 'en')),

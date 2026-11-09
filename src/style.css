@@ -759,6 +759,8 @@ button {
 }
 
 .beat-cue-line {
+  border: 0;
+  text-align: left;
   display: inline-flex;
   align-items: baseline;
   gap: 0.45em;
@@ -2866,3 +2868,5 @@ button {
 @media (orientation: landscape) {
   .parent-progress-editor .stage-node-wrap { grid-template-columns: 148px minmax(0, 1fr) 48px; gap: 8px; }
 }
+
+.beat-cue-line:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }

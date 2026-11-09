@@ -713,9 +713,9 @@ function teachCueHtml(beat) {
   if (!cues.length) return ''
   return `<div class="beat-cue">${cues
     .map(
-      (cue) => `<div class="beat-cue-line"><span class="beat-cue-image">${parentAttribute(
+      (cue) => `<button type="button" class="beat-cue-line" data-cue-action="${parentAttribute(cue.action)}" aria-label="${parentAttribute(`동작 듣기: ${cue.action}`)}"><span class="beat-cue-image"><span aria-hidden="true">🔊 </span>${parentAttribute(
         cue.image
-      )}</span><span class="beat-cue-text">${instructionHtml(cue.action)}</span></div>`
+      )}</span><span class="beat-cue-text">${instructionHtml(cue.action)}</span></button>`
     )
     .join('')}</div>`
 }
@@ -1868,12 +1868,15 @@ function redemonstrateLetterTile(area, letters, letter) {
 // *whole* sequence, not a snapshot of it.
 function wireTeachButtons(beat, runtime) {
   let playPromise = null
+  let cuePromise = null
+  let cuePending = false
   // One tap on 다시 듣기 queues the *whole* repeatAudio sequence. Letting
   // taps stack meant a few impatient taps could queue 20+ seconds of speech
   // that the 다음 button then had to wait out with nothing happening on
   // screen, so a replay is ignored while its sequence is still playing.
   let playing = false
   const play = () => {
+    if (cuePending) return cuePromise
     if (playing) return playPromise
     playing = true
     playPromise = speakSequence(beat.repeatAudio || [], 'en-US').then(
@@ -1890,6 +1893,24 @@ function wireTeachButtons(beat, runtime) {
   const replayBtn = document.getElementById('replay-btn')
   const continueBtn = document.getElementById('continue-btn')
   onTap(replayBtn, play)
+  const cueButtons = [...document.querySelectorAll('.beat-cue-line[data-cue-action]')]
+  const cueBeatIndex = runtime.beatIndex
+  for (const button of cueButtons) {
+    onTap(button, () => {
+      if (cuePending || continueBtn?.disabled) return
+      cuePending = true
+      for (const cueButton of cueButtons) cueButton.disabled = true
+      cuePromise = (async () => {
+        // Keep a movement explanation out of the middle of the sound model.
+        await playPromise
+        if (!ownsScreen(runtime) || runtime.beatIndex !== cueBeatIndex || !button.isConnected) return
+        await speakKO(button.dataset.cueAction)
+      })().finally(() => {
+        cuePending = false
+        for (const cueButton of cueButtons) cueButton.disabled = false
+      })
+    })
+  }
   if (continueBtn)
     onTap(continueBtn, withRecovery(runtime, async () => {
       // Acknowledge the tap immediately (don't leave it feeling unresponsive)
@@ -1898,6 +1919,7 @@ function wireTeachButtons(beat, runtime) {
       // audio never lands on top of this one's tail end.
       continueBtn.disabled = true
       await playPromise
+      await cuePromise
       await whenAudioIdle()
       advanceBeat(runtime)
     }))

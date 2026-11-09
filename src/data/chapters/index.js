@@ -761,7 +761,7 @@ export const SOUND_CUES = {
   awh: { action: '전등 스위치를 켰다 껐다 해요', image: '전등 스위치', jolly: 'switch a light on and off' },
   uh: { action: '우산을 펴는 시늉을 해요', image: '우산', jolly: 'put up an umbrella' },
   lll: { action: '막대사탕을 핥는 시늉을 해요', image: '막대사탕', jolly: 'lick a lollipop' },
-  fff: { action: '바람 빠지는 풍선처럼 두 손을 살살 모아요', image: '풍선', jolly: 'hands come together gently like a deflating fish' },
+  fff: { action: '풍선의 바람을 빼듯 두 손을 천천히 모아요', image: '풍선', jolly: 'hands come together gently like a deflating fish' },
   buh: { action: '방망이로 공을 치는 시늉을 해요', image: '방망이', jolly: 'hit a ball with a bat' },
   // Group 4
   a: { action: '못 들은 듯 손을 귀에 갖다 대요', image: '귀', jolly: "cup hand over ear as if you didn't hear" },

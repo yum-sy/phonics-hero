@@ -14,10 +14,11 @@
     "chapters": 33,
     "stages": 165,
     "protectedRecordings": 41,
-    "entries": 1069,
-    "korean": 57,
+    "entries": 1108,
+    "korean": 96,
     "english": 1012,
     "phraseSentences": 479,
+    "soundCueSentences": 39,
     "excludedUniqueTexts": 41
   },
   "protectedRecordings": [
@@ -19637,6 +19638,118 @@
       "instructions": "Read only the supplied English word or name once in clear American English as a warm adult female preschool teacher speaking kindly to a five-year-old phonics learner. Use a recognizably feminine adult voice, a friendly smile, gentle expressive intonation and clear audible projection at a comfortable moderate pace. Keep crisp intelligible consonants, natural vowels and accurate whole-word pronunciation. Never use deep masculine resonance, booming announcer delivery, whispering, mumbling, rushing, shouting, singing, baby talk, unnatural elongation, or letter spelling. No added words, explanations, music, or effects."
     },
     {
+      "id": "ko-935ef75eb43d4780",
+      "lang": "ko-KR",
+      "text": "가슴에 손을 얹고 숨을 몰아쉬어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.huh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "가슴에 손을 얹고 숨을 몰아쉬어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-6afb26ad4fdf39ac",
+      "lang": "ko-KR",
+      "text": "개미처럼 손가락으로 팔을 타고 올라가요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.aaa.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "개미처럼 손가락으로 팔을 타고 올라가요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-8d0ac22d9467a897",
+      "lang": "ko-KR",
+      "text": "걸레를 문 강아지처럼 고개를 흔들어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.rrr.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "걸레를 문 강아지처럼 고개를 흔들어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-f9a79f44ea8d26d8",
+      "lang": "ko-KR",
+      "text": "검지를 입술에 대고 조용히 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.shhu.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "검지를 입술에 대고 조용히 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-e8d1145e4fbc4e67",
+      "lang": "ko-KR",
+      "text": "그릇에 달걀을 깨는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.eh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "그릇에 달걀을 깨는 시늉을 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-3622adb6ff2402c9",
+      "lang": "ko-KR",
+      "text": "기차처럼 두 팔을 옆에서 돌려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ch.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "기차처럼 두 팔을 옆에서 돌려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-49bc04cea84b445f",
+      "lang": "ko-KR",
+      "text": "깜짝 놀란 듯 손을 입에 가져가요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.oh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "깜짝 놀란 듯 손을 입에 가져가요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-79a8dd1c4a99258a",
+      "lang": "ko-KR",
+      "text": "다른 사람을 손가락으로 가리켜요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.u.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "다른 사람을 손가락으로 가리켜요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-f29a0092c3bf3725",
       "lang": "ko-KR",
       "text": "다시 연습했어요. 잘 들어보세요.",
@@ -19696,6 +19809,21 @@
       ],
       "status": "source-script-inventory",
       "synthesisInput": "단어 두 개를 만들었어요! 잘 들어보세요.",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-86cdfaf9ee65d5c3",
+      "lang": "ko-KR",
+      "text": "당나귀 귀처럼 손을 머리에 대고 펄럭여요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ee.action",
+        "SOUND_CUES.or.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "당나귀 귀처럼 손을 머리에 대고 펄럭여요",
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
@@ -19797,6 +19925,34 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-0f6c3ef1b6e77c66",
+      "lang": "ko-KR",
+      "text": "두 손으로 오리 부리를 만들어 벌렸다 닫아요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.kw.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "두 손으로 오리 부리를 만들어 벌렸다 닫아요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-453be990f2566dae",
+      "lang": "ko-KR",
+      "text": "두 손을 입에 모으고 배를 향해 외쳐요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.oi.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "두 손을 입에 모으고 배를 향해 외쳐요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-5aaeacbcc9f7e75e",
       "lang": "ko-KR",
       "text": "디는 이런 소리를 내요. 세 소리를 모두 배웠어요.",
@@ -19811,6 +19967,160 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-abd3dd6f670052f9",
+      "lang": "ko-KR",
+      "text": "막대사탕을 핥는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.lll.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "막대사탕을 핥는 시늉을 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-244a835733066f43",
+      "lang": "ko-KR",
+      "text": "맛있다는 듯 배를 문질러요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.mmm.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "맛있다는 듯 배를 문질러요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-617ec245272bfd80",
+      "lang": "ko-KR",
+      "text": "못 들은 듯 손을 귀에 갖다 대요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.a.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "못 들은 듯 손을 귀에 갖다 대요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-c9302065d356750e",
+      "lang": "ko-KR",
+      "text": "물이 빠지듯 손을 빙글빙글 아래로 내려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.guh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "물이 빠지듯 손을 빙글빙글 아래로 내려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-fa12f5a5b3bbcf0c",
+      "lang": "ko-KR",
+      "text": "믹서처럼 두 손을 빙글빙글 돌려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.erh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "믹서처럼 두 손을 빙글빙글 돌려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-b6ba7da06f9cbb32",
+      "lang": "ko-KR",
+      "text": "바람처럼 펼친 손바닥에 입김을 불어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.weh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "바람처럼 펼친 손바닥에 입김을 불어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-ef370ad4ac8be771",
+      "lang": "ko-KR",
+      "text": "방망이로 공을 치는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.buh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "방망이로 공을 치는 시늉을 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-4a8fb39746bf75be",
+      "lang": "ko-KR",
+      "text": "밴 운전대를 잡고 돌리는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.vve.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "밴 운전대를 잡고 돌리는 시늉을 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-4109175bed61bd4c",
+      "lang": "ko-KR",
+      "text": "뱀처럼 팔을 구불구불 움직여요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.sss.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "뱀처럼 팔을 구불구불 움직여요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-509864bc7d797336",
+      "lang": "ko-KR",
+      "text": "벌처럼 두 팔을 옆으로 펴고 날아요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.zze.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "벌처럼 두 팔을 옆으로 펴고 날아요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-172263a05488caf0",
+      "lang": "ko-KR",
+      "text": "북을 치듯 두 손을 위아래로 두드려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.duh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "북을 치듯 두 손을 위아래로 두드려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-ac8f262faf489746",
       "lang": "ko-KR",
       "text": "비는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.",
@@ -19822,6 +20132,35 @@
       ],
       "status": "source-script-inventory",
       "synthesisInput": "비는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-88b91ab1dc9e4b54",
+      "lang": "ko-KR",
+      "text": "비행기처럼 두 팔을 쭉 펴요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.nnn.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "비행기처럼 두 팔을 쭉 펴요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-fb8684c3ad0c69bc",
+      "lang": "ko-KR",
+      "text": "뻐꾸기시계처럼 고개를 앞뒤로 움직여요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.uuh.action",
+        "SOUND_CUES.uuu.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "뻐꾸기시계처럼 고개를 앞뒤로 움직여요",
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
@@ -19884,6 +20223,20 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-25cecab67606db9e",
+      "lang": "ko-KR",
+      "text": "생쥐 수염처럼 코끝에서 손가락을 꼼지락해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ihh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "생쥐 수염처럼 코끝에서 손가락을 꼼지락해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-c4dd2c2c8da790f2",
       "lang": "ko-KR",
       "text": "세 소리를 합쳐서 두 번째 단어를 만들었어요!",
@@ -19909,6 +20262,48 @@
       ],
       "status": "source-script-inventory",
       "synthesisInput": "세 소리를 합쳐서 첫 번째 단어를 만들었어요!",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-e2982dce8c14258b",
+      "lang": "ko-KR",
+      "text": "손가락을 바늘처럼 엄지에 찔러요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ou.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "손가락을 바늘처럼 엄지에 찔러요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-d38142f61c0a5bf2",
+      "lang": "ko-KR",
+      "text": "손가락을 촛불처럼 세우고 입김을 불어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.puh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "손가락을 촛불처럼 세우고 입김을 불어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-2741b3217af732b1",
+      "lang": "ko-KR",
+      "text": "숟가락으로 요구르트를 떠먹는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.yyuh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "숟가락으로 요구르트를 떠먹는 시늉을 해요",
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
@@ -20094,6 +20489,20 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-23de101bf21b0f03",
+      "lang": "ko-KR",
+      "text": "엑스레이 찍듯 두 팔을 앞에서 엇갈려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ksuh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "엑스레이 찍듯 두 팔을 앞에서 엇갈려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-a8825631b53631a9",
       "lang": "ko-KR",
       "text": "엔은 이런 소리를 내요. 세 소리를 모두 배웠어요.",
@@ -20122,6 +20531,20 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-0518dbba66dd1481",
+      "lang": "ko-KR",
+      "text": "역도 선수처럼 무거운 걸 머리 위로 들어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.ngh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "역도 선수처럼 무거운 걸 머리 위로 들어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-852dd54e12a417bc",
       "lang": "ko-KR",
       "text": "오는 이런 소리를 내요. 에이 소리와 다르니 잘 들어보세요.",
@@ -20147,6 +20570,20 @@
       ],
       "status": "source-script-inventory",
       "synthesisInput": "오에이는 이런 소리를 내요. 이제 세 소리를 모두 배웠어요.",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-e43c05aa81ff3f79",
+      "lang": "ko-KR",
+      "text": "우산을 펴는 시늉을 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.uh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "우산을 펴는 시늉을 해요",
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
@@ -20461,6 +20898,49 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-f467c37c147bf3c8",
+      "lang": "ko-KR",
+      "text": "장난꾸러기 광대처럼 혀를 살짝 내밀어요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.TH/dh/.action",
+        "SOUND_CUES.thhu.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "장난꾸러기 광대처럼 혀를 살짝 내밀어요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-d2538b1d896a2e85",
+      "lang": "ko-KR",
+      "text": "전등 스위치를 켰다 껐다 해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.awh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "전등 스위치를 켰다 껐다 해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-8f3782aa69fe50e0",
+      "lang": "ko-KR",
+      "text": "접시 위 젤리처럼 몸을 흔들흔들해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.juh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "접시 위 젤리처럼 몸을 흔들흔들해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-0e6a916bb3dbea0e",
       "lang": "ko-KR",
       "text": "정답이에요!",
@@ -20517,6 +20997,62 @@
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {
+      "id": "ko-291088736a063ce7",
+      "lang": "ko-KR",
+      "text": "진찰받듯 입을 크게 벌려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.arh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "진찰받듯 입을 크게 벌려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-28cd46ce97a1f18e",
+      "lang": "ko-KR",
+      "text": "차렷하고 선장님께 경례해요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.eye.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "차렷하고 선장님께 경례해요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-bb9c201b220d5a3a",
+      "lang": "ko-KR",
+      "text": "캐스터네츠처럼 손가락을 튕겨요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.kuh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "캐스터네츠처럼 손가락을 튕겨요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-eeae5e5ae2bea916",
+      "lang": "ko-KR",
+      "text": "테니스 보듯 고개를 좌우로 돌려요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.tuh.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "테니스 보듯 고개를 좌우로 돌려요",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
       "id": "ko-08c80abe887fd483",
       "lang": "ko-KR",
       "text": "티는 이런 소리를 내요. 세 소리를 모두 배웠어요.",
@@ -20528,6 +21064,20 @@
       ],
       "status": "source-script-inventory",
       "synthesisInput": "티는 이런 소리를 내요. 세 소리를 모두 배웠어요.",
+      "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
+    },
+    {
+      "id": "ko-cdc9523d4eb5ded0",
+      "lang": "ko-KR",
+      "text": "풍선의 바람을 빼듯 두 손을 천천히 모아요",
+      "categories": [
+        "sound-cue"
+      ],
+      "sources": [
+        "SOUND_CUES.fff.action"
+      ],
+      "status": "source-script-inventory",
+      "synthesisInput": "풍선의 바람을 빼듯 두 손을 천천히 모아요",
       "instructions": "Speak natural standard Korean with a clearly feminine adult female voice, like a caring preschool teacher talking kindly and directly to a five-year-old child. Sound recognizably like a warm adult woman: soft rounded feminine timbre, a friendly smile, gentle expressive intonation, patient and reassuring, natural conversational delivery. Be clearly audible and articulate every syllable at a comfortable moderate pace. Warm encouragement, never flat or sleepy. Do not use a deep masculine resonance, booming announcer voice, theatrical host style, shouting, squealing, baby talk, whispering, breathy ASMR, singing, music or sound effects. Read only the supplied Korean text, adding no words."
     },
     {

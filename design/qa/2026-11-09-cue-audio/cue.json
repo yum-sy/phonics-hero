@@ -1,0 +1,104 @@
+{
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-09T12:27:37.122Z",
+  "cases": [
+    {
+      "name": "native-cue-button-balloon-label",
+      "passed": true
+    },
+    {
+      "name": "next-waits-for-model-and-cue",
+      "passed": true
+    },
+    {
+      "name": "repeated-taps-queue-one-cue",
+      "passed": true
+    },
+    {
+      "name": "cue-finished-before-next",
+      "passed": true
+    },
+    {
+      "name": "original-phoneme-finishes-before-cue",
+      "passed": true
+    },
+    {
+      "name": "exit-discards-pending-cue",
+      "passed": true
+    },
+    {
+      "name": "exit-stays-in-review",
+      "passed": true
+    },
+    {
+      "name": "console-clean",
+      "passed": true
+    },
+    {
+      "name": "balloon-cue-portrait-HUD",
+      "passed": true
+    },
+    {
+      "name": "balloon-cue-portrait-rendered",
+      "passed": true,
+      "hud": "NOSCROLL shot=c6-stage-3:teach on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=3px(0.2%)@y1191 bgap=35px(3.9%)@y464/col893"
+    },
+    {
+      "name": "balloon-cue-landscape-HUD",
+      "passed": true
+    },
+    {
+      "name": "balloon-cue-landscape-rendered",
+      "passed": true,
+      "hud": "NOSCROLL shot=c6-stage-3:teach on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=43px(5.4%)@y169/col802"
+    }
+  ],
+  "failures": [],
+  "events": [
+    {
+      "url": "http://localhost:5174/narration/en-8ebd254b0c818906-7f38e3b4e7fd53e5-p2.m4a",
+      "event": "start",
+      "at": 690.8999998569489
+    },
+    {
+      "url": "http://localhost:5174/narration/en-8ebd254b0c818906-7f38e3b4e7fd53e5-p2.m4a",
+      "event": "end",
+      "at": 2717.2999999523163
+    },
+    {
+      "url": "http://localhost:5174/narration/en-d891568b1b5b75c7-483ede86a0ade210-p2.m4a",
+      "event": "start",
+      "at": 3271.7999999523163
+    },
+    {
+      "url": "http://localhost:5174/narration/en-d891568b1b5b75c7-483ede86a0ade210-p2.m4a",
+      "event": "end",
+      "at": 4058.5
+    },
+    {
+      "url": "http://localhost:5174/sounds/fff.wav",
+      "event": "start",
+      "at": 5214.200000047684
+    },
+    {
+      "url": "http://localhost:5174/sounds/fff.wav",
+      "event": "end",
+      "at": 5434.599999904633
+    },
+    {
+      "url": "http://localhost:5174/narration/ko-cdc9523d4eb5ded0-7f95547279e31675-p2.m4a",
+      "event": "start",
+      "at": 5991.399999856949
+    },
+    {
+      "url": "http://localhost:5174/narration/ko-cdc9523d4eb5ded0-7f95547279e31675-p2.m4a",
+      "event": "end",
+      "at": 10489.799999952316
+    },
+    {
+      "url": "http://localhost:5174/narration/en-a69c691f57d5523a-df3e8f67e41e602d-p2.m4a",
+      "event": "start",
+      "at": 11058.899999856949
+    }
+  ]
+}

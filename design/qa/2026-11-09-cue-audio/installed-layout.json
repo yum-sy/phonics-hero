@@ -1,0 +1,1292 @@
+{
+  "standalone": true,
+  "base": "http://localhost:5174",
+  "generatedAt": "2026-11-09T12:25:06.530Z",
+  "cases": [
+    {
+      "name": "portrait-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=26px(2.2%)@y1041 bgap=26px(3.0%)@y1041/col869",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=33px(2.8%)@y1161 bgap=29px(3.4%)@y480/col869",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=26px(2.2%)@y1041 bgap=26px(3.0%)@y1041/col869",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=26px(2.2%)@y1041 bgap=26px(3.0%)@y1041/col869",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=63px(5.3%)@y1131 bgap=59px(6.8%)@y465/col869",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=55px(4.6%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=66px(5.5%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=24px(3.1%)@y698/col778",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=39px(5.0%)@y189/col778",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=24px(3.1%)@y698/col778",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=24px(3.1%)@y698/col778",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=58px(7.5%)@y198/col778",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=26px(3.2%)@y808",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=28px(3.4%)@y806",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 16,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158 bgap=26px(3.1%)@y1021/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=50px(4.2%)@y1144 bgap=26px(3.0%)@y477/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158 bgap=26px(3.1%)@y1021/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158 bgap=26px(3.1%)@y1021/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=80px(6.7%)@y1114 bgap=56px(6.5%)@y462/col849",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=51px(4.3%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "portrait-safe-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=63px(5.3%)@y0",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=24px(3.2%)@y678/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=36px(4.7%)@y186/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=24px(3.2%)@y678/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=24px(3.2%)@y678/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=55px(7.2%)@y194/col758",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://localhost:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=43px(5.2%)@y791",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "landscape-safe-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=35px(4.2%)@y799",
+      "images": [
+        {
+          "url": "http://localhost:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://localhost:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    }
+  ],
+  "failures": []
+}

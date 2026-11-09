@@ -43,6 +43,12 @@ for (const entry of inventory.entries) {
   const request = narrationRequest(entry, model, voice)
   const requestHash = hash(JSON.stringify(request))
   const basename = `${entry.id}-${requestHash.slice(0, 16)}`
+  // Adding clips must not re-encode already validated, identical requests.
+  const prior = existingByKey.get(`${entry.lang}\0${entry.text}`)
+  if (prior?.requestHash === requestHash && prior.model === model && prior.voice === voice) {
+    const bytes = await readFile(join(root, 'public/narration', prior.file)).catch(e => { if (e.code !== 'ENOENT') throw e; return null })
+    if (bytes && hash(bytes) === prior.sha256) { kept.push({ ...prior, id: entry.id }); continue }
+  }
   const wav = join(root, 'design/audio/generated', `${basename}.wav`)
   let metadata, bytes
   try {

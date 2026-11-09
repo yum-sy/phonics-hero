@@ -1,5 +1,26 @@
 # 안내·단어 음성 제작
 
+## 2026-11-09 — 동작 안내 Nova39개 추가
+
+F는 풍선로 확정했다. SOUND_CUES42개 중 공유 문장을 합친 고유39개를
+`--category sound-cue`로 생성했다. teach의 동작 칩을 탭하면 한국어 안내를 읽는다.
+기존1,069클립은 파일 해시 그대로 유지하며 현재 총1,108개(한국어96·영어1,012)다.
+신규39개는1,257,143바이트, 생성 실패0. 전체 수치는 `validation-summary.json`을 따른다.
+
+```sh
+node scripts/export-narration.mjs
+node scripts/generate-narration.mjs --model gpt-4o-mini-tts --voice nova --category sound-cue --concurrency 4 --generate
+node scripts/publish-narration.mjs --model gpt-4o-mini-tts --voice nova
+node scripts/summarize-narration.mjs
+node scripts/check-narration-assets.mjs http://localhost:5174
+node scripts/check-cue-audio.mjs http://localhost:5174
+```
+
+발행기는 요청 해시와 파일 해시가 동일한 기존 클립을 재인코딩하지 않는다. 요약 도구는
+현재 전체 라이브러리의 수치와 해시를 검증하며, 과거590개 배치 수치를 전체 수치로
+혼용하지 않는다. 기술 검증은 사람의 발음 청취나 iPad 검증을 대신하지 않는다.
+아래 날짜별 수치는 해당 과거 배치의 이력이다.
+
 사용자 제공 파닉스 녹음 41종은 그대로 유지한다. 단어·빌런 이름·한국어 해설의
 교체 에셋은 `public/narration/`에 둔다. 클리어 안내는
 `stage.recapAudio.ko`와 `.en`, 다른 소리 고르기 해설은 `confirmOddOneOut()`의
