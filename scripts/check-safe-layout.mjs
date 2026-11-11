@@ -5,6 +5,7 @@
 // seeds a mixed completion/lock fixture instead of clearing the full curriculum.
 // LAYOUT_REDUCED_MOTION=1 also checks static battle feedback under reduced motion.
 // LAYOUT_STANDALONE=1 activates the shipped standalone CSS rule (not iOS emulation).
+// LAYOUT_VIEWPORTS='[["fold-portrait",691,829,24,24],["fold-landscape",829,691,24,24]]'
 // 24 screens × portrait/landscape × normal/simulated safe insets = 96 cases.
 // Desktop layout evidence only: injected CSS insets do not emulate iOS or installed PWA behavior.
 import { spawn } from 'node:child_process'
@@ -77,7 +78,7 @@ async function screenshot(name) {
 }
 
 const decodedImages = `(async () => {
-  const urls = [...new Set([...document.querySelectorAll('.character-asset image')].map(el => new URL(el.getAttribute('href'), location.href).href))];
+  const urls = [...new Set([...document.querySelectorAll('.character-asset image, .pokemon-art img')].map(el => new URL(el.getAttribute('href') || el.getAttribute('src'), location.href).href))];
   return await Promise.all(urls.map(async url => {
     const image = new Image(); image.src = url;
     try { await image.decode(); return {url, width:image.naturalWidth, height:image.naturalHeight}; }
@@ -117,18 +118,21 @@ try {
   if (process.env.LAYOUT_REDUCED_MOTION === '1') mediaFeatures.push({ name: 'prefers-reduced-motion', value: 'reduce' })
   await command('Emulation.setEmulatedMedia', { features: mediaFeatures })
   const parentMode = process.env.LAYOUT_PARENT_MODE === '1'
+  const parentStorageKey = (process.env.LAYOUT_PROGRESS_PREFIX || 'phonics-hero') + '-parent-access-v1'
+  const progressStorageKey = process.env.LAYOUT_PROGRESS_PREFIX === 'phonics-poke' ? 'phonics-poke-progress-v1' : 'carbot-phonics-progress-v1'
   const partialProgress = parentMode && process.env.LAYOUT_PARENT_PROGRESS === 'partial'
   await command('Page.addScriptToEvaluateOnNewDocument', {source: `
     localStorage.clear(); sessionStorage.clear();
-    ${parentMode ? "sessionStorage.setItem('phonics-hero-parent-access-v1', '1');" : ''}
-    ${partialProgress ? `localStorage.setItem('carbot-phonics-progress-v1', JSON.stringify({
+    ${parentMode ? `sessionStorage.setItem('${parentStorageKey}', '1');` : ''}
+    ${partialProgress ? `localStorage.setItem('${progressStorageKey}', JSON.stringify({
       clearedStages: ['stage-1'], stars: {'stage-1': 3}, lockedStages: ['stage-3'], checkpoint: null
     }));` : ''}
   `});
   const cases = ['world','chapters','map1','map4','battle1','battle4','battle7','boss1','boss5','boss7','boss1after','boss5after','boss7after','reward1','reward33','long3','long4','build7','listen1','finale1','finale2','lang6c','lang6t','lang6b','lang7m','lang9c','lang20t','reward6','reward16'].map(name=>({name,query:'shot='+name,screen:name==='world'||name==='chapters'?'chapter-select-screen':name.startsWith('map')?'map-screen':name.startsWith('reward')?'reward-screen':'stage-screen'}));
   cases.unshift(...['world','chapters','map1'].map(name=>({name:name+'-locked',query:'shot='+name,locked:true,screen:name==='map1'?'map-screen':'chapter-select-screen'})));
   const filter = process.env.LAYOUT_CHECK_CASES?.split(',')
-  for (const [orientation,width,height,safeTop,safeBottom] of [['portrait',834,1194,0,0],['landscape',1194,834,0,0],['portrait-safe',834,1194,24,20],['landscape-safe',1194,834,24,20]]) {
+  const viewports = process.env.LAYOUT_VIEWPORTS ? JSON.parse(process.env.LAYOUT_VIEWPORTS) : [['portrait',834,1194,0,0],['landscape',1194,834,0,0],['portrait-safe',834,1194,24,20],['landscape-safe',1194,834,24,20]]
+  for (const [orientation,width,height,safeTop,safeBottom] of viewports) {
     await command('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false })
     for (const item of cases.filter(c => !filter || filter.includes(c.name))) {
       const label=`${orientation}-${item.name}`

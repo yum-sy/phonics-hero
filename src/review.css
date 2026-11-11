@@ -123,3 +123,31 @@
   .review-catalog .review-stage-copy { gap: 4px; }
   .review-catalog .review-stage-art > svg { width: 56px; height: 66px; }
 }
+
+/* Unfolded compact displays: keep all five stage choices in the safe area. */
+@media (max-width: 900px) and (max-height: 900px) {
+  .review-catalog { gap: 8px; }
+  .review-catalog .review-header { gap: 12px; }
+  .review-catalog h1 { font-size: 24px; }
+  .review-catalog .review-game-link { font-size: 16px; padding-block: 8px; }
+  .review-catalog .review-notice,
+  .review-catalog .review-chapter-summary { font-size: 14px; line-height: 1.25; }
+  .review-catalog .review-chapter-nav { gap: 6px; }
+  .review-catalog .review-chapter-nav button,
+  .review-catalog select { min-height: 44px; font-size: 16px; padding: 6px 8px; }
+  .review-catalog .review-stages { gap: 6px; }
+  .review-catalog .review-stage { min-height: 0; padding: 5px 10px; gap: 8px; border-width: 2px; border-radius: 14px; }
+  .review-catalog .review-stage-number { flex-basis: 38px; font-size: 24px; gap: 2px; }
+  .review-catalog .review-stage-copy { gap: 3px; }
+  .review-catalog .review-stage-title { font-size: 18px; }
+  .review-catalog .review-stage-names { font-size: 14px; }
+  .review-catalog .review-stage-art > .carbot-art { width: 42px; height: 50px; }
+  .review-catalog .review-stage-play { font-size: 20px; }
+  .review-catalog .review-boss-badge { font-size: 10px; padding: 2px 3px; }
+}
+@media (max-width: 900px) and (max-height: 650px) {
+  .review-catalog { gap: 6px; }
+  .review-catalog .review-stage-art > .carbot-art { width: 36px; height: 42px; }
+  .review-catalog .review-stage-title { font-size: 17px; }
+  .review-catalog .review-stage-copy { gap: 2px; }
+}

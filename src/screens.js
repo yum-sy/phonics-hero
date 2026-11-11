@@ -1468,15 +1468,25 @@ function runBeat(runtime) {
 // size, so reset the inline overrides and run both fits once more. One extra
 // pass on the next frame also covers layout that settles after runBeat().
 let refitFrame = 0
+let resizeTraceCanvas = () => {}
 function refitBeatText() {
   const el = document.querySelector('.beat-instruction')
-  if (!el) return
-  el.style.fontSize = ''
-  el.classList.remove('instruction-packed')
-  for (const sub of el.querySelectorAll('.instruction-sub')) sub.style.fontSize = ''
-  for (const chip of document.querySelectorAll('.beat-cue-line')) chip.style.fontSize = ''
-  fitBeatInstruction()
-  fitBeatCue()
+  if (el) {
+    el.style.fontSize = ''
+    el.classList.remove('instruction-packed')
+    for (const sub of el.querySelectorAll('.instruction-sub')) sub.style.fontSize = ''
+    for (const chip of document.querySelectorAll('.beat-cue-line')) chip.style.fontSize = ''
+    fitBeatInstruction()
+    fitBeatCue()
+  }
+  const recap = document.querySelector('.recap-line')
+  if (recap) {
+    recap.style.fontSize = ''
+    recap.classList.remove('instruction-packed')
+    for (const sub of recap.querySelectorAll('.instruction-sub')) sub.style.fontSize = ''
+    fitRecapLine()
+  }
+  resizeTraceCanvas()
 }
 function scheduleRefit() {
   cancelAnimationFrame(refitFrame)
@@ -1484,6 +1494,7 @@ function scheduleRefit() {
 }
 if (typeof window !== 'undefined') {
   window.addEventListener('resize', scheduleRefit)
+  window.visualViewport?.addEventListener('resize', scheduleRefit)
 }
 
 // Same recipe as fitRecapLine(): shrink only as far as THIS string's own
@@ -1493,6 +1504,10 @@ if (typeof window !== 'undefined') {
 // so "2 lines at the current font-size" stays a self-consistent target as
 // the loop shrinks it -- it isn't chasing a fixed pixel goal that would
 // over-shrink once the font is already smaller.
+function cssFitFloor(element, property, fallback) {
+  return parseFloat(getComputedStyle(element).getPropertyValue(property)) || fallback
+}
+
 function fitBeatInstruction() {
   const el = document.querySelector('.beat-instruction')
   if (!el) return
@@ -1501,18 +1516,18 @@ function fitBeatInstruction() {
   // recap, so it has to stay legible at the size an actual overlong string
   // gets shrunk to -- 26px is still comfortably above this app's smallest
   // deliberately-sized text.
-  const FLOOR_PX = 26
+  const FLOOR_PX = cssFitFloor(el, '--instruction-min-font', 26)
   // A lone long sentence is first nudged toward a single line, but only down
   // to this size -- below it, wrapping once at a word boundary reads better
   // than tiny type.
-  const ONE_LINE_FLOOR_PX = 44
+  const ONE_LINE_FLOOR_PX = cssFitFloor(el, '--instruction-line-min-font', 44)
   const LINE_HEIGHT_RATIO = 1.14
   const lines = el.querySelectorAll('.instruction-line:not(.instruction-sub)')
   // Bilingual subtitle lines (language-policy 'en-ko') are budgeted by their
   // own rendered height and shrunk first, so the primary sentence keeps its
   // size as long as the subtitle can still give way.
   const subs = Array.from(el.querySelectorAll('.instruction-sub'))
-  const SUB_FLOOR_PX = 20
+  const SUB_FLOOR_PX = cssFitFloor(el, '--instruction-sub-min-font', 20)
   // Budget = one line per sentence (the whole point of .instruction-line),
   // never less than the historical 2-line budget so a single long sentence
   // is still allowed to wrap once instead of shrinking to the floor.
@@ -1581,7 +1596,7 @@ function fitBeatInstruction() {
 function fitBeatCue() {
   const chips = document.querySelectorAll('.beat-cue-line')
   if (!chips.length) return
-  const FLOOR_PX = 22
+  const FLOOR_PX = cssFitFloor(chips[0], '--cue-min-font', 22)
   const screen = document.querySelector('.screen')
   const overflowing = () => {
     if (screen && screen.scrollHeight > screen.clientHeight + 1) return true
@@ -2039,11 +2054,11 @@ function traceBoxHtml(letter) {
   // -- 27px over). Cutting the svh mid-points here buys back ~55px, re-verified
   // empty on that same screen afterward with the retry message forced in.
   const boxStyle = isDigraph
-    ? 'width:clamp(220px, 46svh, 400px);height:clamp(120px, 24svh, 190px);'
-    : 'width:clamp(150px, 26svh, 260px);height:clamp(150px, 26svh, 260px);'
+    ? 'width:var(--trace-digraph-width, clamp(220px, 46svh, 400px));height:var(--trace-digraph-height, clamp(120px, 24svh, 190px));'
+    : 'width:var(--trace-box-width, clamp(150px, 26svh, 260px));height:var(--trace-box-height, clamp(150px, 26svh, 260px));'
   const guideFontStyle = isDigraph
-    ? 'font-size:clamp(54px, 15svh, 110px);'
-    : 'font-size:clamp(80px, 18svh, 155px);'
+    ? 'font-size:var(--trace-digraph-font, clamp(54px, 15svh, 110px));'
+    : 'font-size:var(--trace-box-font, clamp(80px, 18svh, 155px));'
   // The clear button sits *inside* the box, absolutely positioned, instead
   // of below it: a below-it button is a 5th flex child that .beat has to
   // find room for on top of the box itself, and that extra row is what
@@ -2082,27 +2097,39 @@ function wireTraceCanvas() {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  // The canvas has no intrinsic pixel size -- CSS gives it a box, but the
-  // backing bitmap defaults to 300x150 and would draw blurry/stretched
-  // without this. devicePixelRatio keeps strokes crisp on the iPad's
-  // high-density screen.
-  const dpr = window.devicePixelRatio || 1
-  const rect = canvas.getBoundingClientRect()
-  canvas.width = Math.max(1, Math.round(rect.width * dpr))
-  canvas.height = Math.max(1, Math.round(rect.height * dpr))
-  ctx.scale(dpr, dpr)
-  ctx.lineJoin = 'round'
-  ctx.lineCap = 'round'
-  ctx.lineWidth = 14
-  // Canvas 2D can't take a CSS var() directly, so it's resolved once here
-  // instead of hard-coding a duplicate of the theme color.
-  ctx.strokeStyle =
-    getComputedStyle(document.documentElement).getPropertyValue('--accent-dark').trim() ||
-    '#2b3a67'
-
   let drawing = false
   let lastX = 0
   let lastY = 0
+  let bitmapInitialized = false
+  const resizeBitmap = () => {
+    if (!canvas.isConnected) return
+    const rect = canvas.getBoundingClientRect()
+    const dpr = window.devicePixelRatio || 1
+    const width = Math.max(1, Math.round(rect.width * dpr))
+    const height = Math.max(1, Math.round(rect.height * dpr))
+    if (bitmapInitialized && canvas.width === width && canvas.height === height) return
+    // Changing the backing size clears the bitmap. Preserve the child's
+    // drawing at its relative position while rotation changes the CSS box.
+    const previous = document.createElement('canvas')
+    previous.width = canvas.width
+    previous.height = canvas.height
+    previous.getContext('2d').drawImage(canvas, 0, 0)
+    canvas.width = width
+    canvas.height = height
+    ctx.drawImage(previous, 0, 0, width, height)
+    bitmapInitialized = true
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.lineJoin = 'round'
+    ctx.lineCap = 'round'
+    ctx.lineWidth = 14
+    ctx.strokeStyle =
+      getComputedStyle(document.documentElement).getPropertyValue('--accent-dark').trim() || '#2b3a67'
+    // A pointer still held during rotation must not bridge the old and new
+    // coordinate spaces with an unintended stroke.
+    drawing = false
+  }
+  resizeTraceCanvas = resizeBitmap
+  resizeBitmap()
   const pointFromEvent = (e) => {
     const r = canvas.getBoundingClientRect()
     return { x: e.clientX - r.left, y: e.clientY - r.top }
@@ -3195,6 +3222,7 @@ function renderReward(runtime) {
     </div>
   `
   fitRecapLine()
+  scheduleRefit()
   // recapKo now has plain English letters/words mixed into the Korean
   // explanation (deliberate -- environmental print on screen), so speaking
   // *that* string with speakKO would read the English through a Korean
@@ -3241,7 +3269,7 @@ function fitRecapLine() {
   // 28px, not the CSS clamp's existing 30/40px floor: this is a last-resort
   // safety net for text nobody has measured yet, so it is allowed to go
   // slightly smaller than the floor tuned for known content.
-  const FLOOR_PX = 28
+  const FLOOR_PX = cssFitFloor(recap, '--recap-min-font', 28)
   const baseSize = parseFloat(getComputedStyle(recap).fontSize)
   const fits = () =>
     Math.max(de.scrollHeight, document.body.scrollHeight) - window.innerHeight <= 0 &&

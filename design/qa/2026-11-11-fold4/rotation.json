@@ -1,0 +1,374 @@
+{
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-11T14:15:16.558Z",
+  "cases": [
+    {
+      "name": "trace-0-retains-ink-and-state",
+      "passed": true,
+      "same": true,
+      "count": 4089,
+      "x": 0.3982236309401206,
+      "y": 0.4989777905636706,
+      "width": 431,
+      "height": 431,
+      "wantWidth": 431,
+      "wantHeight": 431,
+      "checkpoint": true,
+      "audio": 2
+    },
+    {
+      "name": "trace-0-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 396.15625,
+          "bottom": 440.15625,
+          "left": 481.265625,
+          "right": 525.265625
+        },
+        {
+          "top": 504.4375,
+          "bottom": 592.4375,
+          "left": 333.5,
+          "right": 513.5
+        },
+        {
+          "top": 650.71875,
+          "bottom": 738.71875,
+          "left": 333.5,
+          "right": 513.5
+        }
+      ]
+    },
+    {
+      "name": "trace-1-retains-ink-and-state",
+      "passed": true,
+      "same": true,
+      "count": 2842,
+      "x": 0.3985217754376748,
+      "y": 0.49836123095862106,
+      "width": 359,
+      "height": 359,
+      "wantWidth": 359,
+      "wantHeight": 359,
+      "checkpoint": true,
+      "audio": 2
+    },
+    {
+      "name": "trace-1-fits",
+      "passed": true,
+      "width": 829,
+      "height": 691,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 313.65625,
+          "bottom": 357.65625,
+          "left": 532.328125,
+          "right": 576.328125
+        },
+        {
+          "top": 403.4375,
+          "bottom": 491.4375,
+          "left": 402.5,
+          "right": 582.5
+        },
+        {
+          "top": 531.21875,
+          "bottom": 619.21875,
+          "left": 402.5,
+          "right": 582.5
+        }
+      ]
+    },
+    {
+      "name": "trace-2-retains-ink-and-state",
+      "passed": true,
+      "same": true,
+      "count": 4198,
+      "x": 0.39897907411439987,
+      "y": 0.4987713738394927,
+      "width": 431,
+      "height": 431,
+      "wantWidth": 431,
+      "wantHeight": 431,
+      "checkpoint": true,
+      "audio": 2
+    },
+    {
+      "name": "trace-2-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 396.15625,
+          "bottom": 440.15625,
+          "left": 481.265625,
+          "right": 525.265625
+        },
+        {
+          "top": 504.4375,
+          "bottom": 592.4375,
+          "left": 333.5,
+          "right": 513.5
+        },
+        {
+          "top": 650.71875,
+          "bottom": 738.71875,
+          "left": 333.5,
+          "right": 513.5
+        }
+      ]
+    },
+    {
+      "name": "trace-clear-after-rotation",
+      "passed": true
+    },
+    {
+      "name": "trace-new-stroke-maps-after-rotation",
+      "passed": true
+    },
+    {
+      "name": "build-0-retains-answer",
+      "passed": true
+    },
+    {
+      "name": "build-0-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 283.5,
+          "right": 371.5
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 379.5,
+          "right": 467.5
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 475.5,
+          "right": 563.5
+        },
+        {
+          "top": 645.140625,
+          "bottom": 733.140625,
+          "left": 348.5,
+          "right": 498.5
+        }
+      ]
+    },
+    {
+      "name": "build-1-retains-answer",
+      "passed": true
+    },
+    {
+      "name": "build-1-fits",
+      "passed": true,
+      "width": 829,
+      "height": 691,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 384.09375,
+          "bottom": 472.09375,
+          "left": 352.5,
+          "right": 440.5
+        },
+        {
+          "top": 384.09375,
+          "bottom": 472.09375,
+          "left": 448.5,
+          "right": 536.5
+        },
+        {
+          "top": 384.09375,
+          "bottom": 472.09375,
+          "left": 544.5,
+          "right": 632.5
+        },
+        {
+          "top": 521.53125,
+          "bottom": 609.53125,
+          "left": 417.5,
+          "right": 567.5
+        }
+      ]
+    },
+    {
+      "name": "build-2-retains-answer",
+      "passed": true
+    },
+    {
+      "name": "build-2-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 40,
+          "bottom": 84,
+          "left": 16,
+          "right": 92.390625
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 283.5,
+          "right": 371.5
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 379.5,
+          "right": 467.5
+        },
+        {
+          "top": 493.296875,
+          "bottom": 581.296875,
+          "left": 475.5,
+          "right": 563.5
+        },
+        {
+          "top": 645.140625,
+          "bottom": 733.140625,
+          "left": 348.5,
+          "right": 498.5
+        }
+      ]
+    },
+    {
+      "name": "reward-0-same-dom-and-progress",
+      "passed": true
+    },
+    {
+      "name": "reward-0-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 683.0625,
+          "bottom": 771.0625,
+          "left": 217.59375,
+          "right": 473.390625
+        }
+      ]
+    },
+    {
+      "name": "reward-1-same-dom-and-progress",
+      "passed": true
+    },
+    {
+      "name": "reward-1-fits",
+      "passed": true,
+      "width": 829,
+      "height": 691,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 550.53125,
+          "bottom": 638.53125,
+          "left": 286.59375,
+          "right": 542.390625
+        }
+      ]
+    },
+    {
+      "name": "reward-2-same-dom-and-progress",
+      "passed": true
+    },
+    {
+      "name": "reward-2-fits",
+      "passed": true,
+      "width": 691,
+      "height": 829,
+      "scrollX": 0,
+      "scrollY": 0,
+      "screenOverflowY": 0,
+      "screenOverflowX": 0,
+      "controls": [
+        {
+          "top": 683.0625,
+          "bottom": 771.0625,
+          "left": 217.59375,
+          "right": 473.390625
+        }
+      ]
+    },
+    {
+      "name": "console-clean",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "failures": []
+}

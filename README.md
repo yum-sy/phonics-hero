@@ -10,6 +10,15 @@
 
 ---
 
+## 지원 화면
+
+iPad를 기본으로, **펼친 Galaxy Z Fold4의 안쪽 화면 가로·세로**에도 대응한다.
+홈 화면에 설치해 사용하는 standalone 앱 기준이며, 화면 회전 중 답안과 따라 쓴 그림을
+유지한다. 바깥 커버 화면·반접힘은 이번 지원 범위에 포함하지 않는다.
+데스크톱 크기/안전 영역 검사는 완료 후 HANDOFF에 기록하며, 실기기 확인과 구분한다.
+검증: `scripts/check-fold-install.mjs`, `scripts/check-fold-resize.mjs`,
+`LAYOUT_STANDALONE=1 LAYOUT_VIEWPORTS='[["fold-p",691,829,24,24],["fold-l",829,691,24,24]]' node scripts/check-safe-layout.mjs`.
+
 ## 한글→영어 점진 전환 (2026-11-07)
 
 챕터 1~5는 한글, 6~7은 음성 전부 영어 + 지문 2개 국어(영어 크게·한글 자막), 8~14는 한글
