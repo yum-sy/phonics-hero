@@ -1,0 +1,21 @@
+{
+  "tool": "built-in image_gen",
+  "purpose": "Actual screenshot-based UI concept edits; not implementation",
+  "prompts": [
+    [
+      "teach",
+      "/tmp/fold-ipad-hero/landscape-battle1.png",
+      "Keep exact teaching content: header S는 이런 소리를 내요!, blue S, snake motion cue 뱀처럼 팔을 구불구불 움직여요, Listen and Next buttons. Preserve robot hero and villain identities. Make Listen cobalt filled white text and Next yellow navy text, a white central learning surface with ample space, subtle sky-blue villain compartment and mint hero compartment."
+    ],
+    [
+      "choose",
+      "/tmp/fold-ipad-hero/landscape-long3.png",
+      "Keep exact question 다른 소리로 시작하는 걸 찾아보세요! and three picture choices orange, octopus, umbrella. Preserve existing robot/block hero and villain identities for this UI-only comparison. Center each picture and make pictures large within equal white cards; NO written answer names or selected correct answer. Check remains clearly disabled neutral grey because no choice selected. Crisp cobalt card borders, no rainbow fill."
+    ],
+    [
+      "build",
+      "/tmp/fold-hero-full/fold-dense-landscape-build7.png",
+      "Keep exact build activity and bilingual instruction Move the letters in order to build the word! (Practice), 글자를 순서대로 옮겨서 단어를 완성해보세요! (연습이에요). Three empty slots and three tiles R AI N, do not split AI. Preserve existing superhero character identities and Undo button. Make slots cool pale blue with crisp dashed cobalt borders and tiles vivid yellow with dark navy letters. Undo quieter white outlined button."
+    ]
+  ]
+}
