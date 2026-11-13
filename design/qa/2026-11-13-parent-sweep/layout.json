@@ -1,0 +1,944 @@
+{
+  "standalone": true,
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-13T06:32:09.414Z",
+  "cases": [
+    {
+      "name": "ipad-p-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-p-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y1158",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/brick-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-p-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=40px(3.4%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-p-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=59px(4.9%)@y1135 bgap=35px(4.1%)@y535/col849",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-l-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=36px(4.3%)@y798",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-l-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=36px(4.3%)@y798",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/brick-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-l-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "ipad-l-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=43px(5.7%)@y248/col758",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 834,
+          "height": 834
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 24,
+          "right": 24
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-p-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y685",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-p-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/brick-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-p-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=102px(14.0%)@y623",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-p-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=46px(7.1%)@y205/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-l-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/dino.png",
+          "width": 1292,
+          "height": 1217
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-l-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/brick-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-l-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=73px(12.0%)@y531",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-l-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=30px(5.7%)@y94/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    }
+  ],
+  "failures": []
+}

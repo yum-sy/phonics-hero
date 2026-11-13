@@ -47,7 +47,7 @@ import {
 import { heroArt, villainArt } from './art.js'
 import { fusionLineup, fusionSounds } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
-import { bindParentHold } from './parent-command.js'
+import { bindParentSweep } from './parent-command.js'
 import { rosterInstruction } from './art/hero-roster.js'
 import { audioLang, textMode } from './data/language-policy.js'
 import { phraseFor, englishFor } from './data/phrasebook.js'
@@ -65,11 +65,11 @@ const app = document.getElementById('app')
 // previous one, and anything resuming after an await checks it still owns
 // the screen.
 let navGeneration = 0
-let releaseParentHold = () => {}
+let releaseParentCommand = () => {}
 
 function beginScreen() {
-  releaseParentHold()
-  releaseParentHold = () => {}
+  releaseParentCommand()
+  releaseParentCommand = () => {}
   navGeneration += 1
   return navGeneration
 }
@@ -82,7 +82,7 @@ function installParentCommand(title, refreshLocks) {
     title.setAttribute('aria-label', `${title.textContent.trim()}${isParentAccessEnabled() ? ' · Parent mode' : ''}`)
   }
   updateStatus()
-  releaseParentHold = bindParentHold(title, () => {
+  releaseParentCommand = bindParentSweep(title, () => {
     toggleParentAccess()
     parentProgressMessage = ''
     if (refreshLocks) refreshLocks()
@@ -1411,7 +1411,7 @@ function beatArea() {
 
 function runBeat(runtime) {
   if (!ownsScreen(runtime)) return
-  releaseParentHold.cancel?.()
+  releaseParentCommand.cancel?.()
   const { stage, beatIndex } = runtime
   try {
     if (beatIndex >= stage.beats.length) {

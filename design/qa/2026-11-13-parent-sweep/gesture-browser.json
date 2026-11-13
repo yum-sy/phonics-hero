@@ -1,0 +1,44 @@
+{
+  "base": "http://127.0.0.1:5274",
+  "generatedAt": "2026-11-13T06:34:07.720Z",
+  "gallery": null,
+  "cases": [
+    {
+      "name": "trusted-mouse-five-roundtrips-world-and-release-reset",
+      "passed": true
+    },
+    {
+      "name": "all-hierarchy-access-without-clears",
+      "passed": true
+    },
+    {
+      "name": "trusted-pointer-play-relock-preserves-beat-hp-checkpoint",
+      "passed": true
+    },
+    {
+      "name": "relock-restores-earned-progress",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-four-titles-ipad-p",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-four-titles-ipad-l",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-four-titles-fold-p",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-four-titles-fold-l",
+      "passed": true
+    },
+    {
+      "name": "review-command-isolated",
+      "passed": true
+    }
+  ],
+  "failures": []
+}

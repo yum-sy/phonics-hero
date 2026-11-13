@@ -101,13 +101,22 @@ try {
   await evaluate(`localStorage.setItem('carbot-phonics-progress-v1',${JSON.stringify(saved)}); sessionStorage.clear()`)
   await navigate('/?parent-progress-check=1')
   await until(() => evaluate(`!!document.querySelector('.parent-hold-target')`), 'parent target')
-  const point = async selector => evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
-  const hold = async selector => { const p=await point(selector); await command('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',buttons:1,clickCount:1}); await sleep(11300); await command('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',buttons:0,clickCount:1}) }
+  const points = async selector => evaluate(`(()=>{
+    const el=document.querySelector(${JSON.stringify(selector)}), walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), rects=[];
+    while(walker.nextNode()){const n=walker.currentNode;for(let i=0;i<n.length;i++){if(!/[A-Za-z0-9가-힣]/.test(n.data[i]))continue;const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);rects.push(r.getBoundingClientRect())}}
+    const b=el.getBoundingClientRect(),first=rects[0],last=rects.at(-1);
+    return {left:{x:Math.max(b.left,first.left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,last.right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
+  })()`)
+  const input = async(type,p,touch=false)=> touch
+    ? command('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd'})[type],touchPoints:type==='up'?[]:[{...p,id:1,radiusX:5,radiusY:5,force:1}]})
+    : command('Input.dispatchMouseEvent',{type:({down:'mousePressed',move:'mouseMoved',up:'mouseReleased'})[type],...p,button:'left',buttons:type==='up'?0:1,clickCount:1})
+  const trip = async(p,n=5,touch=false)=>{for(let i=0;i<n;i++){await input('move',p.right,touch);await input('move',p.left,touch)}}
+  const sweep = async(selector,touch=false)=>{const p=await points(selector);await input('down',p.left,touch);await trip(p,5,touch);await input('up',p.left,touch)}
   const click = async selector => { await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await sleep(150) }
   const progress = () => evaluate(`JSON.parse(localStorage.getItem('carbot-phonics-progress-v1'))`)
   const check = (name, passed) => { assert(passed,name); report.cases.push({name,passed:true}); console.log('PASS '+name) }
-  await hold('.parent-hold-target')
-  check('11s-opens-five-world-edit-controls',await evaluate(`document.querySelectorAll('[data-parent-scope="world"]').length===5 && !document.querySelector('button button')`))
+  await sweep('.parent-hold-target')
+  check('five-roundtrips-open-five-world-edit-controls',await evaluate(`document.querySelectorAll('[data-parent-scope="world"]').length===5 && !document.querySelector('button button')`))
   const worldId=await evaluate(`document.querySelectorAll('[data-world]')[4].dataset.world`)
   await click(`[data-parent-scope="world"][data-parent-id="${worldId}"]`)
   check('world-control-completes25-without-navigation',(await progress()).clearedStages.length===25 && await evaluate(`document.querySelectorAll('[data-world]').length===5`))
@@ -131,7 +140,7 @@ try {
   check('partial-chapter-relocks-directly',(await progress()).lockedStages.length===5)
   await click('#parent-progress-undo')
   await click(`[data-chapter="${chapterId}"]`)
-  await hold('.parent-hold-target')
+  await sweep('.parent-hold-target')
   const nextStageId=await evaluate(`document.querySelectorAll('[data-stage]')[3].dataset.stage`)
   // Relock = "not cleared": the relocked stage (its predecessor is cleared)
   // stays playable; the stage after it is what becomes locked.

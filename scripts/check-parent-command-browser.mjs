@@ -53,8 +53,6 @@ async function evaluate(expression) {
 }
 
 async function navigate(path) {
-  currentErrors = []
-  currentNetworkFailures = []
   const url = base + path
   await command('Page.navigate', { url })
   await until(async () => {
@@ -107,20 +105,29 @@ try {
   await command('Emulation.setDeviceMetricsOverride', { width: 1194, height: 834, deviceScaleFactor: 1, mobile: false })
   await navigate('/')
   await until(() => evaluate(`!!document.querySelector('.map-header')`), 'world title')
-  const saved = JSON.stringify({clearedStages:['stage-1'],stars:{'stage-1':3},checkpoint:null})
+  const saved = JSON.stringify({clearedStages:['stage-1'],stars:{'stage-1':3},checkpoint:null,lockedStages:[]})
   await evaluate(`localStorage.setItem('carbot-phonics-progress-v1',${JSON.stringify(saved)}); sessionStorage.clear()`)
   await navigate('/?parent-check=1')
   await until(() => evaluate(`!!document.querySelector('.parent-hold-target')`), 'parent target')
-  const point = async selector => evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
-  const press = async selector => { const p=await point(selector); await command('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',buttons:1,clickCount:1}); return p }
-  const release = p => command('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',buttons:0,clickCount:1})
+  const points = async selector => evaluate(`(()=>{
+    const el=document.querySelector(${JSON.stringify(selector)}), walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), rects=[];
+    while(walker.nextNode()){const n=walker.currentNode;for(let i=0;i<n.length;i++){if(!/[A-Za-z0-9가-힣]/.test(n.data[i]))continue;const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);rects.push(r.getBoundingClientRect())}}
+    const b=el.getBoundingClientRect(),first=rects[0],last=rects.at(-1);
+    return {left:{x:Math.max(b.left,first.left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,last.right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
+  })()`)
+  const input = async(type,p,touch=false)=> touch
+    ? command('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd'})[type],touchPoints:type==='up'?[]:[{...p,id:1,radiusX:5,radiusY:5,force:1}]})
+    : command('Input.dispatchMouseEvent',{type:({down:'mousePressed',move:'mouseMoved',up:'mouseReleased'})[type],...p,button:'left',buttons:type==='up'?0:1,clickCount:1})
+  const trip = async(p,n=5,touch=false)=>{for(let i=0;i<n;i++){await input('move',p.right,touch);await input('move',p.left,touch)}}
+  const sweep = async(selector,touch=false)=>{const p=await points(selector);await input('down',p.left,touch);await trip(p,5,touch);await input('up',p.left,touch)}
   const enabled = () => evaluate(`document.querySelector('.parent-hold-target')?.dataset.parentUnlocked==='true'`)
   const unchanged = async () => assert.equal(await evaluate(`localStorage.getItem('carbot-phonics-progress-v1')`),saved)
-  let p=await press('.parent-hold-target'); await sleep(600); await release(p); assert.equal(await enabled(),false); await unchanged()
-  p=await press('.parent-hold-target'); await sleep(10500); assert.equal(await enabled(),false); await sleep(800); assert.equal(await enabled(),true)
-  await sleep(1000); assert.equal(await enabled(),true); await release(p)
+  let p=await points('.parent-hold-target'); await input('down',p.left); await trip(p,4); assert.equal(await enabled(),false); await input('up',p.left);
+  await input('down',p.left);await trip(p,1);assert.equal(await enabled(),false);await input('up',p.left);
+  await input('down',{x:(p.left.x+p.right.x)/2,y:p.left.y});await trip(p);assert.equal(await enabled(),false);await input('up',p.left);
+  await sweep('.parent-hold-target');assert.equal(await enabled(),true);
   assert.equal(await evaluate(`document.querySelectorAll('.chapter-card.locked').length`),0); await unchanged()
-  report.cases.push({name:'trusted-pointer-11-second-unlock',passed:true,elapsedBeforeCheckMs:11300})
+  report.cases.push({name:'trusted-mouse-five-roundtrips-world-and-release-reset',passed:true})
   await navigate('/?parent-check=reload'); await until(enabled,'reload retains session unlock'); await unchanged()
   await evaluate(`document.querySelectorAll('.chapter-card[data-world]')[4].click()`)
   await until(() => evaluate(`document.querySelectorAll('.chapter-card[data-chapter]').length===5`),'world five chapters')
@@ -133,15 +140,26 @@ try {
   await until(() => evaluate(`!!document.querySelector('.stage-parent-title.parent-hold-target')`),'play title')
   await evaluate(`window.parentBeatBefore=document.querySelector('#beat-area').firstElementChild;window.parentHpBefore=document.querySelector('#health-fill').style.width;window.parentProgressBefore=localStorage.getItem('carbot-phonics-progress-v1')`)
   await screenshot('play-parent-on-landscape')
-  p=await press('.stage-parent-title'); await sleep(11300); assert.equal(await enabled(),false); await release(p)
+  await sweep('.stage-parent-title');assert.equal(await enabled(),false)
   assert(await evaluate(`window.parentBeatBefore.isConnected && window.parentHpBefore===document.querySelector('#health-fill').style.width && window.parentProgressBefore===localStorage.getItem('carbot-phonics-progress-v1')`))
   report.cases.push({name:'trusted-pointer-play-relock-preserves-beat-hp-checkpoint',passed:true})
   await evaluate(`document.querySelector('#exit-stage').click()`)
   await until(() => evaluate(`document.querySelectorAll('.chapter-card[data-world]').length===5`),'locked parent world exit')
   assert.equal(await evaluate(`document.querySelectorAll('.chapter-card.locked').length`),4); await unchanged()
   report.cases.push({name:'relock-restores-earned-progress',passed:true})
+  await command('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5})
+  for(const [name,width,height]of [['ipad-p',834,1194],['ipad-l',1194,834],['fold-p',691,829],['fold-l',829,691]]){
+    await command('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:true});await sleep(100);
+    await navigate('/?touch='+name);await until(()=>evaluate(`!!document.querySelector('.parent-hold-target')`),'touch title');
+    await sweep('.parent-hold-target',true);assert.equal(await enabled(),true,name+' world');
+    await evaluate(`document.querySelector('[data-world]').click()`);await sweep('.parent-hold-target',true);assert.equal(await enabled(),false,name+' chapter');await sweep('.parent-hold-target',true);
+    await evaluate(`document.querySelector('[data-chapter]').click()`);await sweep('.parent-hold-target',true);assert.equal(await enabled(),false,name+' map');await sweep('.parent-hold-target',true);
+    await evaluate(`document.querySelector('[data-stage]').click()`);await until(()=>evaluate(`!!document.querySelector('.stage-parent-title')`),'touch play title');await sweep('.stage-parent-title',true);assert.equal(await enabled(),false,name+' play');
+    report.cases.push({name:'trusted-touch-four-titles-'+name,passed:true});
+  }
+  const beforeReview=await evaluate(`localStorage.getItem('carbot-phonics-progress-v1')`);
   await navigate('/review.html'); await until(() => evaluate(`document.querySelectorAll('.review-stage').length===5`),'review catalog')
-  assert.equal(await evaluate(`document.querySelectorAll('.parent-hold-target').length`),0); await unchanged()
+  assert.equal(await evaluate(`document.querySelectorAll('.parent-hold-target').length`),0); assert.equal(await evaluate(`localStorage.getItem('carbot-phonics-progress-v1')`),beforeReview)
   report.cases.push({name:'review-command-isolated',passed:true})
   assert.deepEqual(currentErrors,[])
 } catch (error) {
