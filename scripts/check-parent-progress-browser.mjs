@@ -104,8 +104,8 @@ try {
   const points = async selector => evaluate(`(()=>{
     const el=document.querySelector(${JSON.stringify(selector)}), walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), rects=[];
     while(walker.nextNode()){const n=walker.currentNode;for(let i=0;i<n.length;i++){if(!/[A-Za-z0-9가-힣]/.test(n.data[i]))continue;const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);rects.push(r.getBoundingClientRect())}}
-    const b=el.getBoundingClientRect(),first=rects[0],last=rects.at(-1);
-    return {left:{x:Math.max(b.left,first.left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,last.right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
+    const b=el.getBoundingClientRect(),first=rects[0],left=Math.min(...rects.map(r=>r.left)),right=Math.max(...rects.map(r=>r.right));
+    return {left:{x:Math.max(b.left,left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
   })()`)
   const input = async(type,p,touch=false)=> touch
     ? command('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd'})[type],touchPoints:type==='up'?[]:[{...p,id:1,radiusX:5,radiusY:5,force:1}]})

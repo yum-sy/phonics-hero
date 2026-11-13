@@ -6,6 +6,7 @@ import { WORLD_CHARACTER_ASSETS } from '../src/art/world-character-assets.js'
 import { CHARACTER_ASSETS } from '../src/art/character-assets.js'
 import { heroArt, heroEmblem } from '../src/art.js'
 import { fusionLineup, fusionSounds } from '../src/art/fusion-lineup.js'
+import { CHARACTER_ATLASES } from '../src/art/atlas.js'
 
 const originals = await Promise.all(chapters.map(async chapter => {
   const module = await import(`../src/data/chapters/chapter-${String(chapter.order).padStart(2, '0')}.js`)
@@ -59,7 +60,7 @@ for (const [index, chapter] of chapters.entries()) {
   for (const s of team) {
     const svg = heroArt(s.hero), frame = asset(s.hero)
     assert(svg.includes(`data-art-slot="${frame.slot}"`))
-    assert(svg.includes(`/art/${frame.sheet ? 'v3' : 'v2'}/${frame.sheet || frame.family}.png`))
+    assert(svg.includes(`/art/${CHARACTER_ATLASES[frame.sheet || frame.family].path}`))
     assert(!/<text\b/.test(svg))
   }
   previous.set(family, chapter)

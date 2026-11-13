@@ -100,7 +100,7 @@ try {
       currentErrors.push(message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text)
     } else if (message.method === 'Network.responseReceived') {
       const { url, status } = message.params.response
-      if (/\/art\/v[23]\//.test(url) && status >= 400) currentNetworkFailures.push({ url, status })
+      if (/\/art\/v[234]\//.test(url) && status >= 400) currentNetworkFailures.push({ url, status })
     }
   })
   await Promise.all([command('Page.enable'), command('Runtime.enable'), command('Network.enable')])
@@ -160,14 +160,29 @@ try {
       document.body.innerHTML='<h1>'+sheetName+' — production crops</h1><div style="display:grid;grid-template-columns:repeat('+(isWorld?5:3)+',1fr);gap:10px;text-align:center">'+slots.map(slot=>'<div><div style="width:190px;height:220px;margin:auto">'+renderCharacterAsset({family,sheet:isWorld?sheetName:undefined,slot,emblem:isWorld?(slot<5?'EE':undefined):(slot<fusion?'EE':slot===fusion?'★':undefined)})+'</div><div>slot '+slot+'</div></div>').join('')+'</div>';
       document.body.style.padding='16px';
       document.querySelectorAll('.character-asset').forEach(svg=>{svg.style.width='190px';svg.style.height='220px'});
-      return {family,sheet:sheetName,isWorld,slots,expectedDimensions:[metadata.width,metadata.height]};
+      return {family,sheet:sheetName,isWorld,slots,expectedPath:metadata.path,expectedDimensions:[metadata.width,metadata.height]};
     })()`)
     sheet.images = await evaluate(decodedImages)
     assert(sheet.images.length > 0 && sheet.images.every(i => !i.error), 'Audit sheet atlas decode failed')
     assert(sheet.images.every(i => i.width===sheet.expectedDimensions[0] && i.height===sheet.expectedDimensions[1]),'Audit sheet native dimensions differ from metadata')
-    assert(sheet.images.every(i=>i.url.includes('/art/'+(isWorld?'v3':'v2')+'/')),'Audit sheet loaded wrong asset version')
+    assert(sheet.images.every(i=>new URL(i.url).pathname.endsWith('/art/'+sheet.expectedPath)),'Audit sheet loaded wrong asset version')
     await screenshot(`atlas-${sheetName}`)
     report.atlasSheets.push(sheet)
+    if (sheet.expectedPath.startsWith('v4/')) {
+      sheet.silhouetteCount = await evaluate(`(() => {
+        const arts=[...document.querySelectorAll('.character-asset')];
+        document.body.classList.add('silhouette');
+        for(const art of arts) {
+          const parent=art.parentElement;
+          parent.classList.add('box');
+          parent.style.cssText='width:190px;height:220px;margin:auto;border:0;background:transparent;box-shadow:none';
+        }
+        return arts.filter(art=>getComputedStyle(art).filter==='brightness(0)').length;
+      })()`)
+      assert.equal(sheet.silhouetteCount,sheet.slots.length,'Gallery art does not use black silhouette')
+      await screenshot(`silhouette-${sheetName}`)
+      await evaluate(`document.body.classList.remove('silhouette')`)
+    }
   }
   assert.equal(report.atlasSheets.filter(s=>!s.isWorld).reduce((n,s)=>n+s.slots.length,0),65,'Expected all 65 base production slots')
   assert.equal(report.atlasSheets.filter(s=>s.isWorld).reduce((n,s)=>n+s.slots.length,0),70,'Expected all 70 world characters, including four reserved')

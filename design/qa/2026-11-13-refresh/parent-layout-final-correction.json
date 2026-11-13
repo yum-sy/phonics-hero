@@ -1,0 +1,75 @@
+{
+  "standalone": true,
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-13T08:12:55.294Z",
+  "cases": [
+    {
+      "name": "ipad-p-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen parent-progress-editor|-] chapter=5 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=36px(3.0%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 1194,
+          "height": 1194
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 36,
+          "left": 20,
+          "right": 20
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    }
+  ],
+  "failures": []
+}

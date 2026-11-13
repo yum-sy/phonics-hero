@@ -1495,6 +1495,7 @@ function scheduleRefit() {
 if (typeof window !== 'undefined') {
   window.addEventListener('resize', scheduleRefit)
   window.visualViewport?.addEventListener('resize', scheduleRefit)
+  document.fonts?.ready.then(scheduleRefit)
 }
 
 // Same recipe as fitRecapLine(): shrink only as far as THIS string's own

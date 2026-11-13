@@ -25,7 +25,7 @@
 export const chapter30 = {
   "id": "chapter-30",
   "order": 30,
-  "title": "Brick Kingdom Returns",
+  "title": "Royal Knights Return",
   "stages": [
     {
       "id": "c30s1",
@@ -804,7 +804,7 @@ export const chapter30 = {
     {
       "id": "c30s4",
       "order": 4,
-      "title": "Brick Training",
+      "title": "Knight Training",
       "villain": {
         "name": "Rubblehorn",
         "art": "rubblehorn",

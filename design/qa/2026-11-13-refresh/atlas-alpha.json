@@ -1,0 +1,153 @@
+{
+  "measured": [
+    "dino",
+    "brick",
+    "dino-worlds",
+    "brick-worlds"
+  ],
+  "audits": {
+    "dino": {
+      "rowCuts": [
+        0,
+        381,
+        802,
+        1245
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          426,
+          825,
+          1263
+        ],
+        [
+          0,
+          426,
+          817,
+          1263
+        ],
+        [
+          0,
+          411,
+          809,
+          1263
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "brick": {
+      "rowCuts": [
+        0,
+        405,
+        801,
+        1247
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          436,
+          831,
+          1261
+        ],
+        [
+          0,
+          415,
+          835,
+          1261
+        ],
+        [
+          0,
+          416,
+          827,
+          1261
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "dino-worlds": {
+      "rowCuts": [
+        0,
+        408,
+        793
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          388,
+          794,
+          1175,
+          1586,
+          1983
+        ],
+        [
+          0,
+          391,
+          791,
+          1185,
+          1578,
+          1983
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    },
+    "brick-worlds": {
+      "rowCuts": [
+        0,
+        381,
+        793
+      ],
+      "columnCutsByRow": [
+        [
+          0,
+          392,
+          795,
+          1175,
+          1566,
+          1983
+        ],
+        [
+          0,
+          409,
+          765,
+          1171,
+          1551,
+          1983
+        ]
+      ],
+      "visibleEdgePixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sharedEmptyPadding": [],
+      "omittedVisiblePixels": 0,
+      "duplicatedVisiblePixels": 0
+    }
+  },
+  "failures": []
+}

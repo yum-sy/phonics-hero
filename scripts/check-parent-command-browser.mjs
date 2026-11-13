@@ -59,6 +59,8 @@ async function navigate(path) {
     try { return await evaluate(`location.href === ${JSON.stringify(url)} && document.readyState !== 'loading'`) }
     catch { return false }
   }, `new document ${path}`)
+  await evaluate('document.fonts.ready.then(() => true)')
+  await sleep(150)
 }
 
 async function screenshot(name) {
@@ -112,8 +114,8 @@ try {
   const points = async selector => evaluate(`(()=>{
     const el=document.querySelector(${JSON.stringify(selector)}), walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), rects=[];
     while(walker.nextNode()){const n=walker.currentNode;for(let i=0;i<n.length;i++){if(!/[A-Za-z0-9가-힣]/.test(n.data[i]))continue;const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);rects.push(r.getBoundingClientRect())}}
-    const b=el.getBoundingClientRect(),first=rects[0],last=rects.at(-1);
-    return {left:{x:Math.max(b.left,first.left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,last.right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
+    const b=el.getBoundingClientRect(),first=rects[0],left=Math.min(...rects.map(r=>r.left)),right=Math.max(...rects.map(r=>r.right));
+    return {left:{x:Math.max(b.left,left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
   })()`)
   const input = async(type,p,touch=false)=> touch
     ? command('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd'})[type],touchPoints:type==='up'?[]:[{...p,id:1,radiusX:5,radiusY:5,force:1}]})
@@ -147,6 +149,15 @@ try {
   await until(() => evaluate(`document.querySelectorAll('.chapter-card[data-world]').length===5`),'locked parent world exit')
   assert.equal(await evaluate(`document.querySelectorAll('.chapter-card.locked').length`),4); await unchanged()
   report.cases.push({name:'relock-restores-earned-progress',passed:true})
+  // The title may wrap after a font or viewport change. Sweep the visible
+  // left/right envelope, not the last character of a shorter second line.
+  await evaluate(`document.querySelector('.parent-hold-target').style.maxWidth='420px'`)
+  assert(await evaluate(`(()=>{const e=document.querySelector('.parent-hold-target');return e.getBoundingClientRect().height>parseFloat(getComputedStyle(e).fontSize)*1.6})()`),'multiline title fixture')
+  await sweep('.parent-hold-target');assert.equal(await enabled(),true)
+  // Toggling menus rebuilds the heading; force wrapping again for relocking.
+  await evaluate(`document.querySelector('.parent-hold-target').style.maxWidth='420px'`)
+  await sweep('.parent-hold-target');assert.equal(await enabled(),false);await unchanged()
+  report.cases.push({name:'trusted-pointer-multiline-title-envelope',passed:true})
   await command('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5})
   for(const [name,width,height]of [['ipad-p',834,1194],['ipad-l',1194,834],['fold-p',691,829],['fold-l',829,691]]){
     await command('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:true});await sleep(100);

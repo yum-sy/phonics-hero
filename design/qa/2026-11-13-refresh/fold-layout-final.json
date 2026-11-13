@@ -1,0 +1,6633 @@
+{
+  "standalone": true,
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-13T08:09:31.530Z",
+  "cases": [
+    {
+      "name": "fold-portrait-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y789",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-chapters-locked",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y789",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/dino-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-map1-locked",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=115px(13.8%)@y714",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y789",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y789",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-map1",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=115px(13.8%)@y714",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=127px(15.3%)@y702",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=59px(7.9%)@y135/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-battle4",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=59px(7.9%)@y135/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-battle7",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=57px(7.6%)@y248/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss1",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=26px(3.1%)@y803 bgap=88px(11.7%)@y701/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss5",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=70px(9.3%)@y719/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss7",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=11px(1.3%)@y818 bgap=75px(10.1%)@y714/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss1after",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=26px(3.1%)@y803 bgap=92px(12.3%)@y529/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss5after",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=41px(5.4%)@y155/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-boss7after",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=11px(1.3%)@y818 bgap=47px(6.3%)@y619/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-reward1",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=79px(9.5%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-reward33",
+      "hud": "NOSCROLL shot=reward33 on=[screen reward-screen|-] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=60px(7.2%)@y769",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-long3",
+      "hud": "NOSCROLL shot=long3 on=[screen stage-screen|beat choose-beat] option=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=36px(4.3%)@y0 bgap=81px(10.8%)@y554/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-long4",
+      "hud": "NOSCROLL shot=long4 on=[screen stage-screen|beat multiselect-beat] option=4 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(5.1%)@y638/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-build7",
+      "hud": "NOSCROLL shot=build7 on=[screen stage-screen|beat build-beat] letter=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=11px(1.3%)@y818 bgap=75px(10.1%)@y232/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-listen1",
+      "hud": "NOSCROLL shot=listen1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=227px(30.4%)@y125/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-finale1",
+      "hud": "NOSCROLL shot=finale1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=58px(7.7%)@y505/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-finale2",
+      "hud": "NOSCROLL shot=finale2 on=[screen stage-screen|beat listen-beat finale] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=73px(9.8%)@y562/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=15px(1.8%)@y0 bgap=37px(5.0%)@y640/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=15px(1.8%)@y0 bgap=55px(7.4%)@y156/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang6b",
+      "hud": "NOSCROLL shot=lang6b on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=15px(1.8%)@y0 bgap=230px(30.8%)@y194/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(5.1%)@y638/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=34px(4.6%)@y646/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=40px(4.8%)@y0 bgap=70px(9.3%)@y570/col749",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=81px(9.8%)@y748",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-portrait-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=691x829 svh=829 tb=365 ovfY=0 ovfX=0 gap=93px(11.2%)@y736",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          691,
+          829
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 829,
+          "height": 829
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y651",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-chapters-locked",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y651",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-map1-locked",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=82px(11.8%)@y609",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y651",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y651",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-map1",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=82px(11.8%)@y609",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=94px(13.5%)@y597",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=41px(6.8%)@y109/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-battle4",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=41px(6.8%)@y109/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-battle7",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=38px(6.2%)@y128/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss1",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=49px(8.0%)@y602/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss5",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=33px(5.5%)@y40/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss7",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=33px(5.5%)@y40/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss1after",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=67px(11.0%)@y441/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss5after",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=42px(6.9%)@y491/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-boss7after",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(6.2%)@y500/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-reward1",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=31px(4.5%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-reward33",
+      "hud": "NOSCROLL shot=reward33 on=[screen reward-screen|-] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=45px(6.6%)@y646",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-long3",
+      "hud": "NOSCROLL shot=long3 on=[screen stage-screen|beat choose-beat] option=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=1px(0.2%)@y0 bgap=27px(4.3%)@y524/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-long4",
+      "hud": "NOSCROLL shot=long4 on=[screen stage-screen|beat multiselect-beat] option=4 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.3%)@y549/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-build7",
+      "hud": "NOSCROLL shot=build7 on=[screen stage-screen|beat build-beat] letter=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=42px(6.9%)@y487/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-listen1",
+      "hud": "NOSCROLL shot=listen1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=176px(28.8%)@y102/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-finale1",
+      "hud": "NOSCROLL shot=finale1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=38px(6.3%)@y425/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-finale2",
+      "hud": "NOSCROLL shot=finale2 on=[screen stage-screen|beat listen-beat finale] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=48px(7.8%)@y476/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.3%)@y549/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=38px(6.2%)@y128/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang6b",
+      "hud": "NOSCROLL shot=lang6b on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=181px(29.6%)@y146/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.3%)@y549/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=14px(2.3%)@y549/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=40px(5.8%)@y0 bgap=49px(8.1%)@y470/col611",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=7px(0.9%)@y684",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-landscape-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=829x691 svh=691 tb=143 ovfY=0 ovfX=0 gap=72px(10.4%)@y619",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          829,
+          691
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 691,
+          "height": 691
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y685",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-chapters-locked",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y685",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-map1-locked",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=90px(12.4%)@y635",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y685",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-map1",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=90px(12.4%)@y635",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=102px(14.0%)@y623",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=46px(7.1%)@y205/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-battle4",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=46px(7.1%)@y114/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-battle7",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=38px(6.0%)@y151/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss1",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=53px(8.2%)@y632/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss5",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=39px(6.1%)@y40/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss7",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=41px(6.3%)@y644/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss1after",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=73px(11.4%)@y462/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss5after",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=29px(4.5%)@y133/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-boss7after",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=23px(3.5%)@y172/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-reward1",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=65px(8.9%)@y660",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-reward33",
+      "hud": "NOSCROLL shot=reward33 on=[screen reward-screen|-] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y685",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-long3",
+      "hud": "NOSCROLL shot=long3 on=[screen stage-screen|beat choose-beat] option=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=10px(1.3%)@y0 bgap=67px(10.4%)@y477/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-long4",
+      "hud": "NOSCROLL shot=long4 on=[screen stage-screen|beat multiselect-beat] option=4 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=26px(4.0%)@y559/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-build7",
+      "hud": "NOSCROLL shot=build7 on=[screen stage-screen|beat build-beat] letter=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=55px(8.6%)@y495/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-listen1",
+      "hud": "NOSCROLL shot=listen1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=188px(29.2%)@y108/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-finale1",
+      "hud": "NOSCROLL shot=finale1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=45px(7.0%)@y439/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-finale2",
+      "hud": "NOSCROLL shot=finale2 on=[screen stage-screen|beat listen-beat finale] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=58px(9.0%)@y489/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=20px(3.0%)@y572/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=42px(6.5%)@y135/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang6b",
+      "hud": "NOSCROLL shot=lang6b on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=190px(29.4%)@y171/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=26px(4.0%)@y559/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=24px(3.7%)@y563/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=40px(5.5%)@y0 bgap=52px(8.1%)@y500/col645",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=65px(8.9%)@y660",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-portrait-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=604x725 svh=725 tb=469 ovfY=0 ovfX=0 gap=77px(10.6%)@y648",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          604,
+          725
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 725,
+          "height": 725
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-world-locked",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-chapters-locked",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          },
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-map1-locked",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=61px(10.0%)@y543",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": [
+          {
+            "filter": "brightness(0)",
+            "opacity": "1",
+            "parentOpacity": "1"
+          }
+        ]
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-world",
+      "hud": "NOSCROLL shot=world on=[screen chapter-select-screen |-] chapter=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-chapters",
+      "hud": "NOSCROLL shot=chapters on=[screen chapter-select-screen |-] chapter=7 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y564",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot",
+          "comic",
+          "dino",
+          "pixel",
+          "brick",
+          "career",
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-map1",
+      "hud": "NOSCROLL shot=map1 on=[screen map-screen |-] stage=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=61px(10.0%)@y543",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-map4",
+      "hud": "NOSCROLL shot=map4 on=[screen map-screen |-] stage=5 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=73px(12.0%)@y531",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-battle1",
+      "hud": "NOSCROLL shot=battle1 on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=30px(5.7%)@y94/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-battle4",
+      "hud": "NOSCROLL shot=battle4 on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=30px(5.7%)@y94/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "pixel"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-battle7",
+      "hud": "NOSCROLL shot=battle7 on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=27px(5.1%)@y181/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss1",
+      "hud": "NOSCROLL shot=boss1 on=[screen stage-screen|beat teach-beat] mini=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=20px(3.8%)@y544/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss5",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=19px(3.6%)@y40/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss7",
+      "hud": "NOSCROLL shot=boss7 on=[screen stage-screen|beat teach-beat] mini=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=19px(3.6%)@y40/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss1after",
+      "hud": "NOSCROLL shot=boss1after on=[screen stage-screen|beat teach-beat] beat-equation=1 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=54px(10.2%)@y381/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss5after",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=38px(7.3%)@y412/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-boss7after",
+      "hud": "NOSCROLL shot=boss7after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=33px(6.3%)@y422/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-reward1",
+      "hud": "NOSCROLL shot=reward1 on=[screen reward-screen|-] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=47px(7.8%)@y557",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-reward33",
+      "hud": "NOSCROLL shot=reward33 on=[screen reward-screen|-] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=41px(6.8%)@y563",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-long3",
+      "hud": "NOSCROLL shot=long3 on=[screen stage-screen|beat choose-beat] option=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=19px(3.6%)@y452/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-long4",
+      "hud": "NOSCROLL shot=long4 on=[screen stage-screen|beat multiselect-beat] option=4 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.7%)@y462/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-build7",
+      "hud": "NOSCROLL shot=build7 on=[screen stage-screen|beat build-beat] letter=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=36px(6.9%)@y163/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-listen1",
+      "hud": "NOSCROLL shot=listen1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=143px(27.3%)@y88/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-finale1",
+      "hud": "NOSCROLL shot=finale1 on=[screen stage-screen|beat readaloud-beat attack-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=25px(4.7%)@y380/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "charging",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-finale2",
+      "hud": "NOSCROLL shot=finale2 on=[screen stage-screen|beat listen-beat finale] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=31px(5.9%)@y422/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "comic"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang6c",
+      "hud": "NOSCROLL shot=lang6c on=[screen stage-screen|beat choose-beat] option=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.7%)@y462/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang6t",
+      "hud": "NOSCROLL shot=lang6t on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=27px(5.1%)@y110/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang6b",
+      "hud": "NOSCROLL shot=lang6b on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=140px(26.7%)@y155/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang7m",
+      "hud": "NOSCROLL shot=lang7m on=[screen stage-screen|beat multiselect-beat] option=4 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=0px(0.0%)@y0 bgap=14px(2.7%)@y462/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang9c",
+      "hud": "NOSCROLL shot=lang9c on=[screen stage-screen|beat choose-beat] option=3 vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=14px(2.7%)@y462/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-lang20t",
+      "hud": "NOSCROLL shot=lang20t on=[screen stage-screen|beat teach-beat] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=40px(6.6%)@y0 bgap=30px(5.7%)@y126/col524",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "robot"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "topbar": 40,
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "state": "studying",
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-reward6",
+      "hud": "NOSCROLL shot=reward6 on=[screen reward-screen|-] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=47px(7.8%)@y557",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "career"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "fold-dense-landscape-reward16",
+      "hud": "NOSCROLL shot=reward16 on=[screen reward-screen|-] empty vp=725x604 svh=604 tb=230 ovfY=0 ovfX=0 gap=59px(9.8%)@y545",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ],
+      "dom": {
+        "viewport": [
+          725,
+          604
+        ],
+        "families": [
+          "deco"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "bounds": {
+        "screen": {
+          "top": 0,
+          "bottom": 604,
+          "height": 604
+        },
+        "padding": {
+          "top": 40,
+          "bottom": 40,
+          "left": 16,
+          "right": 16
+        },
+        "locked": []
+      },
+      "motion": {
+        "reduced": false,
+        "activeBattleAnimations": 0,
+        "badges": 0
+      },
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "provenance": "127/128 full run passed. Three dense landscape fusion cases rerun after equation font cap correction; replacements included. Initial failure and correction reports retained."
+}

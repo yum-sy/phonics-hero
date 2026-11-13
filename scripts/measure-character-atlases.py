@@ -119,10 +119,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--allow-missing", action="store_true", help="Measure available sheets while generation is in progress")
     parser.add_argument("--worlds", action="store_true", help="Measure public/art/v3/*-worlds.png as 5-column x 2-row world sheets")
+    parser.add_argument("--refresh", action="store_true", help="Measure the four dinosaur/animal-knight replacement sheets in public/art/v4")
     args = parser.parse_args()
     output, audits, failures = {}, {}, []
     grids = {f"{family}-worlds": (5, 2) for family in GRIDS} if args.worlds else GRIDS
     source_dir = ROOT / ("public/art/v3" if args.worlds else "public/art/v2")
+    if args.refresh:
+        grids = {"dino": (3, 3), "brick": (3, 3), "dino-worlds": (5, 2), "brick-worlds": (5, 2)}
+        source_dir = ROOT / "public/art/v4"
     for family, (columns, rows) in grids.items():
         path = source_dir / f"{family}.png"
         if not path.exists():
@@ -131,12 +135,16 @@ def main():
             continue
         try:
             output[family], audits[family] = measure(path, columns, rows)
+            if args.refresh:
+                output[family]["path"] = f"v4/{family}.png"
         except ValueError as error:
             failures.append(str(error))
     print(json.dumps({"measured": list(output), "audits": audits, "failures": failures}, indent=2))
     if failures:
         raise SystemExit(1)
     destination = ROOT / ("src/art/world-atlas-frames.json" if args.worlds else "src/art/atlas-frames.json")
+    if args.refresh:
+        destination = ROOT / "src/art/refresh-atlas-frames.json"
     destination.write_text(json.dumps(output, indent=2) + "\n")
 
 

@@ -80,10 +80,12 @@ try {
 
   const baselineFrames = await json('src/art/atlas-frames.json')
   const worldFrames = await optionalJson('src/art/world-atlas-frames.json')
+  const refreshFrames = await json('src/art/refresh-atlas-frames.json')
+  const activeFrames = { ...baselineFrames, ...worldFrames, ...refreshFrames }
   let pngCount = 0, frameCount = 0
-  for (const [sheet, data] of Object.entries({ ...baselineFrames, ...worldFrames })) {
+  for (const [sheet, data] of Object.entries(activeFrames)) {
     const isWorld = sheet.endsWith('-worlds')
-    const path = `public/art/${isWorld ? 'v3' : 'v2'}/${sheet}.png`
+    const path = `public/art/${data.path || `${isWorld ? 'v3' : 'v2'}/${sheet}.png`}`
     let png
     try { png = await readFile(join(root, path)) }
     catch (error) {
@@ -149,8 +151,8 @@ try {
         assert(!/<text\b/i.test(rendered), `Permanent character badge: ${slug}`)
         const asset = HERO_ROSTER[slug]?.asset || worldAssets[slug] || CHARACTER_ASSETS[slug]
         const sheet = asset.sheet || asset.family
-        const version = asset.sheet ? 'v3' : 'v2'
-        assert(rendered.includes(`/art/${version}/${sheet}.png`), `Renderer uses wrong sheet: ${slug}`)
+        const path = activeFrames[sheet].path || `${asset.sheet ? 'v3' : 'v2'}/${sheet}.png`
+        assert(rendered.includes(`/art/${path}`), `Renderer uses wrong sheet: ${slug}`)
         assert(rendered.includes(`data-art-slot="${asset.slot}"`), `Renderer uses wrong slot: ${slug}`)
       }
       assert.equal(pngCount, 14); assert.equal(frameCount, 136)

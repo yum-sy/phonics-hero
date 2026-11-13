@@ -49,7 +49,7 @@
 export const chapter21 = {
   "id": "chapter-21",
   "order": 21,
-  "title": "Block Kingdom: Blend Boost",
+  "title": "Knights: Blend Quest",
   "stages": [
     {
       "id": "c21-stage-1",

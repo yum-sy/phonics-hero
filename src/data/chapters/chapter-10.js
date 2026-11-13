@@ -59,7 +59,7 @@
 export const chapter10 = {
   id: 'chapter-10',
   order: 10,
-  title: 'Brick Road Returns',
+  title: 'Knights Return',
   stages: [
     {
       id: 'c10-stage-1',

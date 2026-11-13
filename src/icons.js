@@ -1056,12 +1056,12 @@ const ICONS = {
   // itself carries shape-recognition value instead of being blank filler.
   letterTile: (label = '') =>
     wrap(`
-      <rect x="8" y="8" width="48" height="48" rx="10" fill="#378add"/>
-      <rect x="8" y="8" width="48" height="48" rx="10" fill="none" stroke="#0c447c" stroke-width="3"/>
+      <rect x="8" y="8" width="48" height="48" rx="10" fill="#ffd84d"/>
+      <rect x="8" y="8" width="48" height="48" rx="10" fill="none" stroke="#202124" stroke-width="3"/>
       <polygon points="8,18 18,8 8,8" fill="#eafcff" opacity="0.8"/>
       <text x="32" y="40" text-anchor="middle" font-size="${
         label.length > 2 ? 18 : 26
-      }" font-weight="800" fill="#fff">${label}</text>
+      }" font-weight="800" fill="#202124">${label}</text>
     `),
 }
 

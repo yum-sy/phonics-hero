@@ -1,4 +1,4 @@
-// Chapter 25 (Brick Peaks Rally) -- consonant blend chapter (world 4, no new
+// Chapter 25 (Knights of the Peaks) -- consonant blend chapter (world 4, no new
 // phonemes: Jolly Phonics Group 1-7 전체가 챕터 1-14에서 이미 끝났다). 이
 // 챕터가 가르치는 것은 이미 배운 낱글자 소리 두세 개를 이어 말하는 것뿐이다
 // -- SOUND_TABLE에 새 표기를 추가하지 않았다(신규 오디오 에셋 불필요).
@@ -38,7 +38,7 @@
 export const chapter25 = {
   "id": "chapter-25",
   "order": 25,
-  "title": "Brick Peaks Rally",
+  "title": "Knights of the Peaks",
   "stages": [
     {
       "id": "c25-stage-1",

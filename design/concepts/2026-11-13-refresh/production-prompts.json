@@ -1,0 +1,26 @@
+{
+  "tool": "built-in image_gen",
+  "jobs": [
+    [
+      "dino",
+      "02-dinosaurs.png",
+      "3 columns by 3 rows exactly NINE characters in equal square cells. Row1: turquoise friendly triceratops shield guardian; golden friendly ankylosaurus clubtail; kindly emerald stegosaurus (reserve hero). Row2: magnificent friendly FUSION guardian dinosaur combining golden triceratops horns, blue brachiosaurus neck, emerald stegosaurus plates, compact heroic quadruped; rust-red sneaky raptor; petrol-blue predatory spinosaurus orange sail. Row3: ochre horned carnotaurus mean forward lean; dark olive allosaurus with sharp red eyebrows; imposing charcoal lava-orange tyrannosaurus with ivory bone jaw armor (reserve boss)."
+    ],
+    [
+      "dino-worlds",
+      "02-dinosaurs.png",
+      "5 columns by 2 rows exactly TEN characters in equal cells. Top row five friendly HEROES: sky-blue longneck brachiosaurus; mint green parasaurolophus tall curved crest; coral peach pachycephalosaurus rounded dome head; ivory teal styracosaurus wide decorative frill; deep blue gold-edged sauropelta broad low armored body. Bottom row five different BOSS VILLAINS: charcoal lava-orange bone-jaw tyrannosaurus; crimson cream enormous spinosaurus with large triangular sail; icy pale blue navy giganotosaurus with jagged frost back plates; dark green ochre carnotaurus with enormous forward horns; black ivory red acrocanthosaurus with towering dorsal ridge and crown-like heavy brow. Each boss a different silhouette and palette, aggressive predatory posture, sharp teeth, no purple."
+    ],
+    [
+      "brick",
+      "03-knights.png",
+      "3 columns by 3 rows exactly NINE characters in equal square cells. Row1: brave golden lion shield knight royal blue cape; small white rabbit wizard teal hat golden star staff; elegant friendly deer ranger green tunic and antler-shaped staff (reservehero). Row2: magnificent FUSION king white griffin paladin with folded golden wings, lion hindlegs, noble eagle head, emerald crystal shield, upright heroic pose; sneaky grey weasel thief red mask small hooked cane; wiry dark rat bandit rustorange leather armor round buckler. Row3: sly lanky spotted hyena duelist tawny jacket and curved wooden practice saber; squat black boar raider brown leather and small iron mallet; imposing black ram sorcerer huge ivory spiral horns emerald gold mantle and staff (reserveboss)."
+    ],
+    [
+      "brick-worlds",
+      "03-knights.png",
+      "5 columns by 2 rows exactly TEN characters in equal cells. Top row five HEROES: slim russet fox archer green cape bow; large brown bear hammerwarrior burnt orange armor wooden hammer; sleek grey otter lance knight turquoise tabard with simple blunt ceremonial lance; round white owl scholar gold spectacles burgundy scholar robe glowing book; stocky grey rhinoceros shield guardian ivory orange armor and huge tower shield. Bottom row five BOSS VILLAINS: black ram archmage huge ivory spiral horns emerald gold robe; white snow leopard duelist navy silver armor dual elegant sabers; dark crocodile warlord terracotta bronze armor broad serrated shield; broad black wolf baron crimson black cape silver halberd; immense walrus frost king white fur collar icy teal gold crown mighty icehammer. Five wildly distinct silhouettes and dominant colors, no purple sameness. Each boss impressive regal sly scowl, suitableage5 no gore."
+    ]
+  ],
+  "notes": "Transparent PNG atlas creation. dino-worlds first output opaque; replaced with image_gen background removal preserving ten characters. Existing slots retained, v4 explicit paths."
+}

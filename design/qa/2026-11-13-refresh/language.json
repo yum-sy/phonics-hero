@@ -1,0 +1,12 @@
+PASS ch1-5 audio ko, ch6+ en
+PASS ch1-5 text ko for every rank
+PASS ch6 exactly the even ranks are en-ko
+PASS ch7 every rank en-ko
+PASS ch8-14 monotone fade (en-ko -> en, never back)
+PASS ch8 has both en-ko and en; every fade chapter 8-14 drops at least one rank
+PASS by ch14 every rank is en
+PASS ch15+ en for every rank
+PASS unknown phrase -> ko in every chapter
+PASS textMode uses phrase rank
+PASS describePolicy rows
+11/11 policy checks passed

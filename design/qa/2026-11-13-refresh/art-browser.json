@@ -1,0 +1,844 @@
+{
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-13T08:10:43.583Z",
+  "gallery": {
+    "uniqueCharacters": 296,
+    "missing": [],
+    "badgeErrors": [],
+    "families": {
+      "robot": 45,
+      "comic": 44,
+      "dino": 45,
+      "pixel": 36,
+      "brick": 45,
+      "career": 36,
+      "deco": 45
+    },
+    "images": [
+      {
+        "url": "http://127.0.0.1:5174/art/v2/robot.png",
+        "width": 1312,
+        "height": 1199
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+        "width": 1774,
+        "height": 887
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v2/comic.png",
+        "width": 1254,
+        "height": 1254
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+        "width": 1536,
+        "height": 1024
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v4/dino.png",
+        "width": 1263,
+        "height": 1245
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+        "width": 1983,
+        "height": 793
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+        "width": 1254,
+        "height": 1254
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+        "width": 1536,
+        "height": 1024
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v4/brick.png",
+        "width": 1261,
+        "height": 1247
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+        "width": 1983,
+        "height": 793
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v2/career.png",
+        "width": 1086,
+        "height": 1448
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+        "width": 1536,
+        "height": 1024
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v2/deco.png",
+        "width": 1216,
+        "height": 1293
+      },
+      {
+        "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+        "width": 1536,
+        "height": 1024
+      }
+    ],
+    "galleryCharacters": 297,
+    "galleryMapped": 297,
+    "consoleErrors": [],
+    "networkFailures": []
+  },
+  "cases": [
+    {
+      "name": "portrait-battle3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=battle3 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=54px(4.5%)@y1140 bgap=50px(5.7%)@y384/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=43px(3.6%)@y450 bgap=43px(4.8%)@y450/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss3after",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=63px(5.3%)@y1131 bgap=59px(6.6%)@y961/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-battle5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=battle5 on=[screen stage-screen|beat teach-beat] empty vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=54px(4.5%)@y1140 bgap=50px(5.7%)@y391/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=20px(1.7%)@y455 bgap=30px(3.4%)@y291/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "portrait-boss5after",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=834x1194 svh=1194 tb=0 ovfY=0 ovfX=0 gap=63px(5.3%)@y1131 bgap=59px(6.6%)@y961/col887",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          834,
+          1194
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=battle3 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=53px(6.6%)@y118/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss3",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=32px(4.0%)@y164/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss3after",
+      "family": "dino",
+      "hud": "NOSCROLL shot=boss3after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=58px(7.3%)@y617/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "dino"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-battle5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=battle5 on=[screen stage-screen|beat teach-beat] empty vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=53px(6.6%)@y123/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss5",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5 on=[screen stage-screen|beat teach-beat] mini=3 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=19px(2.4%)@y16/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    },
+    {
+      "name": "landscape-boss5after",
+      "family": "brick",
+      "hud": "NOSCROLL shot=boss5after on=[screen stage-screen|beat teach-beat] beat-equation=2 vp=1194x834 svh=834 tb=0 ovfY=0 ovfX=0 gap=16px(1.9%)@y0 bgap=58px(7.3%)@y617/col802",
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        },
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "dom": {
+        "viewport": [
+          1194,
+          834
+        ],
+        "families": [
+          "brick"
+        ],
+        "legacy": 0
+      },
+      "consoleErrors": [],
+      "networkFailures": [],
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "atlasSheets": [
+    {
+      "family": "robot",
+      "sheet": "robot",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v2/robot.png",
+      "expectedDimensions": [
+        1312,
+        1199
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/robot.png",
+          "width": 1312,
+          "height": 1199
+        }
+      ]
+    },
+    {
+      "family": "comic",
+      "sheet": "comic",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v2/comic.png",
+      "expectedDimensions": [
+        1254,
+        1254
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/comic.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ]
+    },
+    {
+      "family": "dino",
+      "sheet": "dino",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v4/dino.png",
+      "expectedDimensions": [
+        1263,
+        1245
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino.png",
+          "width": 1263,
+          "height": 1245
+        }
+      ],
+      "silhouetteCount": 9
+    },
+    {
+      "family": "pixel",
+      "sheet": "pixel",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v2/pixel.png",
+      "expectedDimensions": [
+        1254,
+        1254
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/pixel.png",
+          "width": 1254,
+          "height": 1254
+        }
+      ]
+    },
+    {
+      "family": "brick",
+      "sheet": "brick",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v4/brick.png",
+      "expectedDimensions": [
+        1261,
+        1247
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick.png",
+          "width": 1261,
+          "height": 1247
+        }
+      ],
+      "silhouetteCount": 9
+    },
+    {
+      "family": "career",
+      "sheet": "career",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expectedPath": "v2/career.png",
+      "expectedDimensions": [
+        1086,
+        1448
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/career.png",
+          "width": 1086,
+          "height": 1448
+        }
+      ]
+    },
+    {
+      "family": "deco",
+      "sheet": "deco",
+      "isWorld": false,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expectedPath": "v2/deco.png",
+      "expectedDimensions": [
+        1216,
+        1293
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v2/deco.png",
+          "width": 1216,
+          "height": 1293
+        }
+      ]
+    },
+    {
+      "family": "robot",
+      "sheet": "robot-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v3/robot-worlds.png",
+      "expectedDimensions": [
+        1774,
+        887
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/robot-worlds.png",
+          "width": 1774,
+          "height": 887
+        }
+      ]
+    },
+    {
+      "family": "comic",
+      "sheet": "comic-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v3/comic-worlds.png",
+      "expectedDimensions": [
+        1536,
+        1024
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/comic-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "family": "dino",
+      "sheet": "dino-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v4/dino-worlds.png",
+      "expectedDimensions": [
+        1983,
+        793
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/dino-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "silhouetteCount": 10
+    },
+    {
+      "family": "pixel",
+      "sheet": "pixel-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v3/pixel-worlds.png",
+      "expectedDimensions": [
+        1536,
+        1024
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/pixel-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "family": "brick",
+      "sheet": "brick-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v4/brick-worlds.png",
+      "expectedDimensions": [
+        1983,
+        793
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v4/brick-worlds.png",
+          "width": 1983,
+          "height": 793
+        }
+      ],
+      "silhouetteCount": 10
+    },
+    {
+      "family": "career",
+      "sheet": "career-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v3/career-worlds.png",
+      "expectedDimensions": [
+        1536,
+        1024
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/career-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "family": "deco",
+      "sheet": "deco-worlds",
+      "isWorld": true,
+      "slots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expectedPath": "v3/deco-worlds.png",
+      "expectedDimensions": [
+        1536,
+        1024
+      ],
+      "images": [
+        {
+          "url": "http://127.0.0.1:5174/art/v3/deco-worlds.png",
+          "width": 1536,
+          "height": 1024
+        }
+      ]
+    }
+  ]
+}

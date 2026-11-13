@@ -83,7 +83,7 @@
 export const chapter5 = {
   id: 'chapter-5',
   order: 5,
-  title: 'Brick Road Dash',
+  title: 'Animal Knights',
   stages: [
     {
       id: 'c5-stage-1',

@@ -1,0 +1,4 @@
+Locally served Google Fonts, SIL Open Font License 1.1. Retrieved 2026-11-13.
+Nunito variable (200–1000): https://github.com/google/fonts/tree/main/ofl/nunito
+Jua regular: https://github.com/google/fonts/tree/main/ofl/jua
+No external font request is made during gameplay.

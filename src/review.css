@@ -13,6 +13,8 @@
 }
 
 .review-catalog h1 {
+  font-family: 'Hero Nunito', 'Hero Jua', sans-serif;
+  font-weight: 800;
   margin: 0;
   font-size: 34px;
   line-height: 1.2;
@@ -79,7 +81,7 @@
 
 .review-catalog .review-stage-selected {
   border-color: var(--accent-dark);
-  background: #e7f1f5;
+  background: #fff1ac;
 }
 
 .review-catalog .review-stage-number {

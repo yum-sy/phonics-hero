@@ -1,0 +1,59 @@
+{
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-13T08:14:53.594Z",
+  "cases": [
+    {
+      "name": "five-roundtrips-open-five-world-edit-controls",
+      "passed": true
+    },
+    {
+      "name": "world-control-completes25-without-navigation",
+      "passed": true
+    },
+    {
+      "name": "world-restoration-survives-reload",
+      "passed": true
+    },
+    {
+      "name": "chapter-relock-only-five",
+      "passed": true
+    },
+    {
+      "name": "undo-restores-exact-subtree",
+      "passed": true
+    },
+    {
+      "name": "stage-relock-does-not-start-game",
+      "passed": true
+    },
+    {
+      "name": "partial-chapter-has-direct-relock",
+      "passed": true
+    },
+    {
+      "name": "partial-chapter-relocks-directly",
+      "passed": true
+    },
+    {
+      "name": "off-keeps-relocked-stage-playable-and-locks-its-successor",
+      "passed": true
+    },
+    {
+      "name": "saved-world-remains-accessible-outside-parent",
+      "passed": true
+    },
+    {
+      "name": "relock-survives-reload-as-uncleared",
+      "passed": true
+    },
+    {
+      "name": "review-has-no-progress-editor",
+      "passed": true
+    },
+    {
+      "name": "review-keeps-real-progress",
+      "passed": true
+    }
+  ],
+  "failures": []
+}
