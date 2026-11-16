@@ -1,0 +1,319 @@
+{
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-16T12:29:37.056Z",
+  "cases": [
+    {
+      "name": "controls-world-834x1194",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-chapters-834x1194",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-map4-834x1194",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-battle1-834x1194",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "부모 설정",
+          "width": 500,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-world-1194x834",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 97.328125,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 81.875,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 115.296875,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-chapters-1194x834",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 97.328125,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 81.875,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 115.296875,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-map4-1194x834",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 97.328125,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 81.875,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 115.296875,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-battle1-1194x834",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "부모 설정",
+          "width": 244,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-world-604x725",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-chapters-604x725",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-map4-604x725",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-battle1-604x725",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "부모 설정",
+          "width": 144,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-world-725x604",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-chapters-725x604",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-map4-725x604",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "↶ 되돌리기",
+          "width": 82.171875,
+          "height": 44
+        },
+        {
+          "text": "PIN 변경",
+          "width": 68.640625,
+          "height": 44
+        },
+        {
+          "text": "부모 모드 종료",
+          "width": 97.890625,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "controls-battle1-725x604",
+      "passed": true,
+      "overlap": [],
+      "buttons": [
+        {
+          "text": "부모 설정",
+          "width": 144,
+          "height": 44
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

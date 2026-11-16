@@ -1,0 +1,68 @@
+{
+  "base": "http://127.0.0.1:5174",
+  "generatedAt": "2026-11-16T12:28:35.805Z",
+  "gallery": null,
+  "cases": [
+    {
+      "name": "legacy-unprotected-session-invalidated",
+      "passed": true
+    },
+    {
+      "name": "six-taps-hidden-seven-fast-taps-pin-gate-wrong-and-default-pin",
+      "passed": true
+    },
+    {
+      "name": "relaxed-seven-taps-and-cancel",
+      "passed": true
+    },
+    {
+      "name": "keyboard-masked-digits-enter-escape-focus-trap",
+      "passed": true
+    },
+    {
+      "name": "gap-timeout-resets-without-losing-next-first-tap",
+      "passed": true
+    },
+    {
+      "name": "change-pin-repeat-mismatch-then-confirm",
+      "passed": true
+    },
+    {
+      "name": "changed-pin-persists-old-pin-rejected",
+      "passed": true
+    },
+    {
+      "name": "pin-storage-failure-keeps-old-pin-and-shows-error",
+      "passed": true
+    },
+    {
+      "name": "all-hierarchy-access-without-clears",
+      "passed": true
+    },
+    {
+      "name": "play-pin-entry-change-cancel-exit-preserves-beat-hp-checkpoint",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-seven-taps-pin-four-titles-ipad-p",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-seven-taps-pin-four-titles-ipad-l",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-seven-taps-pin-four-titles-fold-p",
+      "passed": true
+    },
+    {
+      "name": "trusted-touch-seven-taps-pin-four-titles-fold-l",
+      "passed": true
+    },
+    {
+      "name": "review-command-and-pin-isolated",
+      "passed": true
+    }
+  ],
+  "failures": []
+}

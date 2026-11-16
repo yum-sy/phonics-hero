@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": 19,
+  "cases": [
+    "old-save-migration-and-parent-guard",
+    "invalid-scope-is-atomic",
+    "world-restores-only-own-35-stages",
+    "reload-and-restored-world-access",
+    "world-relock-clears-subtree-and-preserves-others",
+    "single-stage-restoration-opens-ancestors-not-siblings",
+    "affected-checkpoint-clears-and-undo-restores-exact-state",
+    "gameplay-mutation-invalidates-undo",
+    "leaving-parent-mode-clears-undo",
+    "relock-means-uncleared-not-forbidden-after-reload",
+    "child-clearing-relocked-stage-reopens-next",
+    "locking-first-world-keeps-first-stage-playable",
+    "locking-everything-leaves-exactly-first-stage-open",
+    "reset-removes-manual-locks",
+    "chapter-relock-keeps-its-first-stage-reachable",
+    "middle-stage-relock-gates-only-its-successor",
+    "corrupt-lock-list-sanitized",
+    "review-edit-and-undo-cannot-touch-real-storage",
+    "storage-failure-is-reported"
+  ]
+}

@@ -98,25 +98,17 @@ try {
   await navigate('/')
   await until(() => evaluate(`!!document.querySelector('.map-header')`), 'world title')
   const saved = JSON.stringify({clearedStages:[],stars:{},checkpoint:null})
-  await evaluate(`localStorage.setItem('carbot-phonics-progress-v1',${JSON.stringify(saved)}); sessionStorage.clear()`)
+  await evaluate(`localStorage.setItem('carbot-phonics-progress-v1',${JSON.stringify(saved)}); sessionStorage.clear();localStorage.removeItem('phonics-hero-parent-pin-v1')`)
   await navigate('/?parent-progress-check=1')
   await until(() => evaluate(`!!document.querySelector('.parent-hold-target')`), 'parent target')
-  const points = async selector => evaluate(`(()=>{
-    const el=document.querySelector(${JSON.stringify(selector)}), walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), rects=[];
-    while(walker.nextNode()){const n=walker.currentNode;for(let i=0;i<n.length;i++){if(!/[A-Za-z0-9가-힣]/.test(n.data[i]))continue;const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);rects.push(r.getBoundingClientRect())}}
-    const b=el.getBoundingClientRect(),first=rects[0],left=Math.min(...rects.map(r=>r.left)),right=Math.max(...rects.map(r=>r.right));
-    return {left:{x:Math.max(b.left,left)+2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2},right:{x:Math.min(b.right,right)-2,y:Math.max(b.top,first.top)+Math.min(b.bottom-first.top,first.height)/2}};
-  })()`)
-  const input = async(type,p,touch=false)=> touch
-    ? command('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd'})[type],touchPoints:type==='up'?[]:[{...p,id:1,radiusX:5,radiusY:5,force:1}]})
-    : command('Input.dispatchMouseEvent',{type:({down:'mousePressed',move:'mouseMoved',up:'mouseReleased'})[type],...p,button:'left',buttons:type==='up'?0:1,clickCount:1})
-  const trip = async(p,n=5,touch=false)=>{for(let i=0;i<n;i++){await input('move',p.right,touch);await input('move',p.left,touch)}}
-  const sweep = async(selector,touch=false)=>{const p=await points(selector);await input('down',p.left,touch);await trip(p,5,touch);await input('up',p.left,touch)}
+  const point = async selector => evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`)
+  const tap = async selector => {const p=await point(selector);await command('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',buttons:1,clickCount:1});await command('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',buttons:0,clickCount:1})}
+  const enter = async()=>{for(let i=0;i<7;i++)await tap('.parent-hold-target');for(let i=0;i<4;i++)await tap('[data-pin-digit="0"]');await tap('#parent-pin-confirm')}
   const click = async selector => { await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await sleep(150) }
   const progress = () => evaluate(`JSON.parse(localStorage.getItem('carbot-phonics-progress-v1'))`)
   const check = (name, passed) => { assert(passed,name); report.cases.push({name,passed:true}); console.log('PASS '+name) }
-  await sweep('.parent-hold-target')
-  check('five-roundtrips-open-five-world-edit-controls',await evaluate(`document.querySelectorAll('[data-parent-scope="world"]').length===5 && !document.querySelector('button button')`))
+  await enter()
+  check('seven-taps-pin-open-five-world-edit-controls',await evaluate(`document.querySelectorAll('[data-parent-scope="world"]').length===5 && !document.querySelector('button button')`))
   const worldId=await evaluate(`document.querySelectorAll('[data-world]')[4].dataset.world`)
   await click(`[data-parent-scope="world"][data-parent-id="${worldId}"]`)
   check('world-control-completes25-without-navigation',(await progress()).clearedStages.length===25 && await evaluate(`document.querySelectorAll('[data-world]').length===5`))
@@ -140,7 +132,7 @@ try {
   check('partial-chapter-relocks-directly',(await progress()).lockedStages.length===5)
   await click('#parent-progress-undo')
   await click(`[data-chapter="${chapterId}"]`)
-  await sweep('.parent-hold-target')
+  await tap('#parent-mode-exit')
   const nextStageId=await evaluate(`document.querySelectorAll('[data-stage]')[3].dataset.stage`)
   // Relock = "not cleared": the relocked stage (its predecessor is cleared)
   // stays playable; the stage after it is what becomes locked.

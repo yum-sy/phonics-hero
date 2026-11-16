@@ -118,7 +118,7 @@ try {
   if (process.env.LAYOUT_REDUCED_MOTION === '1') mediaFeatures.push({ name: 'prefers-reduced-motion', value: 'reduce' })
   await command('Emulation.setEmulatedMedia', { features: mediaFeatures })
   const parentMode = process.env.LAYOUT_PARENT_MODE === '1'
-  const parentStorageKey = (process.env.LAYOUT_PROGRESS_PREFIX || 'phonics-hero') + '-parent-access-v1'
+  const parentStorageKey = (process.env.LAYOUT_PROGRESS_PREFIX || 'phonics-hero') + '-parent-access-v2'
   const progressStorageKey = process.env.LAYOUT_PROGRESS_PREFIX === 'phonics-poke' ? 'phonics-poke-progress-v1' : 'carbot-phonics-progress-v1'
   const partialProgress = parentMode && process.env.LAYOUT_PARENT_PROGRESS === 'partial'
   await command('Page.addScriptToEvaluateOnNewDocument', {source: `

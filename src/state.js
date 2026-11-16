@@ -1,7 +1,7 @@
 import { stages as authoredStages } from './data/chapters/index.js'
 
 const STORAGE_KEY = 'carbot-phonics-progress-v1'
-const PARENT_ACCESS_KEY = 'phonics-hero-parent-access-v1'
+const PARENT_ACCESS_KEY = 'phonics-hero-parent-access-v2'
 const validStageIds = new Set(authoredStages.map(stage => stage.id))
 
 function loadParentAccess() {

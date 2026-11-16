@@ -12,7 +12,7 @@ async function fresh(value = null, parent = false) {
   globalThis.localStorage = storage()
   globalThis.sessionStorage = storage()
   if (value) localStorage.setItem(KEY, JSON.stringify(value))
-  if (parent) sessionStorage.setItem('phonics-hero-parent-access-v1', '1')
+  if (parent) sessionStorage.setItem('phonics-hero-parent-access-v2', '1')
   return import(`../src/state.js?progress-case=${++serial}`)
 }
 const snapshot = state => JSON.parse(JSON.stringify(state.progress))

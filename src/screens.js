@@ -47,7 +47,8 @@ import {
 import { heroArt, villainArt } from './art.js'
 import { fusionLineup, fusionSounds } from './art/fusion-lineup.js'
 import { wordIcon, shoutBurst } from './icons.js'
-import { bindParentSweep } from './parent-command.js'
+import { bindParentTaps } from './parent-command.js'
+import { openParentPinDialog } from './parent-pin.js'
 import { rosterInstruction } from './art/hero-roster.js'
 import { audioLang, textMode } from './data/language-policy.js'
 import { phraseFor, englishFor } from './data/phrasebook.js'
@@ -77,17 +78,57 @@ function beginScreen() {
 function installParentCommand(title, refreshLocks) {
   if (!title || isReviewMode()) return
   title.classList.add('parent-hold-target')
+  let closeDialog = () => {}
+  const originalTitle = title.textContent.trim()
+  const playTitle = title.querySelector('.stage-parent-title-copy')
   const updateStatus = () => {
     title.dataset.parentUnlocked = String(isParentAccessEnabled())
-    title.setAttribute('aria-label', `${title.textContent.trim()}${isParentAccessEnabled() ? ' · Parent mode' : ''}`)
+    title.setAttribute('aria-label', `${originalTitle}${isParentAccessEnabled() ? ' · 부모 설정' : ''}`)
+    if (playTitle) {
+      playTitle.textContent = isParentAccessEnabled() ? '부모 설정' : originalTitle
+      if (isParentAccessEnabled()) { title.setAttribute('role', 'button'); title.tabIndex = 0 }
+      else { title.removeAttribute('role'); title.removeAttribute('tabindex') }
+    }
   }
-  updateStatus()
-  releaseParentCommand = bindParentSweep(title, () => {
-    toggleParentAccess()
+  const exitParent = () => {
+    closeDialog()
+    if (isParentAccessEnabled()) toggleParentAccess()
     parentProgressMessage = ''
     if (refreshLocks) refreshLocks()
-    else updateStatus() // Play keeps its current beat, HP and audio untouched.
+    else updateStatus()
+  }
+  const openDialog = (change = false, settings = false) => {
+    if (document.getElementById('parent-pin-dialog')) return
+    closeDialog = openParentPinDialog({ change, settings, onExit: exitParent, onUnlock: () => {
+      if (isReviewMode() || !title.isConnected || isParentAccessEnabled()) return
+      toggleParentAccess()
+      parentProgressMessage = ''
+      if (refreshLocks) refreshLocks()
+      else updateStatus() // Keep the play DOM/HP/audio intact.
+    } })
+  }
+  updateStatus()
+  app.querySelector('#parent-pin-change')?.addEventListener('click', () => openDialog(true))
+  app.querySelector('#parent-mode-exit')?.addEventListener('click', exitParent)
+  const playSettings = event => {
+    if (!playTitle || !isParentAccessEnabled()) return
+    if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) return
+    if (event.type === 'pointerup' && (event.button !== 0 || event.isPrimary === false)) return
+    event.preventDefault()
+    openDialog(false, true)
+  }
+  title.addEventListener('pointerup', playSettings)
+  title.addEventListener('keydown', playSettings)
+  const releaseTaps = bindParentTaps(title, () => {
+    if (isParentAccessEnabled()) openDialog(false, true)
+    else openDialog()
   })
+  releaseParentCommand = () => {
+    releaseTaps(); closeDialog()
+    title.removeEventListener('pointerup', playSettings)
+    title.removeEventListener('keydown', playSettings)
+  }
+  releaseParentCommand.cancel = releaseTaps.cancel
 }
 
 function returnToAccessibleMap(chapterId) {
@@ -736,7 +777,7 @@ function parentProgressControls(kind, id, label) {
 }
 function parentProgressBar() {
   if (!isParentAccessEnabled()) return ''
-  return `<div class="parent-progress-bar"><span role="status">${parentProgressMessage || '🔒 완료 처리 · 🔓 다시 잠금 · 변경은 자동 저장'}</span><button type="button" id="parent-progress-undo" ${canUndoParentProgress() ? '' : 'disabled'}>↶ 되돌리기</button></div>`
+  return `<div class="parent-progress-bar"><span role="status">${parentProgressMessage || '🔒 완료 처리 · 🔓 다시 잠금 · 변경은 자동 저장'}</span><div class="parent-session-controls"><button type="button" id="parent-progress-undo" ${canUndoParentProgress() ? '' : 'disabled'}>↶ 되돌리기</button><button type="button" id="parent-pin-change">PIN 변경</button><button type="button" id="parent-mode-exit">부모 모드 종료</button></div></div>`
 }
 function installParentProgressControls(refresh) {
   if (!isParentAccessEnabled()) return
